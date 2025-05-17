@@ -1,12 +1,21 @@
 // logic/growth.js
 import { switchScreen } from "../main.js";
-import { loadGrowthData, mockGrowthDebug, loadGrowthFlags, markChordAsUnlocked, saveGrowthFlags } from "../utils/growthStore.js";
-import { getToday, isQualifiedToday, getPassedDays, forceUnlock, getCurrentTargetChord } from "../utils/growthUtils.js";
+import {
+  getToday,
+  isQualifiedToday,
+  getPassedDays,
+  forceUnlock,
+  getCurrentTargetChord
+} from "../utils/growthUtils.js";
+import { loadGrowthFlags, markChordAsUnlocked } from "../utils/growthStore_supabase.js";
 import { chords } from "../data/chords.js";
+import { renderHeader } from "../components/header.js";
 
-export function renderGrowthScreen() {
+export async function renderGrowthScreen(user) {
   const app = document.getElementById("app");
   app.innerHTML = "";
+
+  renderHeader(app, () => renderGrowthScreen(user)); // ← user を再渡し
 
   const container = document.createElement("div");
   container.className = "screen active";
@@ -14,15 +23,13 @@ export function renderGrowthScreen() {
   const today = getToday();
   const passed = getPassedDays();
   const qualifiedToday = isQualifiedToday();
-  const target = getCurrentTargetChord();
-  const flags = loadGrowthFlags();
+  const flags = await loadGrowthFlags(user.id);
+  const target = getCurrentTargetChord(flags);
 
-  // タイトル
   const title = document.createElement("h2");
   title.textContent = "🎯 育成モード進捗と履歴";
   container.appendChild(title);
 
-  // 現在挑戦中の和音
   if (target) {
     const challenge = document.createElement("div");
     challenge.style.margin = "1em 0";
@@ -38,7 +45,6 @@ export function renderGrowthScreen() {
     container.appendChild(challenge);
   }
 
-  // 合格状況
   const info = document.createElement("p");
   info.innerHTML = `
     今日の日付: <strong>${today}</strong><br/>
@@ -47,7 +53,6 @@ export function renderGrowthScreen() {
   `;
   container.appendChild(info);
 
-  // 進捗バー
   const progressBar = document.createElement("div");
   progressBar.style.height = "30px";
   progressBar.style.background = "#eee";
@@ -63,7 +68,6 @@ export function renderGrowthScreen() {
   progressBar.appendChild(progress);
   container.appendChild(progressBar);
 
-  // 和音の進捗表示（色＋状態）
   const chordStatus = document.createElement("div");
   chordStatus.style.display = "grid";
   chordStatus.style.gridTemplateColumns = "repeat(auto-fit, minmax(90px, 1fr))";
@@ -98,7 +102,6 @@ export function renderGrowthScreen() {
   });
   container.appendChild(chordStatus);
 
-  // 転回系の任意解放セクション
   const optionalTitle = document.createElement("h3");
   optionalTitle.textContent = "🔧 転回系の任意解放";
   container.appendChild(optionalTitle);
@@ -118,12 +121,11 @@ export function renderGrowthScreen() {
       btn.disabled = true;
     } else {
       btn.textContent = "🔓 解放する";
-      btn.onclick = () => {
+      btn.onclick = async () => {
         if (confirm(`「${chord.label}」を解放しますか？`)) {
-          flags[chord.name] = { unlocked: true };
-          saveGrowthFlags(flags);
+          await markChordAsUnlocked(user.id, chord.name);
           alert(`「${chord.label}」を解放しました！`);
-          renderGrowthScreen();
+          renderGrowthScreen(user); // 再描画
         }
       };
     }
@@ -133,7 +135,6 @@ export function renderGrowthScreen() {
     container.appendChild(item);
   });
 
-  // 強制解放
   if (passed < 14) {
     const unlockBtn = document.createElement("button");
     unlockBtn.textContent = "🔓 強制解放する";
@@ -141,7 +142,7 @@ export function renderGrowthScreen() {
       if (confirm("本当に強制解放しますか？ 進捗はリセットされます。")) {
         forceUnlock();
         alert("強制解放しました。");
-        renderGrowthScreen();
+        renderGrowthScreen(user);
       }
     };
     container.appendChild(unlockBtn);
@@ -152,74 +153,10 @@ export function renderGrowthScreen() {
     container.appendChild(done);
   }
 
-  // 今日の概要
-  const data = loadGrowthData();
-  const todayData = data[today] || { count: 0, correct: 0, sets: 0 };
-  const summary = document.createElement("div");
-  summary.innerHTML = `
-    <h3>📈 今日のトレーニング概要</h3>
-    <p>出題数：<strong>${todayData.count}</strong></p>
-    <p>正答数：<strong>${todayData.correct}</strong></p>
-    <p>セット数：<strong>${todayData.sets}</strong></p>
-    <p>正答率：<strong>${todayData.count > 0 ? ((todayData.correct / todayData.count) * 100).toFixed(1) : 0}%</strong></p>
-  `;
-  container.appendChild(summary);
-
-  // 過去7日間履歴
-  const historyTitle = document.createElement("h3");
-  historyTitle.textContent = "📆 過去7日間の履歴";
-  container.appendChild(historyTitle);
-
-  const table = document.createElement("table");
-  table.style.borderCollapse = "collapse";
-  table.style.width = "100%";
-  const headerRow = document.createElement("tr");
-  ["日付", "出題数", "正答数", "正答率", "セット数"].forEach(text => {
-    const th = document.createElement("th");
-    th.textContent = text;
-    th.style.border = "1px solid #ccc";
-    th.style.padding = "6px";
-    th.style.background = "#f0f0f0";
-    headerRow.appendChild(th);
-  });
-  table.appendChild(headerRow);
-
-  const sortedKeys = Object.keys(data).sort().reverse().slice(0, 7);
-  sortedKeys.forEach(date => {
-    const d = data[date];
-    const rate = d.count ? ((d.correct / d.count) * 100).toFixed(1) : "0.0";
-    const tr = document.createElement("tr");
-    [date, d.count, d.correct, rate + "%", d.sets].forEach(text => {
-      const td = document.createElement("td");
-      td.textContent = text;
-      td.style.border = "1px solid #ccc";
-      td.style.padding = "6px";
-      tr.appendChild(td);
-    });
-    table.appendChild(tr);
-  });
-  container.appendChild(table);
-
-  // ボタン群
-  const btnBox = document.createElement("div");
-  btnBox.style.marginTop = "2em";
-  btnBox.style.display = "flex";
-  btnBox.style.justifyContent = "center";
-  btnBox.style.gap = "1em";
-
   const backBtn = document.createElement("button");
   backBtn.textContent = "🏠 ホームに戻る";
-  backBtn.onclick = () => switchScreen("home");
-  btnBox.appendChild(backBtn);
+  backBtn.onclick = () => switchScreen("home", user); // 必ずuserを渡す
+  container.appendChild(backBtn);
 
-  const debugBtn = document.createElement("button");
-  debugBtn.textContent = "🐞 デバッグ追加";
-  debugBtn.onclick = () => {
-    mockGrowthDebug();
-    renderGrowthScreen();
-  };
-  btnBox.appendChild(debugBtn);
-
-  container.appendChild(btnBox);
   app.appendChild(container);
 }

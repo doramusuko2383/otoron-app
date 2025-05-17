@@ -1,67 +1,68 @@
 import { switchScreen } from "../main.js";
 import { loadGrowthData } from "../utils/growthStore.js";
 import { getToday } from "../utils/growthUtils.js";
+import { renderHeader } from "./header.js";
 
 export function renderHomeScreen() {
   const app = document.getElementById("app");
   app.innerHTML = "";
 
+  // ✅ ヘッダー（固定表示、上部に表示）
+  renderHeader(app, renderHomeScreen);
+
+  // ✅ メインコンテンツ（ヘッダーの下に表示）
   const container = document.createElement("div");
-  container.className = "screen active";
+  container.className = "home-screen active";
+  app.appendChild(container);
 
-  const title = document.createElement("h1");
-  title.textContent = "絶対音感トレーニング";
-  title.style.textAlign = "center";
+  // ✅ ロゴ・タイトル・サブタイトル
+  const logoContainer = document.createElement("div");
+  logoContainer.style.textAlign = "center";
+  logoContainer.style.marginTop = "2em";
 
+  const faceImg = document.createElement("img");
+  faceImg.src = "images/otolon.png";
+  faceImg.alt = "おとろん";
+  faceImg.style.height = "180px";
+  faceImg.style.marginBottom = "0.5em";
+
+  const titleText = document.createElement("h1");
+  titleText.textContent = "オトロン";
+  titleText.style.fontSize = "2.2rem";
+  titleText.style.margin = "0";
+  titleText.style.color = "#543014";
+
+  const subTitle = document.createElement("p");
+  subTitle.textContent = "おとで あそぼう！";
+  subTitle.style.fontSize = "1.2rem";
+  subTitle.style.marginTop = "0.2em";
+  subTitle.style.color = "#543014";
+
+  logoContainer.appendChild(faceImg);
+  logoContainer.appendChild(titleText);
+  logoContainer.appendChild(subTitle);
+  container.appendChild(logoContainer);
+
+  // ✅ トレーニング開始ボタン（ひとつに集約）
+  const startButton = document.createElement("button");
+  startButton.textContent = "とれーにんぐ かいし";
+  startButton.className = "main-start-button"; // CSSでデザイン指定
+  startButton.style.marginTop = "2em";
+  startButton.onclick = () => switchScreen("training");
+  logoContainer.appendChild(startButton);
+
+  // ✅ 今日のトレーニング回数
   const today = getToday();
   const growthData = loadGrowthData();
   const todayRecord = growthData[today] || { sets: 0 };
 
   const info = document.createElement("p");
-  info.innerHTML = `🎯 今日のトレーニング数：<strong>${todayRecord.sets}</strong>`;
-  info.style.marginTop = "1em";
+  info.innerHTML = `🎯 きょう の がんばり：<strong>${todayRecord.sets}</strong> かい`;
+  info.style.marginTop = "2em";
   info.style.fontSize = "1.1em";
   info.style.textAlign = "center";
-
-  const buttons = document.createElement("div");
-  buttons.className = "home-buttons";
-
-  const trainingBtn = document.createElement("button");
-  trainingBtn.textContent = "🎵 トレーニング";
-  trainingBtn.onclick = () => switchScreen("training");
-
-  const settingBtn = document.createElement("button");
-  settingBtn.textContent = "⚙️ 設定";
-  settingBtn.onclick = () => switchScreen("settings");
-
-  const summaryBtn = document.createElement("button");
-  summaryBtn.textContent = "📊 診断結果";
-  summaryBtn.onclick = () => switchScreen("summary");
-
-  const growthBtn = document.createElement("button");
-  growthBtn.textContent = "🌱 育成モード";
-  growthBtn.onclick = () => switchScreen("growth");
-
-  buttons.appendChild(trainingBtn);
-  buttons.appendChild(settingBtn);
-  buttons.appendChild(summaryBtn);
-  buttons.appendChild(growthBtn);
-
-  const mascot = document.createElement("img");
-  mascot.src = "/images/otoron.png";
-  mascot.alt = "オトロン";
-  mascot.style.position = "fixed";
-  mascot.style.bottom = "20px";
-  mascot.style.right = "20px";
-  mascot.style.width = "100px";
-  mascot.style.height = "auto";
-  mascot.style.zIndex = "10";
-
-  container.appendChild(title);
+  info.style.color = "#543014";
   container.appendChild(info);
-  container.appendChild(buttons);
-  container.appendChild(mascot);
-  app.appendChild(container);
 }
 
 // ✅ 他の画面から再利用できるカスタム confirm 関数

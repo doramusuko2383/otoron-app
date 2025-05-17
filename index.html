@@ -1,15 +1,33 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <link rel="icon" href="images/favicon_face.ico" type="image/x-icon">
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>絶対音感トレーニング</title>
-  <link rel="stylesheet" href="style.css" />
-</head>
-<body>
-  <div id="app"></div>
-  <script type="module" src="main.js"></script>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/common.css" />
+  <link rel="stylesheet" href="css/intro.css">
+  <link rel="stylesheet" href="css/login.css">
+  <link rel="stylesheet" href="css/result.css">
+  <link rel="stylesheet" href="css/signup.css">
+  <link rel="stylesheet" href="css/home.css" />
+  <link rel="stylesheet" href="css/header.css" />
+  <link rel="stylesheet" href="css/training.css" />
+  <link rel="stylesheet" href="css/settings.css" />
+  <link rel="stylesheet" href="css/summary.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+  <!-- JSライブラリ（非モジュール） -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+</head>
+
+<body class="app-root">
+  <!-- SPA本体：JavaScriptで動的に描画される -->
+  <div id="app"></div>
+
+  <!-- メインモジュール：FirebaseやSupabaseの処理はここから -->
+  <script type="module" src="main.js"></script>
 </body>
 </html>

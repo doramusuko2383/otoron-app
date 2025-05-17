@@ -1,0 +1,101 @@
+/* 結果画面全体のレイアウト */
+.result-container {
+  text-align: center;
+  padding: 2em;
+  background-color: #fffaf5;
+}
+
+/* メッセージ強調 */
+.praise {
+  font-size: 1.8em;
+  color: #ff69b4;
+  margin-top: 0.5em;
+}
+
+/* フッター・ボタン周辺 */
+.result-footer {
+  margin-top: 2em;
+}
+
+.small-btn {
+  font-size: 1rem;
+  padding: 0.5em 1.2em;
+  border: 1px solid #ccc;
+  background-color: white;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.small-btn:hover {
+  background-color: #f8f8f8;
+}
+
+/* 正誤表（テーブル） */
+.result-table {
+  margin: 2em auto;
+  border-collapse: collapse;
+  width: auto;
+  font-size: 0.85em;
+  table-layout: fixed;
+}
+
+/* 列幅調整：1列目だけ小さく */
+.result-table th:nth-child(1),
+.result-table td:nth-child(1) {
+  width: 40px;
+}
+
+.result-table th:nth-child(2),
+.result-table td:nth-child(2),
+.result-table th:nth-child(3),
+.result-table td:nth-child(3) {
+  width: 60px;
+}
+
+/* セルの余白を最小限に */
+.result-table th,
+.result-table td {
+  padding: 0.2em;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.correct-row,
+.wrong-row {
+  background-color: transparent; /* 正誤背景色はなし */
+}
+
+/* 和音色ボックス（文字折り返し無し＋小サイズ） */
+.chord-box {
+  width: 50px;
+  height: 50px;
+  line-height: 50px;
+  margin: 0 auto;
+  color: white;
+  font-weight: bold;
+  font-size: 8px;        /* ← これで確実に小さくなる！ */
+  border-radius: 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
+  letter-spacing: -0.05em;
+}
+
+/* 色クラス：Chord Color Mapping */
+.aka        { background-color: red; }
+.kiiro      { background-color: gold; }
+.ao         { background-color: blue; }
+.kuro       { background-color: black; }
+.midori     { background-color: green; }
+.orange     { background-color: orange; }
+.murasaki   { background-color: purple; }
+.pinku      { background-color: pink; color: black; }
+.chairo     { background-color: sienna; }
+.kigreen    { background-color: yellowgreen; }
+.usudaidai  { background-color: peachpuff; color: black; }
+.fuji       { background-color: plum; }
+.hai        { background-color: gray; }
+.mizuiro    { background-color: skyblue; }
+.white      { background-color: white; color: black; border: 1px solid #aaa; }

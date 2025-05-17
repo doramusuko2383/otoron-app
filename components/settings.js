@@ -1,5 +1,5 @@
-import { switchScreen } from "../main.js";
 import { chords } from "../data/chords.js";
+import { renderHeader } from "./header.js";
 
 export let selectedChords = [];
 
@@ -7,49 +7,22 @@ export function renderSettingsScreen() {
   const app = document.getElementById("app");
   app.innerHTML = "";
 
+  renderHeader(app, renderSettingsScreen);
+
   const container = document.createElement("div");
   container.className = "screen active";
   container.style.overflow = "hidden";
 
-  // ヘッダー（タイトル＋合計＋ボタン）
+  // ✅ 横一列にまとめたヘッダー行（タイトル・出題数・ボタン）
   const headerBar = document.createElement("div");
   headerBar.className = "header-bar";
 
-  const title = document.createElement("h2");
-  title.textContent = "🎼 出題設定";
-  title.style.margin = "0";
+  const titleLine = document.createElement("div");
+  titleLine.className = "header-title-line";
+  titleLine.innerHTML = `🎼 <strong>出題設定</strong> <span id="total-count">累計出題回数: 0 回</span>`;
 
-  const totalCountDisplay = document.createElement("div");
-  totalCountDisplay.className = "total";
-  totalCountDisplay.id = "total-count";
-  totalCountDisplay.textContent = "累計出題回数: 0 回";
-
-  const buttonBox = document.createElement("div");
-  buttonBox.className = "header-buttons";
-
-  const startBtn = document.createElement("button");
-  startBtn.textContent = "🎵 トレーニングスタート！";
-  startBtn.onclick = () => {
-    updateSelection();
-    if (selectedChords.length === 0) {
-      alert("和音を選択してください");
-      return;
-    }
-    localStorage.setItem("selectedChords", JSON.stringify(selectedChords));
-    switchScreen("training");
-  };
-
-  const backBtn = document.createElement("button");
-  backBtn.textContent = "🏠 ホームに戻る";
-  backBtn.onclick = () => {
-    updateSelection();
-    if (selectedChords.length === 0) {
-      alert("和音を選択してください");
-      return;
-    }
-    localStorage.setItem("selectedChords", JSON.stringify(selectedChords));
-    switchScreen("home");
-  };
+  const buttonGroup = document.createElement("div");
+  buttonGroup.className = "header-button-group";
 
   const debugBtn = document.createElement("button");
   debugBtn.textContent = "🛠 全部選択 (4回)";
@@ -66,11 +39,7 @@ export function renderSettingsScreen() {
     updateSelection();
   };
 
-  buttonBox.appendChild(startBtn);
-  buttonBox.appendChild(backBtn);
-  buttonBox.appendChild(debugBtn);
   const bulkDropdown = document.createElement("select");
-  bulkDropdown.id = "bulk-count";
   bulkDropdown.innerHTML = `
     <option value="">✔ 一括出題回数</option>
     <option value="1">1回ずつ</option>
@@ -78,11 +47,10 @@ export function renderSettingsScreen() {
     <option value="3">3回ずつ</option>
     <option value="4">4回ずつ</option>
     <option value="5">5回ずつ</option>
-  `;
+`;
   bulkDropdown.onchange = () => {
     const count = parseInt(bulkDropdown.value);
     if (!count) return;
-
     chords.forEach(chord => {
       const checkbox = document.getElementById(`chk-${chord.name}`);
       const input = checkbox?.parentElement?.querySelector("input[type='number']");
@@ -90,20 +58,18 @@ export function renderSettingsScreen() {
         input.value = count;
       }
     });
+    
     updateSelection();
   };
-  bulkDropdown.style.marginLeft = "1em";
-  bulkDropdown.style.fontSize = "1em";
-  bulkDropdown.style.padding = "4px 8px";
 
-  buttonBox.appendChild(bulkDropdown);
+  buttonGroup.appendChild(debugBtn);
+  buttonGroup.appendChild(bulkDropdown);
 
-  headerBar.appendChild(title);
-  headerBar.appendChild(totalCountDisplay);
-  headerBar.appendChild(buttonBox);
+  headerBar.appendChild(titleLine);
+  headerBar.appendChild(buttonGroup);
   container.appendChild(headerBar);
 
-  // 和音設定エリア
+  // ✅ 和音設定エリア
   const chordSettings = document.createElement("div");
   chordSettings.id = "chord-settings";
 
@@ -112,7 +78,7 @@ export function renderSettingsScreen() {
   const blackColumn = document.createElement("div");
   blackColumn.className = "chord-column";
   const invColumn = document.createElement("div");
-  invColumn.className = "chord-column";
+  invColumn.className = "chord-column-inv";
 
   const stored = localStorage.getItem("selectedChords");
   let storedSelection = stored ? JSON.parse(stored) : [{ name: "C-E-G", count: 4 }];
@@ -165,9 +131,14 @@ export function renderSettingsScreen() {
     }
   });
 
-  chordSettings.appendChild(whiteColumn);
-  chordSettings.appendChild(blackColumn);
+  const upperRow = document.createElement("div");
+  upperRow.className = "chord-columns-row";
+  upperRow.appendChild(whiteColumn);
+  upperRow.appendChild(blackColumn);
+
+  chordSettings.appendChild(upperRow);
   chordSettings.appendChild(invColumn);
+
   container.appendChild(chordSettings);
   app.appendChild(container);
 

@@ -1,0 +1,141 @@
+/* ===== settings.css ===== */
+
+/* 全体のグリッドエリア */
+#chord-settings {
+  max-width: 960px;
+  margin: 1em auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+}
+
+/* PC：3カラムレイアウト */
+@media (min-width: 768px) {
+  #chord-settings {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 24px;
+  }
+
+  .chord-columns-row {
+    display: contents;
+  }
+
+  .chord-column-inv {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+
+/* モバイル：2列 + 1列の構成 */
+@media (max-width: 767px) {
+  .chord-columns-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1em;
+  }
+
+  .chord-columns-row > .chord-column {
+    flex: 1;
+    min-width: 45%;
+  }
+
+  .chord-column-inv {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+
+/* 各列内のスタイル */
+.chord-column {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.chord-setting {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #fff;
+  box-sizing: border-box;
+  width: 100%;
+  color: black;
+}
+
+.chord-setting label {
+  flex: 1;
+}
+
+.chord-setting input[type='number'] {
+  width: 3.5em;              /* ← px より em 単位のほうが縮小時に強い */
+  font-size: 1em;
+  padding: 4px;
+  border: 1px solid #ccc;    /* ← 明示的に border を再定義 */
+  border-radius: 6px;
+  box-sizing: border-box;    /* ← パディングとボーダーを含む */
+  text-align: right;
+  appearance: none;          /* ← iOS や一部ブラウザでの独自スタイル無効化 */
+}
+.chord-setting input[type='checkbox'] {
+  margin: 0;
+}
+
+/* ヘッダー行 */
+.header-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75em;
+  padding: 0.5em 1em;
+  max-width: 860px; /* ← 少し狭くて美しい */
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.header-title-line {
+  display: flex;
+  align-items: center;
+  gap: 1em;
+  font-size: 1.2em;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.header-title-line #total-count {
+  font-size: 1rem;
+  font-weight: normal;
+  color: #333;
+}
+
+/* ボタン行 */
+.center-button-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1em;
+  margin-bottom: 1em;
+  flex-wrap: wrap;
+}
+
+.center-button-box button,
+.center-button-box select {
+  font-size: 1em;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.center-button-box button:hover,
+.center-button-box select:hover {
+  background-color: #f8f8f8;
+}

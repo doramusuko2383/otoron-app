@@ -1,0 +1,66 @@
+/* ===== common.css (scoped) ===== */
+
+/* デフォルト：モバイルファースト（スクロール許可） */
+.app-root {
+  font-family: sans-serif;
+  margin: 0;
+  padding: 0;
+  background: #fff8f0;
+  overflow-x: hidden;
+  overflow-y: auto; /* ← モバイルでスクロールできるように */
+}
+
+/* .screen の基本レイアウト */
+.screen {
+  max-width: 900px;
+  margin: 56px auto 2em; /* ヘッダー高さ分上にスペース */
+  padding: 1em;
+  box-sizing: border-box;
+}
+
+/* 見出し統一（任意） */
+.screen h1,
+.screen h2 {
+  text-align: center;
+  margin-bottom: 1em;
+}
+
+/* ボタン・セレクトの統一 */
+button, select {
+  font-family: inherit;
+  font-size: 1em;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background: #f8f8f8;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #eee;
+}
+
+/* 共通ユーティリティ */
+.u-text-center {
+  text-align: center;
+}
+
+.u-mt-2 {
+  margin-top: 2em;
+}
+
+.u-hidden {
+  display: none !important;
+}
+
+/* PC版のみ：app-root はスクロールさせず、.screen に任せる */
+@media (min-width: 768px) {
+  .app-root {
+    overflow-y: hidden;
+  }
+
+  .screen {
+    height: calc(100vh - 56px); /* ヘッダーを除く高さ */
+    overflow-y: auto;
+  }
+}

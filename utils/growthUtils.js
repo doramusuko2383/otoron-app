@@ -1,27 +1,26 @@
-import { loadGrowthData, saveGrowthData, loadGrowthFlags } from "./growthStore.js";
 import { chords } from "../data/chords.js";
+import { loadTrainingRecords } from "./recordStore_supabase.js";
 
 /**
  * 現在挑戦中の和音を返す（未解放の最初の1つ）
+ * @param {object} flags - 和音解放フラグ（loadGrowthFlagsの結果）
+ * @returns {object|null} 該当する chord オブジェクト or null
  */
-export function getCurrentTargetChord() {
-  const flags = loadGrowthFlags();
-
+export function getCurrentTargetChord(flags) {
   for (const chord of chords) {
     if (!chord.colorClass || chord.type === "black-inv") continue;
     if (!flags[chord.name]?.unlocked) {
       return chord;
     }
   }
-
-  return null; // 全て解放済み
+  return null;
 }
 
-const PASS_THRESHOLD = 0.98;
-const MIN_COUNT = 40;
-const MIN_SETS = 2;
-const REQUIRED_DAYS = 14;
-const STORAGE_FORCE_FLAG = "growth_force_unlock";
+export const PASS_THRESHOLD = 0.98;
+export const MIN_COUNT = 40;
+export const MIN_SETS = 2;
+export const REQUIRED_DAYS = 14;
+export const STORAGE_FORCE_FLAG = "growth_force_unlock";
 
 /**
  * 今日の日付（YYYY-MM-DD）
@@ -31,10 +30,12 @@ export function getToday() {
 }
 
 /**
- * 今日の成績が合格基準を満たしているか
+ * 今日の成績が合格基準を満たしているか（Supabase版）
+ * @param {string} userId - SupabaseユーザーID
+ * @returns {Promise<boolean>}
  */
-export function isQualifiedToday() {
-  const data = loadGrowthData();
+export async function isQualifiedToday(userId) {
+  const data = await loadTrainingRecords(userId);
   const today = getToday();
   const record = data[today];
   if (!record) return false;
@@ -44,10 +45,12 @@ export function isQualifiedToday() {
 }
 
 /**
- * 合格した日数を取得（強制解放後はリセット）
+ * 合格した日数を取得（強制解放後はリセット） Supabase版
+ * @param {string} userId
+ * @returns {Promise<number>}
  */
-export function getPassedDays() {
-  const data = loadGrowthData();
+export async function getPassedDays(userId) {
+  const data = await loadTrainingRecords(userId);
   let passed = 0;
 
   for (const date in data) {
@@ -79,32 +82,15 @@ export function forceUnlock() {
 }
 
 /**
- * 今日を合格済みにマーク（デバッグ・テスト用）
+ * 日付の昇順で並び替えられた記録を返す（過去表示など用）
+ * @param {string} userId
+ * @returns {Promise<Array<{date, count, correct, sets}>>}
  */
-export function markTodayAsPassed() {
-  const data = loadGrowthData();
-  const today = getToday();
-  data[today] = {
-    count: 60,
-    correct: 60,
-    sets: 3
-  };
-  saveGrowthData(data);
-}
-
-/**
- * トレーニング中の出題・正解数を記録
- */
-export function updateGrowthRecord({ correct = 0, total = 1 }) {
-  const data = JSON.parse(localStorage.getItem("growthRecords") || "{}");
-  const today = getToday();
-
-  if (!data[today]) {
-    data[today] = { correct: 0, count: 0, sets: 0 };
-  }
-
-  data[today].correct += correct;
-  data[today].count += total;
-
-  localStorage.setItem("growthRecords", JSON.stringify(data));
+export async function getSortedRecordArray(userId) {
+  const data = await loadTrainingRecords(userId);
+  const sortedKeys = Object.keys(data).sort();
+  return sortedKeys.map(date => ({
+    date,
+    ...data[date]
+  }));
 }

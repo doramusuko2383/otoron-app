@@ -1,23 +1,29 @@
+// 修正済み training.js（黒鍵転回形も正しく表示）
 import { chords } from "../data/chords.js";
 import { selectedChords } from "./settings.js";
 import { switchScreen } from "../main.js";
 import { showCustomConfirm } from "./home.js";
-import { updateGrowthRecord } from "../utils/growthUtils.js";
+import { resetResultFlag } from "./result.js";
+import { saveSessionToHistory } from "./summary.js";
+import { incrementSetCount } from "../utils/recordStore_supabase.js";
+import { autoUnlockNextChord } from "../utils/progressUtils.js";
 
 let questionCount = 0;
-let correctCount = 0;
 let currentAnswer = null;
 let quitFlag = false;
 let currentAudio = null;
 let alreadyTried = false;
 let questionQueue = [];
+let isForcedAnswer = false;
+let currentUser = null; // ← 追加
 
 export const stats = {};
 export const mistakes = {};
 export const firstMistakeInSession = { flag: false, wrong: null };
+export let lastResults = [];
+export let correctCount = 0;
 
 function playSoundThen(name, callback) {
-  console.log("🔊 再生ファイル:", `audio/${name}.mp3`);
   if (currentAudio) {
     currentAudio.pause();
     currentAudio.currentTime = 0;
@@ -29,16 +35,6 @@ function playSoundThen(name, callback) {
     callback();
   };
   currentAudio.play();
-}
-
-function toHiragana(label) {
-  const map = {
-    "赤": "あか", "黄色": "きいろ", "青": "あお", "黒": "くろ", "緑": "みどり",
-    "オレンジ": "おれんじ", "紫": "むらさき", "ピンク": "ぴんく", "茶色": "ちゃいろ",
-    "黄緑": "きみどり", "薄橙": "うすだいだい", "藤色": "ふじいろ",
-    "灰色": "はいいろ", "水色": "みずいろ"
-  };
-  return map[label] || label;
 }
 
 function createQuestionQueue() {
@@ -59,33 +55,46 @@ function shuffleArray(array) {
   return array;
 }
 
-export function renderTrainingScreen() {
+export function renderTrainingScreen(user) {
+  currentUser = user; // ← 保持
+  resetResultFlag();
+  lastResults = [];
+
+  for (const key in stats) delete stats[key];
+  for (const key in mistakes) delete mistakes[key];
+  correctCount = 0;
+
   if (!selectedChords || selectedChords.length === 0) {
     selectedChords.push({ name: "C-E-G", count: 4 });
     localStorage.setItem("selectedChords", JSON.stringify(selectedChords));
   }
+
   questionCount = 0;
-  correctCount = 0;
   quitFlag = false;
   alreadyTried = false;
+  isForcedAnswer = false;
   firstMistakeInSession.flag = false;
   questionQueue = createQuestionQueue();
   nextQuestion();
 }
 
-function nextQuestion() {
+async function nextQuestion() {
   alreadyTried = false;
+  isForcedAnswer = false;
   if (questionQueue.length === 0 || quitFlag) {
+    saveSessionToHistory();
+  
+    await incrementSetCount(currentUser.id);
+    await autoUnlockNextChord(currentUser);
+  
     const sound = (correctCount === questionCount) ? "perfect" : "end";
-    playSoundThen(sound, () => switchScreen("summary"));
+    playSoundThen(sound, () => {
+      switchScreen("result");
+    });
     return;
   }
-
-  if (questionCount === Math.floor((questionQueue.length + questionCount) * 0.8)) {
-    playSoundThen("almost", () => showQuiz());
-  } else {
-    showQuiz();
-  }
+  
+  showQuiz();
 }
 
 function showQuiz() {
@@ -120,22 +129,34 @@ function drawQuizScreen() {
 
   const header = document.createElement("div");
   header.style.display = "flex";
-  header.style.justifyContent = "center";
+  header.style.justifyContent = "space-between";
+  header.style.alignItems = "center";
   header.style.width = "100%";
-  header.style.marginBottom = "1em";
+  header.style.maxWidth = "600px";
+  header.style.margin = "1em auto 0.5em";
+  header.style.padding = "0 1em";
 
   const counter = document.createElement("h2");
-  counter.textContent = `${questionCount + 1}`;
+  const total = questionQueue.length + questionCount + 1;
+  counter.textContent = `${questionCount} / ${total}`;
+  counter.style.fontSize = "1.2em";
   header.appendChild(counter);
 
+  const progress = document.createElement("progress");
+  progress.value = questionCount;
+  progress.max = total;
+  progress.style.width = "60%";
+  progress.style.height = "1em";
+  header.appendChild(progress);
+
   const layout = document.createElement("div");
+  layout.className = "grid-container";
   layout.style.display = "grid";
   layout.style.gridTemplateColumns = "repeat(5, 1fr)";
-  layout.style.gap = "2px";
+  layout.style.gap = "12px";
   layout.style.width = "100%";
-  layout.style.padding = "0 2px";
-  layout.style.boxSizing = "border-box";
-  layout.style.margin = "0";
+  layout.style.maxWidth = "500px";
+  layout.style.margin = "0 auto";
 
   const order = [
     "C-E-G", "C-F-A", "B-D-G", "A-C-F", "D-G-B",
@@ -146,31 +167,35 @@ function drawQuizScreen() {
   ];
 
   order.forEach(name => {
-    const btn = document.createElement("button");
     if (name === null) {
-      btn.disabled = true;
-      btn.style.visibility = "hidden";
-    } else {
-      const chord = chords.find(c => c.name === name);
-      if (!chord) return;
-      btn.className = `color-btn ${chord.colorClass}`;
-      btn.textContent = toHiragana(chord.label);
-      btn.style.aspectRatio = "1/1";
-      btn.style.width = "100%";
-      btn.style.fontSize = "clamp(10px, 3vw, 16px)";
-      if (chord.colorClass === "white") {
-        btn.style.color = "black";
-        btn.style.border = "2px solid #333";
-      }
-      btn.disabled = true;
-      btn.style.visibility = "hidden";
-      if (selectedChords.some(sc => sc.name === chord.name)) {
-        btn.disabled = false;
-        btn.style.visibility = "visible";
-        btn.onclick = () => checkAnswer(chord.name);
-      }
+      const placeholder = document.createElement("div");
+      placeholder.className = "square-btn";
+      placeholder.style.visibility = "hidden";
+      layout.appendChild(placeholder);
+      return;
     }
-    layout.appendChild(btn);
+
+    const chord = chords.find(c => c.name === name);
+    if (!chord) return;
+
+    const wrapper = document.createElement("div");
+    wrapper.className = "square-btn";
+
+    const inner = document.createElement("div");
+    inner.className = `square-btn-content ${chord.colorClass}`;
+    inner.innerHTML = chord.labelHtml;
+    inner.setAttribute("data-name", chord.name);
+
+    if (selectedChords.some(sc => sc.name === chord.name)) {
+      inner.style.pointerEvents = "auto";
+      inner.style.opacity = "1";
+      inner.addEventListener("click", () => checkAnswer(chord.name));
+    } else {
+      inner.style.visibility = "hidden";
+    }
+
+    wrapper.appendChild(inner);
+    layout.appendChild(wrapper);
   });
 
   const quitBtn = document.createElement("button");
@@ -190,12 +215,57 @@ function drawQuizScreen() {
   debugAnswer.style.fontSize = "0.9em";
   debugAnswer.style.color = "gray";
 
+  const unknownBtn = document.createElement("button");
+  unknownBtn.id = "unknownBtn";
+  unknownBtn.textContent = "わからない";
+  unknownBtn.style.marginTop = "1em";
+  unknownBtn.onclick = () => {
+    if (alreadyTried || isForcedAnswer) return;
+
+    alreadyTried = true;
+    isForcedAnswer = true;
+
+    stats[currentAnswer.name] = stats[currentAnswer.name] || { correct: 0, wrong: 0, unknown: 0, total: 0 };
+    stats[currentAnswer.name].unknown++;
+    stats[currentAnswer.name].total++;
+
+    mistakes[currentAnswer.name] = mistakes[currentAnswer.name] || {};
+    mistakes[currentAnswer.name]["わからない"] = (mistakes[currentAnswer.name]["わからない"] || 0) + 1;
+
+    lastResults.push({ chordName: currentAnswer.name, answerName: "", correct: false });
+
+    document.querySelectorAll(".square-btn-content").forEach(btn => {
+      const chordName = btn.getAttribute("data-name");
+      if (chordName === currentAnswer.name) {
+        btn.style.pointerEvents = "auto";
+        btn.style.opacity = "1";
+      } else {
+        btn.style.pointerEvents = "none";
+        btn.style.opacity = "0.4";
+      }
+    });
+
+// 正解のボタンに星を表示
+const correctBtn = document.querySelector(`.square-btn-content[data-name="${currentAnswer.name}"]`);
+if (correctBtn) {
+  correctBtn.classList.add("correct-mark");
+}
+
+    showFeedback("もういちど", "bad");
+    const soundKey = currentAnswer.soundKey || currentAnswer.colorClass;
+    playSoundThen(`wrong_${soundKey}`, () => {
+      playChordFile(currentAnswer.file);
+    });
+  };
+
   container.appendChild(debugAnswer);
   container.appendChild(header);
   container.appendChild(layout);
+  container.appendChild(unknownBtn);
   container.appendChild(quitBtn);
   app.appendChild(container);
 }
+
 
 function playChordFile(filename) {
   if (currentAudio) {
@@ -221,7 +291,18 @@ function showFeedback(message, type = "good") {
 function checkAnswer(selected) {
   const name = currentAnswer.name;
   stats[name] = stats[name] || { correct: 0, wrong: 0, total: 0 };
-  stats[name].total++;
+
+  if (isForcedAnswer) {
+    isForcedAnswer = false;
+    questionCount++;
+    nextQuestion();
+    return;
+  }
+
+  if (!alreadyTried) {
+    stats[name].total++;
+    lastResults.push({ chordName: name, answerName: selected, correct: selected === name });
+  }
 
   if (questionCount === 0 && selected !== name) {
     firstMistakeInSession.flag = true;
@@ -235,12 +316,20 @@ function checkAnswer(selected) {
     }
     questionCount++;
 
-    updateGrowthRecord({ correct: 1, total: 1 });
+    updateTrainingRecord({ userId: currentUser.id, correct: 1, total: 1 });
+
+    document.querySelectorAll(".square-btn-content").forEach(btn => {
+      btn.style.pointerEvents = "none";
+      btn.style.opacity = "0.4";
+    });
 
     if (questionQueue.length === 0) {
       showFeedback("トレーニング終了！", "good");
       const sound = (correctCount === questionCount) ? "perfect" : "end";
-      playSoundThen(sound, () => switchScreen("summary"));
+      saveSessionToHistory();
+      playSoundThen(sound, () => {
+        switchScreen("result");
+      });
     } else {
       const voices = ["good1", "good2"];
       showFeedback("GOOD!", "good");
@@ -249,15 +338,29 @@ function checkAnswer(selected) {
       });
     }
   } else {
-    console.log("🔍 currentAnswer:", currentAnswer.name, currentAnswer.label, currentAnswer.soundKey);
-    console.log("🔍 選択した和音:", selected);
-
     alreadyTried = true;
     stats[name].wrong++;
     mistakes[name] = mistakes[name] || {};
     mistakes[name][selected] = (mistakes[name][selected] || 0) + 1;
 
-    updateGrowthRecord({ correct: 0, total: 1 });
+    updateTrainingRecord({ userId: currentUser.id, correct: 0, total: 1 });
+
+    document.querySelectorAll(".square-btn-content").forEach(btn => {
+      const chordName = btn.getAttribute("data-name");
+      if (chordName === name) {
+        btn.style.pointerEvents = "auto";
+        btn.style.opacity = "1";
+      } else {
+        btn.style.pointerEvents = "none";
+        btn.style.opacity = "0.4";
+      }
+    });
+
+      // 🔽 ここに追加
+  const correctBtn = document.querySelector(`.square-btn-content[data-name="${name}"]`);
+  if (correctBtn) {
+    correctBtn.classList.add("correct-mark");
+  }
 
     showFeedback("もういちど", "bad");
     const soundKey = currentAnswer.soundKey || currentAnswer.colorClass;
@@ -266,5 +369,3 @@ function checkAnswer(selected) {
     });
   }
 }
-
-export { correctCount };
