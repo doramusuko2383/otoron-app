@@ -1,11 +1,12 @@
-// logic/growth.js
+あ// logic/growth.js
 import { switchScreen } from "../main.js";
 import {
   getToday,
   isQualifiedToday,
   getPassedDays,
   forceUnlock,
-  getCurrentTargetChord
+  getCurrentTargetChord,
+  getSortedRecordArray
 } from "../utils/growthUtils.js";
 import { loadGrowthFlags, markChordAsUnlocked } from "../utils/growthStore_supabase.js";
 import { chords } from "../data/chords.js";
@@ -15,14 +16,14 @@ export async function renderGrowthScreen(user) {
   const app = document.getElementById("app");
   app.innerHTML = "";
 
-  renderHeader(app, () => renderGrowthScreen(user)); // ← user を再渡し
+  renderHeader(app, () => renderGrowthScreen(user));
 
   const container = document.createElement("div");
   container.className = "screen active";
 
   const today = getToday();
-  const passed = getPassedDays();
-  const qualifiedToday = isQualifiedToday();
+  const passed = await getPassedDays(user.id);
+  const qualifiedToday = await isQualifiedToday(user.id);
   const flags = await loadGrowthFlags(user.id);
   const target = getCurrentTargetChord(flags);
 
@@ -125,7 +126,7 @@ export async function renderGrowthScreen(user) {
         if (confirm(`「${chord.label}」を解放しますか？`)) {
           await markChordAsUnlocked(user.id, chord.name);
           alert(`「${chord.label}」を解放しました！`);
-          renderGrowthScreen(user); // 再描画
+          renderGrowthScreen(user);
         }
       };
     }
@@ -153,9 +154,47 @@ export async function renderGrowthScreen(user) {
     container.appendChild(done);
   }
 
+  // 📆 過去7日間履歴
+  const historyTitle = document.createElement("h3");
+  historyTitle.textContent = "📆 過去7日間の履歴";
+  container.appendChild(historyTitle);
+
+  const allRecords = await getSortedRecordArray(user.id);
+  const recent = allRecords.slice(-7).reverse(); // 直近7日分・新しい順
+
+  const table = document.createElement("table");
+  table.style.borderCollapse = "collapse";
+  table.style.width = "100%";
+  const headerRow = document.createElement("tr");
+  ["日付", "出題数", "正答数", "正答率", "セット数"].forEach(text => {
+    const th = document.createElement("th");
+    th.textContent = text;
+    th.style.border = "1px solid #ccc";
+    th.style.padding = "6px";
+    th.style.background = "#f0f0f0";
+    headerRow.appendChild(th);
+  });
+  table.appendChild(headerRow);
+
+  recent.forEach(r => {
+    const rate = r.count ? ((r.correct / r.count) * 100).toFixed(1) : "0.0";
+    const tr = document.createElement("tr");
+    [r.date, r.count, r.correct, `${rate}%`, r.sets].forEach(text => {
+      const td = document.createElement("td");
+      td.textContent = text;
+      td.style.border = "1px solid #ccc";
+      td.style.padding = "6px";
+      tr.appendChild(td);
+    });
+    table.appendChild(tr);
+  });
+
+  container.appendChild(table);
+
   const backBtn = document.createElement("button");
   backBtn.textContent = "🏠 ホームに戻る";
-  backBtn.onclick = () => switchScreen("home", user); // 必ずuserを渡す
+  backBtn.onclick = () => switchScreen("home", user);
+  backBtn.style.marginTop = "2em";
   container.appendChild(backBtn);
 
   app.appendChild(container);
