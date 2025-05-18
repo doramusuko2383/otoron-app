@@ -1,4 +1,4 @@
-あ// logic/growth.js
+// logic/growth.js
 import { switchScreen } from "../main.js";
 import {
   getToday,

@@ -1,5 +1,8 @@
+// components/settings.js
+
 import { chords } from "../data/chords.js";
 import { renderHeader } from "./header.js";
+import { switchScreen } from "../main.js";
 
 export let selectedChords = [];
 
@@ -13,7 +16,6 @@ export function renderSettingsScreen() {
   container.className = "screen active";
   container.style.overflow = "hidden";
 
-  // ✅ 横一列にまとめたヘッダー行（タイトル・出題数・ボタン）
   const headerBar = document.createElement("div");
   headerBar.className = "header-bar";
 
@@ -47,7 +49,7 @@ export function renderSettingsScreen() {
     <option value="3">3回ずつ</option>
     <option value="4">4回ずつ</option>
     <option value="5">5回ずつ</option>
-`;
+  `;
   bulkDropdown.onchange = () => {
     const count = parseInt(bulkDropdown.value);
     if (!count) return;
@@ -58,18 +60,15 @@ export function renderSettingsScreen() {
         input.value = count;
       }
     });
-    
     updateSelection();
   };
 
   buttonGroup.appendChild(debugBtn);
   buttonGroup.appendChild(bulkDropdown);
-
   headerBar.appendChild(titleLine);
   headerBar.appendChild(buttonGroup);
   container.appendChild(headerBar);
 
-  // ✅ 和音設定エリア
   const chordSettings = document.createElement("div");
   chordSettings.id = "chord-settings";
 
@@ -138,9 +137,22 @@ export function renderSettingsScreen() {
 
   chordSettings.appendChild(upperRow);
   chordSettings.appendChild(invColumn);
-
   container.appendChild(chordSettings);
   app.appendChild(container);
+
+  // ✅ その他のトレーニングセクション（UI構築）
+  const section = document.createElement("div");
+  section.innerHTML = `
+    <h3>その他のトレーニング</h3>
+    <ul>
+      <li><button id="btn-easy">単音音あて（簡易モード）</button></li>
+      <li><button id="btn-full">単音音あて（本気モード）</button></li>
+    </ul>
+  `;
+  app.appendChild(section);
+
+  document.getElementById("btn-easy").onclick = () => switchScreen("training_easy");
+  document.getElementById("btn-full").onclick = () => switchScreen("training_full");
 
   updateSelection();
 }

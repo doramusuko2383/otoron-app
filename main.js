@@ -1,15 +1,17 @@
+// main.js
+
 import { renderHomeScreen } from "./components/home.js";
-import { renderTrainingScreen } from "./components/training.js";
+import { renderTrainingScreen } from "./components/training.js"; // 和音トレーニング
+import { renderTrainingScreen as renderTrainingFull } from "./components/training_full.js"; // 単音（本気）
 import { renderSettingsScreen } from "./components/settings.js";
 import { renderResultScreen } from "./components/result.js";
 import { renderSummaryScreen } from "./components/summary.js";
 import { renderGrowthScreen } from "./logic/growth.js";
-import { renderLoginScreen } from './components/login.js';
+import { renderLoginScreen } from "./components/login.js";
 import { renderIntroScreen } from "./components/intro.js";
 import { renderSignUpScreen } from "./components/signup.js";
 import { supabase } from "./components/supabaseClient.js";
 
-// Firebase初期化
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
 import {
   getAuth,
@@ -32,21 +34,21 @@ window.firebaseAuth = auth;
 
 console.log("🧭 main.js にて全コンポーネント統合済み");
 
-// ✅ 開発中は true にすればログインスキップ
 const DEBUG_AUTO_LOGIN = false;
 
-let currentUser = null; // 🔑 Supabaseのユーザー情報
+let currentUser = null;
 
 export const switchScreen = (screen, user = currentUser) => {
   const app = document.getElementById("app");
   app.innerHTML = "";
 
-  currentUser = user; // 呼び出し時に毎回上書き
+  currentUser = user;
 
   if (screen === "intro") renderIntroScreen();
   else if (screen === "login") renderLoginScreen(app, () => switchScreen("home", user));
   else if (screen === "home") renderHomeScreen(user);
   else if (screen === "training") renderTrainingScreen(user);
+  else if (screen === "training_full") renderTrainingFull(user);
   else if (screen === "settings") renderSettingsScreen(user);
   else if (screen === "summary") renderSummaryScreen(user);
   else if (screen === "growth") renderGrowthScreen(user);
@@ -54,7 +56,6 @@ export const switchScreen = (screen, user = currentUser) => {
   else if (screen === "result") renderResultScreen(user);
 };
 
-// Firebase認証状態の監視とSupabaseへの登録処理
 onAuthStateChanged(auth, async (firebaseUser) => {
   if (!firebaseUser) {
     console.log("🔒 ログインしていません");
@@ -79,10 +80,7 @@ onAuthStateChanged(auth, async (firebaseUser) => {
   if (!user) {
     const { data: inserted, error: insertError } = await supabase
       .from("users")
-      .insert([{
-        firebase_uid: firebaseUser.uid,
-        name: firebaseUser.displayName || "名前未設定"
-      }])
+      .insert([{ firebase_uid: firebaseUser.uid, name: firebaseUser.displayName || "名前未設定" }])
       .select()
       .maybeSingle();
 
@@ -101,7 +99,6 @@ onAuthStateChanged(auth, async (firebaseUser) => {
   switchScreen("home", user);
 });
 
-// 初期表示制御
 window.addEventListener("DOMContentLoaded", () => {
   if (DEBUG_AUTO_LOGIN) {
     switchScreen("home");
