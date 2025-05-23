@@ -373,10 +373,7 @@ function checkAnswer(selected) {
       console.log("📌 nextQuestion: セッション終了に到達");
 
       showFeedback("トレーニング終了！", "good");
-      const sound = (correctCount === questionCount) ? "perfect" : "end";
-      playSoundThen(sound, () => {
-        nextQuestion();
-      });
+      nextQuestion();
     } else {
       const voices = ["good1", "good2"];
       showFeedback("GOOD!", "good");
