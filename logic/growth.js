@@ -53,7 +53,9 @@ export async function renderGrowthScreen(user) {
   statusBar.appendChild(unlockBtn);
   container.appendChild(statusBar);
 
-  await updateGrowthStatusBar(user, target);
+  await updateGrowthStatusBar(user, target, async () => {
+    await renderGrowthScreen(user);
+  });
 
   const progressBar = document.createElement("div");
   progressBar.style.height = "30px";
