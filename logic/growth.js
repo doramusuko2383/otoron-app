@@ -11,7 +11,7 @@ import {
 import { loadGrowthFlags } from "../utils/growthStore_supabase.js";
 import { chords } from "../data/chords.js";
 import { renderHeader } from "../components/header.js";
-import { unlockChord } from "../utils/progressUtils.js";
+import { unlockChord, resetChordProgressToRed } from "../utils/progressUtils.js";
 
 export async function renderGrowthScreen(user) {
   const app = document.getElementById("app");
@@ -54,6 +54,23 @@ export async function renderGrowthScreen(user) {
   progress.style.transition = "width 0.3s ease";
   progressBar.appendChild(progress);
   container.appendChild(progressBar);
+
+  // 🛠 デバッグ: 進捗を赤のみの状態に戻す
+  const resetBtn = document.createElement("button");
+  resetBtn.textContent = "🛠 進捗をリセット (赤のみ)";
+  resetBtn.style.marginBottom = "1em";
+  resetBtn.onclick = async () => {
+    const ok = confirm("本当に進捗を赤だけに戻しますか？");
+    if (!ok) return;
+    const success = await resetChordProgressToRed(user.id);
+    if (success) {
+      alert("進捗をリセットしました");
+      await renderGrowthScreen(user);
+    } else {
+      alert("リセットに失敗しました");
+    }
+  };
+  container.appendChild(resetBtn);
 
   // 和音進捗表示
   const chordStatus = document.createElement("div");

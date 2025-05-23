@@ -77,3 +77,30 @@ export async function lockChord(userId, chordKey) {
     .eq("chord_key", chordKey);
   return !error;
 }
+
+// ✅ 進捗をリセットして赤のみ in_progress に戻す（デバッグ用）
+export async function resetChordProgressToRed(userId) {
+  const { error: lockError } = await supabase
+    .from("user_chord_progress")
+    .update({ status: "locked" })
+    .eq("user_id", userId);
+
+  if (lockError) {
+    console.error("❌ 進捗リセット失敗:", lockError);
+    return false;
+  }
+
+  const firstKey = chordOrder[0];
+  const { error: redError } = await supabase
+    .from("user_chord_progress")
+    .update({ status: "in_progress" })
+    .eq("user_id", userId)
+    .eq("chord_key", firstKey);
+
+  if (redError) {
+    console.error("❌ 赤の設定失敗:", redError);
+    return false;
+  }
+
+  return true;
+}
