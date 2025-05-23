@@ -1,7 +1,7 @@
 import { switchScreen } from "../main.js";
 import { firebaseAuth } from "../firebase/firebase-init.js";
 import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { supabase } from "./supabaseClient.js";
+import { supabase } from "../utils/supabaseClient.js";
 
 export function renderSignUpScreen() {
   const app = document.getElementById("app");

@@ -3,6 +3,7 @@
 import { renderHomeScreen } from "./components/home.js";
 import { renderTrainingScreen } from "./components/training.js"; // 和音トレーニング
 import { renderTrainingScreen as renderTrainingFull } from "./components/training_full.js"; // 単音（本気）
+import { renderTrainingFullResultScreen } from "./components/result_full.js";
 import { renderSettingsScreen } from "./components/settings.js";
 import { renderResultScreen } from "./components/result.js";
 import { renderSummaryScreen } from "./components/summary.js";
@@ -10,7 +11,9 @@ import { renderGrowthScreen } from "./logic/growth.js";
 import { renderLoginScreen } from "./components/login.js";
 import { renderIntroScreen } from "./components/intro.js";
 import { renderSignUpScreen } from "./components/signup.js";
-import { supabase } from "./components/supabaseClient.js";
+import { supabase } from "./utils/supabaseClient.js";
+import { createInitialChordProgress } from "../utils/progressUtils.js";
+
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
 import {
@@ -54,6 +57,7 @@ export const switchScreen = (screen, user = currentUser) => {
   else if (screen === "growth") renderGrowthScreen(user);
   else if (screen === "signup") renderSignUpScreen(user);
   else if (screen === "result") renderResultScreen(user);
+  else if (screen === "result_full") renderTrainingFullResultScreen(user);
 };
 
 onAuthStateChanged(auth, async (firebaseUser) => {
@@ -90,6 +94,8 @@ onAuthStateChanged(auth, async (firebaseUser) => {
     } else {
       console.log("✅ Supabaseにユーザー登録完了");
       user = inserted;
+      await createInitialChordProgress(user.id);
+
     }
   } else {
     console.log("✅ Supabaseに既存ユーザー:", user);

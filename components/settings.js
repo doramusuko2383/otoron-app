@@ -1,16 +1,70 @@
 // components/settings.js
 
-import { chords } from "../data/chords.js";
 import { renderHeader } from "./header.js";
 import { switchScreen } from "../main.js";
+import { supabase } from "../utils/supabaseClient.js";
+import { chords, chordOrder } from "../data/chords.js";
+import { getRecommendedChordSet } from "../utils/growthUtils.js"; // ← 追加
 
 export let selectedChords = [];
 
-export function renderSettingsScreen() {
+// ✅ Supabaseから解放済み和音のkeyを取得
+async function fetchUnlockedChords(userId) {
+  const { data, error } = await supabase
+    .from("user_chord_progress")
+    .select("chord_key, status")
+    .eq("user_id", userId)
+    .not("status", "eq", "locked");  // ← locked 以外（in_progressやunlocked）
+
+  if (error) {
+    console.error("❌ 和音進捗の取得に失敗:", error);
+    return [];
+  }
+
+  return data.map(item => item.chord_key); // ["aka", "kiiro", ...]
+}
+
+// 🔽 settings.js のファイルの上部、他の関数定義の近くに追加
+function saveToSessionStorage() {
+  sessionStorage.setItem("trainingMode", "custom");
+  sessionStorage.setItem("selectedChords", JSON.stringify(selectedChords));
+}
+
+function resetToRecommendedChords(unlockedKeys, user) {
+  const flags = {};
+  unlockedKeys.forEach(key => {
+    flags[key] = { unlocked: true };
+  });
+
+  const recommendedKeys = getRecommendedChordSet(flags);
+
+  const countMap = {};
+  recommendedKeys.forEach(key => {
+    countMap[key] = (countMap[key] || 0) + 1;
+  });
+
+  const recommended = chords
+    .filter(ch => countMap[ch.key])
+    .map(ch => ({
+      name: ch.name,
+      count: countMap[ch.key]
+    }));
+
+  sessionStorage.removeItem("trainingMode");
+  sessionStorage.removeItem("selectedChords");
+  localStorage.setItem("selectedChords", JSON.stringify(recommended));
+
+  // 🔁 直接、受け取った user を使って再描画
+  renderSettingsScreen(user);
+}
+
+
+export async function renderSettingsScreen(user) {
+  const unlockedKeys = await fetchUnlockedChords(user.id); // ← 解放されたkey一覧
   const app = document.getElementById("app");
   app.innerHTML = "";
 
-  renderHeader(app, renderSettingsScreen);
+  renderHeader(app, () => renderSettingsScreen(user));
 
   const container = document.createElement("div");
   container.className = "screen active";
@@ -24,12 +78,24 @@ export function renderSettingsScreen() {
   titleLine.innerHTML = `🎼 <strong>出題設定</strong> <span id="total-count">累計出題回数: 0 回</span>`;
 
   const buttonGroup = document.createElement("div");
+  const resetBtn = document.createElement("button");
+resetBtn.textContent = "↩ 推奨出題に戻す";
+resetBtn.onclick = () => {
+  if (confirm("本当に推奨出題に戻しますか？")) {
+    resetToRecommendedChords(unlockedKeys, user); // ← user を渡す！
+  }
+};
+buttonGroup.appendChild(resetBtn);
+
   buttonGroup.className = "header-button-group";
 
   const debugBtn = document.createElement("button");
   debugBtn.textContent = "🛠 全部選択 (4回)";
   debugBtn.onclick = () => {
     chords.forEach(chord => {
+      const isUnlocked = unlockedKeys.includes(chord.key);
+      if (!isUnlocked) return;
+
       const checkbox = document.getElementById(`chk-${chord.name}`);
       const input = checkbox?.parentElement?.querySelector("input[type='number']");
       if (checkbox && input) {
@@ -54,6 +120,9 @@ export function renderSettingsScreen() {
     const count = parseInt(bulkDropdown.value);
     if (!count) return;
     chords.forEach(chord => {
+      const isUnlocked = unlockedKeys.includes(chord.key);
+      if (!isUnlocked) return;
+
       const checkbox = document.getElementById(`chk-${chord.name}`);
       const input = checkbox?.parentElement?.querySelector("input[type='number']");
       if (checkbox && checkbox.checked && input) {
@@ -79,19 +148,31 @@ export function renderSettingsScreen() {
   const invColumn = document.createElement("div");
   invColumn.className = "chord-column-inv";
 
-  const stored = localStorage.getItem("selectedChords");
-  let storedSelection = stored ? JSON.parse(stored) : [{ name: "C-E-G", count: 4 }];
+  const trainingMode = sessionStorage.getItem("trainingMode");
+  const stored = (trainingMode === "custom")
+    ? sessionStorage.getItem("selectedChords")
+    : localStorage.getItem("selectedChords");
+  
+  let storedSelection = stored ? JSON.parse(stored) : [];
+  
   selectedChords = [];
 
   chords.forEach(chord => {
+    const isUnlocked = unlockedKeys.includes(chord.key);
     const div = document.createElement("div");
-    div.className = `chord-setting ${chord.colorClass}`;
+    div.className = `chord-setting`;
+
+    if (!isUnlocked) {
+      div.style.opacity = "0.5";
+    }
 
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
     checkbox.id = `chk-${chord.name}`;
+    checkbox.disabled = !isUnlocked;
+
     const storedItem = storedSelection.find(item => item.name === chord.name);
-    checkbox.checked = !!storedItem;
+    checkbox.checked = !!storedItem && isUnlocked;
 
     const label = document.createElement("label");
     label.htmlFor = checkbox.id;
@@ -101,7 +182,7 @@ export function renderSettingsScreen() {
     countInput.type = "number";
     countInput.min = "0";
     countInput.value = storedItem ? storedItem.count : (checkbox.checked ? "4" : "0");
-    countInput.disabled = !checkbox.checked;
+    countInput.disabled = !checkbox.checked || !isUnlocked;
     countInput.style.width = "48px";
     countInput.style.textAlign = "right";
     countInput.style.padding = "4px";
@@ -140,7 +221,7 @@ export function renderSettingsScreen() {
   container.appendChild(chordSettings);
   app.appendChild(container);
 
-  // ✅ その他のトレーニングセクション（UI構築）
+  // ✅ その他のトレーニングセクション
   const section = document.createElement("div");
   section.innerHTML = `
     <h3>その他のトレーニング</h3>
@@ -172,4 +253,8 @@ function updateSelection() {
 
   const total = selectedChords.reduce((sum, c) => sum + c.count, 0);
   document.getElementById("total-count").textContent = `累計出題回数: ${total} 回`;
+  // ✅ セッションに「カスタム設定中」であることを記録
+  sessionStorage.setItem("trainingMode", "custom");
+  sessionStorage.setItem("selectedChords", JSON.stringify(selectedChords));
+  localStorage.setItem("selectedChords", JSON.stringify(selectedChords));
 }

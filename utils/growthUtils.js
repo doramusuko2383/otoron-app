@@ -1,19 +1,48 @@
-import { chords } from "../data/chords.js";
+import { chords, chordOrder } from "../data/chords.js";
 import { loadTrainingRecords } from "./recordStore_supabase.js";
+
+export function getRecommendedChordSet(flags) {
+  const unlockedKeys = chordOrder.filter(key => flags[key]?.unlocked);
+  const n = unlockedKeys.length;
+
+  if (n === 0) return [];
+
+  const totalCount = Math.max(30, n * 4);
+  const base = Math.floor(totalCount / n);
+  const extra = totalCount % n;
+
+  const distribution = unlockedKeys.map((_, i) => i < extra ? base + 1 : base);
+
+  const result = [];
+  for (let i = 0; i < unlockedKeys.length; i++) {
+    const key = unlockedKeys[i];
+    for (let j = 0; j < distribution[i]; j++) {
+      result.push(key);
+    }
+  }
+
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+
+  return result;
+}
 
 /**
  * 現在挑戦中の和音を返す（未解放の最初の1つ）
- * @param {object} flags - 和音解放フラグ（loadGrowthFlagsの結果）
+ * @param {object} flags - 和音解放フラグ（keyベース）
  * @returns {object|null} 該当する chord オブジェクト or null
  */
 export function getCurrentTargetChord(flags) {
-  for (const chord of chords) {
-    if (!chord.colorClass || chord.type === "black-inv") continue;
-    if (!flags[chord.name]?.unlocked) {
-      return chord;
+  for (const key of chordOrder) {
+    const status = flags[key];
+    if (!status?.unlocked) {
+      const chord = chords.find(c => c.key === key);
+      if (chord) return chord;
     }
   }
-  return null;
+  return null; // 全て解放済み
 }
 
 export const PASS_THRESHOLD = 0.98;

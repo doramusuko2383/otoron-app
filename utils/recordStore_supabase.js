@@ -1,6 +1,6 @@
 // utils/recordStore_supabase.js
 
-import { supabase } from "../components/supabaseClient.js";
+import { supabase } from "./supabaseClient.js";
 import { getToday } from "./growthUtils.js";
 
 /**

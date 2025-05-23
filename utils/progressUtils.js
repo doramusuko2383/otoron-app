@@ -1,52 +1,79 @@
-// utils/progressUtils.js
+import { supabase } from "./supabaseClient.js";
+import { getPassedDays } from "./growthUtils.js";
+import { chordOrder } from "../data/chords.js";
+import { chords } from "../data/chords.js"; // ✅ 必須
 
-import { getPassedDays, getCurrentTargetChord } from "./growthUtils.js";
-import { supabase } from "../components/supabaseClient.js";
+// ✅ 新規ユーザー用：赤からスタート、他はlocked
+export async function createInitialChordProgress(userId) {
+  const chordKeys = chords.map(chord => chord.key); // すべての和音に対応
 
-/**
- * 合格日数が14日あれば、現在のターゲット和音を解放する
- * @param {object} user - Supabaseのユーザーオブジェクト
- */
+  const insertData = chordKeys.map((key, index) => ({
+    user_id: userId,
+    chord_key: key,
+    status: index === 0 ? "in_progress" : "locked"
+  }));
+
+  const { error } = await supabase
+    .from("user_chord_progress")
+    .insert(insertData, { upsert: false }); // すでに入っていたら失敗させる
+
+  if (error) {
+    console.error("❌ 初期進捗の登録失敗:", error);
+  } else {
+    console.log("✅ 初期進捗を登録しました（1件目を in_progress）");
+  }
+}
+
+// ✅ 合格日数が14日に達したら、次の和音に進める
 export async function autoUnlockNextChord(user) {
-  const flags = await supabase
+  const passed = await getPassedDays(user.id);
+  if (passed < 14) return;
+
+  const { data: all } = await supabase
     .from("user_chord_progress")
     .select("chord_key, status")
     .eq("user_id", user.id);
 
-  if (flags.error) {
-    console.error("❌ 解放状況の取得失敗:", flags.error);
-    return;
-  }
+  const currentIndex = chordOrder.findIndex(key =>
+    all.find(row => row.chord_key === key && row.status === "in_progress")
+  );
 
-  const flagMap = {};
-  flags.data.forEach(f => {
-    flagMap[f.chord_key] = {
-      unlocked: f.status === "completed" || f.status === "unlocked"
-    };
-  });
+  if (currentIndex === -1 || currentIndex === chordOrder.length - 1) return;
 
-  const passed = await getPassedDays(user.id);
+  const currentChord = chordOrder[currentIndex];
+  const nextChord = chordOrder[currentIndex + 1];
 
-  if (passed >= 14) {
-    const target = getCurrentTargetChord(flagMap);
-    if (!target) {
-      console.log("🎉 全ての和音が解放済みです");
-      return;
-    }
+  await supabase
+    .from("user_chord_progress")
+    .update({ status: "completed" })
+    .eq("user_id", user.id)
+    .eq("chord_key", currentChord);
 
-    const { error } = await supabase
-      .from("user_chord_progress")
-      .update({
-        status: "completed",
-        unlocked_date: new Date().toISOString().split("T")[0]
-      })
-      .eq("user_id", user.id)
-      .eq("chord_key", target.name);
+  await supabase
+    .from("user_chord_progress")
+    .update({ status: "in_progress" })
+    .eq("user_id", user.id)
+    .eq("chord_key", nextChord);
 
-    if (error) {
-      console.error("❌ 和音自動解放失敗:", error);
-    } else {
-      console.log(`✅ 自動で「${target.label}」を解放しました`);
-    }
-  }
+  console.log(`✅ ${currentChord} 完了 → ${nextChord} 開始`);
+}
+
+// ✅ 和音を解放（in_progressに）
+export async function unlockChord(userId, chordKey) {
+  const { error } = await supabase
+    .from("user_chord_progress")
+    .update({ status: "in_progress" })
+    .eq("user_id", userId)
+    .eq("chord_key", chordKey);
+  return !error;
+}
+
+// ✅ 和音を再ロック（lockedに）
+export async function lockChord(userId, chordKey) {
+  const { error } = await supabase
+    .from("user_chord_progress")
+    .update({ status: "locked" })
+    .eq("user_id", userId)
+    .eq("chord_key", chordKey);
+  return !error;
 }

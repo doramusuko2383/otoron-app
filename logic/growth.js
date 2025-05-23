@@ -1,16 +1,17 @@
 // logic/growth.js
+
 import { switchScreen } from "../main.js";
 import {
   getToday,
   isQualifiedToday,
   getPassedDays,
-  forceUnlock,
   getCurrentTargetChord,
   getSortedRecordArray
 } from "../utils/growthUtils.js";
-import { loadGrowthFlags, markChordAsUnlocked } from "../utils/growthStore_supabase.js";
+import { loadGrowthFlags } from "../utils/growthStore_supabase.js";
 import { chords } from "../data/chords.js";
 import { renderHeader } from "../components/header.js";
+import { unlockChord } from "../utils/progressUtils.js";
 
 export async function renderGrowthScreen(user) {
   const app = document.getElementById("app");
@@ -25,26 +26,11 @@ export async function renderGrowthScreen(user) {
   const passed = await getPassedDays(user.id);
   const qualifiedToday = await isQualifiedToday(user.id);
   const flags = await loadGrowthFlags(user.id);
-  const target = getCurrentTargetChord(flags);
+  const target = getCurrentTargetChord(flags); // ← chordOrder に沿った未解放の最初の1つ
 
   const title = document.createElement("h2");
   title.textContent = "🎯 育成モード進捗と履歴";
   container.appendChild(title);
-
-  if (target) {
-    const challenge = document.createElement("div");
-    challenge.style.margin = "1em 0";
-    challenge.style.padding = "1em";
-    challenge.style.border = "2px dashed #ccc";
-    challenge.style.borderRadius = "10px";
-    challenge.style.background = "#f9f9f9";
-    const remain = 14 - passed;
-    challenge.innerHTML = `
-      <p>🧪 <strong>いま、「${target.label}（${target.name}）」に挑戦中！</strong></p>
-      <p>解放まであと <strong>${remain}</strong> 回の合格が必要です。</p>
-    `;
-    container.appendChild(challenge);
-  }
 
   const info = document.createElement("p");
   info.innerHTML = `
@@ -69,88 +55,79 @@ export async function renderGrowthScreen(user) {
   progressBar.appendChild(progress);
   container.appendChild(progressBar);
 
+  // 和音進捗表示
   const chordStatus = document.createElement("div");
   chordStatus.style.display = "grid";
   chordStatus.style.gridTemplateColumns = "repeat(auto-fit, minmax(90px, 1fr))";
   chordStatus.style.gap = "10px";
   chordStatus.style.marginTop = "1.5em";
 
-  chords.forEach(chord => {
-    if (!chord.colorClass || chord.type === "black-inv") return;
+  for (const chord of chords) {
     const item = document.createElement("div");
     item.style.textAlign = "center";
 
     const circle = document.createElement("div");
-    circle.style.width = "36px";
-    circle.style.height = "36px";
-    circle.style.borderRadius = "50%";
-    circle.style.margin = "0 auto";
-    circle.style.backgroundColor = chord.colorClass;
-    circle.style.border = "2px solid #aaa";
+    circle.classList.add("growth-chord-circle");
+
+    const isUnlocked = flags[chord.key]?.unlocked === true;
+
+    if (chord.type === "black-inv") {
+      circle.classList.add("growth-locked");
+      if (isUnlocked) {
+        circle.textContent = "✅";
+      }
+    } else {
+      if (isUnlocked) {
+        circle.classList.add(chord.colorClass);
+      } else {
+        circle.classList.add("growth-locked");
+      }
+    }
+
+    circle.onclick = () => {
+      if (chord.file) {
+        const audio = new Audio(`audio/${chord.file}`);
+        audio.play();
+      }
+    };
 
     const label = document.createElement("div");
     label.style.fontSize = "0.85em";
     label.textContent = chord.label;
 
-    const status = document.createElement("div");
-    status.style.fontSize = "0.7em";
-    status.textContent = flags[chord.name]?.unlocked ? "✅ 解放済み" : "🔒 未解放";
-
     item.appendChild(circle);
     item.appendChild(label);
-    item.appendChild(status);
-    chordStatus.appendChild(item);
-  });
-  container.appendChild(chordStatus);
 
-  const optionalTitle = document.createElement("h3");
-  optionalTitle.textContent = "🔧 転回系の任意解放";
-  container.appendChild(optionalTitle);
+    // ✅ 「次の和音を解放」ボタン表示（すべて解放済みの場合は出ない）
+    if (target && chord.key === target.key) {
+      const button = document.createElement("button");
+      button.style.marginTop = "4px";
+      button.textContent = "🔓 次の和音を解放する";
+      button.onclick = async () => {
+        const confirmed = confirm(`「${chord.label}」を解放しますか？`);
+        if (!confirmed) return;
 
-  const optionalInversions = chords.filter(ch => ch.type === "black-inv");
-  optionalInversions.forEach(chord => {
-    const item = document.createElement("div");
-    item.style.marginBottom = "1em";
-
-    const label = document.createElement("span");
-    label.textContent = `${chord.label}（${chord.name}）`;
-    label.style.marginRight = "1em";
-
-    const btn = document.createElement("button");
-    if (flags[chord.name]?.unlocked) {
-      btn.textContent = "✅ 解放済み";
-      btn.disabled = true;
-    } else {
-      btn.textContent = "🔓 解放する";
-      btn.onclick = async () => {
-        if (confirm(`「${chord.label}」を解放しますか？`)) {
-          await markChordAsUnlocked(user.id, chord.name);
-          alert(`「${chord.label}」を解放しました！`);
-          renderGrowthScreen(user);
+        const success = await unlockChord(user.id, chord.key);
+        if (success) {
+          alert(`🎉 ${chord.label} を解放しました！`);
+          await renderGrowthScreen(user);
         }
       };
+      item.appendChild(button);
     }
 
-    item.appendChild(label);
-    item.appendChild(btn);
-    container.appendChild(item);
-  });
+    chordStatus.appendChild(item);
+  }
 
-  if (passed < 14) {
-    const unlockBtn = document.createElement("button");
-    unlockBtn.textContent = "🔓 強制解放する";
-    unlockBtn.onclick = () => {
-      if (confirm("本当に強制解放しますか？ 進捗はリセットされます。")) {
-        forceUnlock();
-        alert("強制解放しました。");
-        renderGrowthScreen(user);
-      }
-    };
-    container.appendChild(unlockBtn);
-  } else {
+  container.appendChild(chordStatus);
+
+  // ✅ 全和音が解放済みだった場合の表示（解放ボタンなし）
+  if (!target) {
     const done = document.createElement("p");
-    done.textContent = "🎉 新しい和音が解放されます！";
-    done.style.color = "green";
+    done.textContent = "🎉 すべての和音が解放されています！";
+    done.style.margin = "1.5em auto";
+    done.style.textAlign = "center";
+    done.style.color = "#666";
     container.appendChild(done);
   }
 
@@ -160,11 +137,12 @@ export async function renderGrowthScreen(user) {
   container.appendChild(historyTitle);
 
   const allRecords = await getSortedRecordArray(user.id);
-  const recent = allRecords.slice(-7).reverse(); // 直近7日分・新しい順
+  const recent = allRecords.slice(-7).reverse();
 
   const table = document.createElement("table");
   table.style.borderCollapse = "collapse";
   table.style.width = "100%";
+
   const headerRow = document.createElement("tr");
   ["日付", "出題数", "正答数", "正答率", "セット数"].forEach(text => {
     const th = document.createElement("th");

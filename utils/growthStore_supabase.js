@@ -1,6 +1,6 @@
 // utils/growthStore_supabase.js
 
-import { supabase } from "../components/supabaseClient.js";
+import { supabase } from "./supabaseClient.js";
 
 /**
  * 和音の進捗（解放状態）を取得
@@ -21,7 +21,7 @@ export async function loadGrowthFlags(userId) {
   const flags = {};
   data.forEach(row => {
     flags[row.chord_key] = {
-      unlocked: row.status === "completed" || row.status === "unlocked"
+      unlocked: row.status === "in_progress"
     };
   });
 

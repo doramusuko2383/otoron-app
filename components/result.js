@@ -1,10 +1,12 @@
 // components/result.js
 import { switchScreen } from "../main.js";
 import { lastResults } from "./training.js";
-import { chords } from "../data/chords.js"; // ←追加！
+import { chords } from "../data/chords.js";
+import { drawStaffFromNotes } from "./resultStaff.js";  // 楽譜描画（必要なら）
 
 let resultShownInThisSession = false;
 
+// ✅ 本番用：こども向けごほうび画面
 export function renderResultScreen() {
   if (resultShownInThisSession) {
     switchScreen("home");
@@ -60,15 +62,37 @@ export function renderResultScreen() {
   });
 }
 
+// ✅ セッション内で結果を再表示できないようにするためのリセット関数
 export function resetResultFlag() {
   resultShownInThisSession = false;
 }
 
+// ✅ オプション：VexFlowのテストや保護者向け画面用に残す
+export function renderStaffResultScreen() {
+  const app = document.getElementById("app");
+  app.innerHTML = `
+    <div class="result-screen">
+      <h2>結果の楽譜表示</h2>
+      <div id="result-container"></div>
+      <button id="back-btn">ホームへ戻る</button>
+    </div>
+  `;
+
+  const noteHistory = ["C4", "D4", "F#4", "B3"]; // 仮データ
+  drawStaffFromNotes(noteHistory, "result-container");
+
+  document.getElementById("back-btn").addEventListener("click", () => {
+    switchScreen("home");
+  });
+}
+
+// ✅ ヘルパー関数：和音名をひらがなに変換
 function getLabelHiragana(name) {
   const chord = chords.find(c => c.name === name);
   return chord?.labelHiragana || name;
 }
 
+// ✅ ヘルパー関数：和音名に対応する色クラスを返す
 function getColorClass(chordName) {
   const colorMap = {
     "C-E-G": "aka", "C-F-A": "kiiro", "B-D-G": "ao", "A-C-F": "kuro",

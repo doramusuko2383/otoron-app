@@ -7,6 +7,9 @@ import { resetResultFlag } from "./result.js";
 import { saveSessionToHistory } from "./summary.js";
 import { incrementSetCount } from "../utils/recordStore_supabase.js";
 import { autoUnlockNextChord } from "../utils/progressUtils.js";
+import { saveTrainingSession } from "../utils/trainingStore_supabase.js";
+import { getRecommendedChordSet } from "../utils/growthUtils.js";
+import { loadGrowthFlags } from "../utils/growthStore_supabase.js";
 
 let questionCount = 0;
 let currentAnswer = null;
@@ -55,8 +58,9 @@ function shuffleArray(array) {
   return array;
 }
 
-export function renderTrainingScreen(user) {
-  currentUser = user; // ← 保持
+export async function renderTrainingScreen(user) {
+  console.log("🟢 renderTrainingScreen: user.id =", user?.id);
+  currentUser = user;
   resetResultFlag();
   lastResults = [];
 
@@ -64,24 +68,68 @@ export function renderTrainingScreen(user) {
   for (const key in mistakes) delete mistakes[key];
   correctCount = 0;
 
+  // ✅ 推奨設定をデフォルトにする処理
   if (!selectedChords || selectedChords.length === 0) {
-    selectedChords.push({ name: "C-E-G", count: 4 });
-    localStorage.setItem("selectedChords", JSON.stringify(selectedChords));
-  }
+    const trainingMode = sessionStorage.getItem("trainingMode");
+    const storedChords = sessionStorage.getItem("selectedChords");
 
+    if (trainingMode === "custom" && storedChords) {
+      selectedChords.push(...JSON.parse(storedChords));
+    } else {
+      // ✅ 推奨出題で自動構成
+      const flags = await loadGrowthFlags(user.id);
+      const recommendedKeys = getRecommendedChordSet(flags);
+
+      const countMap = {};
+      recommendedKeys.forEach(key => {
+        countMap[key] = (countMap[key] || 0) + 1;
+      });
+
+      const recommended = chords
+        .filter(ch => countMap[ch.key])
+        .map(ch => ({
+          name: ch.name,
+          count: countMap[ch.key]
+        }));
+
+      selectedChords.push(...recommended);
+      localStorage.setItem("selectedChords", JSON.stringify(recommended));
+    }
+  }
   questionCount = 0;
   quitFlag = false;
   alreadyTried = false;
   isForcedAnswer = false;
   firstMistakeInSession.flag = false;
   questionQueue = createQuestionQueue();
-  nextQuestion();
+  nextQuestion(); // ✅ 出題開始！
 }
 
 async function nextQuestion() {
+  if (!currentUser || !currentUser.id) {
+    console.error("❌ currentUser が null または id が未定義です");
+    return;
+  }
+  console.log("🧩 nextQuestion():",
+  "queue.length =", questionQueue.length,
+  "questionCount =", questionCount,
+  "quitFlag =", quitFlag
+);
   alreadyTried = false;
   isForcedAnswer = false;
   if (questionQueue.length === 0 || quitFlag) {
+
+    // 🔽 ここで一括保存
+    await saveTrainingSession({
+      userId: currentUser.id,
+      results: lastResults,
+      stats,
+      mistakes,
+      correctCount,
+      totalCount: questionCount,
+      date: new Date().toISOString(),
+    });
+
     saveSessionToHistory();
   
     await incrementSetCount(currentUser.id);
@@ -316,19 +364,18 @@ function checkAnswer(selected) {
     }
     questionCount++;
 
-    updateTrainingRecord({ userId: currentUser.id, correct: 1, total: 1 });
-
     document.querySelectorAll(".square-btn-content").forEach(btn => {
       btn.style.pointerEvents = "none";
       btn.style.opacity = "0.4";
     });
 
     if (questionQueue.length === 0) {
+      console.log("📌 nextQuestion: セッション終了に到達");
+
       showFeedback("トレーニング終了！", "good");
       const sound = (correctCount === questionCount) ? "perfect" : "end";
-      saveSessionToHistory();
       playSoundThen(sound, () => {
-        switchScreen("result");
+        nextQuestion();
       });
     } else {
       const voices = ["good1", "good2"];
@@ -342,8 +389,6 @@ function checkAnswer(selected) {
     stats[name].wrong++;
     mistakes[name] = mistakes[name] || {};
     mistakes[name][selected] = (mistakes[name][selected] || 0) + 1;
-
-    updateTrainingRecord({ userId: currentUser.id, correct: 0, total: 1 });
 
     document.querySelectorAll(".square-btn-content").forEach(btn => {
       const chordName = btn.getAttribute("data-name");

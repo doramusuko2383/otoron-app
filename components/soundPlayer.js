@@ -1,7 +1,10 @@
 const audioBasePath = "./sounds";
 
 export function playNote(noteName) {
-  const encodedNote = encodeURIComponent(noteName); // ← ここが重要！
-  const audio = new Audio(`${audioBasePath}/${encodedNote}.mp3`);
-  audio.play();
+  const encoded = encodeURIComponent(noteName);
+  const audio = new Audio(`sounds/${encoded}.mp3`);
+  audio.play().catch(e => {
+    console.warn(`音声再生エラー: ${noteName}`, e);
+  });
 }
+
