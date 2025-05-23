@@ -6,7 +6,8 @@ import {
   isQualifiedToday,
   getPassedDays,
   getCurrentTargetChord,
-  getSortedRecordArray
+  getSortedRecordArray,
+  applyRecommendedSelection
 } from "../utils/growthUtils.js";
 import { loadGrowthFlags } from "../utils/growthStore_supabase.js";
 import { chords } from "../data/chords.js";
@@ -140,6 +141,7 @@ export async function renderGrowthScreen(user) {
         const success = await unlockChord(user.id, chord.key);
         if (success) {
           alert(`🎉 ${chord.label} を解放しました！`);
+          await applyRecommendedSelection(user.id);
           await renderGrowthScreen(user);
         }
       };
