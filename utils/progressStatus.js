@@ -39,7 +39,7 @@ export async function countQualifiedDays(userId) {
   return passed;
 }
 
-export async function updateGrowthStatusBar(user, target) {
+export async function updateGrowthStatusBar(user, target, onUnlocked) {
   const msg = document.getElementById("growth-message");
   const btn = document.getElementById("unlock-button");
   if (!msg || !btn) return;
@@ -55,9 +55,14 @@ export async function updateGrowthStatusBar(user, target) {
       if (!ok) return;
       const success = await unlockChord(user.id, target.key);
       if (success) {
+        alert(`🎉 ${target.label} を解放しました！`);
         btn.disabled = true;
         btn.style.display = "none";
-        await updateGrowthStatusBar(user, target);
+        if (onUnlocked) {
+          await onUnlocked();
+        } else {
+          await updateGrowthStatusBar(user, target);
+        }
       }
     };
   } else {
