@@ -1,5 +1,6 @@
 import { chords, chordOrder } from "../data/chords.js";
 import { loadTrainingRecords } from "./recordStore_supabase.js";
+import { loadGrowthFlags } from "./growthStore_supabase.js";
 
 export function getRecommendedChordSet(flags) {
   const unlockedKeys = chordOrder.filter(key => flags[key]?.unlocked);
@@ -122,4 +123,26 @@ export async function getSortedRecordArray(userId) {
     date,
     ...data[date]
   }));
+}
+
+/**
+ * 解放済み和音から推奨出題セットを算出し、選択状態を更新する
+ * @param {string} userId - SupabaseユーザーID
+ */
+export async function applyRecommendedSelection(userId) {
+  const flags = await loadGrowthFlags(userId);
+  const recommendedKeys = getRecommendedChordSet(flags);
+
+  const countMap = {};
+  recommendedKeys.forEach(key => {
+    countMap[key] = (countMap[key] || 0) + 1;
+  });
+
+  const recommended = chords
+    .filter(ch => countMap[ch.key])
+    .map(ch => ({ name: ch.name, count: countMap[ch.key] }));
+
+  sessionStorage.removeItem("trainingMode");
+  sessionStorage.removeItem("selectedChords");
+  localStorage.setItem("selectedChords", JSON.stringify(recommended));
 }

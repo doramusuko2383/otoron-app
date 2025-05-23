@@ -1,5 +1,6 @@
 import { supabase } from "./supabaseClient.js";
 import { unlockChord } from "./progressUtils.js";
+import { applyRecommendedSelection } from "./growthUtils.js";
 
 const PASS_DAYS = 14;
 const MIN_SETS = 2;
@@ -56,6 +57,7 @@ export async function updateGrowthStatusBar(user, target, onUnlocked) {
       const success = await unlockChord(user.id, target.key);
       if (success) {
         alert(`🎉 ${target.label} を解放しました！`);
+        await applyRecommendedSelection(user.id);
         btn.disabled = true;
         btn.style.display = "none";
         if (onUnlocked) {
