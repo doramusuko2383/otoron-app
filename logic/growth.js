@@ -12,6 +12,7 @@ import { loadGrowthFlags } from "../utils/growthStore_supabase.js";
 import { chords } from "../data/chords.js";
 import { renderHeader } from "../components/header.js";
 import { unlockChord, resetChordProgressToRed } from "../utils/progressUtils.js";
+import { updateGrowthStatusBar } from "../utils/progressStatus.js";
 
 export async function renderGrowthScreen(user) {
   const app = document.getElementById("app");
@@ -39,6 +40,20 @@ export async function renderGrowthScreen(user) {
     今日の状態: ${qualifiedToday ? "✅ 合格済み" : "❌ 未合格"}
   `;
   container.appendChild(info);
+
+  const statusBar = document.createElement("div");
+  statusBar.style.margin = "1em 0";
+  const msgSpan = document.createElement("span");
+  msgSpan.id = "growth-message";
+  const unlockBtn = document.createElement("button");
+  unlockBtn.id = "unlock-button";
+  unlockBtn.textContent = "次の和音を解放する";
+  unlockBtn.style.marginLeft = "1em";
+  statusBar.appendChild(msgSpan);
+  statusBar.appendChild(unlockBtn);
+  container.appendChild(statusBar);
+
+  await updateGrowthStatusBar(user, target);
 
   const progressBar = document.createElement("div");
   progressBar.style.height = "30px";
