@@ -10,6 +10,7 @@ let noteHistory = [];
 let isAnswering = false;
 let isSoundPlaying = false;
 let questionCount = 0;
+const FEEDBACK_DELAY = 1000;
 const maxQuestions = 24;
 
 const noteLabels = {
@@ -64,6 +65,20 @@ export function renderTrainingScreen(user) {
   });
 
   const piano = app.querySelector(".piano-container");
+  const finishBtn = document.getElementById("finish-btn");
+
+  function setInteraction(enabled) {
+    if (enabled) {
+      piano.classList.remove("disabled");
+      finishBtn.classList.remove("disabled");
+      finishBtn.disabled = false;
+    } else {
+      piano.classList.add("disabled");
+      finishBtn.classList.add("disabled");
+      finishBtn.disabled = true;
+    }
+  }
+
   blackOrder.forEach(b => {
     const btn = document.createElement("button");
     btn.className = `key-black ${b.pos}`;
@@ -75,7 +90,7 @@ export function renderTrainingScreen(user) {
   piano.addEventListener("click", (e) => {
     const btn = e.target.closest("button");
     if (!btn || isAnswering || isSoundPlaying) return;
-    piano.style.pointerEvents = "none";
+    setInteraction(false);
     const note = btn.dataset.note;
     const correct = note === currentNote.replace(/[0-9]/g, "");
     noteHistory.push({ question: currentNote, answer: note, correct });
@@ -85,27 +100,32 @@ export function renderTrainingScreen(user) {
     feedback.style.color = correct ? "green" : "red";
 
     isAnswering = true;
+    const proceed = () => {
+      setTimeout(() => {
+        feedback.textContent = "";
+        isAnswering = false;
+        questionCount++;
+        if (questionCount < maxQuestions) {
+          nextQuestion();
+        } else {
+          sessionStorage.setItem("noteHistory", JSON.stringify(noteHistory));
+          switchScreen("result_easy", user);
+        }
+      }, FEEDBACK_DELAY);
+    };
+
     if (correct) {
       isSoundPlaying = true;
       playNote(currentNote).then(() => {
         isSoundPlaying = false;
+        proceed();
       });
+    } else {
+      proceed();
     }
-    setTimeout(() => {
-      feedback.textContent = "";
-      isAnswering = false;
-      piano.style.pointerEvents = "auto";
-      questionCount++;
-      if (questionCount < maxQuestions) {
-        nextQuestion();
-      } else {
-        sessionStorage.setItem("noteHistory", JSON.stringify(noteHistory));
-        switchScreen("result_easy", user);
-      }
-    }, 1000);
   });
 
-  document.getElementById("finish-btn").onclick = () => {
+  finishBtn.onclick = () => {
     switchScreen("settings", user);
   };
 
@@ -115,8 +135,10 @@ export function renderTrainingScreen(user) {
     }
     currentNote = noteSequence.pop();
     isSoundPlaying = true;
+    setInteraction(false);
     playNote(currentNote).then(() => {
       isSoundPlaying = false;
+      setInteraction(true);
     });
   }
 
