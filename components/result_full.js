@@ -1,6 +1,5 @@
 // components/result_full.js
-
-import { Flow } from "https://unpkg.com/vexflow@4.1.0/build/esm/entry/vexflow.js";
+// Uses global VexFlow loaded in index.html
 
 const noteLabels = {
   "C": "ド",
@@ -51,7 +50,7 @@ export function renderTrainingFullResultScreen(user) {
   app.insertBefore(vexDiv, document.getElementById("summary"));
 
   const vexNotes = [];
-  const VF = Flow;
+  const VF = Vex.Flow; // use global VexFlow 3.x loaded in index.html
 
   function convertForStaff(note) {
     const m = note.match(/^([A-G]#?)(-?\d)$/);
