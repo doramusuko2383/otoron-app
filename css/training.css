@@ -134,5 +134,10 @@
 /* --- Single note question --- */
 .single-note-options button {
   font-size: 1.5rem;
-  padding: 0.5em 1em;
+  width: 3em;
+  height: 3em;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }

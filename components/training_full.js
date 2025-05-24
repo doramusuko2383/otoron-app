@@ -25,6 +25,11 @@ const noteLabels = {
   "F#": "フィス",
   "G#": "ジス",
   "A#": "ベー",
+  "Db": "チス",
+  "Eb": "エス",
+  "Gb": "フィス",
+  "Ab": "ジス",
+  "Bb": "ベー",
 };
 
 export function renderTrainingScreen(user) {

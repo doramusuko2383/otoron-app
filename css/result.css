@@ -67,6 +67,13 @@
   background-color: transparent; /* 正誤背景色はなし */
 }
 
+.ans-mark {
+  font-weight: bold;
+  margin-right: 4px;
+}
+.ans-mark.correct { color: green; }
+.ans-mark.wrong { color: red; }
+
 /* 和音色ボックス（文字折り返し無し＋小サイズ） */
 .chord-box {
   width: 50px;
