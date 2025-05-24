@@ -138,6 +138,25 @@ buttonGroup.appendChild(resetBtn);
   headerBar.appendChild(buttonGroup);
   container.appendChild(headerBar);
 
+  const singleWrap = document.createElement('label');
+  singleWrap.style.display = 'flex';
+  singleWrap.style.alignItems = 'center';
+  singleWrap.style.gap = '4px';
+  singleWrap.style.margin = '0.5em 1em';
+  const singleToggle = document.createElement('input');
+  singleToggle.type = 'checkbox';
+  singleToggle.checked = localStorage.getItem('singleNoteMode') === 'on';
+  singleToggle.onchange = () => {
+    if (singleToggle.checked) {
+      localStorage.setItem('singleNoteMode', 'on');
+    } else {
+      localStorage.removeItem('singleNoteMode');
+    }
+  };
+  singleWrap.appendChild(singleToggle);
+  singleWrap.appendChild(document.createTextNode('単音分化モード'));
+  container.appendChild(singleWrap);
+
   const chordSettings = document.createElement("div");
   chordSettings.id = "chord-settings";
 

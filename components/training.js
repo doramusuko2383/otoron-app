@@ -62,7 +62,7 @@ function shuffleArray(array) {
 export async function renderTrainingScreen(user) {
   console.log("🟢 renderTrainingScreen: user.id =", user?.id);
   currentUser = user;
-  singleNoteMode = false;
+  singleNoteMode = localStorage.getItem("singleNoteMode") === "on";
   resetResultFlag();
   lastResults = [];
 
@@ -199,17 +199,6 @@ function drawQuizScreen() {
   progress.style.height = "1em";
   header.appendChild(progress);
 
-  const toggleWrap = document.createElement("label");
-  toggleWrap.style.display = "flex";
-  toggleWrap.style.alignItems = "center";
-  toggleWrap.style.gap = "4px";
-  const toggle = document.createElement("input");
-  toggle.type = "checkbox";
-  toggle.checked = singleNoteMode;
-  toggle.onchange = () => { singleNoteMode = toggle.checked; };
-  toggleWrap.appendChild(toggle);
-  toggleWrap.appendChild(document.createTextNode("単音分化モード"));
-  header.appendChild(toggleWrap);
 
   const layout = document.createElement("div");
   layout.className = "grid-container";
@@ -274,6 +263,7 @@ function drawQuizScreen() {
   });
 
   const quitBtn = document.createElement("button");
+  quitBtn.id = "quitBtn";
   quitBtn.textContent = "やめる";
   quitBtn.onclick = () => {
     showCustomConfirm(() => {
@@ -399,36 +389,46 @@ function showSingleNoteQuiz(chord, onFinish) {
   const pitch = toPitchClass(note);
   const options = generateNoteOptions(pitch);
 
-  const app = document.getElementById('app');
-  app.innerHTML = '';
+  const container = document.querySelector('.screen.active');
+  if (!container) return;
 
-  const container = document.createElement('div');
-  container.className = 'screen active';
-  container.style.padding = '0';
-  container.style.width = '100vw';
+  const layout = container.querySelector('.grid-container');
+  const unknownBtn = container.querySelector('#unknownBtn');
+  const quitBtn = container.querySelector('#quitBtn');
+  if (layout) layout.style.display = 'none';
+  if (unknownBtn) unknownBtn.style.display = 'none';
+  if (quitBtn) quitBtn.style.display = 'none';
 
-  const feedback = document.createElement('div');
-  feedback.id = 'feedback';
-  feedback.style.position = 'fixed';
-  feedback.style.top = '40%';
-  feedback.style.left = '0';
-  feedback.style.right = '0';
-  feedback.style.textAlign = 'center';
-  feedback.style.fontSize = '3em';
-  feedback.style.fontWeight = 'bold';
-  feedback.style.zIndex = '999';
-  feedback.style.display = 'none';
-  container.appendChild(feedback);
+  const overlay = document.createElement('div');
+  overlay.id = 'single-note-overlay';
+  overlay.style.textAlign = 'center';
+  overlay.style.marginTop = '2em';
+  container.appendChild(overlay);
+
+  const feedback = document.getElementById('feedback');
 
   const optionWrap = document.createElement('div');
   optionWrap.className = 'single-note-options';
   optionWrap.style.display = 'flex';
   optionWrap.style.justifyContent = 'center';
   optionWrap.style.gap = '12px';
-  optionWrap.style.marginTop = '2em';
-  container.appendChild(optionWrap);
+  optionWrap.style.marginTop = '1em';
+  overlay.appendChild(optionWrap);
 
   let recorded = false;
+
+  function getWrongSoundName(p) {
+    switch (p) {
+      case 'Db': return 'wrong_C#';
+      case 'Gb': return 'wrong_F#';
+      case 'Ab': return 'wrong_G#';
+      case 'Bb': return 'wrong_Bb';
+      case 'Eb': return 'wrong_Eb';
+      case 'A#': return 'wrong_Bb';
+      case 'D#': return 'wrong_Eb';
+      default: return `wrong_${p}`;
+    }
+  }
 
   function setActive(active) {
     optionWrap.querySelectorAll('button').forEach(b => {
@@ -448,11 +448,16 @@ function showSingleNoteQuiz(chord, onFinish) {
     if (correct) {
       showFeedback('GOOD!', 'good');
       playNoteFile(note, () => {
+        overlay.remove();
+        if (layout) layout.style.display = '';
+        if (unknownBtn) unknownBtn.style.display = '';
+        if (quitBtn) quitBtn.style.display = '';
         onFinish();
       });
     } else {
       showFeedback('もういちど', 'bad');
-      playSoundThen(`wrong_${selection}`, () => {
+      const wrongName = getWrongSoundName(selection);
+      playSoundThen(wrongName, () => {
         playNoteFile(note, () => {
           setActive(true);
         });
@@ -469,7 +474,6 @@ function showSingleNoteQuiz(chord, onFinish) {
     optionWrap.appendChild(btn);
   });
 
-  app.appendChild(container);
   playNoteFile(note, () => {
     setActive(true);
   });
