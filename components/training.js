@@ -19,6 +19,7 @@ let alreadyTried = false;
 let questionQueue = [];
 let isForcedAnswer = false;
 let currentUser = null; // ← 追加
+let singleNoteMode = false;
 
 export const stats = {};
 export const mistakes = {};
@@ -61,6 +62,7 @@ function shuffleArray(array) {
 export async function renderTrainingScreen(user) {
   console.log("🟢 renderTrainingScreen: user.id =", user?.id);
   currentUser = user;
+  singleNoteMode = false;
   resetResultFlag();
   lastResults = [];
 
@@ -196,6 +198,18 @@ function drawQuizScreen() {
   progress.style.width = "60%";
   progress.style.height = "1em";
   header.appendChild(progress);
+
+  const toggleWrap = document.createElement("label");
+  toggleWrap.style.display = "flex";
+  toggleWrap.style.alignItems = "center";
+  toggleWrap.style.gap = "4px";
+  const toggle = document.createElement("input");
+  toggle.type = "checkbox";
+  toggle.checked = singleNoteMode;
+  toggle.onchange = () => { singleNoteMode = toggle.checked; };
+  toggleWrap.appendChild(toggle);
+  toggleWrap.appendChild(document.createTextNode("単音分化モード"));
+  header.appendChild(toggleWrap);
 
   const layout = document.createElement("div");
   layout.className = "grid-container";
@@ -338,6 +352,129 @@ function playChordFile(filename) {
   currentAudio.play();
 }
 
+function playNoteFile(note, callback) {
+  if (currentAudio) {
+    currentAudio.pause();
+    currentAudio.currentTime = 0;
+  }
+  const encoded = encodeURIComponent(note);
+  currentAudio = new Audio(`sounds/${encoded}.mp3`);
+  currentAudio.onerror = () => console.error("音声ファイルが見つかりません:", note);
+  if (callback) {
+    currentAudio.onended = () => setTimeout(callback, 100);
+  }
+  currentAudio.play();
+}
+
+function chooseSingleNote(notes) {
+  const black = notes.filter(n => n.includes('#') || n.includes('♭'));
+  if (black.length > 0 && Math.random() < 0.8) {
+    return black[Math.floor(Math.random() * black.length)];
+  }
+  return notes[Math.floor(Math.random() * notes.length)];
+}
+
+function toPitchClass(note) {
+  return note.replace(/[0-9]/g, '').replace('♭', 'b');
+}
+
+function generateNoteOptions(correct) {
+  const pool = [
+    'C','C#','Db','D','D#','Eb','E','F','F#','Gb','G','G#','Ab','A','A#','Bb','B'
+  ].filter(n => n !== correct);
+  for (let i = pool.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [pool[i], pool[j]] = [pool[j], pool[i]];
+  }
+  const opts = [correct, pool[0], pool[1]];
+  for (let i = opts.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [opts[i], opts[j]] = [opts[j], opts[i]];
+  }
+  return opts;
+}
+
+function showSingleNoteQuiz(chord, onFinish) {
+  const note = chooseSingleNote(chord.notes);
+  const pitch = toPitchClass(note);
+  const options = generateNoteOptions(pitch);
+
+  const app = document.getElementById('app');
+  app.innerHTML = '';
+
+  const container = document.createElement('div');
+  container.className = 'screen active';
+  container.style.padding = '0';
+  container.style.width = '100vw';
+
+  const feedback = document.createElement('div');
+  feedback.id = 'feedback';
+  feedback.style.position = 'fixed';
+  feedback.style.top = '40%';
+  feedback.style.left = '0';
+  feedback.style.right = '0';
+  feedback.style.textAlign = 'center';
+  feedback.style.fontSize = '3em';
+  feedback.style.fontWeight = 'bold';
+  feedback.style.zIndex = '999';
+  feedback.style.display = 'none';
+  container.appendChild(feedback);
+
+  const optionWrap = document.createElement('div');
+  optionWrap.className = 'single-note-options';
+  optionWrap.style.display = 'flex';
+  optionWrap.style.justifyContent = 'center';
+  optionWrap.style.gap = '12px';
+  optionWrap.style.marginTop = '2em';
+  container.appendChild(optionWrap);
+
+  let recorded = false;
+
+  function setActive(active) {
+    optionWrap.querySelectorAll('button').forEach(b => {
+      b.disabled = !active;
+      b.style.opacity = active ? '1' : '0.5';
+    });
+  }
+
+  function handle(selection) {
+    setActive(false);
+    const correct = selection === pitch;
+    if (!recorded) {
+      lastResults.push({ chordName: chord.name, answerName: selection, correct, isSingleNote: true });
+      recorded = true;
+    }
+
+    if (correct) {
+      showFeedback('GOOD!', 'good');
+      playNoteFile(note, () => {
+        onFinish();
+      });
+    } else {
+      showFeedback('もういちど', 'bad');
+      playSoundThen(`wrong_${selection}`, () => {
+        playNoteFile(note, () => {
+          setActive(true);
+        });
+      });
+    }
+  }
+
+  options.forEach(n => {
+    const btn = document.createElement('button');
+    btn.textContent = n;
+    btn.style.fontSize = '1.5em';
+    btn.style.padding = '0.5em 1em';
+    btn.onclick = () => handle(n);
+    optionWrap.appendChild(btn);
+  });
+
+  app.appendChild(container);
+  playNoteFile(note, () => {
+    setActive(true);
+  });
+}
+
 function showFeedback(message, type = "good") {
   const fb = document.getElementById("feedback");
   if (!fb) return;
@@ -382,18 +519,26 @@ function checkAnswer(selected) {
       btn.style.opacity = "0.4";
     });
 
-    if (questionQueue.length === 0) {
-      console.log("📌 nextQuestion: セッション終了に到達");
+    const proceed = () => {
+      if (questionQueue.length === 0) {
+        console.log("📌 nextQuestion: セッション終了に到達");
 
-      showFeedback("トレーニング終了！", "good");
-      nextQuestion();
-    } else {
-      const voices = ["good1", "good2"];
-      showFeedback("GOOD!", "good");
-      playSoundThen(voices[Math.floor(Math.random() * voices.length)], () => {
+        showFeedback("トレーニング終了！", "good");
         nextQuestion();
-      });
-    }
+      } else {
+        nextQuestion();
+      }
+    };
+
+    const voices = ["good1", "good2"];
+    showFeedback("GOOD!", "good");
+    playSoundThen(voices[Math.floor(Math.random() * voices.length)], () => {
+      if (singleNoteMode) {
+        showSingleNoteQuiz(currentAnswer, proceed);
+      } else {
+        proceed();
+      }
+    });
   } else {
     alreadyTried = true;
     stats[name].wrong++;
