@@ -7,6 +7,7 @@ import { switchScreen } from "../main.js";
 let currentNote = null;
 let noteHistory = [];
 let isAnswering = false;
+let isSoundPlaying = false;
 let questionCount = 0;
 const maxQuestions = 5; // ← テスト用（本番時は30に）
 
@@ -65,7 +66,7 @@ export function renderTrainingScreen(user) {
 
   piano.addEventListener("click", (e) => {
     const btn = e.target.closest("button");
-    if (!btn || isAnswering) return;
+    if (!btn || isAnswering || isSoundPlaying) return;
     const note = btn.dataset.note;
     const correct = note === currentNote.replace(/[0-9-]/g, "");
     noteHistory.push({ question: currentNote, answer: note, correct });
@@ -75,7 +76,12 @@ export function renderTrainingScreen(user) {
     feedback.style.color = correct ? "green" : "red";
 
     isAnswering = true;
-    if (correct) playNote(currentNote);
+    if (correct) {
+      isSoundPlaying = true;
+      playNote(currentNote).then(() => {
+        isSoundPlaying = false;
+      });
+    }
     setTimeout(() => {
       feedback.textContent = "";
       isAnswering = false;
@@ -96,7 +102,10 @@ export function renderTrainingScreen(user) {
 
   function nextQuestion() {
     currentNote = getRandomNote();
-    playNote(currentNote);
+    isSoundPlaying = true;
+    playNote(currentNote).then(() => {
+      isSoundPlaying = false;
+    });
   }
 
   nextQuestion();

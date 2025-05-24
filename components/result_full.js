@@ -90,18 +90,38 @@ export function renderTrainingFullResultScreen(user) {
 
     if (VF) {
       const conv = convertForStaff(entry.question);
-      const vNote = new VF.StaveNote({ clef: "treble", keys: [conv.key], duration: "q" })
-        .setStyle({ fillStyle: entry.correct ? "black" : "red", strokeStyle: entry.correct ? "black" : "red" });
+      const vNote = new VF.StaveNote({ clef: "treble", keys: [conv.key], duration: "q" });
+      if (typeof vNote.setStyle === "function") {
+        vNote.setStyle({
+          fillStyle: entry.correct ? "black" : "red",
+          strokeStyle: entry.correct ? "black" : "red",
+        });
+      }
       if (conv.accidental && typeof vNote.addAccidental === "function") {
         vNote.addAccidental(0, new VF.Accidental(conv.accidental));
       }
       if (typeof vNote.addModifier === "function") {
         if (conv.shift > 0) {
-          vNote.addModifier(0, new VF.Annotation("8va").setVerticalJustification(VF.Annotation.VerticalJustify.TOP));
+          vNote.addModifier(
+            0,
+            new VF.Annotation("8va").setVerticalJustification(
+              VF.Annotation.VerticalJustify.TOP
+            )
+          );
         } else if (conv.shift < 0) {
-          vNote.addModifier(0, new VF.Annotation("8vb").setVerticalJustification(VF.Annotation.VerticalJustify.BOTTOM));
+          vNote.addModifier(
+            0,
+            new VF.Annotation("8vb").setVerticalJustification(
+              VF.Annotation.VerticalJustify.BOTTOM
+            )
+          );
         }
-        vNote.addModifier(0, new VF.Annotation(entry.correct ? "◯" : "×").setVerticalJustification(VF.Annotation.VerticalJustify.ABOVE));
+        vNote.addModifier(
+          0,
+          new VF.Annotation(entry.correct ? "◯" : "×").setVerticalJustification(
+            VF.Annotation.VerticalJustify.ABOVE
+          )
+        );
       }
       vexNotes.push(vNote);
     }
