@@ -20,6 +20,22 @@ let questionQueue = [];
 let isForcedAnswer = false;
 let currentUser = null; // ← 追加
 let singleNoteMode = false;
+let chordProgressCount = 0;
+
+const noteLabels = {
+  "C": "ド",
+  "D": "レ",
+  "E": "ミ",
+  "F": "ファ",
+  "G": "ソ",
+  "A": "ラ",
+  "B": "シ",
+  "C#": "チス", "Db": "チス",
+  "D#": "エス", "Eb": "エス",
+  "F#": "フィス", "Gb": "フィス",
+  "G#": "ジス", "Ab": "ジス",
+  "A#": "ベー", "Bb": "ベー"
+};
 
 export const stats = {};
 export const mistakes = {};
@@ -63,6 +79,8 @@ export async function renderTrainingScreen(user) {
   console.log("🟢 renderTrainingScreen: user.id =", user?.id);
   currentUser = user;
   singleNoteMode = localStorage.getItem("singleNoteMode") === "on";
+  const flags = await loadGrowthFlags(user.id);
+  chordProgressCount = Object.values(flags).filter(f => f.unlocked).length;
   resetResultFlag();
   lastResults = [];
 
@@ -79,7 +97,6 @@ export async function renderTrainingScreen(user) {
       selectedChords.push(...JSON.parse(storedChords));
     } else {
       // ✅ 推奨出題で自動構成
-      const flags = await loadGrowthFlags(user.id);
       const recommendedKeys = getRecommendedChordSet(flags);
 
       const countMap = {};
@@ -247,7 +264,11 @@ function drawQuizScreen() {
 
     const inner = document.createElement("div");
     inner.className = `square-btn-content ${chord.colorClass}`;
-    inner.innerHTML = chord.labelHtml;
+    if (chordProgressCount >= 10) {
+      inner.innerHTML = chord.italian.join("<br>");
+    } else {
+      inner.innerHTML = chord.labelHtml;
+    }
     inner.setAttribute("data-name", chord.name);
 
     if (selectedChords.some(sc => sc.name === chord.name)) {
@@ -411,7 +432,7 @@ function generateNoteOptions(correct, chordNotes = null) {
   return opts;
 }
 
-function showSingleNoteQuiz(chord, onFinish) {
+function showSingleNoteQuiz(chord, onFinish, isLast = false) {
   const note = chooseSingleNote(chord.notes);
   const pitch = toPitchClass(note);
   const options = generateNoteOptions(pitch, chord.notes);
@@ -484,9 +505,11 @@ function showSingleNoteQuiz(chord, onFinish) {
       const voices = ['good1', 'good2'];
       playSoundThen(voices[Math.floor(Math.random() * voices.length)], () => {
         overlay.remove();
-        if (layout) layout.style.display = '';
-        if (unknownBtn) unknownBtn.style.display = '';
-        if (quitBtn) quitBtn.style.display = '';
+        if (!isLast) {
+          if (layout) layout.style.display = '';
+          if (unknownBtn) unknownBtn.style.display = '';
+          if (quitBtn) quitBtn.style.display = '';
+        }
         onFinish();
       });
     } else {
@@ -502,7 +525,7 @@ function showSingleNoteQuiz(chord, onFinish) {
 
   options.forEach(n => {
     const btn = document.createElement('button');
-    btn.textContent = n;
+    btn.textContent = noteLabels[n] || n;
     btn.style.fontSize = '1.5em';
     btn.style.padding = '0.5em 1em';
     btn.onclick = () => handle(n);
@@ -573,7 +596,8 @@ function checkAnswer(selected) {
     showFeedback("GOOD!", "good");
     playSoundThen(voices[Math.floor(Math.random() * voices.length)], () => {
       if (singleNoteMode) {
-        showSingleNoteQuiz(currentAnswer, proceed);
+        const isLast = questionQueue.length === 0;
+        showSingleNoteQuiz(currentAnswer, proceed, isLast);
       } else {
         proceed();
       }
