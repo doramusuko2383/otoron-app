@@ -264,7 +264,7 @@ function drawQuizScreen() {
 
     const inner = document.createElement("div");
     inner.className = `square-btn-content ${chord.colorClass}`;
-    if (chordProgressCount >= 10) {
+    if (chordProgressCount >= 10 && chord.italian) {
       inner.innerHTML = chord.italian.join("<br>");
     } else {
       inner.innerHTML = chord.labelHtml;
