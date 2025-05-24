@@ -52,3 +52,12 @@
   height: 2em;
   font-size: 1.5em;
 }
+
+.piano-container.disabled {
+  pointer-events: none;
+}
+.piano-container.disabled .key-white,
+.piano-container.disabled .key-black,
+button.disabled {
+  opacity: 0.5;
+}
