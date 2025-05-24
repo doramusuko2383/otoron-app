@@ -50,11 +50,15 @@
 }
 
 /* --- dynamic grid layouts --- */
-.grid-container.cols-1 { grid-template-columns: repeat(1, 1fr); max-width: 180px; }
+.grid-container.cols-1 { grid-template-columns: repeat(1, 1fr); max-width: 240px; }
 .grid-container.cols-2 { grid-template-columns: repeat(2, 1fr); max-width: 320px; }
 .grid-container.cols-3 { grid-template-columns: repeat(3, 1fr); max-width: 360px; }
 .grid-container.cols-4 { grid-template-columns: repeat(4, 1fr); max-width: 480px; }
 .grid-container.cols-5 { grid-template-columns: repeat(5, minmax(60px, 80px)); max-width: 500px; }
+
+.grid-container.cols-1 .square-btn-content {
+  font-size: 1.2rem;
+}
 
 @media screen and (max-width: 480px) {
   .home-buttons button {

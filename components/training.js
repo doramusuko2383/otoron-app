@@ -206,11 +206,17 @@ function drawQuizScreen() {
 
   const btnCount = selectedChords.length;
   let cols = 5;
-  if (btnCount === 1) cols = 1;
-  else if (btnCount === 2) cols = 2;
-  else if (btnCount <= 4) cols = 2;
-  else if (btnCount <= 9) cols = 3;
-  else if (btnCount <= 16) cols = 4;
+  if (btnCount === 1) {
+    cols = 1;
+  } else if (btnCount === 2) {
+    cols = 2;
+  } else if (btnCount <= 4) {
+    cols = 2; // 2×2 grid
+  } else if (btnCount <= 9) {
+    cols = 3; // 3×3 grid
+  } else if (btnCount <= 16) {
+    cols = 4;
+  }
   layout.classList.add(`cols-${cols}`);
 
   const order = [
