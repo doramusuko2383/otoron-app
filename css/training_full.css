@@ -1,0 +1,54 @@
+/* training_full.css - 単音テスト(本気)専用 */
+
+.piano-container {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  height: 160px;
+  margin: 0 auto;
+}
+
+.white-keys {
+  display: flex;
+  height: 100%;
+}
+
+.key-white,
+.key-black {
+  font-size: 0.9rem;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  user-select: none;
+  cursor: pointer;
+}
+
+.key-white {
+  flex: 1;
+  border: 1px solid #333;
+  background: #fff;
+}
+
+.key-black {
+  position: absolute;
+  width: calc(100% / 7 * 0.6);
+  height: 60%;
+  background: #000;
+  color: #fff;
+  border: 1px solid #333;
+  top: 0;
+  z-index: 2;
+}
+
+.key-black.pos1 { left: calc(100% / 7 * 0.75); }
+.key-black.pos2 { left: calc(100% / 7 * 1.75); }
+.key-black.pos3 { left: calc(100% / 7 * 3.75); }
+.key-black.pos4 { left: calc(100% / 7 * 4.75); }
+.key-black.pos5 { left: calc(100% / 7 * 5.75); }
+
+#feedback {
+  text-align: center;
+  margin: 0.5em 0;
+  height: 2em;
+  font-size: 1.5em;
+}
