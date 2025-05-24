@@ -48,20 +48,23 @@ export function renderTrainingFullResultScreen(user) {
     const pitch = base.replace("#", "");
 
     const noteToValue = { C:0,D:2,E:4,F:5,G:7,A:9,B:11 };
-    const originalMidi = (octave + 1) * 12 + noteToValue[pitch] + (accidental ? 1 : 0);
-    const clef = originalMidi < 60 ? "bass" : "treble";
+    const midi = (octave + 1) * 12 + noteToValue[pitch] + (accidental ? 1 : 0);
+    const clef = midi < 60 ? "bass" : "treble";
 
-    let midi = originalMidi;
     let shift = 0;
-    if (clef === "treble") {
-      while (midi > 84) { midi -= 12; octave--; shift++; }
-      while (midi < 60) { midi += 12; octave++; shift--; }
-    } else {
-      while (midi > 72) { midi -= 12; octave--; shift++; }
-      while (midi < 48) { midi += 12; octave++; shift--; }
+    if (midi <= 28) {
+      shift = -2; // A0-E1 -> 16vb
+    } else if (midi <= 47) {
+      shift = -1; // F1-B2 -> 8vb
+    } else if (midi >= 96) {
+      shift = 2; // C7-C8 -> 16va
+    } else if (midi >= 84) {
+      shift = 1; // C6-B6 -> 8va
     }
 
-    const key = `${pitch.toLowerCase()}${accidental ? "#" : ""}/${octave}`;
+    const displayOctave = octave - shift;
+    const key = `${pitch.toLowerCase()}${accidental ? "#" : ""}/${displayOctave}`;
+
     return { key, accidental, shift, clef };
   }
 
