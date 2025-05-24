@@ -6,6 +6,26 @@ import { drawStaffFromNotes } from "./resultStaff.js";  // 楽譜描画（必要
 
 let resultShownInThisSession = false;
 
+const noteLabels = {
+  "C": "ド",
+  "D": "レ",
+  "E": "ミ",
+  "F": "ファ",
+  "G": "ソ",
+  "A": "ラ",
+  "B": "シ",
+  "C#": "チス", "Db": "チス",
+  "D#": "エス", "Eb": "エス",
+  "F#": "フィス", "Gb": "フィス",
+  "G#": "ジス", "Ab": "ジス",
+  "A#": "ベー", "Bb": "ベー"
+};
+
+function labelNote(n) {
+  const pitch = n ? n.replace(/\d/g, '') : '';
+  return noteLabels[pitch] || n;
+}
+
 // ✅ 本番用：こども向けごほうび画面
 export function renderResultScreen() {
   if (resultShownInThisSession) {
@@ -16,6 +36,7 @@ export function renderResultScreen() {
   resultShownInThisSession = true;
 
   const results = lastResults;
+  const singleNoteMode = localStorage.getItem('singleNoteMode') === 'on';
 
   const app = document.getElementById("app");
   app.innerHTML = `
@@ -29,8 +50,7 @@ export function renderResultScreen() {
             <th>じゅんばん</th>
             <th>わおん</th>
             <th>かいとう</th>
-            <th>たんおん</th>
-            <th>かいとう</th>
+            ${singleNoteMode ? '<th>たんおん</th><th>かいとう</th>' : ''}
           </tr>
         </thead>
         <tbody>
@@ -40,7 +60,7 @@ export function renderResultScreen() {
             for (let i = 0; i < results.length; i++) {
               const r = results[i];
               if (r.isSingleNote) continue;
-              const noteRes = results[i + 1] && results[i + 1].isSingleNote ? results[i + 1] : null;
+              const noteRes = singleNoteMode && results[i + 1] && results[i + 1].isSingleNote ? results[i + 1] : null;
               if (noteRes) i++;
               idx++;
               rows += `
@@ -52,12 +72,13 @@ export function renderResultScreen() {
                 </div>
               </td>
               <td>
+                <span class="ans-mark ${r.correct ? 'correct' : 'wrong'}">${r.correct ? '◯' : '×'}</span>
                 <div class="chord-box ${getColorClass(r.answerName)}">
                   ${getLabelHiragana(r.answerName)}
                 </div>
               </td>
-              <td>${noteRes ? noteRes.noteQuestion || '' : ''}</td>
-              <td>${noteRes ? noteRes.noteAnswer || '' : ''}</td>
+              ${singleNoteMode ? `<td>${noteRes ? labelNote(noteRes.noteQuestion || '') : ''}</td>` : ''}
+              ${singleNoteMode ? `<td>${noteRes ? '<span class="ans-mark ' + (noteRes.correct ? 'correct' : 'wrong') + '">' + (noteRes.correct ? '◯' : '×') + '</span>' + labelNote(noteRes.noteAnswer || '') : ''}</td>` : ''}
             </tr>`;
             }
             return rows;
