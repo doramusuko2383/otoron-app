@@ -384,12 +384,15 @@ function toPitchClass(note) {
 
 function generateNoteOptions(correct, chordNotes = null) {
   if (Array.isArray(chordNotes) && chordNotes.length > 0) {
-    const pcs = [...new Set(chordNotes.map(toPitchClass))];
-    const opts = pcs.slice();
-    for (let i = opts.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [opts[i], opts[j]] = [opts[j], opts[i]];
-    }
+    const seen = new Set();
+    const opts = [];
+    chordNotes.forEach(n => {
+      const pc = toPitchClass(n);
+      if (!seen.has(pc)) {
+        seen.add(pc);
+        opts.push(pc);
+      }
+    });
     return opts;
   }
 
@@ -441,7 +444,8 @@ function showSingleNoteQuiz(chord, onFinish) {
 
   let recorded = false;
 
-  function getWrongSoundName(p) {
+  function getWrongSoundName() {
+    const p = pitch;
     switch (p) {
       case 'Db': return 'wrong_C#';
       case 'Gb': return 'wrong_F#';
@@ -465,7 +469,13 @@ function showSingleNoteQuiz(chord, onFinish) {
     setActive(false);
     const correct = selection === pitch;
     if (!recorded) {
-      lastResults.push({ chordName: chord.name, answerName: selection, correct, isSingleNote: true });
+      lastResults.push({
+        chordName: chord.name,
+        noteQuestion: note,
+        noteAnswer: selection,
+        correct,
+        isSingleNote: true
+      });
       recorded = true;
     }
 
@@ -473,17 +483,15 @@ function showSingleNoteQuiz(chord, onFinish) {
       showFeedback('GOOD!', 'good');
       const voices = ['good1', 'good2'];
       playSoundThen(voices[Math.floor(Math.random() * voices.length)], () => {
-        playNoteFile(note, () => {
-          overlay.remove();
-          if (layout) layout.style.display = '';
-          if (unknownBtn) unknownBtn.style.display = '';
-          if (quitBtn) quitBtn.style.display = '';
-          onFinish();
-        });
+        overlay.remove();
+        if (layout) layout.style.display = '';
+        if (unknownBtn) unknownBtn.style.display = '';
+        if (quitBtn) quitBtn.style.display = '';
+        onFinish();
       });
     } else {
       showFeedback('もういちど', 'bad');
-      const wrongName = getWrongSoundName(selection);
+      const wrongName = getWrongSoundName();
       playSoundThen(wrongName, () => {
         playNoteFile(note, () => {
           setActive(true);

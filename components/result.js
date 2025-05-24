@@ -29,24 +29,39 @@ export function renderResultScreen() {
             <th>じゅんばん</th>
             <th>わおん</th>
             <th>かいとう</th>
+            <th>たんおん</th>
+            <th>かいとう</th>
           </tr>
         </thead>
         <tbody>
-          ${results.map((item, index) => `
-            <tr class="${item.correct ? 'correct-row' : 'wrong-row'}">
-              <td>${index + 1}</td>
+          ${(() => {
+            let rows = '';
+            let idx = 0;
+            for (let i = 0; i < results.length; i++) {
+              const r = results[i];
+              if (r.isSingleNote) continue;
+              const noteRes = results[i + 1] && results[i + 1].isSingleNote ? results[i + 1] : null;
+              if (noteRes) i++;
+              idx++;
+              rows += `
+            <tr class="${r.correct ? 'correct-row' : 'wrong-row'}">
+              <td>${idx}</td>
               <td>
-                <div class="chord-box ${getColorClass(item.chordName)}">
-                  ${getLabelHiragana(item.chordName)}
+                <div class="chord-box ${getColorClass(r.chordName)}">
+                  ${getLabelHiragana(r.chordName)}
                 </div>
               </td>
               <td>
-                <div class="chord-box ${getColorClass(item.answerName)}">
-                  ${getLabelHiragana(item.answerName)}
+                <div class="chord-box ${getColorClass(r.answerName)}">
+                  ${getLabelHiragana(r.answerName)}
                 </div>
               </td>
-            </tr>
-          `).join('')}
+              <td>${noteRes ? noteRes.noteQuestion || '' : ''}</td>
+              <td>${noteRes ? noteRes.noteAnswer || '' : ''}</td>
+            </tr>`;
+            }
+            return rows;
+          })()}
         </tbody>
       </table>
 
