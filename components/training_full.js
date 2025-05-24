@@ -28,6 +28,12 @@ const noteLabels = {
 
 export function renderTrainingScreen(user) {
   const app = document.getElementById("app");
+  // reset session state
+  currentNote = null;
+  noteHistory = [];
+  isAnswering = false;
+  isSoundPlaying = false;
+  questionCount = 0;
   app.innerHTML = `
     <h2>単音テスト（本気）</h2>
     <div id="feedback"></div>
@@ -67,6 +73,7 @@ export function renderTrainingScreen(user) {
   piano.addEventListener("click", (e) => {
     const btn = e.target.closest("button");
     if (!btn || isAnswering || isSoundPlaying) return;
+    piano.style.pointerEvents = "none";
     const note = btn.dataset.note;
     const correct = note === currentNote.replace(/[0-9-]/g, "");
     noteHistory.push({ question: currentNote, answer: note, correct });
@@ -85,6 +92,7 @@ export function renderTrainingScreen(user) {
     setTimeout(() => {
       feedback.textContent = "";
       isAnswering = false;
+      piano.style.pointerEvents = "auto";
       questionCount++;
       if (questionCount < maxQuestions) {
         nextQuestion();
