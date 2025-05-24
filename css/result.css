@@ -104,12 +104,14 @@
 .score-wrapper {
   text-align: center;
   margin: 1em 0;
+  background-color: #ffffff;
 }
 
 .score-image {
   max-width: 100%;
   height: auto;
   border: 1px solid #ccc;
+  background-color: #ffffff;
   cursor: pointer;
 }
 
