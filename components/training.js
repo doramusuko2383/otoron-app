@@ -368,7 +368,17 @@ function toPitchClass(note) {
   return note.replace(/[0-9]/g, '').replace('♭', 'b');
 }
 
-function generateNoteOptions(correct) {
+function generateNoteOptions(correct, chordNotes = null) {
+  if (Array.isArray(chordNotes) && chordNotes.length > 0) {
+    const pcs = [...new Set(chordNotes.map(toPitchClass))];
+    const opts = pcs.slice();
+    for (let i = opts.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [opts[i], opts[j]] = [opts[j], opts[i]];
+    }
+    return opts;
+  }
+
   const pool = [
     'C','C#','Db','D','D#','Eb','E','F','F#','Gb','G','G#','Ab','A','A#','Bb','B'
   ].filter(n => n !== correct);
@@ -387,7 +397,7 @@ function generateNoteOptions(correct) {
 function showSingleNoteQuiz(chord, onFinish) {
   const note = chooseSingleNote(chord.notes);
   const pitch = toPitchClass(note);
-  const options = generateNoteOptions(pitch);
+  const options = generateNoteOptions(pitch, chord.notes);
 
   const container = document.querySelector('.screen.active');
   if (!container) return;
@@ -422,10 +432,10 @@ function showSingleNoteQuiz(chord, onFinish) {
       case 'Db': return 'wrong_C#';
       case 'Gb': return 'wrong_F#';
       case 'Ab': return 'wrong_G#';
-      case 'Bb': return 'wrong_Bb';
-      case 'Eb': return 'wrong_Eb';
-      case 'A#': return 'wrong_Bb';
-      case 'D#': return 'wrong_Eb';
+      case 'Bb': return 'wrong_A#';
+      case 'Eb': return 'wrong_D#';
+      case 'A#': return 'wrong_A#';
+      case 'D#': return 'wrong_D#';
       default: return `wrong_${p}`;
     }
   }
