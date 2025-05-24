@@ -13,6 +13,7 @@ export function renderTrainingEasyResultScreen(user) {
     <div id="score-modal" class="modal hidden">
       <img id="full-score-image" />
     </div>
+    <div id="summary"></div>
     <button id="back-btn">設定に戻る</button>`;
 
   const history = JSON.parse(sessionStorage.getItem("noteHistory") || "[]");
@@ -23,6 +24,13 @@ export function renderTrainingEasyResultScreen(user) {
   app.insertBefore(vexDiv, document.querySelector(".score-wrapper"));
 
   const VF = (typeof Vex !== "undefined" && Vex.Flow) ? Vex.Flow : null;
+
+  const summary = {};
+  history.forEach(entry => {
+    if (!summary[entry.question]) summary[entry.question] = { correct: 0, total: 0 };
+    summary[entry.question].total++;
+    if (entry.correct) summary[entry.question].correct++;
+  });
 
   function convertForStaff(note) {
     const m = note.match(/^([A-G]#?)(\d)$/);
@@ -115,10 +123,37 @@ export function renderTrainingEasyResultScreen(user) {
     document.getElementById("score-image").addEventListener("click", () => {
       document.getElementById("score-modal").classList.remove("hidden");
     });
+
     document.getElementById("score-modal").addEventListener("click", () => {
       document.getElementById("score-modal").classList.add("hidden");
     });
   }
+
+  const summaryDiv = document.getElementById("summary");
+  const totalQuestions = history.length;
+  const correctCount = history.filter(e => e.correct).length;
+  const overallAccuracy = totalQuestions ? Math.round((correctCount / totalQuestions) * 100) : 0;
+
+  const summaryText = document.createElement("p");
+  summaryText.textContent = `正解率 ${overallAccuracy}％（${correctCount}/${totalQuestions}）`;
+  summaryDiv.appendChild(summaryText);
+  const table = document.createElement("table");
+  table.innerHTML = `<tr><th>音</th><th>正解数</th><th>出題数</th><th>正答率</th></tr>`;
+
+  Object.keys(summary).sort().forEach(note => {
+    const data = summary[note];
+    const accuracy = ((data.correct / data.total) * 100).toFixed(1);
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${note}</td>
+      <td>${data.correct}</td>
+      <td>${data.total}</td>
+      <td>${accuracy}%</td>
+    `;
+    table.appendChild(row);
+  });
+
+  summaryDiv.appendChild(table);
 
   document.getElementById("back-btn").onclick = () => {
     switchScreen("settings", user);
