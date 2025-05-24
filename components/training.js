@@ -200,11 +200,18 @@ function drawQuizScreen() {
   const layout = document.createElement("div");
   layout.className = "grid-container";
   layout.style.display = "grid";
-  layout.style.gridTemplateColumns = "repeat(5, 1fr)";
   layout.style.gap = "12px";
   layout.style.width = "100%";
-  layout.style.maxWidth = "500px";
   layout.style.margin = "0 auto";
+
+  const btnCount = selectedChords.length;
+  let cols = 5;
+  if (btnCount === 1) cols = 1;
+  else if (btnCount === 2) cols = 2;
+  else if (btnCount <= 4) cols = 2;
+  else if (btnCount <= 9) cols = 3;
+  else if (btnCount <= 16) cols = 4;
+  layout.classList.add(`cols-${cols}`);
 
   const order = [
     "C-E-G", "C-F-A", "B-D-G", "A-C-F", "D-G-B",
