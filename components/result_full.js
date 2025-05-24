@@ -18,7 +18,16 @@ const noteLabels = {
 
 export function renderTrainingFullResultScreen(user) {
   const app = document.getElementById("app");
-  app.innerHTML = `<h2>単音テスト（本気） 結果</h2><div id="summary"></div><button id="back-btn">設定に戻る</button>`;
+  app.innerHTML = `
+    <h2>単音テスト（本気） 結果</h2>
+    <div class="score-wrapper">
+      <img id="score-image" class="score-image" />
+    </div>
+    <div id="score-modal" class="modal hidden">
+      <img id="full-score-image" />
+    </div>
+    <div id="summary"></div>
+    <button id="back-btn">設定に戻る</button>`;
 
   const history = JSON.parse(sessionStorage.getItem("noteHistory") || "[]");
   const summary = {};
@@ -49,28 +58,40 @@ export function renderTrainingFullResultScreen(user) {
   vexDiv.style.margin = "2em 0";
   app.insertBefore(vexDiv, document.getElementById("summary"));
 
-  const vexNotes = [];
   // VexFlow が読み込まれていない環境も考慮する
   const VF = (typeof Vex !== "undefined" && Vex.Flow) ? Vex.Flow : null; // use global VexFlow 3.x loaded in index.html
 
   function convertForStaff(note) {
     const m = note.match(/^([A-G]#?)(-?\d)$/);
-    if (!m) return { key: "c/4", shift: 0, accidental: null };
+    if (!m) return { clef: "treble", key: "c/4", shift: 0, accidental: null };
     let [_, base, octaveStr] = m;
     let octave = parseInt(octaveStr, 10);
     const accidental = base.includes("#") ? "#" : null;
     const pitch = base.replace("#", "");
 
     const noteToValue = { C:0,D:2,E:4,F:5,G:7,A:9,B:11 };
-    let midi = (octave + 1) * 12 + noteToValue[pitch] + (accidental ? 1 : 0);
+    const originalMidi = (octave + 1) * 12 + noteToValue[pitch] + (accidental ? 1 : 0);
+    const clef = originalMidi < 60 ? "bass" : "treble";
+
+    let midi = originalMidi;
     let shift = 0;
-    while (midi > 84) { midi -= 12; octave--; shift++; }
-    while (midi < 60) { midi += 12; octave++; shift--; }
+    if (clef === "treble") {
+      while (midi > 84) { midi -= 12; octave--; shift++; }
+      while (midi < 60) { midi += 12; octave++; shift--; }
+    } else {
+      while (midi > 72) { midi -= 12; octave--; shift++; }
+      while (midi < 48) { midi += 12; octave++; shift--; }
+    }
+
     const key = `${pitch.toLowerCase()}${accidental ? "#" : ""}/${octave}`;
-    return { key, accidental, shift };
+    return { key, accidental, shift, clef };
   }
 
-  history.forEach(entry => {
+  const measures = Array.from({ length: 6 }, () => ({ treble: [], bass: [] }));
+  const restTreble = () => new VF.StaveNote({ clef: "treble", keys: ["b/4"], duration: "qr" });
+  const restBass = () => new VF.StaveNote({ clef: "bass", keys: ["d/3"], duration: "qr" });
+
+  history.slice(0, 30).forEach((entry, idx) => {
     if (!validNotes.has(entry.question)) return;
 
     const shortNote = entry.question.replace(/[0-9-]/g, "");
@@ -90,7 +111,7 @@ export function renderTrainingFullResultScreen(user) {
 
     if (VF) {
       const conv = convertForStaff(entry.question);
-      const vNote = new VF.StaveNote({ clef: "treble", keys: [conv.key], duration: "q" });
+      const vNote = new VF.StaveNote({ clef: conv.clef, keys: [conv.key], duration: "q" });
       if (typeof vNote.setStyle === "function") {
         vNote.setStyle({
           fillStyle: entry.correct ? "black" : "red",
@@ -101,29 +122,41 @@ export function renderTrainingFullResultScreen(user) {
         vNote.addAccidental(0, new VF.Accidental(conv.accidental));
       }
       if (typeof vNote.addModifier === "function") {
-        if (conv.shift > 0) {
+        if (conv.shift > 1) {
           vNote.addModifier(
             0,
-            new VF.Annotation("8va").setVerticalJustification(
-              VF.Annotation.VerticalJustify.TOP
-            )
+            new VF.Annotation("16va").setVerticalJustification(VF.Annotation.VerticalJustify.TOP)
           );
-        } else if (conv.shift < 0) {
+        } else if (conv.shift === 1) {
           vNote.addModifier(
             0,
-            new VF.Annotation("8vb").setVerticalJustification(
-              VF.Annotation.VerticalJustify.BOTTOM
-            )
+            new VF.Annotation("8va").setVerticalJustification(VF.Annotation.VerticalJustify.TOP)
+          );
+        } else if (conv.shift === -1) {
+          vNote.addModifier(
+            0,
+            new VF.Annotation("8vb").setVerticalJustification(VF.Annotation.VerticalJustify.BOTTOM)
+          );
+        } else if (conv.shift <= -2) {
+          vNote.addModifier(
+            0,
+            new VF.Annotation("16vb").setVerticalJustification(VF.Annotation.VerticalJustify.BOTTOM)
           );
         }
         vNote.addModifier(
           0,
-          new VF.Annotation(entry.correct ? "◯" : "×").setVerticalJustification(
-            VF.Annotation.VerticalJustify.ABOVE
-          )
+          new VF.Annotation(entry.correct ? "◯" : "×").setVerticalJustification(VF.Annotation.VerticalJustify.ABOVE)
         );
       }
-      vexNotes.push(vNote);
+
+      const measureIndex = Math.floor(idx / 5);
+      if (conv.clef === "treble") {
+        measures[measureIndex].treble.push(vNote);
+        measures[measureIndex].bass.push(restBass());
+      } else {
+        measures[measureIndex].treble.push(restTreble());
+        measures[measureIndex].bass.push(vNote);
+      }
     }
   });
 
@@ -149,13 +182,59 @@ export function renderTrainingFullResultScreen(user) {
 
   summaryDiv.appendChild(table);
 
-  if (VF && vexNotes.length > 0) {
+  if (VF) {
+    const measureWidth = 200;
+    const lineHeight = 180;
     const renderer = new VF.Renderer("vexflow-staff", VF.Renderer.Backends.SVG);
-    renderer.resize(800, 180);
+    renderer.resize(measureWidth * 3 + 40, lineHeight * 2 + 40);
     const context = renderer.getContext();
-    const stave = new VF.Stave(10, 40, 780);
-    stave.addClef("treble").setContext(context).draw();
-    VF.Formatter.FormatAndDraw(context, stave, vexNotes);
+
+    for (let line = 0; line < 2; line++) {
+      for (let m = 0; m < 3; m++) {
+        const idx = line * 3 + m;
+        const x = 20 + m * measureWidth;
+        const y = 20 + line * lineHeight;
+
+        const treble = new VF.Stave(x, y, measureWidth);
+        if (idx === 0) treble.addClef("treble");
+        if (idx === 5) treble.setEndBarType(VF.Barline.type.END);
+        treble.setContext(context).draw();
+
+        const bass = new VF.Stave(x, y + 80, measureWidth);
+        if (idx === 0) bass.addClef("bass");
+        if (idx === 5) bass.setEndBarType(VF.Barline.type.END);
+        bass.setContext(context).draw();
+
+        if (idx === 0) {
+          new VF.StaveConnector(treble, bass).setType(VF.StaveConnector.type.BRACE).setContext(context).draw();
+        }
+        new VF.StaveConnector(treble, bass).setType(VF.StaveConnector.type.SINGLE).setContext(context).draw();
+
+        const voiceTreble = new VF.Voice({ num_beats: 5, beat_value: 4 });
+        voiceTreble.addTickables(measures[idx].treble);
+        const voiceBass = new VF.Voice({ num_beats: 5, beat_value: 4 });
+        voiceBass.addTickables(measures[idx].bass);
+
+        new VF.Formatter().joinVoices([voiceTreble, voiceBass]).format([voiceTreble, voiceBass], measureWidth - 20);
+        voiceTreble.draw(context, treble);
+        voiceBass.draw(context, bass);
+      }
+    }
+
+    const svg = vexDiv.querySelector("svg");
+    const data = new XMLSerializer().serializeToString(svg);
+    const base64 = "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(data)));
+    const imgElem = document.getElementById("score-image");
+    imgElem.src = base64;
+    document.getElementById("full-score-image").src = base64;
+    vexDiv.innerHTML = "";
+
+    imgElem.addEventListener("click", () => {
+      document.getElementById("score-modal").classList.remove("hidden");
+    });
+    document.getElementById("score-modal").addEventListener("click", () => {
+      document.getElementById("score-modal").classList.add("hidden");
+    });
   }
 
   document.getElementById("back-btn").onclick = () => {

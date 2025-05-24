@@ -99,3 +99,38 @@
 .hai        { background-color: gray; }
 .mizuiro    { background-color: skyblue; }
 .white      { background-color: white; color: black; border: 1px solid #aaa; }
+
+/* === 五線譜表示用 === */
+.score-wrapper {
+  text-align: center;
+  margin: 1em 0;
+}
+
+.score-image {
+  max-width: 100%;
+  height: auto;
+  border: 1px solid #ccc;
+  cursor: pointer;
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal.hidden {
+  display: none;
+}
+
+.modal img {
+  max-width: 90%;
+  max-height: 90%;
+}
