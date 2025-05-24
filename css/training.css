@@ -130,3 +130,9 @@
 .hai       { background-color: gray;      color: white; }
 .mizuiro   { background-color: skyblue;   color: white; }
 .white     { background-color: white;     color: black; border: 1px solid #ccc; }
+
+/* --- Single note question --- */
+.single-note-options button {
+  font-size: 1.5rem;
+  padding: 0.5em 1em;
+}
