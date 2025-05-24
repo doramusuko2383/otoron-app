@@ -9,7 +9,7 @@ let noteHistory = [];
 let isAnswering = false;
 let isSoundPlaying = false;
 let questionCount = 0;
-const maxQuestions = 5; // ← テスト用（本番時は30に）
+const maxQuestions = 30;
 
 const noteLabels = {
   "C": "ド",
