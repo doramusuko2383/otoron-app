@@ -160,6 +160,16 @@ export function renderTrainingFullResultScreen(user) {
     }
   });
 
+  // Ensure each measure has exactly five notes per staff
+  if (VF) {
+    for (let i = 0; i < 6; i++) {
+      while (measures[i].treble.length < 5) {
+        measures[i].treble.push(restTreble());
+        measures[i].bass.push(restBass());
+      }
+    }
+  }
+
   staffDiv.appendChild(staffNotes);
   app.insertBefore(staffDiv, document.getElementById("summary"));
 
@@ -196,23 +206,29 @@ export function renderTrainingFullResultScreen(user) {
         const y = 20 + line * lineHeight;
 
         const treble = new VF.Stave(x, y, measureWidth);
-        if (idx === 0) treble.addClef("treble");
+        if (m === 0) treble.addClef("treble");
         if (idx === 5) treble.setEndBarType(VF.Barline.type.END);
         treble.setContext(context).draw();
 
         const bass = new VF.Stave(x, y + 80, measureWidth);
-        if (idx === 0) bass.addClef("bass");
+        if (m === 0) bass.addClef("bass");
         if (idx === 5) bass.setEndBarType(VF.Barline.type.END);
         bass.setContext(context).draw();
 
-        if (idx === 0) {
-          new VF.StaveConnector(treble, bass).setType(VF.StaveConnector.type.BRACE).setContext(context).draw();
+        if (m === 0) {
+          new VF.StaveConnector(treble, bass)
+            .setType(VF.StaveConnector.type.BRACE)
+            .setContext(context)
+            .draw();
         }
-        new VF.StaveConnector(treble, bass).setType(VF.StaveConnector.type.SINGLE).setContext(context).draw();
+        new VF.StaveConnector(treble, bass)
+          .setType(VF.StaveConnector.type.SINGLE)
+          .setContext(context)
+          .draw();
 
-        const voiceTreble = new VF.Voice({ num_beats: 5, beat_value: 4 });
+        const voiceTreble = new VF.Voice({ num_beats: 5, beat_value: 4 }).setStrict(true);
         voiceTreble.addTickables(measures[idx].treble);
-        const voiceBass = new VF.Voice({ num_beats: 5, beat_value: 4 });
+        const voiceBass = new VF.Voice({ num_beats: 5, beat_value: 4 }).setStrict(true);
         voiceBass.addTickables(measures[idx].bass);
 
         new VF.Formatter().joinVoices([voiceTreble, voiceBass]).format([voiceTreble, voiceBass], measureWidth - 20);
