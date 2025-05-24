@@ -214,8 +214,8 @@ function drawQuizScreen() {
     cols = 2; // 2×2 grid
   } else if (btnCount <= 9) {
     cols = 3; // 3×3 grid
-  } else if (btnCount <= 16) {
-    cols = 4;
+  } else {
+    cols = 5; // 5×5 grid for 10 or more
   }
   layout.classList.add(`cols-${cols}`);
 
