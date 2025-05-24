@@ -1,6 +1,8 @@
 // components/result_full.js
 // Uses global VexFlow loaded in index.html
 
+import { switchScreen } from "../main.js";
+
 export function renderTrainingFullResultScreen(user) {
   const app = document.getElementById("app");
   app.innerHTML = `
@@ -132,6 +134,13 @@ export function renderTrainingFullResultScreen(user) {
 
 
   const summaryDiv = document.getElementById("summary");
+  const totalQuestions = entries.length;
+  const correctCount = entries.filter(e => e.correct).length;
+  const overallAccuracy = totalQuestions ? Math.round((correctCount / totalQuestions) * 100) : 0;
+
+  const summaryText = document.createElement("p");
+  summaryText.textContent = `正解率 ${overallAccuracy}％（${correctCount}/${totalQuestions}）`;
+  summaryDiv.appendChild(summaryText);
   const table = document.createElement("table");
   table.innerHTML = `<tr><th>音</th><th>正解数</th><th>出題数</th><th>正答率</th></tr>`;
 
@@ -217,6 +226,6 @@ export function renderTrainingFullResultScreen(user) {
   }
 
   document.getElementById("back-btn").onclick = () => {
-    location.reload();
+    switchScreen("settings", user);
   };
 }

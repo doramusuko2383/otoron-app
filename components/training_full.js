@@ -34,7 +34,7 @@ export function renderTrainingScreen(user) {
     <div class="piano-container">
       <div class="white-keys"></div>
     </div>
-    <button id="finish-btn">結果を見る</button>
+    <button id="finish-btn">やめる</button>
   `;
 
   const whiteOrder = ["C", "D", "E", "F", "G", "A", "B"];
@@ -96,8 +96,7 @@ export function renderTrainingScreen(user) {
   });
 
   document.getElementById("finish-btn").onclick = () => {
-    sessionStorage.setItem("noteHistory", JSON.stringify(noteHistory));
-    switchScreen("result_full", user);
+    switchScreen("settings", user);
   };
 
   function nextQuestion() {
