@@ -50,7 +50,8 @@ export function renderTrainingFullResultScreen(user) {
   app.insertBefore(vexDiv, document.getElementById("summary"));
 
   const vexNotes = [];
-  const VF = Vex.Flow; // use global VexFlow 3.x loaded in index.html
+  // VexFlow が読み込まれていない環境も考慮する
+  const VF = (typeof Vex !== "undefined" && Vex.Flow) ? Vex.Flow : null; // use global VexFlow 3.x loaded in index.html
 
   function convertForStaff(note) {
     const m = note.match(/^([A-G]#?)(-?\d)$/);
@@ -87,17 +88,23 @@ export function renderTrainingFullResultScreen(user) {
     summary[shortNote].total++;
     if (entry.correct) summary[shortNote].correct++;
 
-    const conv = convertForStaff(entry.question);
-    const vNote = new VF.StaveNote({ clef: "treble", keys: [conv.key], duration: "q" })
-      .setStyle({ fillStyle: entry.correct ? "black" : "red", strokeStyle: entry.correct ? "black" : "red" });
-    if (conv.accidental) vNote.addAccidental(0, new VF.Accidental(conv.accidental));
-    if (conv.shift > 0) {
-      vNote.addModifier(0, new VF.Annotation("8va").setVerticalJustification(VF.Annotation.VerticalJustify.TOP));
-    } else if (conv.shift < 0) {
-      vNote.addModifier(0, new VF.Annotation("8vb").setVerticalJustification(VF.Annotation.VerticalJustify.BOTTOM));
+    if (VF) {
+      const conv = convertForStaff(entry.question);
+      const vNote = new VF.StaveNote({ clef: "treble", keys: [conv.key], duration: "q" })
+        .setStyle({ fillStyle: entry.correct ? "black" : "red", strokeStyle: entry.correct ? "black" : "red" });
+      if (conv.accidental && typeof vNote.addAccidental === "function") {
+        vNote.addAccidental(0, new VF.Accidental(conv.accidental));
+      }
+      if (typeof vNote.addModifier === "function") {
+        if (conv.shift > 0) {
+          vNote.addModifier(0, new VF.Annotation("8va").setVerticalJustification(VF.Annotation.VerticalJustify.TOP));
+        } else if (conv.shift < 0) {
+          vNote.addModifier(0, new VF.Annotation("8vb").setVerticalJustification(VF.Annotation.VerticalJustify.BOTTOM));
+        }
+        vNote.addModifier(0, new VF.Annotation(entry.correct ? "◯" : "×").setVerticalJustification(VF.Annotation.VerticalJustify.ABOVE));
+      }
+      vexNotes.push(vNote);
     }
-    vNote.addModifier(0, new VF.Annotation(entry.correct ? "◯" : "×").setVerticalJustification(VF.Annotation.VerticalJustify.ABOVE));
-    vexNotes.push(vNote);
   });
 
   staffDiv.appendChild(staffNotes);
