@@ -2,6 +2,21 @@
 
 import { Flow } from "https://unpkg.com/vexflow@4.1.0/build/esm/entry/vexflow.js";
 
+const noteLabels = {
+  "C": "ド",
+  "D": "レ",
+  "E": "ミ",
+  "F": "ファ",
+  "G": "ソ",
+  "A": "ラ",
+  "B": "シ",
+  "C#": "チス",
+  "D#": "エス",
+  "F#": "フィス",
+  "G#": "ジス",
+  "A#": "ベー",
+};
+
 export function renderTrainingFullResultScreen(user) {
   const app = document.getElementById("app");
   app.innerHTML = `<h2>単音テスト（本気） 結果</h2><div id="summary"></div><button id="back-btn">設定に戻る</button>`;
@@ -38,31 +53,51 @@ export function renderTrainingFullResultScreen(user) {
   const vexNotes = [];
   const VF = Flow;
 
+  function convertForStaff(note) {
+    const m = note.match(/^([A-G]#?)(-?\d)$/);
+    if (!m) return { key: "c/4", shift: 0, accidental: null };
+    let [_, base, octaveStr] = m;
+    let octave = parseInt(octaveStr, 10);
+    const accidental = base.includes("#") ? "#" : null;
+    const pitch = base.replace("#", "");
+
+    const noteToValue = { C:0,D:2,E:4,F:5,G:7,A:9,B:11 };
+    let midi = (octave + 1) * 12 + noteToValue[pitch] + (accidental ? 1 : 0);
+    let shift = 0;
+    while (midi > 84) { midi -= 12; octave--; shift++; }
+    while (midi < 60) { midi += 12; octave++; shift--; }
+    const key = `${pitch.toLowerCase()}${accidental ? "#" : ""}/${octave}`;
+    return { key, accidental, shift };
+  }
+
   history.forEach(entry => {
     if (!validNotes.has(entry.question)) return;
 
+    const shortNote = entry.question.replace(/[0-9-]/g, "");
+    const label = noteLabels[shortNote] || shortNote;
+
     const noteSpan = document.createElement("span");
-    noteSpan.textContent = `🎵 ${entry.question}`;
+    noteSpan.textContent = `🎵 ${label}`;
     noteSpan.style.padding = "4px";
     noteSpan.style.background = entry.correct ? "#c8facc" : "#ffe0e0";
     noteSpan.style.border = "1px solid #ccc";
     noteSpan.style.borderRadius = "4px";
     staffNotes.appendChild(noteSpan);
 
-    const shortNote = entry.question.replace(/[0-9-]/g, "");
-    if (!summary[shortNote]) {
-      summary[shortNote] = { correct: 0, total: 0 };
-    }
+    if (!summary[shortNote]) summary[shortNote] = { correct: 0, total: 0 };
     summary[shortNote].total++;
     if (entry.correct) summary[shortNote].correct++;
 
-    const vexKey = entry.question
-      .replace("-1", "/0")
-      .replace(/([A-Ga-g])#(\d)/, "$1#/\$2")
-      .replace(/([A-Ga-g])(\d)/, "$1/\$2");
-
-    const vNote = new VF.StaveNote({ clef: "treble", keys: [vexKey.toLowerCase()], duration: "q" })
+    const conv = convertForStaff(entry.question);
+    const vNote = new VF.StaveNote({ clef: "treble", keys: [conv.key], duration: "q" })
       .setStyle({ fillStyle: entry.correct ? "black" : "red", strokeStyle: entry.correct ? "black" : "red" });
+    if (conv.accidental) vNote.addAccidental(0, new VF.Accidental(conv.accidental));
+    if (conv.shift > 0) {
+      vNote.addModifier(0, new VF.Annotation("8va").setVerticalJustification(VF.Annotation.VerticalJustify.TOP));
+    } else if (conv.shift < 0) {
+      vNote.addModifier(0, new VF.Annotation("8vb").setVerticalJustification(VF.Annotation.VerticalJustify.BOTTOM));
+    }
+    vNote.addModifier(0, new VF.Annotation(entry.correct ? "◯" : "×").setVerticalJustification(VF.Annotation.VerticalJustify.ABOVE));
     vexNotes.push(vNote);
   });
 
@@ -78,7 +113,7 @@ export function renderTrainingFullResultScreen(user) {
     const accuracy = ((data.correct / data.total) * 100).toFixed(1);
     const row = document.createElement("tr");
     row.innerHTML = `
-      <td>${note}</td>
+      <td>${noteLabels[note] || note}</td>
       <td>${data.correct}</td>
       <td>${data.total}</td>
       <td>${accuracy}%</td>
