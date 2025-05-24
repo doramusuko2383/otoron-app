@@ -342,12 +342,26 @@ function playChordFile(filename) {
   currentAudio.play();
 }
 
+function normalizeNoteName(name) {
+  return name
+    .replace("C♭", "B")
+    .replace("D♭", "C#")
+    .replace("E♭", "D#")
+    .replace("F♭", "E")
+    .replace("G♭", "F#")
+    .replace("A♭", "G#")
+    .replace("B♭", "A#")
+    .replace("E#", "F")
+    .replace("B#", "C")
+    .replace("♯", "#");
+}
+
 function playNoteFile(note, callback) {
   if (currentAudio) {
     currentAudio.pause();
     currentAudio.currentTime = 0;
   }
-  const encoded = encodeURIComponent(note);
+  const encoded = encodeURIComponent(normalizeNoteName(note));
   currentAudio = new Audio(`sounds/${encoded}.mp3`);
   currentAudio.onerror = () => console.error("音声ファイルが見つかりません:", note);
   if (callback) {
@@ -457,12 +471,15 @@ function showSingleNoteQuiz(chord, onFinish) {
 
     if (correct) {
       showFeedback('GOOD!', 'good');
-      playNoteFile(note, () => {
-        overlay.remove();
-        if (layout) layout.style.display = '';
-        if (unknownBtn) unknownBtn.style.display = '';
-        if (quitBtn) quitBtn.style.display = '';
-        onFinish();
+      const voices = ['good1', 'good2'];
+      playSoundThen(voices[Math.floor(Math.random() * voices.length)], () => {
+        playNoteFile(note, () => {
+          overlay.remove();
+          if (layout) layout.style.display = '';
+          if (unknownBtn) unknownBtn.style.display = '';
+          if (quitBtn) quitBtn.style.display = '';
+          onFinish();
+        });
       });
     } else {
       showFeedback('もういちど', 'bad');
