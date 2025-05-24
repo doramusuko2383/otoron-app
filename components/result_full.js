@@ -1,21 +1,6 @@
 // components/result_full.js
 // Uses global VexFlow loaded in index.html
 
-const noteLabels = {
-  "C": "ド",
-  "D": "レ",
-  "E": "ミ",
-  "F": "ファ",
-  "G": "ソ",
-  "A": "ラ",
-  "B": "シ",
-  "C#": "チス",
-  "D#": "エス",
-  "F#": "フィス",
-  "G#": "ジス",
-  "A#": "ベー",
-};
-
 export function renderTrainingFullResultScreen(user) {
   const app = document.getElementById("app");
   app.innerHTML = `
@@ -45,13 +30,6 @@ export function renderTrainingFullResultScreen(user) {
     "C7"
   ]);
 
-  const staffDiv = document.createElement("div");
-  staffDiv.innerHTML = "<h3>出題された音</h3>";
-  const staffNotes = document.createElement("div");
-  staffNotes.style.margin = "1em 0";
-  staffNotes.style.display = "flex";
-  staffNotes.style.flexWrap = "wrap";
-  staffNotes.style.gap = "6px";
 
   const vexDiv = document.createElement("div");
   vexDiv.id = "vexflow-staff";
@@ -87,27 +65,14 @@ export function renderTrainingFullResultScreen(user) {
     return { key, accidental, shift, clef };
   }
 
-  const measures = Array.from({ length: 6 }, () => ({ treble: [], bass: [] }));
-  const restTreble = () => new VF.StaveNote({ clef: "treble", keys: ["b/4"], duration: "qr" });
-  const restBass = () => new VF.StaveNote({ clef: "bass", keys: ["d/3"], duration: "qr" });
+  const entries = history.slice(0, 30).filter(e => validNotes.has(e.question));
+  const measures = Array.from({ length: Math.max(1, Math.ceil(entries.length / 5)) }, () => ({ treble: [], bass: [] }));
 
-  history.slice(0, 30).forEach((entry, idx) => {
-    if (!validNotes.has(entry.question)) return;
+  entries.forEach((entry, idx) => {
 
-    const shortNote = entry.question.replace(/[0-9-]/g, "");
-    const label = noteLabels[shortNote] || shortNote;
-
-    const noteSpan = document.createElement("span");
-    noteSpan.textContent = `🎵 ${label}`;
-    noteSpan.style.padding = "4px";
-    noteSpan.style.background = entry.correct ? "#c8facc" : "#ffe0e0";
-    noteSpan.style.border = "1px solid #ccc";
-    noteSpan.style.borderRadius = "4px";
-    staffNotes.appendChild(noteSpan);
-
-    if (!summary[shortNote]) summary[shortNote] = { correct: 0, total: 0 };
-    summary[shortNote].total++;
-    if (entry.correct) summary[shortNote].correct++;
+    if (!summary[entry.question]) summary[entry.question] = { correct: 0, total: 0 };
+    summary[entry.question].total++;
+    if (entry.correct) summary[entry.question].correct++;
 
     if (VF) {
       const conv = convertForStaff(entry.question);
@@ -150,28 +115,18 @@ export function renderTrainingFullResultScreen(user) {
       }
 
       const measureIndex = Math.floor(idx / 5);
+      const ghost = new VF.GhostNote("q");
       if (conv.clef === "treble") {
         measures[measureIndex].treble.push(vNote);
-        measures[measureIndex].bass.push(restBass());
+        measures[measureIndex].bass.push(ghost);
       } else {
-        measures[measureIndex].treble.push(restTreble());
+        measures[measureIndex].treble.push(ghost);
         measures[measureIndex].bass.push(vNote);
       }
     }
   });
 
-  // Ensure each measure has exactly five notes per staff
-  if (VF) {
-    for (let i = 0; i < 6; i++) {
-      while (measures[i].treble.length < 5) {
-        measures[i].treble.push(restTreble());
-        measures[i].bass.push(restBass());
-      }
-    }
-  }
 
-  staffDiv.appendChild(staffNotes);
-  app.insertBefore(staffDiv, document.getElementById("summary"));
 
   const summaryDiv = document.getElementById("summary");
   const table = document.createElement("table");
@@ -182,7 +137,7 @@ export function renderTrainingFullResultScreen(user) {
     const accuracy = ((data.correct / data.total) * 100).toFixed(1);
     const row = document.createElement("tr");
     row.innerHTML = `
-      <td>${noteLabels[note] || note}</td>
+      <td>${note}</td>
       <td>${data.correct}</td>
       <td>${data.total}</td>
       <td>${accuracy}%</td>
@@ -195,24 +150,29 @@ export function renderTrainingFullResultScreen(user) {
   if (VF) {
     const measureWidth = 200;
     const lineHeight = 180;
+    const measuresPerLine = 3;
+    const numLines = Math.ceil(measures.length / measuresPerLine);
     const renderer = new VF.Renderer("vexflow-staff", VF.Renderer.Backends.SVG);
-    renderer.resize(measureWidth * 3 + 40, lineHeight * 2 + 40);
+    const width = Math.min(measures.length, measuresPerLine) * measureWidth + 40;
+    renderer.resize(width, lineHeight * numLines + 40);
     const context = renderer.getContext();
+    if (context.svg && context.svg.style) context.svg.style.background = "#ffffff";
 
-    for (let line = 0; line < 2; line++) {
-      for (let m = 0; m < 3; m++) {
-        const idx = line * 3 + m;
+    for (let line = 0; line < numLines; line++) {
+      for (let m = 0; m < measuresPerLine; m++) {
+        const idx = line * measuresPerLine + m;
+        if (idx >= measures.length) break;
         const x = 20 + m * measureWidth;
         const y = 20 + line * lineHeight;
 
         const treble = new VF.Stave(x, y, measureWidth);
         if (m === 0) treble.addClef("treble");
-        if (idx === 5) treble.setEndBarType(VF.Barline.type.END);
+        if (idx === measures.length - 1) treble.setEndBarType(VF.Barline.type.END);
         treble.setContext(context).draw();
 
         const bass = new VF.Stave(x, y + 80, measureWidth);
         if (m === 0) bass.addClef("bass");
-        if (idx === 5) bass.setEndBarType(VF.Barline.type.END);
+        if (idx === measures.length - 1) bass.setEndBarType(VF.Barline.type.END);
         bass.setContext(context).draw();
 
         if (m === 0) {
@@ -226,9 +186,9 @@ export function renderTrainingFullResultScreen(user) {
           .setContext(context)
           .draw();
 
-        const voiceTreble = new VF.Voice({ num_beats: 5, beat_value: 4 }).setStrict(true);
+        const voiceTreble = new VF.Voice({ num_beats: measures[idx].treble.length, beat_value: 4 }).setStrict(false);
         voiceTreble.addTickables(measures[idx].treble);
-        const voiceBass = new VF.Voice({ num_beats: 5, beat_value: 4 }).setStrict(true);
+        const voiceBass = new VF.Voice({ num_beats: measures[idx].bass.length, beat_value: 4 }).setStrict(false);
         voiceBass.addTickables(measures[idx].bass);
 
         new VF.Formatter().joinVoices([voiceTreble, voiceBass]).format([voiceTreble, voiceBass], measureWidth - 20);
