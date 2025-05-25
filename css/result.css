@@ -68,14 +68,25 @@
 }
 
 .ans-mark {
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
   font-weight: bold;
-  margin-right: 4px;
+  font-size: 1rem;
 }
 .ans-mark.correct { color: green; }
 .ans-mark.wrong { color: red; }
 
+/* 単音回答ラッパー */
+.note-answer {
+  position: relative;
+  display: inline-block;
+}
+
 /* 和音色ボックス（文字折り返し無し＋小サイズ） */
 .chord-box {
+  position: relative;
   width: 50px;
   height: 50px;
   line-height: 50px;

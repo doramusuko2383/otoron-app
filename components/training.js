@@ -48,7 +48,8 @@ function playSoundThen(name, callback) {
     currentAudio.pause();
     currentAudio.currentTime = 0;
   }
-  currentAudio = new Audio(`audio/${name}.mp3`);
+  const encoded = encodeURIComponent(name);
+  currentAudio = new Audio(`audio/${encoded}.mp3`);
   currentAudio.onended = () => setTimeout(callback, 100);
   currentAudio.onerror = () => {
     console.error("⚠️ 音声ファイルが読み込めませんでした:", name);
@@ -247,14 +248,33 @@ function drawQuizScreen() {
     "E-A-C#", "A-D-F#", "B-E-G#", "F-B♭-D", "B♭-E♭-G"
   ];
 
-  order.forEach(name => {
-    if (name === null) {
-      const placeholder = document.createElement("div");
-      placeholder.className = "square-btn";
-      placeholder.style.visibility = "hidden";
-      layout.appendChild(placeholder);
-      return;
+  const visibleNames = selectedChords.map(c => c.name);
+  if (btnCount === 1 && visibleNames.length === 1) {
+    const only = chords.find(c => c.name === visibleNames[0]);
+    if (only) {
+      const wrapper = document.createElement("div");
+      wrapper.className = "square-btn";
+
+      const inner = document.createElement("div");
+      inner.className = `square-btn-content ${only.colorClass}`;
+      inner.innerHTML = chordProgressCount >= 10 && only.italian ? only.italian.join("<br>") : only.labelHtml;
+      inner.setAttribute("data-name", only.name);
+      inner.style.pointerEvents = "auto";
+      inner.style.opacity = "1";
+      inner.addEventListener("click", () => checkAnswer(only.name));
+
+      wrapper.appendChild(inner);
+      layout.appendChild(wrapper);
     }
+  } else {
+    order.forEach(name => {
+      if (name === null) {
+        const placeholder = document.createElement("div");
+        placeholder.className = "square-btn";
+        placeholder.style.visibility = "hidden";
+        layout.appendChild(placeholder);
+        return;
+      }
 
     const chord = chords.find(c => c.name === name);
     if (!chord) return;
@@ -279,9 +299,10 @@ function drawQuizScreen() {
       inner.style.visibility = "hidden";
     }
 
-    wrapper.appendChild(inner);
-    layout.appendChild(wrapper);
-  });
+      wrapper.appendChild(inner);
+      layout.appendChild(wrapper);
+    });
+  }
 
   const quitBtn = document.createElement("button");
   quitBtn.id = "quitBtn";
