@@ -41,13 +41,23 @@ console.log("🧭 main.js にて全コンポーネント統合済み");
 
 const DEBUG_AUTO_LOGIN = false;
 
+
 let currentUser = null;
 
-export const switchScreen = (screen, user = currentUser) => {
+export const switchScreen = (screen, user = currentUser, options = {}) => {
+  const { replace = false } = options;
+
   const app = document.getElementById("app");
   app.innerHTML = "";
 
   currentUser = user;
+
+  const state = { screen };
+  if (replace) {
+    history.replaceState(state, "", `#${screen}`);
+  } else {
+    history.pushState(state, "", `#${screen}`);
+  }
 
   if (screen === "intro") renderIntroScreen();
   else if (screen === "login") renderLoginScreen(app, () => switchScreen("home", user));
@@ -63,6 +73,14 @@ export const switchScreen = (screen, user = currentUser) => {
   else if (screen === "result_easy") renderTrainingEasyResultScreen(user);
   else if (screen === "result_full") renderTrainingFullResultScreen(user);
 };
+
+// ブラウザ戻る/進む操作に対応
+window.addEventListener("popstate", (e) => {
+  const state = e.state;
+  if (state && state.screen) {
+    switchScreen(state.screen, currentUser, { replace: true });
+  }
+});
 
 onAuthStateChanged(auth, async (firebaseUser) => {
   if (!firebaseUser) {
@@ -110,9 +128,8 @@ onAuthStateChanged(auth, async (firebaseUser) => {
 });
 
 window.addEventListener("DOMContentLoaded", () => {
-  if (DEBUG_AUTO_LOGIN) {
-    switchScreen("home");
-  } else {
-    switchScreen("intro");
-  }
+  const initial = DEBUG_AUTO_LOGIN ? "home" : "intro";
+  const hash = location.hash.replace("#", "");
+  const startScreen = hash || initial;
+  switchScreen(startScreen, undefined, { replace: true });
 });
