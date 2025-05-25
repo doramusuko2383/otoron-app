@@ -10,10 +10,15 @@
   overflow-y: auto; /* ← モバイルでスクロールできるように */
 }
 
+/* ヘッダー表示時に余白を確保 */
+#app.with-header {
+  padding-top: 56px;
+}
+
 /* .screen の基本レイアウト */
 .screen {
   max-width: 900px;
-  margin: 56px auto 2em; /* ヘッダー高さ分上にスペース */
+  margin: 0 auto 2em; /* 上部余白は #app.with-header に委任 */
   padding: 1em;
   box-sizing: border-box;
 }

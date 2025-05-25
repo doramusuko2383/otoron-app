@@ -11,7 +11,7 @@ html, body {
 /* ===== ホーム画面専用スタイル ===== */
 .home-screen {
   height: calc(100dvh - 56px);
-  margin-top: 56px;
+  margin-top: 0; /* 上部余白は #app.with-header に委任 */
   display: flex;
   flex-direction: column;
   justify-content: center;
