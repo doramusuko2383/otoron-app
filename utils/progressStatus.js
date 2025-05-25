@@ -1,6 +1,7 @@
 import { supabase } from "./supabaseClient.js";
 import { unlockChord } from "./progressUtils.js";
 import { applyRecommendedSelection } from "./growthUtils.js";
+import { showCustomConfirm } from "../components/home.js";
 
 const PASS_DAYS = 14;
 const MIN_SETS = 2;
@@ -50,22 +51,22 @@ export async function updateGrowthStatusBar(user, target, onUnlocked) {
     msg.textContent = "🎉 和音の進捗条件を満たしました。次の和音を解放してください。";
     btn.disabled = false;
     btn.style.display = "inline-block";
-    btn.onclick = async () => {
+    btn.onclick = () => {
       if (!target) return;
-      const ok = confirm(`「${target.label}」を解放しますか？`);
-      if (!ok) return;
-      const success = await unlockChord(user.id, target.key);
-      if (success) {
-        alert(`🎉 ${target.label} を解放しました！`);
-        await applyRecommendedSelection(user.id);
-        btn.disabled = true;
-        btn.style.display = "none";
-        if (onUnlocked) {
-          await onUnlocked();
-        } else {
-          await updateGrowthStatusBar(user, target);
+      showCustomConfirm(async () => {
+        const success = await unlockChord(user.id, target.key);
+        if (success) {
+          alert(`🎉 ${target.label} を解放しました！`);
+          await applyRecommendedSelection(user.id);
+          btn.disabled = true;
+          btn.style.display = "none";
+          if (onUnlocked) {
+            await onUnlocked();
+          } else {
+            await updateGrowthStatusBar(user, target);
+          }
         }
-      }
+      });
     };
   } else {
     const label = target ? target.label : "";
