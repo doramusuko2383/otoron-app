@@ -74,8 +74,9 @@ export function showCustomConfirm(onConfirm) {
     modal.style.position = "fixed";
     modal.style.top = "0";
     modal.style.left = "0";
-    modal.style.width = "100vw";
-    modal.style.height = "100vh";
+    // Prevent potential overflow caused by viewport units
+    modal.style.width = "100%";
+    modal.style.height = "100%";
     modal.style.background = "rgba(0,0,0,0.6)";
     modal.style.display = "flex";
     modal.style.justifyContent = "center";

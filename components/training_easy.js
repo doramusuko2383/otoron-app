@@ -113,7 +113,8 @@ function drawQuizScreen() {
   container.style.minHeight = "100vh";
   container.style.boxSizing = "border-box";
   container.style.padding = "1em 0 6em";
-  container.style.width = "100vw";
+  // Avoid potential horizontal scroll on mobile
+  container.style.width = "100%";
 
   const feedback = document.createElement("div");
   feedback.id = "feedback";
