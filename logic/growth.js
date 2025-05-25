@@ -14,6 +14,7 @@ import { chords } from "../data/chords.js";
 import { renderHeader } from "../components/header.js";
 import { unlockChord, resetChordProgressToRed } from "../utils/progressUtils.js";
 import { updateGrowthStatusBar } from "../utils/progressStatus.js";
+import { showCustomConfirm } from "../components/home.js";
 
 export async function renderGrowthScreen(user) {
   const app = document.getElementById("app");
@@ -134,16 +135,15 @@ export async function renderGrowthScreen(user) {
       const button = document.createElement("button");
       button.style.marginTop = "4px";
       button.textContent = "🔓 次の和音を解放する";
-      button.onclick = async () => {
-        const confirmed = confirm(`「${chord.label}」を解放しますか？`);
-        if (!confirmed) return;
-
-        const success = await unlockChord(user.id, chord.key);
-        if (success) {
-          alert(`🎉 ${chord.label} を解放しました！`);
-          await applyRecommendedSelection(user.id);
-          await renderGrowthScreen(user);
-        }
+      button.onclick = () => {
+        showCustomConfirm(async () => {
+          const success = await unlockChord(user.id, chord.key);
+          if (success) {
+            alert(`🎉 ${chord.label} を解放しました！`);
+            await applyRecommendedSelection(user.id);
+            await renderGrowthScreen(user);
+          }
+        });
       };
       item.appendChild(button);
     }
