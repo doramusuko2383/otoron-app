@@ -1,0 +1,80 @@
+.mypage-screen {
+  max-width: 480px;
+  margin: 56px auto 2em;
+}
+
+.mypage-tabs {
+  display: flex;
+  border-bottom: 1px solid #ccc;
+}
+
+.mypage-tab-button {
+  flex: 1;
+  background: #f5f5f5;
+  border: none;
+  padding: 0.6em;
+  font-size: 0.9rem;
+}
+
+.mypage-tab-button.active {
+  background: #fff;
+  border-bottom: 2px solid #ff9900;
+  font-weight: bold;
+}
+
+.tab-section {
+  padding: 1em 0;
+}
+
+.profile-image-wrap {
+  text-align: center;
+  margin-bottom: 1em;
+}
+
+.profile-image {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+  margin: 0 auto 0.5em;
+}
+
+.profile-image-wrap input {
+  display: block;
+  margin: 0 auto;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1em;
+}
+
+.form-field label {
+  font-size: 0.9rem;
+  margin-bottom: 0.2em;
+}
+
+.required {
+  color: red;
+  margin-left: 0.5em;
+  font-size: 0.8em;
+}
+
+.optional {
+  color: gray;
+  margin-left: 0.5em;
+  font-size: 0.8em;
+}
+
+.plan-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6em;
+  margin-top: 1em;
+}
+
+.plan-buttons button {
+  padding: 0.8em;
+}

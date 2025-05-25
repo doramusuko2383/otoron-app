@@ -15,6 +15,7 @@ import { renderIntroScreen } from "./components/intro.js";
 import { renderSignUpScreen } from "./components/signup.js";
 import { supabase } from "./utils/supabaseClient.js";
 import { createInitialChordProgress } from "../utils/progressUtils.js";
+import { renderMyPageScreen } from "./components/mypage.js";
 
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
@@ -69,6 +70,7 @@ export const switchScreen = (screen, user = currentUser, options = {}) => {
   else if (screen === "summary") renderSummaryScreen(user);
   else if (screen === "growth") renderGrowthScreen(user);
   else if (screen === "signup") renderSignUpScreen(user);
+  else if (screen === "mypage") renderMyPageScreen(user);
   else if (screen === "result") renderResultScreen(user);
   else if (screen === "result_easy") renderTrainingEasyResultScreen(user);
   else if (screen === "result_full") renderTrainingFullResultScreen(user);
