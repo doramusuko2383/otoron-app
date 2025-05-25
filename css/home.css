@@ -10,7 +10,7 @@ html, body {
 
 /* ===== ホーム画面専用スタイル ===== */
 .home-screen {
-  height: calc(100vh - 56px);
+  height: calc(100dvh - 56px);
   margin-top: 56px;
   display: flex;
   flex-direction: column;
