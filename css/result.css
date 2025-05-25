@@ -69,11 +69,11 @@
 
 .ans-mark {
   position: absolute;
-  top: -10px;
+  top: -12px;
   left: 50%;
   transform: translateX(-50%);
-  font-weight: bold;
-  font-size: 1.4rem;
+  font-weight: 900;
+  font-size: 2rem;
   color: red;
 }
 .ans-mark.correct { color: red; }
