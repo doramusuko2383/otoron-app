@@ -183,17 +183,27 @@ function drawQuizScreen() {
     "E-A-C#", "A-D-F#", "B-E-G#", "F-B♭-D", "B♭-E♭-G"
   ];
 
-  order.forEach(name => {
-    if (name === null) {
+  const visibleNames = selectedChords.map(c => c.name);
+  const sorted = visibleNames.sort((a, b) => order.indexOf(a) - order.indexOf(b));
+  let gridSize = 25;
+  if (btnCount <= 4) {
+    gridSize = 4;
+  } else if (btnCount <= 9) {
+    gridSize = 9;
+  }
+
+  for (let i = 0; i < gridSize; i++) {
+    const name = sorted[i];
+    if (!name) {
       const placeholder = document.createElement("div");
       placeholder.className = "square-btn";
       placeholder.style.visibility = "hidden";
       layout.appendChild(placeholder);
-      return;
+      continue;
     }
 
     const chord = chords.find(c => c.name === name);
-    if (!chord) return;
+    if (!chord) continue;
 
     const wrapper = document.createElement("div");
     wrapper.className = "square-btn";
@@ -202,18 +212,13 @@ function drawQuizScreen() {
     inner.className = `square-btn-content ${chord.colorClass}`;
     inner.innerHTML = chord.labelHtml;
     inner.setAttribute("data-name", chord.name);
-
-    if (selectedChords.some(sc => sc.name === chord.name)) {
-      inner.style.pointerEvents = "auto";
-      inner.style.opacity = "1";
-      inner.addEventListener("click", () => checkAnswer(chord.name));
-    } else {
-      inner.style.visibility = "hidden";
-    }
+    inner.style.pointerEvents = "auto";
+    inner.style.opacity = "1";
+    inner.addEventListener("click", () => checkAnswer(chord.name));
 
     wrapper.appendChild(inner);
     layout.appendChild(wrapper);
-  });
+  }
 
   const quitBtn = document.createElement("button");
   quitBtn.textContent = "やめる";
