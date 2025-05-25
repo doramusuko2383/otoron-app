@@ -90,7 +90,7 @@ export function showCustomConfirm(onConfirm) {
     box.style.textAlign = "center";
 
     const message = document.createElement("p");
-    message.innerHTML = "ほんとうにやめちゃうの？<br>記録されなくなるよ。";
+    message.textContent = "本当に和音を解放しますか？";
     box.appendChild(message);
 
     const buttons = document.createElement("div");
