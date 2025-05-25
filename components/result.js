@@ -7,19 +7,25 @@ import { drawStaffFromNotes } from "./resultStaff.js";  // 楽譜描画（必要
 let resultShownInThisSession = false;
 
 const noteLabels = {
-  "C": "ド",
-  "D": "レ",
-  "E": "ミ",
-  "F": "ファ",
-  "G": "ソ",
-  "A": "ラ",
-  "B": "シ",
-  "C#": "チス", "Db": "チス",
-  "D#": "エス", "Eb": "エス",
-  "F#": "フィス", "Gb": "フィス",
-  "G#": "ジス", "Ab": "ジス",
-  "A#": "ベー", "Bb": "ベー"
+  "C": "ど",
+  "D": "れ",
+  "E": "み",
+  "F": "ふぁ",
+  "G": "そ",
+  "A": "ら",
+  "B": "し",
+  "C#": "ちす", "Db": "ちす",
+  "D#": "えす", "Eb": "えす",
+  "F#": "ふぃす", "Gb": "ふぃす",
+  "G#": "じす", "Ab": "じす",
+  "A#": "べー", "Bb": "べー"
 };
+
+function kanaToHiragana(str) {
+  return str.replace(/[ァ-ン]/g, ch =>
+    String.fromCharCode(ch.charCodeAt(0) - 0x60)
+  );
+}
 
 function labelNote(n) {
   const pitch = n ? n.replace(/\d/g, '') : '';

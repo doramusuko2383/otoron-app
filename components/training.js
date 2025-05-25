@@ -23,19 +23,25 @@ let singleNoteMode = false;
 let chordProgressCount = 0;
 
 const noteLabels = {
-  "C": "ド",
-  "D": "レ",
-  "E": "ミ",
-  "F": "ファ",
-  "G": "ソ",
-  "A": "ラ",
-  "B": "シ",
-  "C#": "チス", "Db": "チス",
-  "D#": "エス", "Eb": "エス",
-  "F#": "フィス", "Gb": "フィス",
-  "G#": "ジス", "Ab": "ジス",
-  "A#": "ベー", "Bb": "ベー"
+  "C": "ど",
+  "D": "れ",
+  "E": "み",
+  "F": "ふぁ",
+  "G": "そ",
+  "A": "ら",
+  "B": "し",
+  "C#": "ちす", "Db": "ちす",
+  "D#": "えす", "Eb": "えす",
+  "F#": "ふぃす", "Gb": "ふぃす",
+  "G#": "じす", "Ab": "じす",
+  "A#": "べー", "Bb": "べー"
 };
+
+function kanaToHiragana(str) {
+  return str.replace(/[ァ-ン]/g, ch =>
+    String.fromCharCode(ch.charCodeAt(0) - 0x60)
+  );
+}
 
 export const stats = {};
 export const mistakes = {};
@@ -183,7 +189,9 @@ function drawQuizScreen() {
 
   const container = document.createElement("div");
   container.className = "screen active";
-  container.style.padding = "0";
+  container.style.minHeight = "100vh";
+  container.style.boxSizing = "border-box";
+  container.style.padding = "1em 0 6em";
   container.style.width = "100vw";
 
   const feedback = document.createElement("div");
@@ -262,7 +270,9 @@ function drawQuizScreen() {
 
       const inner = document.createElement("div");
       inner.className = `square-btn-content ${only.colorClass}`;
-      inner.innerHTML = chordProgressCount >= 10 && only.italian ? only.italian.join("<br>") : only.labelHtml;
+      inner.innerHTML = chordProgressCount >= 10 && only.italian
+        ? only.italian.map(kanaToHiragana).join("<br>")
+        : only.labelHtml;
       inner.setAttribute("data-name", only.name);
       inner.style.pointerEvents = "auto";
       inner.style.opacity = "1";
@@ -290,7 +300,7 @@ function drawQuizScreen() {
     const inner = document.createElement("div");
     inner.className = `square-btn-content ${chord.colorClass}`;
     if (chordProgressCount >= 10 && chord.italian) {
-      inner.innerHTML = chord.italian.join("<br>");
+      inner.innerHTML = chord.italian.map(kanaToHiragana).join("<br>");
     } else {
       inner.innerHTML = chord.labelHtml;
     }
@@ -330,7 +340,6 @@ function drawQuizScreen() {
   const unknownBtn = document.createElement("button");
   unknownBtn.id = "unknownBtn";
   unknownBtn.textContent = "わからない";
-  unknownBtn.style.marginTop = "1em";
   unknownBtn.onclick = () => {
     if (alreadyTried || isForcedAnswer) return;
 
@@ -370,12 +379,16 @@ if (correctBtn) {
     });
   };
 
+  const bottomWrap = document.createElement("div");
+  bottomWrap.id = "bottom-buttons";
+  bottomWrap.appendChild(unknownBtn);
+  bottomWrap.appendChild(quitBtn);
+
   container.appendChild(debugAnswer);
   container.appendChild(header);
   container.appendChild(layout);
-  container.appendChild(unknownBtn);
-  container.appendChild(quitBtn);
   app.appendChild(container);
+  app.appendChild(bottomWrap);
 }
 
 
