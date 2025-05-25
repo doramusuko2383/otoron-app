@@ -15,7 +15,8 @@
 
 .key-white,
 .key-black {
-  font-size: 0.9rem;
+  font-size: 0.8rem;
+  line-height: 1;
   display: flex;
   align-items: flex-end;
   justify-content: center;
@@ -38,6 +39,8 @@
   border: 1px solid #333;
   top: 0;
   z-index: 2;
+  font-size: 0.75rem;
+  padding-bottom: 2px;
 }
 
 .key-black.pos1 { left: calc(100% / 7 * 0.75); }
