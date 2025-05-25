@@ -69,15 +69,16 @@
 
 .ans-mark {
   position: absolute;
-  top: -12px;
+  top: 50%;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translate(-50%, -50%);
   font-weight: 900;
-  font-size: 2rem;
-  color: red;
+  font-size: 2.6rem; /* 30% larger */
+  color: #ff6666; /* lighter red */
+  -webkit-text-stroke: 1px #ff6666; /* slightly thicker */
 }
-.ans-mark.correct { color: red; }
-.ans-mark.wrong { color: red; }
+.ans-mark.correct { color: #ff6666; }
+.ans-mark.wrong { color: #ff6666; }
 
 /* 単音回答ラッパー */
 .note-answer {

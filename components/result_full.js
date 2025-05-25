@@ -115,7 +115,7 @@ export function renderTrainingFullResultScreen(user) {
         }
         vNote.addModifier(
           0,
-          new VF.Annotation(entry.correct ? "◯" : "×").setVerticalJustification(VF.Annotation.VerticalJustify.ABOVE)
+          new VF.Annotation(entry.correct ? "◯" : "").setVerticalJustification(VF.Annotation.VerticalJustify.ABOVE)
         );
       }
 
