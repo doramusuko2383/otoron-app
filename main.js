@@ -50,6 +50,7 @@ export const switchScreen = (screen, user = currentUser, options = {}) => {
 
   const app = document.getElementById("app");
   app.innerHTML = "";
+  app.classList.remove("with-header");
 
   currentUser = user;
 

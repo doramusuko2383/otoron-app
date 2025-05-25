@@ -66,4 +66,5 @@ export function renderHeader(container) {
 
   // ▼ ヘッダーを最上部に追加
   container.prepend(header);
+  container.classList.add("with-header");
 }
