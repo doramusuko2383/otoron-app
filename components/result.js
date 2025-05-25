@@ -73,12 +73,12 @@ export function renderResultScreen() {
               </td>
               <td>
                 <div class="chord-box ${getColorClass(r.answerName)}">
-                  <span class="ans-mark ${r.correct ? 'correct' : 'wrong'}">${r.correct ? '◯' : '×'}</span>
+                  <span class="ans-mark ${r.correct ? 'correct' : 'wrong'}">${r.correct ? '◯' : ''}</span>
                   ${getLabelHiragana(r.answerName)}
                 </div>
               </td>
               ${singleNoteMode ? `<td>${noteRes ? labelNote(noteRes.noteQuestion || '') : ''}</td>` : ''}
-              ${singleNoteMode ? `<td>${noteRes ? '<span class="note-answer">' + '<span class="ans-mark ' + (noteRes.correct ? 'correct' : 'wrong') + '">' + (noteRes.correct ? '◯' : '×') + '</span>' + labelNote(noteRes.noteAnswer || '') + '</span>' : ''}</td>` : ''}
+              ${singleNoteMode ? `<td>${noteRes ? '<span class="note-answer">' + '<span class="ans-mark ' + (noteRes.correct ? 'correct' : 'wrong') + '">' + (noteRes.correct ? '◯' : '') + '</span>' + labelNote(noteRes.noteAnswer || '') + '</span>' : ''}</td>` : ''}
             </tr>`;
             }
             return rows;
