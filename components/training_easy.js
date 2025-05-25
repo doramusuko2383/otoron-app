@@ -110,7 +110,8 @@ function drawQuizScreen() {
 
   const container = document.createElement("div");
   container.className = "screen active";
-  container.style.minHeight = "100vh";
+  // Avoid scroll by accounting for header height and padding
+  container.style.minHeight = "calc(100dvh - 56px - 7em)";
   container.style.boxSizing = "border-box";
   container.style.padding = "1em 0 6em";
   // Avoid potential horizontal scroll on mobile
