@@ -8,7 +8,7 @@ import { saveSessionToHistory } from "./summary.js";
 import { incrementSetCount } from "../utils/recordStore_supabase.js";
 import { autoUnlockNextChord } from "../utils/progressUtils.js";
 import { saveTrainingSession } from "../utils/trainingStore_supabase.js";
-import { getRecommendedChordSet } from "../utils/growthUtils.js";
+import { generateRecommendedQueue } from "../utils/growthUtils.js";
 import { loadGrowthFlags } from "../utils/growthStore_supabase.js";
 
 let questionCount = 0;
@@ -96,24 +96,26 @@ export async function renderTrainingScreen(user) {
 
     if (trainingMode === "custom" && storedChords) {
       selectedChords.push(...JSON.parse(storedChords));
+      questionQueue = createQuestionQueue();
     } else {
       // ✅ 推奨出題で自動構成
-      const recommendedKeys = getRecommendedChordSet(flags);
+      const queue = generateRecommendedQueue(flags);
 
       const countMap = {};
-      recommendedKeys.forEach(key => {
-        countMap[key] = (countMap[key] || 0) + 1;
+      queue.forEach(name => {
+        countMap[name] = (countMap[name] || 0) + 1;
       });
 
       const recommended = chords
-        .filter(ch => countMap[ch.key])
+        .filter(ch => countMap[ch.name])
         .map(ch => ({
           name: ch.name,
-          count: countMap[ch.key]
+          count: countMap[ch.name]
         }));
 
       selectedChords.push(...recommended);
       localStorage.setItem("selectedChords", JSON.stringify(recommended));
+      questionQueue = [...queue];
     }
   }
   questionCount = 0;
@@ -121,7 +123,9 @@ export async function renderTrainingScreen(user) {
   alreadyTried = false;
   isForcedAnswer = false;
   firstMistakeInSession.flag = false;
-  questionQueue = createQuestionQueue();
+  if (!questionQueue.length) {
+    questionQueue = createQuestionQueue();
+  }
   nextQuestion(); // ✅ 出題開始！
 }
 

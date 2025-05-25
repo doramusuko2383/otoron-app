@@ -1,6 +1,7 @@
 import { chords, chordOrder } from "../data/chords.js";
 import { loadTrainingRecords } from "./recordStore_supabase.js";
 import { loadGrowthFlags } from "./growthStore_supabase.js";
+import { generateChordQueue } from "./chordQueue.js";
 
 export function getRecommendedChordSet(flags) {
   const unlockedKeys = chordOrder.filter(key => flags[key]?.unlocked);
@@ -28,6 +29,25 @@ export function getRecommendedChordSet(flags) {
   }
 
   return result;
+}
+
+/**
+ * Generate a shuffled queue of chord names for recommended mode
+ * using unlocked chord flags and generateChordQueue utility.
+ *
+ * @param {object} flags - chord unlock flags keyed by chord key
+ * @returns {string[]} shuffled chord name queue
+ */
+export function generateRecommendedQueue(flags) {
+  const unlockedNames = chordOrder
+    .filter(key => flags[key]?.unlocked)
+    .map(key => {
+      const chord = chords.find(c => c.key === key);
+      return chord ? chord.name : null;
+    })
+    .filter(Boolean);
+
+  return generateChordQueue(unlockedNames);
 }
 
 /**
@@ -131,16 +151,16 @@ export async function getSortedRecordArray(userId) {
  */
 export async function applyRecommendedSelection(userId) {
   const flags = await loadGrowthFlags(userId);
-  const recommendedKeys = getRecommendedChordSet(flags);
+  const queue = generateRecommendedQueue(flags);
 
   const countMap = {};
-  recommendedKeys.forEach(key => {
-    countMap[key] = (countMap[key] || 0) + 1;
+  queue.forEach(name => {
+    countMap[name] = (countMap[name] || 0) + 1;
   });
 
   const recommended = chords
-    .filter(ch => countMap[ch.key])
-    .map(ch => ({ name: ch.name, count: countMap[ch.key] }));
+    .filter(ch => countMap[ch.name])
+    .map(ch => ({ name: ch.name, count: countMap[ch.name] }));
 
   sessionStorage.removeItem("trainingMode");
   sessionStorage.removeItem("selectedChords");
