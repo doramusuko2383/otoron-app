@@ -110,7 +110,9 @@ function drawQuizScreen() {
 
   const container = document.createElement("div");
   container.className = "screen active";
-  container.style.padding = "0";
+  container.style.minHeight = "100vh";
+  container.style.boxSizing = "border-box";
+  container.style.padding = "1em 0 6em";
   container.style.width = "100vw";
 
   const feedback = document.createElement("div");
@@ -231,7 +233,6 @@ function drawQuizScreen() {
   const unknownBtn = document.createElement("button");
   unknownBtn.id = "unknownBtn";
   unknownBtn.textContent = "わからない";
-  unknownBtn.style.marginTop = "1em";
   unknownBtn.onclick = () => {
     if (alreadyTried || isForcedAnswer) return;
 
@@ -271,12 +272,16 @@ if (correctBtn) {
     });
   };
 
+  const bottomWrap = document.createElement("div");
+  bottomWrap.id = "bottom-buttons";
+  bottomWrap.appendChild(unknownBtn);
+  bottomWrap.appendChild(quitBtn);
+
   container.appendChild(debugAnswer);
   container.appendChild(header);
   container.appendChild(layout);
-  container.appendChild(unknownBtn);
-  container.appendChild(quitBtn);
   app.appendChild(container);
+  app.appendChild(bottomWrap);
 }
 
 

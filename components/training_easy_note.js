@@ -14,24 +14,30 @@ const FEEDBACK_DELAY = 1000;
 const maxQuestions = 24;
 
 const noteLabels = {
-  "C": "ド",
-  "D": "レ",
-  "E": "ミ",
-  "F": "ファ",
-  "G": "ソ",
-  "A": "ラ",
-  "B": "シ",
-  "C#": "チス",
-  "D#": "エス",
-  "F#": "フィス",
-  "G#": "ジス",
-  "A#": "ベー",
-  "Db": "チス",
-  "Eb": "エス",
-  "Gb": "フィス",
-  "Ab": "ジス",
-  "Bb": "ベー",
+  "C": "ど",
+  "D": "れ",
+  "E": "み",
+  "F": "ふぁ",
+  "G": "そ",
+  "A": "ら",
+  "B": "し",
+  "C#": "ちす",
+  "D#": "えす",
+  "F#": "ふぃす",
+  "G#": "じす",
+  "A#": "べー",
+  "Db": "ちす",
+  "Eb": "えす",
+  "Gb": "ふぃす",
+  "Ab": "じす",
+  "Bb": "べー",
 };
+
+function kanaToHiragana(str) {
+  return str.replace(/[ァ-ン]/g, ch =>
+    String.fromCharCode(ch.charCodeAt(0) - 0x60)
+  );
+}
 
 export function renderTrainingScreen(user) {
   const app = document.getElementById("app");
