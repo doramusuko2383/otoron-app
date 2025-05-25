@@ -78,3 +78,30 @@
 .plan-buttons button {
   padding: 0.8em;
 }
+.profile-form,
+.password-form {
+  max-width: 360px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+}
+
+.profile-form input,
+.profile-form select,
+.password-form input {
+  padding: 0.6em;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.profile-form button,
+.password-form button {
+  padding: 0.8em;
+  background: #ffa500;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+}
