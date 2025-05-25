@@ -142,3 +142,15 @@
   justify-content: center;
   box-sizing: border-box;
 }
+
+/* 下部の操作ボタンを常に画面下部に固定 */
+#bottom-buttons {
+  position: fixed;
+  bottom: 1em;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  gap: 1em;
+  z-index: 1000;
+}
