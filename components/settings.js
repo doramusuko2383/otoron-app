@@ -78,10 +78,10 @@ export async function renderSettingsScreen(user) {
   titleLine.innerHTML = `🎼 <strong>出題設定</strong> <span id="total-count">累計出題回数: 0 回</span>`;
 
   const buttonGroup = document.createElement("div");
-  const resetBtn = document.createElement("button");
-resetBtn.textContent = "↩ 推奨出題に戻す";
+const resetBtn = document.createElement("button");
+resetBtn.textContent = "↩ 推奨出題にする";
 resetBtn.onclick = () => {
-  if (confirm("本当に推奨出題に戻しますか？")) {
+  if (confirm("本当に推奨出題にしますか？")) {
     resetToRecommendedChords(unlockedKeys, user); // ← user を渡す！
   }
 };
