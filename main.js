@@ -92,6 +92,20 @@ onAuthStateChanged(auth, async (firebaseUser) => {
 
   console.log("🔓 Firebaseログイン済み:", firebaseUser.email);
 
+  // 🆕 FirebaseのIDトークンでSupabaseにもサインイン
+  try {
+    const idToken = await firebaseUser.getIdToken();
+    const { error: signInError } = await supabase.auth.signInWithIdToken({
+      provider: "firebase",
+      token: idToken,
+    });
+    if (signInError) {
+      console.error("❌ Supabase sign-in failed:", signInError.message);
+    }
+  } catch (err) {
+    console.error("❌ Firebase IDトークン取得失敗:", err);
+  }
+
   const { data: existingUser, error } = await supabase
     .from("users")
     .select("*")

@@ -145,8 +145,12 @@ export async function renderMyPageScreen(user) {
         const filePath = `${firebaseUser.uid}.${ext}`;
         const { error: uploadError } = await supabase.storage
           .from("avatars")
-          .upload(filePath, file, { upsert: true });
+          .upload(filePath, file, {
+            upsert: true,
+            contentType: file.type,
+          });
         if (uploadError) {
+          console.error("❌ Avatar upload error:", uploadError);
           alert("画像アップロード失敗: " + uploadError.message);
         } else {
           const { data } = supabase.storage.from("avatars").getPublicUrl(filePath);
