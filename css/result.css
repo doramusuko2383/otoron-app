@@ -69,13 +69,14 @@
 
 .ans-mark {
   position: absolute;
-  top: -8px;
+  top: -10px;
   left: 50%;
   transform: translateX(-50%);
   font-weight: bold;
-  font-size: 1rem;
+  font-size: 1.4rem;
+  color: red;
 }
-.ans-mark.correct { color: green; }
+.ans-mark.correct { color: red; }
 .ans-mark.wrong { color: red; }
 
 /* 単音回答ラッパー */
