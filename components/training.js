@@ -89,34 +89,35 @@ export async function renderTrainingScreen(user) {
   for (const key in mistakes) delete mistakes[key];
   correctCount = 0;
 
-  // ✅ 推奨設定をデフォルトにする処理
-  if (!selectedChords || selectedChords.length === 0) {
-    const trainingMode = sessionStorage.getItem("trainingMode");
-    const storedChords = sessionStorage.getItem("selectedChords");
+  // ✅ 常にストレージから出題設定を読み込み直す
+  selectedChords.length = 0;
+  questionQueue = [];
 
-    if (trainingMode === "custom" && storedChords) {
-      selectedChords.push(...JSON.parse(storedChords));
-      questionQueue = createQuestionQueue();
-    } else {
-      // ✅ 推奨出題で自動構成
-      const queue = generateRecommendedQueue(flags);
+  const trainingMode = sessionStorage.getItem("trainingMode");
+  const storedChords = sessionStorage.getItem("selectedChords");
 
-      const countMap = {};
-      queue.forEach(name => {
-        countMap[name] = (countMap[name] || 0) + 1;
-      });
+  if (trainingMode === "custom" && storedChords) {
+    selectedChords.push(...JSON.parse(storedChords));
+    questionQueue = createQuestionQueue();
+  } else {
+    // ✅ 推奨出題で自動構成
+    const queue = generateRecommendedQueue(flags);
 
-      const recommended = chords
-        .filter(ch => countMap[ch.name])
-        .map(ch => ({
-          name: ch.name,
-          count: countMap[ch.name]
-        }));
+    const countMap = {};
+    queue.forEach(name => {
+      countMap[name] = (countMap[name] || 0) + 1;
+    });
 
-      selectedChords.push(...recommended);
-      localStorage.setItem("selectedChords", JSON.stringify(recommended));
-      questionQueue = [...queue];
-    }
+    const recommended = chords
+      .filter(ch => countMap[ch.name])
+      .map(ch => ({
+        name: ch.name,
+        count: countMap[ch.name]
+      }));
+
+    selectedChords.push(...recommended);
+    localStorage.setItem("selectedChords", JSON.stringify(recommended));
+    questionQueue = [...queue];
   }
   questionCount = 0;
   quitFlag = false;
