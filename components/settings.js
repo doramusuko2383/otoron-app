@@ -4,7 +4,7 @@ import { renderHeader } from "./header.js";
 import { switchScreen } from "../main.js";
 import { supabase } from "../utils/supabaseClient.js";
 import { chords, chordOrder } from "../data/chords.js";
-import { getRecommendedChordSet } from "../utils/growthUtils.js"; // ← 追加
+import { generateRecommendedQueue } from "../utils/growthUtils.js"; // use queue util
 
 export let selectedChords = [];
 
@@ -36,18 +36,18 @@ function resetToRecommendedChords(unlockedKeys, user) {
     flags[key] = { unlocked: true };
   });
 
-  const recommendedKeys = getRecommendedChordSet(flags);
+  const queue = generateRecommendedQueue(flags);
 
   const countMap = {};
-  recommendedKeys.forEach(key => {
-    countMap[key] = (countMap[key] || 0) + 1;
+  queue.forEach(name => {
+    countMap[name] = (countMap[name] || 0) + 1;
   });
 
   const recommended = chords
-    .filter(ch => countMap[ch.key])
+    .filter(ch => countMap[ch.name])
     .map(ch => ({
       name: ch.name,
-      count: countMap[ch.key]
+      count: countMap[ch.name]
     }));
 
   sessionStorage.removeItem("trainingMode");
