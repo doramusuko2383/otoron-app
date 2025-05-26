@@ -3,12 +3,19 @@ import { loadGrowthData } from "../utils/growthStore.js";
 import { getToday } from "../utils/growthUtils.js";
 import { renderHeader } from "./header.js";
 
-export function renderHomeScreen() {
+function getGreeting() {
+  const hour = new Date().getHours();
+  if (hour < 12) return "おはよう";
+  if (hour < 18) return "こんにちは";
+  return "こんばんわ";
+}
+
+export function renderHomeScreen(user) {
   const app = document.getElementById("app");
   app.innerHTML = "";
 
   // ✅ ヘッダー（固定表示、上部に表示）
-  renderHeader(app, renderHomeScreen);
+  renderHeader(app);
 
   // ✅ メインコンテンツ（ヘッダーの下に表示）
   const container = document.createElement("div");
@@ -27,20 +34,14 @@ export function renderHomeScreen() {
   faceImg.style.marginBottom = "0.5em";
 
   const titleText = document.createElement("h1");
-  titleText.textContent = "オトロン";
+  const userName = user?.name || "";
+  titleText.textContent = `${userName}ちゃん ${getGreeting()}`;
   titleText.style.fontSize = "2.2rem";
   titleText.style.margin = "0";
   titleText.style.color = "#543014";
 
-  const subTitle = document.createElement("p");
-  subTitle.textContent = "おとで あそぼう！";
-  subTitle.style.fontSize = "1.2rem";
-  subTitle.style.marginTop = "0.2em";
-  subTitle.style.color = "#543014";
-
   logoContainer.appendChild(faceImg);
   logoContainer.appendChild(titleText);
-  logoContainer.appendChild(subTitle);
   container.appendChild(logoContainer);
 
   // ✅ トレーニング開始ボタン（ひとつに集約）

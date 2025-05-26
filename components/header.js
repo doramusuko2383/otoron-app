@@ -15,7 +15,7 @@ export function renderHeader(container) {
     </button>
 
     <div class="parent-menu">
-      <button id="parent-menu-btn">👤 保護者メニュー ▾</button>
+      <button id="parent-menu-btn" aria-label="設定">⚙️</button>
       <div id="parent-dropdown" class="parent-dropdown">
         <button id="settings-btn">⚙️ 設定</button>
         <button id="summary-btn">📊 診断結果</button>

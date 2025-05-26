@@ -36,7 +36,7 @@
 #parent-menu-btn {
   background: transparent;
   border: none;
-  font-size: 1rem;
+  font-size: 1.4rem;
   cursor: pointer;
   padding: 0.5em 1em;
   transition: background-color 0.2s ease;
@@ -107,7 +107,7 @@
 /* ▼ モバイル対応 */
 @media (max-width: 600px) {
   #parent-menu-btn {
-    font-size: 0.9rem;
+    font-size: 1.2rem;
     padding: 0.5em 0.8em;
   }
 
