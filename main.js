@@ -97,7 +97,7 @@ onAuthStateChanged(auth, async (firebaseUser) => {
   try {
     const idToken = await firebaseUser.getIdToken(true);
     const saved = localStorage.getItem("supabaseProvider");
-    const providersToTry = saved ? [saved] : ["firebase", "Firebase", "google"];
+    const providersToTry = saved ? [saved] : ["google", "firebase", "firebase-google", "custom"];
     let signInError = null;
 
     for (const provider of providersToTry) {
