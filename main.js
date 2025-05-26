@@ -13,7 +13,7 @@ import { renderGrowthScreen } from "./logic/growth.js";
 import { renderLoginScreen } from "./components/login.js";
 import { renderIntroScreen } from "./components/intro.js";
 import { renderSignUpScreen } from "./components/signup.js";
-import { supabase } from "./utils/supabaseClient.js";
+import { supabase, fetchAvailableProviders } from "./utils/supabaseClient.js";
 import { createInitialChordProgress } from "../utils/progressUtils.js";
 import { renderMyPageScreen } from "./components/mypage.js";
 
@@ -161,6 +161,8 @@ onAuthStateChanged(auth, async (firebaseUser) => {
 });
 
 window.addEventListener("DOMContentLoaded", () => {
+  // Log available OIDC provider slugs for debugging purposes.
+  fetchAvailableProviders();
   const initial = DEBUG_AUTO_LOGIN ? "home" : "intro";
   const hash = location.hash.replace("#", "");
   const startScreen = hash || initial;
