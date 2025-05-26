@@ -53,32 +53,10 @@ export async function renderMyPageScreen(user) {
       dbUser = data;
     }
   }
-
   function createProfileTab() {
     const div = document.createElement("div");
     div.className = "tab-section";
-
-    const imgWrap = document.createElement("div");
-    imgWrap.className = "profile-image-wrap";
-    const img = document.createElement("img");
-    img.src = dbUser?.avatar_url || "images/otolon_face.png";
-    img.className = "profile-image";
-    imgWrap.appendChild(img);
-    const fileInput = document.createElement("input");
-    fileInput.type = "file";
-    fileInput.accept = "image/*";
-    fileInput.onchange = (e) => {
-      const file = e.target.files[0];
-      if (file) {
-        img.src = URL.createObjectURL(file);
-      }
-    };
-    imgWrap.appendChild(fileInput);
-    div.appendChild(imgWrap);
-
     const form = document.createElement("form");
-    form.className = "profile-form";
-
     const nameField = createField("ユーザー名", true, () => {
       const input = document.createElement("input");
       input.type = "text";
@@ -137,31 +115,9 @@ export async function renderMyPageScreen(user) {
       const gender = genderField.querySelector("select").value || null;
       const birthYearValue = yearField.querySelector("select").value;
       const birth_year = birthYearValue ? parseInt(birthYearValue) : null;
-
-      let avatar_url = dbUser.avatar_url || null;
-      const file = fileInput.files[0];
-      if (file && firebaseUser) {
-        const ext = file.name.split(".").pop();
-        const filePath = `${firebaseUser.uid}.${ext}`;
-        const { data: uploadData, error: uploadError } = await supabase.storage
-          .from("avatars")
-          .upload(filePath, file, {
-            upsert: true,
-            contentType: file.type,
-          });
-        if (uploadError) {
-          console.error("❌ Avatar upload error:", uploadError);
-          alert("画像アップロード失敗: " + uploadError.message);
-        } else {
-          const { data } = supabase.storage.from("avatars").getPublicUrl(filePath);
-          avatar_url = data.publicUrl;
-          img.src = avatar_url;
-        }
-      }
-
       const { data: updated, error } = await supabase
         .from("users")
-        .update({ name, gender, birth_year, avatar_url })
+        .update({ name, gender, birth_year })
         .eq("id", dbUser.id)
         .select()
         .single();

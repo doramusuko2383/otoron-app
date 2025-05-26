@@ -26,24 +26,6 @@
   padding: 1em 0;
 }
 
-.profile-image-wrap {
-  text-align: center;
-  margin-bottom: 1em;
-}
-
-.profile-image {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  object-fit: cover;
-  display: block;
-  margin: 0 auto 0.5em;
-}
-
-.profile-image-wrap input {
-  display: block;
-  margin: 0 auto;
-}
 
 .form-field {
   display: flex;
