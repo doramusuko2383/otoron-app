@@ -19,7 +19,7 @@ Firebase でログイン後、取得した ID トークンを用いて Supabase 
 ```javascript
 const idToken = await firebaseUser.getIdToken(true);
 const saved = localStorage.getItem("supabaseProvider");
-const providersToTry = saved ? [saved] : ["firebase", "Firebase", "google"];
+const providersToTry = saved ? [saved] : ["google", "firebase", "firebase-google", "custom"];
 let signInError = null;
 for (const provider of providersToTry) {
   const { error } = await supabase.auth.signInWithIdToken({ provider, token: idToken });
