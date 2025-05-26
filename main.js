@@ -95,11 +95,27 @@ onAuthStateChanged(auth, async (firebaseUser) => {
 
   // 🆕 FirebaseのIDトークンでSupabaseにもサインイン
   try {
-    const idToken = await firebaseUser.getIdToken();
-    const { error: signInError } = await supabase.auth.signInWithIdToken({
-      provider: "firebase",
-      token: idToken,
-    });
+    const idToken = await firebaseUser.getIdToken(true);
+    const saved = localStorage.getItem("supabaseProvider");
+    const providersToTry = saved ? [saved] : ["firebase", "Firebase", "google"];
+    let signInError = null;
+
+    for (const provider of providersToTry) {
+      const { error } = await supabase.auth.signInWithIdToken({
+        provider,
+        token: idToken,
+      });
+      if (error) {
+        console.warn(`❌ Sign-in with "${provider}" failed:`, error.message);
+        signInError = error;
+      } else {
+        console.log(`✅ Sign-in with "${provider}" succeeded`);
+        localStorage.setItem("supabaseProvider", provider);
+        signInError = null;
+        break;
+      }
+    }
+
     if (signInError) {
       console.error("❌ Supabase sign-in failed:", signInError.message);
     }
