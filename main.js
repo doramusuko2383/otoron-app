@@ -13,7 +13,7 @@ import { renderGrowthScreen } from "./logic/growth.js";
 import { renderLoginScreen } from "./components/login.js";
 import { renderIntroScreen } from "./components/intro.js";
 import { renderSignUpScreen } from "./components/signup.js";
-import { supabase, fetchAvailableProviders } from "./utils/supabaseClient.js";
+import { supabase } from "./utils/supabaseClient.js";
 import { createInitialChordProgress } from "../utils/progressUtils.js";
 import { renderMyPageScreen } from "./components/mypage.js";
 
@@ -109,7 +109,6 @@ onAuthStateChanged(auth, async (firebaseUser) => {
         console.warn(`❌ Sign-in with "${provider}" failed:`, error.message);
         signInError = error;
       } else {
-        console.log(`✅ Sign-in with "${provider}" succeeded`);
         localStorage.setItem("supabaseProvider", provider);
         signInError = null;
         break;
@@ -147,13 +146,10 @@ onAuthStateChanged(auth, async (firebaseUser) => {
       console.error("❌ Supabaseユーザー登録失敗:", insertError);
       return;
     } else {
-      console.log("✅ Supabaseにユーザー登録完了");
       user = inserted;
       await createInitialChordProgress(user.id);
 
     }
-  } else {
-    console.log("✅ Supabaseに既存ユーザー:", user);
   }
 
   currentUser = user;
@@ -161,8 +157,6 @@ onAuthStateChanged(auth, async (firebaseUser) => {
 });
 
 window.addEventListener("DOMContentLoaded", () => {
-  // Log available OIDC provider slugs for debugging purposes.
-  fetchAvailableProviders();
   const initial = DEBUG_AUTO_LOGIN ? "home" : "intro";
   const hash = location.hash.replace("#", "");
   const startScreen = hash || initial;

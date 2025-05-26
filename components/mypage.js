@@ -143,18 +143,12 @@ export async function renderMyPageScreen(user) {
       if (file && firebaseUser) {
         const ext = file.name.split(".").pop();
         const filePath = `${firebaseUser.uid}.${ext}`;
-        console.log("🟡 Avatar upload start", {
-          filePath,
-          type: file.type,
-          size: file.size,
-        });
         const { data: uploadData, error: uploadError } = await supabase.storage
           .from("avatars")
           .upload(filePath, file, {
             upsert: true,
             contentType: file.type,
           });
-        console.log("🟢 Avatar upload result", { uploadData, uploadError });
         if (uploadError) {
           console.error("❌ Avatar upload error:", uploadError);
           alert("画像アップロード失敗: " + uploadError.message);
@@ -165,12 +159,6 @@ export async function renderMyPageScreen(user) {
         }
       }
 
-      console.log("🟢 Updating user profile", {
-        name,
-        gender,
-        birth_year,
-        avatar_url,
-      });
       const { data: updated, error } = await supabase
         .from("users")
         .update({ name, gender, birth_year, avatar_url })
@@ -182,7 +170,6 @@ export async function renderMyPageScreen(user) {
         console.error("❌ ユーザー更新失敗:", error);
         alert("保存に失敗しました: " + error.message);
       } else {
-        console.log("✅ プロフィール更新成功:", updated);
         alert("保存しました");
         dbUser = updated;
       }
