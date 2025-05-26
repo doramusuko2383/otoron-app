@@ -14,28 +14,15 @@ Supabase の認証に Firebase の ID トークンを使用するため、Supaba
 
 ## `main.js` での認証処理
 
-Firebase でログイン後、取得した ID トークンを用いて Supabase にサインインします。Supabase 側で登録したカスタム OIDC のスラッグが `firebase` とは限らないため、`main.js` では複数の候補を順番に試します。
+Firebase でログイン後、取得した ID トークンを用いて Supabase にサインインします。Supabase ではカスタム OIDC プロバイダー `firebase` を使用するため、`main.js` ではそのプロバイダーを指定してサインインします.
 
 ```javascript
 const idToken = await firebaseUser.getIdToken(true);
-const saved = localStorage.getItem("supabaseProvider");
-const providersToTry = saved ? [saved] : ["google", "firebase", "firebase-google", "custom"];
-let signInError = null;
-for (const provider of providersToTry) {
-  const { error } = await supabase.auth.signInWithIdToken({ provider, token: idToken });
-  if (error) {
-    console.warn(`❌ Sign-in with "${provider}" failed:`, error.message);
-    signInError = error;
-  } else {
-    console.log(`✅ Sign-in with "${provider}" succeeded`);
-    localStorage.setItem("supabaseProvider", provider);
-    signInError = null;
-    break;
-  }
-}
-if (signInError) {
-  console.error("❌ Supabase sign-in failed:", signInError.message);
+const { error } = await supabase.auth.signInWithIdToken({
+  provider: "firebase",
+  token: idToken,
+});
+if (error) {
+  console.error("❌ Supabase sign-in failed:", error.message);
 }
 ```
-
-一度成功したプロバイダーは `localStorage` に保存され、次回以降はその値のみでサインインを試みます。

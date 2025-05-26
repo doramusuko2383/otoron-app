@@ -40,7 +40,7 @@ export async function renderMyPageScreen(user) {
   app.appendChild(container);
 
   const firebaseUser = firebaseAuth.currentUser;
-  let dbUser = null;
+  let dbUser = user || null;
   if (firebaseUser) {
     const { data, error } = await supabase
       .from("users")
@@ -49,7 +49,7 @@ export async function renderMyPageScreen(user) {
       .maybeSingle();
     if (error) {
       console.error("❌ ユーザー取得失敗:", error);
-    } else {
+    } else if (data) {
       dbUser = data;
     }
   }
@@ -57,6 +57,7 @@ export async function renderMyPageScreen(user) {
     const div = document.createElement("div");
     div.className = "tab-section";
     const form = document.createElement("form");
+    form.className = "profile-form";
     const nameField = createField("ユーザー名", true, () => {
       const input = document.createElement("input");
       input.type = "text";
@@ -110,7 +111,6 @@ export async function renderMyPageScreen(user) {
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
-      if (!dbUser) return;
       const name = nameField.querySelector("input").value.trim();
       const gender = genderField.querySelector("select").value || null;
       const birthYearValue = yearField.querySelector("select").value;
