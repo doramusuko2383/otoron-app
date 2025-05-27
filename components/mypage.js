@@ -1,14 +1,8 @@
 // components/mypage.js
 import { renderHeader } from "./header.js";
-import { supabase } from "../utils/supabaseClient.js";
-import { firebaseAuth } from "../firebase/firebase-init.js";
-import {
-  updatePassword,
-  EmailAuthProvider,
-  reauthenticateWithCredential
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-export async function renderMyPageScreen(user) {
+
+export function renderMyPageScreen(user) {
   const app = document.getElementById("app");
   app.innerHTML = "";
   renderHeader(app, () => renderMyPageScreen(user));
@@ -39,30 +33,36 @@ export async function renderMyPageScreen(user) {
 
   app.appendChild(container);
 
-  const firebaseUser = firebaseAuth.currentUser;
-  let dbUser = user || null;
-  if (firebaseUser) {
-    const { data, error } = await supabase
-      .from("users")
-      .select("*")
-      .eq("firebase_uid", firebaseUser.uid)
-      .maybeSingle();
-    if (error) {
-      console.error("❌ ユーザー取得失敗:", error);
-    } else if (data) {
-      dbUser = data;
-    }
-  }
   function createProfileTab() {
     const div = document.createElement("div");
     div.className = "tab-section";
+
+    const imgWrap = document.createElement("div");
+    imgWrap.className = "profile-image-wrap";
+    const img = document.createElement("img");
+    img.src = user?.photoURL || "images/otolon_face.png";
+    img.className = "profile-image";
+    imgWrap.appendChild(img);
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+    input.onchange = (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        img.src = URL.createObjectURL(file);
+      }
+    };
+    imgWrap.appendChild(input);
+    div.appendChild(imgWrap);
+
     const form = document.createElement("form");
     form.className = "profile-form";
+
     const nameField = createField("ユーザー名", true, () => {
       const input = document.createElement("input");
       input.type = "text";
       input.required = true;
-      input.value = dbUser?.name || "";
+      input.value = user?.name || "";
       return input;
     });
     form.appendChild(nameField);
@@ -75,7 +75,6 @@ export async function renderMyPageScreen(user) {
         opt.textContent = v ? v : "選択してください";
         select.appendChild(opt);
       });
-      select.value = dbUser?.gender || "";
       return select;
     });
     form.appendChild(genderField);
@@ -89,7 +88,6 @@ export async function renderMyPageScreen(user) {
         opt.textContent = `${y}年`;
         select.appendChild(opt);
       }
-      if (dbUser?.birth_year) select.value = dbUser.birth_year;
       return select;
     });
     form.appendChild(yearField);
@@ -98,8 +96,7 @@ export async function renderMyPageScreen(user) {
       const input = document.createElement("input");
       input.type = "email";
       input.required = true;
-      input.value = firebaseUser?.email || "";
-      input.readOnly = true;
+      input.value = user?.email || "";
       return input;
     });
     form.appendChild(emailField);
@@ -108,28 +105,6 @@ export async function renderMyPageScreen(user) {
     saveBtn.textContent = "保存";
     saveBtn.type = "submit";
     form.appendChild(saveBtn);
-
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const name = nameField.querySelector("input").value.trim();
-      const gender = genderField.querySelector("select").value || null;
-      const birthYearValue = yearField.querySelector("select").value;
-      const birth_year = birthYearValue ? parseInt(birthYearValue) : null;
-      const { data: updated, error } = await supabase
-        .from("users")
-        .update({ name, gender, birth_year })
-        .eq("id", dbUser.id)
-        .select()
-        .single();
-
-      if (error) {
-        console.error("❌ ユーザー更新失敗:", error);
-        alert("保存に失敗しました: " + error.message);
-      } else {
-        alert("保存しました");
-        dbUser = updated;
-      }
-    });
 
     div.appendChild(form);
     return div;
@@ -146,7 +121,6 @@ export async function renderMyPageScreen(user) {
       const input = document.createElement("input");
       input.type = "password";
       input.required = true;
-      input.id = "current-pass";
       return input;
     });
     form.appendChild(current);
@@ -179,24 +153,6 @@ export async function renderMyPageScreen(user) {
       const np = form.querySelector("#new-pass").value;
       const cp = form.querySelector("#confirm-pass").value;
       btn.disabled = !(np && cp && np === cp);
-    });
-
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const currentPw = form.querySelector("#current-pass").value;
-      const newPw = form.querySelector("#new-pass").value;
-      const user = firebaseAuth.currentUser;
-      if (!user) return;
-      try {
-        const cred = EmailAuthProvider.credential(user.email, currentPw);
-        await reauthenticateWithCredential(user, cred);
-        await updatePassword(user, newPw);
-        alert("パスワードを変更しました");
-        form.reset();
-        btn.disabled = true;
-      } catch (err) {
-        alert("パスワード変更失敗: " + err.message);
-      }
     });
 
     div.appendChild(form);
