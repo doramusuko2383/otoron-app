@@ -36,22 +36,26 @@ html, body {
 }
 
 .home-screen.night::before {
-  background-color: #000;
   background-image:
     radial-gradient(#ffffff 1px, transparent 1px),
     radial-gradient(#ffffff 1px, transparent 1px),
-    radial-gradient(#ffffff 1px, transparent 1px);
-  background-size: 2px 2px, 3px 3px, 1.5px 1.5px;
-  background-position: 0 0, 40px 60px, 130px 80px;
+    radial-gradient(#ffffff 1px, transparent 1px),
+    url('../images/night_bg.png');
+  background-size: 2px 2px, 3px 3px, 1.5px 1.5px, cover;
+  background-position: 0 0, 40px 60px, 130px 80px, center;
   animation: star-scroll 60s linear infinite;
 }
 
 .home-screen.morning::before {
-  background: linear-gradient(#fff8f0, #ffe8cc);
+  background: url('../images/morning_bg.png') no-repeat center/cover;
 }
 
-.home-screen.day::before {
-  background: linear-gradient(#cbe8ff, #e0f4ff);
+.home-screen.noon::before {
+  background: url('../images/noon_bg.png') no-repeat center/cover;
+}
+
+.home-screen.evening::before {
+  background: url('../images/evening_bg.png') no-repeat center/cover;
 }
 
 @keyframes star-scroll {

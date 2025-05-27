@@ -15,7 +15,13 @@ export function renderHomeScreen(user) {
   const container = document.createElement("div");
   const timeClass = getTimeOfDay();
   container.className = `home-screen active ${timeClass}`;
-  document.body.classList.remove("morning", "day", "night");
+  document.body.classList.remove(
+    "morning",
+    "day",
+    "noon",
+    "evening",
+    "night"
+  );
   document.body.classList.add(timeClass);
   app.appendChild(container);
 
@@ -25,7 +31,8 @@ export function renderHomeScreen(user) {
   logoContainer.style.marginTop = "2em";
 
   const faceImg = document.createElement("img");
-  faceImg.src = "images/otolon.png";
+  faceImg.src =
+    timeClass === "night" ? "images/night_otolon.png" : "images/otolon.png";
   faceImg.alt = "おとろん";
   faceImg.style.height = "180px";
   faceImg.style.marginBottom = "0.5em";
