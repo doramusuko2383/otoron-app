@@ -13,7 +13,7 @@ export function renderHomeScreen(user) {
 
   // ✅ メインコンテンツ（ヘッダーの下に表示）
   const container = document.createElement("div");
-  const timeClass = getTimeOfDay();
+  let timeClass = getTimeOfDay();
   console.log('[home] time class:', timeClass);
   container.className = `home-screen active ${timeClass}`;
   document.body.classList.remove(
@@ -69,6 +69,31 @@ export function renderHomeScreen(user) {
   info.style.textAlign = "center";
   info.style.color = "#543014";
   container.appendChild(info);
+
+  // ▼ 時間帯の変化に合わせて背景などを更新
+  if (window.homeTimeInterval) {
+    clearInterval(window.homeTimeInterval);
+  }
+
+  window.homeTimeInterval = setInterval(() => {
+    if (!container.isConnected) {
+      clearInterval(window.homeTimeInterval);
+      window.homeTimeInterval = null;
+      return;
+    }
+
+    const newClass = getTimeOfDay();
+    if (newClass !== timeClass) {
+      container.classList.remove(timeClass);
+      container.classList.add(newClass);
+      document.body.classList.remove(timeClass);
+      document.body.classList.add(newClass);
+      faceImg.src =
+        newClass === "night" ? "images/night_otolon.png" : "images/otolon.png";
+      titleText.textContent = `${userName}ちゃん ${getGreeting()}`;
+      timeClass = newClass;
+    }
+  }, 60 * 1000);
 }
 
 // ✅ 他の画面から再利用できるカスタム confirm 関数
