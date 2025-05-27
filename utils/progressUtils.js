@@ -19,6 +19,8 @@ export async function createInitialChordProgress(userId) {
 
   if (error) {
     console.error("❌ 初期進捗の登録失敗:", error);
+  } else {
+    console.log("✅ 初期進捗を登録しました（1件目を in_progress）");
   }
 }
 
@@ -53,6 +55,7 @@ export async function autoUnlockNextChord(user) {
     .eq("user_id", user.id)
     .eq("chord_key", nextChord);
 
+  console.log(`✅ ${currentChord} 完了 → ${nextChord} 開始`);
 }
 
 // ✅ 和音を解放（in_progressに）
