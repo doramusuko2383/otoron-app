@@ -31,6 +31,11 @@ html, body {
   left: 0;
   right: 0;
   bottom: 0;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.home-screen.night::before {
   background-color: #000;
   background-image:
     radial-gradient(#ffffff 1px, transparent 1px),
@@ -39,8 +44,14 @@ html, body {
   background-size: 2px 2px, 3px 3px, 1.5px 1.5px;
   background-position: 0 0, 40px 60px, 130px 80px;
   animation: star-scroll 60s linear infinite;
-  pointer-events: none;
-  z-index: -1;
+}
+
+.home-screen.morning::before {
+  background: linear-gradient(#fff8f0, #ffe8cc);
+}
+
+.home-screen.day::before {
+  background: linear-gradient(#cbe8ff, #e0f4ff);
 }
 
 @keyframes star-scroll {
