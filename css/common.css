@@ -10,6 +10,24 @@
   overflow-y: auto; /* ← モバイルでスクロールできるように */
 }
 
+.app-root.morning {
+  background: #fff8f0;
+}
+
+
+.app-root.noon {
+  background: #e6f7ff;
+}
+
+.app-root.evening {
+  background: #ffe8cc;
+}
+
+.app-root.night {
+  background: #1a1a2a;
+  color: #fff;
+}
+
 /* ヘッダー表示時に余白を確保 */
 #app.with-header {
   padding-top: 56px;

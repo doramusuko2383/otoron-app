@@ -2,13 +2,7 @@ import { switchScreen } from "../main.js";
 import { loadGrowthData } from "../utils/growthStore.js";
 import { getToday } from "../utils/growthUtils.js";
 import { renderHeader } from "./header.js";
-
-function getGreeting() {
-  const hour = new Date().getHours();
-  if (hour < 12) return "おはよう";
-  if (hour < 18) return "こんにちは";
-  return "こんばんわ";
-}
+import { getGreeting, getTimeOfDay } from "../utils/timeOfDay.js";
 
 export function renderHomeScreen(user) {
   const app = document.getElementById("app");
@@ -19,7 +13,17 @@ export function renderHomeScreen(user) {
 
   // ✅ メインコンテンツ（ヘッダーの下に表示）
   const container = document.createElement("div");
-  container.className = "home-screen active";
+  let timeClass = getTimeOfDay();
+  console.log('[home] time class:', timeClass);
+  container.className = `home-screen active ${timeClass}`;
+  document.body.classList.remove(
+    "morning",
+    "day",
+    "noon",
+    "evening",
+    "night"
+  );
+  document.body.classList.add(timeClass);
   app.appendChild(container);
 
   // ✅ ロゴ・タイトル・サブタイトル
@@ -28,7 +32,8 @@ export function renderHomeScreen(user) {
   logoContainer.style.marginTop = "2em";
 
   const faceImg = document.createElement("img");
-  faceImg.src = "images/otolon.png";
+  faceImg.src =
+    timeClass === "night" ? "images/night_otolon.png" : "images/otolon.png";
   faceImg.alt = "おとろん";
   faceImg.style.height = "180px";
   faceImg.style.marginBottom = "0.5em";
@@ -64,6 +69,31 @@ export function renderHomeScreen(user) {
   info.style.textAlign = "center";
   info.style.color = "#543014";
   container.appendChild(info);
+
+  // ▼ 時間帯の変化に合わせて背景などを更新
+  if (window.homeTimeInterval) {
+    clearInterval(window.homeTimeInterval);
+  }
+
+  window.homeTimeInterval = setInterval(() => {
+    if (!container.isConnected) {
+      clearInterval(window.homeTimeInterval);
+      window.homeTimeInterval = null;
+      return;
+    }
+
+    const newClass = getTimeOfDay();
+    if (newClass !== timeClass) {
+      container.classList.remove(timeClass);
+      container.classList.add(newClass);
+      document.body.classList.remove(timeClass);
+      document.body.classList.add(newClass);
+      faceImg.src =
+        newClass === "night" ? "images/night_otolon.png" : "images/otolon.png";
+      titleText.textContent = `${userName}ちゃん ${getGreeting()}`;
+      timeClass = newClass;
+    }
+  }, 60 * 1000);
 }
 
 // ✅ 他の画面から再利用できるカスタム confirm 関数
