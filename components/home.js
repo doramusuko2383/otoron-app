@@ -14,6 +14,7 @@ export function renderHomeScreen(user) {
   // ✅ メインコンテンツ（ヘッダーの下に表示）
   const container = document.createElement("div");
   const timeClass = getTimeOfDay();
+  console.log('[home] time class:', timeClass);
   container.className = `home-screen active ${timeClass}`;
   document.body.classList.remove(
     "morning",

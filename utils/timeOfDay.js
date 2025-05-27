@@ -1,8 +1,10 @@
 export function getTimeOfDay() {
   const hour = new Date().getHours();
-  if (hour < 11) return 'morning';
-  if (hour < 15) return 'noon';
-  if (hour < 18) return 'evening';
+  console.log('[timeOfDay] current hour:', hour);
+
+  if (hour >= 5 && hour < 11) return 'morning';
+  if (hour >= 11 && hour < 15) return 'noon';
+  if (hour >= 15 && hour < 18) return 'evening';
   return 'night';
 }
 
