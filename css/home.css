@@ -10,6 +10,7 @@ html, body {
 
 /* ===== ホーム画面専用スタイル ===== */
 .home-screen {
+  position: relative;
   height: calc(100dvh - 56px);
   margin-top: 0; /* 上部余白は #app.with-header に委任 */
   display: flex;
@@ -19,6 +20,32 @@ html, body {
   box-sizing: border-box;
   overflow: hidden;
   padding: 0;
+  background-color: #000;
+  color: #fff;
+}
+
+.home-screen::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #000;
+  background-image:
+    radial-gradient(#ffffff 1px, transparent 1px),
+    radial-gradient(#ffffff 1px, transparent 1px),
+    radial-gradient(#ffffff 1px, transparent 1px);
+  background-size: 2px 2px, 3px 3px, 1.5px 1.5px;
+  background-position: 0 0, 40px 60px, 130px 80px;
+  animation: star-scroll 60s linear infinite;
+  pointer-events: none;
+  z-index: -1;
+}
+
+@keyframes star-scroll {
+  from { background-position: 0 0, 40px 60px, 130px 80px; }
+  to { background-position: -1000px 1000px, -960px 1060px, -870px 1080px; }
 }
 
 .home-screen .otolon-face {
@@ -30,7 +57,7 @@ html, body {
 
 .home-screen .home-title {
   font-size: 2.4rem;
-  color: #a7551d;
+  color: #FFD44C;
   margin: 0.5em 0 0.2em 0;
   text-align: center;
 }
@@ -38,7 +65,7 @@ html, body {
 .home-screen .sub-title {
   font-size: 1.2rem;
   text-align: center;
-  color: #543014;
+  color: #fff;
   margin: 0;
 }
 
@@ -60,7 +87,7 @@ html, body {
 
 .home-screen .today-count {
   font-size: 1.1em;
-  color: #543014;
+  color: #fff;
   text-align: center;
   margin-top: 2em;
 }
