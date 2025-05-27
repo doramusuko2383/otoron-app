@@ -50,7 +50,6 @@ export const switchScreen = (screen, user = currentUser, options = {}) => {
 
   const app = document.getElementById("app");
   app.innerHTML = "";
-  app.classList.remove("with-header");
 
   currentUser = user;
 
@@ -93,21 +92,6 @@ onAuthStateChanged(auth, async (firebaseUser) => {
 
   console.log("🔓 Firebaseログイン済み:", firebaseUser.email);
 
-  // 🆕 FirebaseのIDトークンでSupabaseにもサインイン
-  try {
-    const idToken = await firebaseUser.getIdToken(true);
-    const { error } = await supabase.auth.signInWithIdToken({
-      provider: "firebase",
-      token: idToken,
-    });
-    if (error) {
-      console.error("❌ Supabase sign-in failed:", error.message);
-      return;
-    }
-  } catch (err) {
-    console.error("❌ Firebase IDトークン取得失敗:", err);
-  }
-
   const { data: existingUser, error } = await supabase
     .from("users")
     .select("*")
@@ -132,10 +116,13 @@ onAuthStateChanged(auth, async (firebaseUser) => {
       console.error("❌ Supabaseユーザー登録失敗:", insertError);
       return;
     } else {
+      console.log("✅ Supabaseにユーザー登録完了");
       user = inserted;
       await createInitialChordProgress(user.id);
 
     }
+  } else {
+    console.log("✅ Supabaseに既存ユーザー:", user);
   }
 
   currentUser = user;
