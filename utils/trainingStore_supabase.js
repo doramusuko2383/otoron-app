@@ -14,6 +14,15 @@ import { supabase } from "./supabaseClient.js";
  * @param {string} param0.date - セッション日時（ISO形式）
  */
 export async function saveTrainingSession({ userId, results, stats, mistakes, correctCount, totalCount, date }) {
+  console.log("🟡 saveTrainingSession 実行:", {
+    userId,
+    results,
+    stats,
+    mistakes,
+    correctCount,
+    totalCount,
+    date
+  });
   const { data, error } = await supabase.from("training_sessions").insert([
     {
       user_id: userId,
@@ -28,5 +37,7 @@ export async function saveTrainingSession({ userId, results, stats, mistakes, co
 
   if (error) {
     console.error("❌ セッション保存に失敗:", error);
+  } else {
+    console.log("✅ セッション保存に成功:", data);
   }
 }
