@@ -2,13 +2,7 @@ import { switchScreen } from "../main.js";
 import { loadGrowthData } from "../utils/growthStore.js";
 import { getToday } from "../utils/growthUtils.js";
 import { renderHeader } from "./header.js";
-
-function getGreeting() {
-  const hour = new Date().getHours();
-  if (hour < 12) return "おはよう";
-  if (hour < 18) return "こんにちは";
-  return "こんばんわ";
-}
+import { getGreeting, getTimeOfDay } from "../utils/timeOfDay.js";
 
 export function renderHomeScreen(user) {
   const app = document.getElementById("app");
@@ -19,7 +13,10 @@ export function renderHomeScreen(user) {
 
   // ✅ メインコンテンツ（ヘッダーの下に表示）
   const container = document.createElement("div");
-  container.className = "home-screen active";
+  const timeClass = getTimeOfDay();
+  container.className = `home-screen active ${timeClass}`;
+  document.body.classList.remove("morning", "day", "night");
+  document.body.classList.add(timeClass);
   app.appendChild(container);
 
   // ✅ ロゴ・タイトル・サブタイトル
