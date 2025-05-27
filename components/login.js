@@ -54,8 +54,10 @@ export function renderLoginScreen(container, onLoginSuccess) {
         return;
       }
       userId = inserted.id;
+      console.log("✅ Supabaseユーザーを新規登録:", inserted);
     } else {
       userId = existingUser.id;
+      console.log("✅ Supabaseに既存ユーザー:", existingUser);
     }
   
     // user_chord_progress にすでにデータがあるか確認
@@ -79,6 +81,8 @@ export function renderLoginScreen(container, onLoginSuccess) {
   
       if (error) {
         console.error("❌ 和音進捗の初期登録失敗:", error);
+      } else {
+        console.log("✅ 和音進捗を初期化しました");
       }
     }
   }
