@@ -14,8 +14,13 @@
   background: #fff8f0;
 }
 
-.app-root.day {
+
+.app-root.noon {
   background: #e6f7ff;
+}
+
+.app-root.evening {
+  background: #ffe8cc;
 }
 
 .app-root.night {
