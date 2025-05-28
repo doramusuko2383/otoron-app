@@ -7,7 +7,8 @@ import {
   getPassedDays,
   getCurrentTargetChord,
   getSortedRecordArray,
-  applyRecommendedSelection
+  applyRecommendedSelection,
+  forceUnlock
 } from "../utils/growthUtils.js";
 import {
   loadGrowthFlags,
@@ -216,6 +217,7 @@ export async function renderGrowthScreen(user) {
           if (success) {
             alert(`🎉 ${chord.label} を解放しました！`);
             await applyRecommendedSelection(user.id);
+            forceUnlock();
             await renderGrowthScreen(user);
           }
         });
