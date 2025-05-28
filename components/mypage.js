@@ -37,23 +37,7 @@ export function renderMyPageScreen(user) {
     const div = document.createElement("div");
     div.className = "tab-section";
 
-    const imgWrap = document.createElement("div");
-    imgWrap.className = "profile-image-wrap";
-    const img = document.createElement("img");
-    img.src = user?.photoURL || "images/otolon_face.png";
-    img.className = "profile-image";
-    imgWrap.appendChild(img);
-    const input = document.createElement("input");
-    input.type = "file";
-    input.accept = "image/*";
-    input.onchange = (e) => {
-      const file = e.target.files[0];
-      if (file) {
-        img.src = URL.createObjectURL(file);
-      }
-    };
-    imgWrap.appendChild(input);
-    div.appendChild(imgWrap);
+    // アイコン登録機能は一旦非表示
 
     const form = document.createElement("form");
     form.className = "profile-form";

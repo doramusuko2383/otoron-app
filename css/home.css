@@ -22,7 +22,7 @@ html, body {
   overflow: hidden;
   padding: 2em 0 0;
   background-color: transparent;
-  color: #fff;
+  color: #543014;
 }
 
 .home-screen::before {
@@ -38,6 +38,10 @@ html, body {
 
 .home-screen.night::before {
   background: url('/images/night_bg.png') no-repeat center/cover;
+}
+
+.home-screen.night {
+  color: #fff;
 }
 
 .home-screen.morning::before {
@@ -60,6 +64,7 @@ html, body {
 
 .home-screen .otolon-face {
   width: 180px;
+  max-height: 180px;
   height: auto;
   display: block;
   margin: 0 auto 0.5em auto;
