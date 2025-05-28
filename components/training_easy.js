@@ -5,7 +5,7 @@ import { switchScreen } from "../main.js";
 import { showCustomConfirm } from "./home.js";
 import { resetResultFlag } from "./result.js";
 import { saveSessionToHistory } from "./summary.js";
-import { incrementSetCount } from "../utils/recordStore_supabase.js";
+import { incrementSetCount, updateTrainingRecord } from "../utils/recordStore_supabase.js";
 import { autoUnlockNextChord } from "../utils/progressUtils.js";
 
 let questionCount = 0;
@@ -83,7 +83,13 @@ async function nextQuestion() {
   isForcedAnswer = false;
   if (questionQueue.length === 0 || quitFlag) {
     saveSessionToHistory();
-  
+
+    await updateTrainingRecord({
+      userId: currentUser.id,
+      correct: correctCount,
+      total: questionCount
+    });
+
     await incrementSetCount(currentUser.id);
     await autoUnlockNextChord(currentUser);
   
@@ -341,8 +347,6 @@ function checkAnswer(selected) {
     }
     questionCount++;
 
-    updateTrainingRecord({ userId: currentUser.id, correct: 1, total: 1 });
-
     document.querySelectorAll(".square-btn-content").forEach(btn => {
       btn.style.pointerEvents = "none";
       btn.style.opacity = "0.4";
@@ -367,8 +371,6 @@ function checkAnswer(selected) {
     stats[name].wrong++;
     mistakes[name] = mistakes[name] || {};
     mistakes[name][selected] = (mistakes[name][selected] || 0) + 1;
-
-    updateTrainingRecord({ userId: currentUser.id, correct: 0, total: 1 });
 
     document.querySelectorAll(".square-btn-content").forEach(btn => {
       const chordName = btn.getAttribute("data-name");
