@@ -5,7 +5,7 @@ import { switchScreen } from "../main.js";
 import { showCustomConfirm } from "./home.js";
 import { resetResultFlag } from "./result.js";
 import { saveSessionToHistory } from "./summary.js";
-import { incrementSetCount } from "../utils/recordStore_supabase.js";
+import { incrementSetCount, updateTrainingRecord } from "../utils/recordStore_supabase.js";
 import { autoUnlockNextChord } from "../utils/progressUtils.js";
 import { saveTrainingSession } from "../utils/trainingStore_supabase.js";
 import { generateRecommendedQueue } from "../utils/growthUtils.js";
@@ -162,7 +162,13 @@ async function nextQuestion() {
     });
 
     saveSessionToHistory();
-  
+
+    await updateTrainingRecord({
+      userId: currentUser.id,
+      correct: correctCount,
+      total: questionCount
+    });
+
     await incrementSetCount(currentUser.id);
     await autoUnlockNextChord(currentUser);
   
