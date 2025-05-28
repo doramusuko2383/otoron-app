@@ -46,9 +46,12 @@ export function mockGrowthDebug() {
     const d = new Date(now);
     d.setDate(now.getDate() - i);
     const key = d.toISOString().split("T")[0];
+    const pass = i < 6;
+    const count = 60;
+    const correct = pass ? 59 : 58;
     data[key] = {
-      count: 60,
-      correct: 55 + Math.floor(Math.random() * 5),
+      count,
+      correct,
       sets: 3
     };
   }
