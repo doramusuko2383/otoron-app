@@ -55,7 +55,6 @@ export function renderHomeScreen(user) {
     timeClass === "night" ? "images/night_otolon.png" : "images/otolon.png";
   faceImg.alt = "おとろん";
   faceImg.className = "otolon-face";
-  faceImg.style.height = "270px";
   faceImg.style.marginBottom = "0.5em";
   logoContainer.appendChild(faceImg);
 
