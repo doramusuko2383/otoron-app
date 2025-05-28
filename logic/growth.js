@@ -45,7 +45,7 @@ export async function renderGrowthScreen(user) {
   const info = document.createElement("p");
   info.innerHTML = `
     今日の日付: <strong>${today}</strong><br/>
-    合格した日数: <strong>${passed}</strong> / 14日<br/>
+    合格した日数: <strong>${passed}</strong> / 7日<br/>
     今日の状態: ${qualifiedToday ? "✅ 合格済み" : "❌ 未合格"}
   `;
   container.appendChild(info);
@@ -71,8 +71,8 @@ export async function renderGrowthScreen(user) {
 
   const progress = document.createElement("div");
   progress.style.height = "100%";
-  progress.style.width = `${Math.min((passed / 14) * 100, 100)}%`;
-  progress.style.background = passed >= 14 ? "#4caf50" : "#66bbff";
+  progress.style.width = `${Math.min((passed / 7) * 100, 100)}%`;
+  progress.style.background = passed >= 7 ? "#4caf50" : "#66bbff";
   progress.style.transition = "width 0.3s ease";
   progressBar.appendChild(progress);
   container.appendChild(progressBar);

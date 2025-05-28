@@ -25,10 +25,10 @@ export async function createInitialChordProgress(userId) {
   }
 }
 
-// ✅ 合格日数が14日に達したら、次の和音に進める
+// ✅ 連続合格日数が7日に達したら、次の和音に進める
 export async function autoUnlockNextChord(user) {
   const passed = await getPassedDays(user.id);
-  if (passed < 14) return;
+  if (passed < 7) return;
 
   const { data: all } = await supabase
     .from("user_chord_progress")
