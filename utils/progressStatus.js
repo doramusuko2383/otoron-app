@@ -34,6 +34,9 @@ export async function checkRecentUnlockCriteria(userId) {
   from.setDate(from.getDate() - (RECENT_DAYS - 1));
   const fromStr = from.toISOString().split("T")[0];
 
+  const verbose = window.unlockDebugLogs === true;
+  if (verbose) console.log("[unlock] 判定開始:", fromStr);
+
   const { data: records, error: recErr } = await supabase
     .from("training_records")
     .select("date, count, correct, sets")
@@ -45,7 +48,10 @@ export async function checkRecentUnlockCriteria(userId) {
     return false;
   }
 
-  if (!records || records.length < RECENT_DAYS) return false;
+  if (!records || records.length < RECENT_DAYS) {
+    if (verbose) console.log("[unlock] ✗ 記録不足", records?.length);
+    return false;
+  }
 
   let totalCorrect = 0;
   let totalCount = 0;
@@ -57,10 +63,19 @@ export async function checkRecentUnlockCriteria(userId) {
   });
 
   for (const r of Object.values(recordMap)) {
-    if ((r.sets || 0) < DAILY_SETS) return false;
+    if ((r.sets || 0) < DAILY_SETS) {
+      if (verbose) console.log("[unlock] ✗ セット不足", r.date, r.sets);
+      return false;
+    }
   }
 
-  if (totalCount === 0 || totalCorrect / totalCount < WEEK_RATE) return false;
+  if (totalCount === 0 || totalCorrect / totalCount < WEEK_RATE) {
+    if (verbose)
+      console.log(
+        "[unlock] ✗ 週間正答率", totalCount ? totalCorrect / totalCount : 0
+      );
+    return false;
+  }
 
   const { data: sessions, error: sesErr } = await supabase
     .from("training_sessions")
@@ -74,7 +89,10 @@ export async function checkRecentUnlockCriteria(userId) {
   }
 
   for (const row of sessions) {
-    if (!sessionEligible(row)) return false;
+    if (!sessionEligible(row)) {
+      if (verbose) console.log("[unlock] ✗ セッション条件未達", row.session_date);
+      return false;
+    }
   }
 
   const { data: progress } = await supabase
@@ -87,8 +105,13 @@ export async function checkRecentUnlockCriteria(userId) {
   if (progress && progress.unlocked_date) {
     const last = new Date(progress.unlocked_date);
     const diff = (Date.now() - last.getTime()) / 86400000;
-    if (diff < POST_UNLOCK_DAYS) return false;
+    if (diff < POST_UNLOCK_DAYS) {
+      if (verbose) console.log("[unlock] ✗ 前回解放からの日数", diff);
+      return false;
+    }
   }
+
+  if (verbose) console.log("[unlock] ✓ 条件クリア");
 
   return true;
 }
