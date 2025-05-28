@@ -59,12 +59,12 @@ html, body {
 
 .home-screen .logo-container {
   text-align: center;
-  margin-top: 4em;
+  margin-top: 6em; /* Adjust position further down */
 }
 
 .home-screen .otolon-face {
-  width: 180px;
-  max-height: 180px;
+  width: 270px; /* 1.5x larger */
+  max-height: 270px;
   height: auto;
   display: block;
   margin: 0 auto 0.5em auto;
