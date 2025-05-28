@@ -3,8 +3,8 @@
 /**
  * Generate a shuffled queue of chords based on user selected list.
  * Each chord will appear an appropriate number of times depending
- * on how many chords are provided. The queue is shuffled so that
- * the same chord does not appear consecutively.
+ * on how many chords are provided. The queue is simply shuffled and
+ * may contain the same chord consecutively.
  *
  * @param {string[]} chordNames - array of chord name strings
  * @returns {string[]} shuffled queue
@@ -23,14 +23,7 @@ export function generateChordQueue(chordNames) {
     }
   }
 
-  const maxRetries = chordNames.length <= 3 ? 10 : 50;
-  for (let attempt = 0; attempt < maxRetries; attempt++) {
-    shuffle(queue);
-    if (!hasConsecutive(queue)) return queue;
-  }
-
-  // manual fix for very small sets
-  fixConsecutive(queue);
+  shuffle(queue);
   return queue;
 }
 
@@ -65,24 +58,4 @@ function shuffle(arr) {
     const j = Math.floor(Math.random() * (i + 1));
     [arr[i], arr[j]] = [arr[j], arr[i]];
   }
-}
-
-function hasConsecutive(arr) {
-  for (let i = 1; i < arr.length; i++) {
-    if (arr[i] === arr[i - 1]) return true;
-  }
-  return false;
-}
-
-function fixConsecutive(arr) {
-  for (let i = 1; i < arr.length; i++) {
-    if (arr[i] === arr[i - 1]) {
-      let j = i + 1;
-      while (j < arr.length && arr[j] === arr[i]) j++;
-      if (j < arr.length) {
-        [arr[i], arr[j]] = [arr[j], arr[i]];
-      }
-    }
-  }
-  if (hasConsecutive(arr)) shuffle(arr);
 }
