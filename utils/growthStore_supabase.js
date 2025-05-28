@@ -1,6 +1,7 @@
 // utils/growthStore_supabase.js
 
 import { supabase } from "./supabaseClient.js";
+import { markQualifiedDayIfNeeded } from "./qualifiedStore_supabase.js";
 
 /**
  * 和音の進捗（解放状態）を取得
@@ -85,11 +86,13 @@ export async function generateMockGrowthData(userId) {
       correct_count: correct,
       total_count: count,
       results_json: { mode: "recommended" },
-      stats_json: { dummy: { total: 20 } }
+      stats_json: { dummy: { total: 20 } },
+      is_qualified: pass
     };
     const { error: sesErr } = await supabase
       .from("training_sessions")
       .insert(ses);
     if (sesErr) console.error("❌ モックセッション挿入失敗:", sesErr);
+    await markQualifiedDayIfNeeded(userId, `${dateStr}T12:00:00`);
   }
 }
