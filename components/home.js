@@ -26,28 +26,38 @@ export function renderHomeScreen(user) {
   document.body.classList.add(timeClass);
   app.appendChild(container);
 
-  // ✅ ロゴ・タイトル・サブタイトル
-  const logoContainer = document.createElement("div");
-  logoContainer.style.textAlign = "center";
-  logoContainer.style.marginTop = "2em";
-
-  const faceImg = document.createElement("img");
-  faceImg.src =
-    timeClass === "night" ? "images/night_otolon.png" : "images/otolon.png";
-  faceImg.alt = "おとろん";
-  faceImg.style.height = "180px";
-  faceImg.style.marginBottom = "0.5em";
-
+  // ✅ あいさつテキスト
   const titleText = document.createElement("h1");
   const userName = user?.name || "";
   titleText.textContent = `${userName}ちゃん ${getGreeting()}`;
   titleText.style.fontSize = "2.2rem";
   titleText.style.margin = "0";
   titleText.style.color = "#543014";
+  titleText.style.textAlign = "center";
+  container.appendChild(titleText);
 
+  // ✅ 今日のトレーニング回数
+  const today = getToday();
+  const growthData = loadGrowthData();
+  const todayRecord = growthData[today] || { sets: 0 };
+
+  const info = document.createElement("p");
+  info.className = "today-count";
+  info.innerHTML = `🎯 きょう の がんばり：<strong>${todayRecord.sets}</strong>かい`;
+  container.appendChild(info);
+
+  // ✅ オトロン画像とスタートボタン
+  const logoContainer = document.createElement("div");
+  logoContainer.style.textAlign = "center";
+  logoContainer.style.marginTop = "1.5em";
+
+  const faceImg = document.createElement("img");
+  faceImg.src =
+    timeClass === "night" ? "images/night_otolon.png" : "images/otolon.png";
+  faceImg.alt = "おとろん";
+  faceImg.style.height = "270px";
+  faceImg.style.marginBottom = "0.5em";
   logoContainer.appendChild(faceImg);
-  logoContainer.appendChild(titleText);
-  container.appendChild(logoContainer);
 
   // ✅ トレーニング開始ボタン（ひとつに集約）
   const startButton = document.createElement("button");
@@ -57,18 +67,7 @@ export function renderHomeScreen(user) {
   startButton.onclick = () => switchScreen("training");
   logoContainer.appendChild(startButton);
 
-  // ✅ 今日のトレーニング回数
-  const today = getToday();
-  const growthData = loadGrowthData();
-  const todayRecord = growthData[today] || { sets: 0 };
-
-  const info = document.createElement("p");
-  info.innerHTML = `🎯 きょう の がんばり：<strong>${todayRecord.sets}</strong> かい`;
-  info.style.marginTop = "2em";
-  info.style.fontSize = "1.1em";
-  info.style.textAlign = "center";
-  info.style.color = "#543014";
-  container.appendChild(info);
+  container.appendChild(logoContainer);
 
   // ▼ 時間帯の変化に合わせて背景などを更新
   if (window.homeTimeInterval) {
