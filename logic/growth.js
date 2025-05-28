@@ -151,17 +151,12 @@ export async function renderGrowthScreen(user) {
 
   async function refreshDebugInfo() {
     const info = await getUnlockCriteriaStatus(user.id);
-    const rate = (info.weekRate * 100).toFixed(1);
-    const reqRate = (info.requiredRate * 100).toFixed(0);
     const daysSince =
       info.daysSinceUnlock === null
         ? "-"
         : info.daysSinceUnlock.toFixed(1);
     debugInfo.textContent =
-      `記録日数: ${info.recordCount} / ${info.requiredDays}\n` +
-      `セット達成日数: ${info.daysWithEnoughSets} / ${info.requiredDays}\n` +
-      `週間正答率: ${rate}% / ${reqRate}%\n` +
-      `セッション条件: ${info.sessionsOk ? "✓" : "✗"}\n` +
+      `連続合格日数: ${info.consecutiveDays} / ${info.requiredDays}\n` +
       `前回解放からの日数: ${daysSince} / ${info.requiredInterval}`;
   }
 
