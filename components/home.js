@@ -2,11 +2,18 @@ import { switchScreen } from "../main.js";
 import { loadGrowthData } from "../utils/growthStore.js";
 import { getToday } from "../utils/growthUtils.js";
 import { renderHeader } from "./header.js";
-import { getGreeting, getTimeOfDay } from "../utils/timeOfDay.js";
+import {
+  getGreeting,
+  getTimeOfDay,
+  clearTimeOfDayStyling,
+} from "../utils/timeOfDay.js";
 
 export function renderHomeScreen(user) {
   const app = document.getElementById("app");
   app.innerHTML = "";
+
+  // Remove any previous time-of-day classes/intervals before applying new one
+  clearTimeOfDayStyling();
 
   // ✅ ヘッダー（固定表示、上部に表示）
   renderHeader(app);
@@ -16,13 +23,6 @@ export function renderHomeScreen(user) {
   let timeClass = getTimeOfDay();
   console.log('[home] time class:', timeClass);
   container.className = `home-screen active ${timeClass}`;
-  document.body.classList.remove(
-    "morning",
-    "day",
-    "noon",
-    "evening",
-    "night"
-  );
   document.body.classList.add(timeClass);
   app.appendChild(container);
 

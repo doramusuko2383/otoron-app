@@ -15,3 +15,19 @@ export function getGreeting() {
   if (time === 'evening') return 'こんばんは';
   return 'こんばんわ';
 }
+
+// Remove all time-of-day classes from the given element.
+// Defaults to `document.body` which has the `.app-root` class.
+export function clearTimeClasses(target = document.body) {
+  target.classList.remove('morning', 'noon', 'evening', 'night');
+}
+
+// Reset any time-of-day styling applied by the home screen. This will
+// also clear the interval used to update the background.
+export function clearTimeOfDayStyling() {
+  clearTimeClasses();
+  if (window.homeTimeInterval) {
+    clearInterval(window.homeTimeInterval);
+    window.homeTimeInterval = null;
+  }
+}
