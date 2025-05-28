@@ -25,7 +25,9 @@
 
 .app-root.night {
   background: #1a1a2a;
-  color: #fff;
+  /* Night theme previously enforced white text globally which caused
+     readability issues on light elements. Text color is now left
+     unchanged so individual screens can style themselves. */
 }
 
 /* ヘッダー表示時に余白を確保 */
