@@ -8,6 +8,91 @@ const MIN_SETS = 2;
 const MIN_COUNT = 40;
 const PASS_RATE = 0.98;
 
+const RECENT_DAYS = 7;
+const DAILY_SETS = 2;
+const WEEK_RATE = 0.98;
+const MIN_QUESTIONS = 20;
+const POST_UNLOCK_DAYS = 7;
+
+function sessionEligible(row) {
+  const mode = row.results_json?.mode || row.stats_json?.mode || row.results_json?.[0]?.mode;
+  if (mode === "recommended") return true;
+
+  const stats = row.stats_json;
+  if (!stats) return false;
+  const counts = Object.values(stats).map(s => {
+    const total = s.total ?? (s.correct || 0) + (s.wrong || 0) + (s.unknown || 0);
+    return total;
+  });
+  if (counts.length === 0) return false;
+  const eachTwo = counts.every(c => c >= 2);
+  return eachTwo && row.total_count >= MIN_QUESTIONS;
+}
+
+export async function checkRecentUnlockCriteria(userId) {
+  const from = new Date();
+  from.setDate(from.getDate() - (RECENT_DAYS - 1));
+  const fromStr = from.toISOString().split("T")[0];
+
+  const { data: records, error: recErr } = await supabase
+    .from("training_records")
+    .select("date, count, correct, sets")
+    .eq("user_id", userId)
+    .gte("date", fromStr);
+
+  if (recErr) {
+    console.error("❌ 記録取得失敗:", recErr);
+    return false;
+  }
+
+  if (!records || records.length < RECENT_DAYS) return false;
+
+  let totalCorrect = 0;
+  let totalCount = 0;
+  const recordMap = {};
+  records.forEach(r => {
+    recordMap[r.date] = r;
+    totalCorrect += r.correct;
+    totalCount += r.count;
+  });
+
+  for (const r of Object.values(recordMap)) {
+    if ((r.sets || 0) < DAILY_SETS) return false;
+  }
+
+  if (totalCount === 0 || totalCorrect / totalCount < WEEK_RATE) return false;
+
+  const { data: sessions, error: sesErr } = await supabase
+    .from("training_sessions")
+    .select("session_date, total_count, results_json, stats_json")
+    .eq("user_id", userId)
+    .gte("session_date", fromStr);
+
+  if (sesErr) {
+    console.error("❌ セッション取得失敗:", sesErr);
+    return false;
+  }
+
+  for (const row of sessions) {
+    if (!sessionEligible(row)) return false;
+  }
+
+  const { data: progress } = await supabase
+    .from("user_chord_progress")
+    .select("unlocked_date")
+    .eq("user_id", userId)
+    .eq("status", "in_progress")
+    .maybeSingle();
+
+  if (progress && progress.unlocked_date) {
+    const last = new Date(progress.unlocked_date);
+    const diff = (Date.now() - last.getTime()) / 86400000;
+    if (diff < POST_UNLOCK_DAYS) return false;
+  }
+
+  return true;
+}
+
 export async function countQualifiedDays(userId) {
   const { data, error } = await supabase
     .from("training_sessions")
@@ -46,9 +131,9 @@ export async function updateGrowthStatusBar(user, target, onUnlocked) {
   const btn = document.getElementById("unlock-button");
   if (!msg || !btn) return;
 
-  const passed = await countQualifiedDays(user.id);
-  if (passed >= PASS_DAYS) {
-    msg.textContent = "🎉 和音の進捗条件を満たしました。次の和音を解放してください。";
+  const canUnlock = await checkRecentUnlockCriteria(user.id);
+  if (canUnlock) {
+    msg.textContent = "🎉 合格条件を満たしました。次の和音を解放できます。";
     btn.disabled = false;
     btn.style.display = "inline-block";
     btn.onclick = () => {
@@ -70,8 +155,7 @@ export async function updateGrowthStatusBar(user, target, onUnlocked) {
     };
   } else {
     const label = target ? target.label : "";
-    const remain = PASS_DAYS - passed;
-    msg.textContent = `いま ${label} の解放に挑戦中　解放まであと${remain}日`;
+    msg.textContent = `いま ${label} の解放条件を満たしていません`;
     btn.disabled = true;
     btn.style.display = "none";
   }
