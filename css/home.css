@@ -37,14 +37,7 @@ html, body {
 }
 
 .home-screen.night::before {
-  background-image:
-    radial-gradient(#ffffff 1px, transparent 1px),
-    radial-gradient(#ffffff 1px, transparent 1px),
-    radial-gradient(#ffffff 1px, transparent 1px),
-    url('/images/night_bg.png');
-  background-size: 2px 2px, 3px 3px, 1.5px 1.5px, cover;
-  background-position: 0 0, 40px 60px, 130px 80px, center;
-  animation: star-scroll 60s linear infinite;
+  background: url('/images/night_bg.png') no-repeat center/cover;
 }
 
 .home-screen.morning::before {
@@ -59,10 +52,6 @@ html, body {
   background: url('/images/evening_bg.png') no-repeat center/cover;
 }
 
-@keyframes star-scroll {
-  from { background-position: 0 0, 40px 60px, 130px 80px; }
-  to { background-position: -1000px 1000px, -960px 1060px, -870px 1080px; }
-}
 
 .home-screen .otolon-face {
   width: 120px;
