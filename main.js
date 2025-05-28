@@ -16,6 +16,7 @@ import { renderSignUpScreen } from "./components/signup.js";
 import { supabase } from "./utils/supabaseClient.js";
 import { createInitialChordProgress } from "../utils/progressUtils.js";
 import { renderMyPageScreen } from "./components/mypage.js";
+import { clearTimeOfDayStyling } from "./utils/timeOfDay.js";
 
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
@@ -50,6 +51,10 @@ export const switchScreen = (screen, user = currentUser, options = {}) => {
 
   const app = document.getElementById("app");
   app.innerHTML = "";
+
+  if (screen !== "home") {
+    clearTimeOfDayStyling();
+  }
 
   currentUser = user;
 
