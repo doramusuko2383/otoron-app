@@ -48,13 +48,13 @@ export function renderHomeScreen(user) {
 
   // ✅ オトロン画像とスタートボタン
   const logoContainer = document.createElement("div");
-  logoContainer.style.textAlign = "center";
-  logoContainer.style.marginTop = "1.5em";
+  logoContainer.className = "logo-container";
 
   const faceImg = document.createElement("img");
   faceImg.src =
     timeClass === "night" ? "images/night_otolon.png" : "images/otolon.png";
   faceImg.alt = "おとろん";
+  faceImg.className = "otolon-face";
   faceImg.style.height = "270px";
   faceImg.style.marginBottom = "0.5em";
   logoContainer.appendChild(faceImg);
@@ -63,7 +63,6 @@ export function renderHomeScreen(user) {
   const startButton = document.createElement("button");
   startButton.textContent = "とれーにんぐ かいし";
   startButton.className = "main-start-button"; // CSSでデザイン指定
-  startButton.style.marginTop = "2em";
   startButton.onclick = () => switchScreen("training");
   logoContainer.appendChild(startButton);
 

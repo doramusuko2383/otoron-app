@@ -53,6 +53,11 @@ html, body {
 }
 
 
+.home-screen .logo-container {
+  text-align: center;
+  margin-top: 3em;
+}
+
 .home-screen .otolon-face {
   width: 180px;
   height: auto;
@@ -83,7 +88,8 @@ html, body {
   border-radius: 10px;
   box-shadow: 0 4px #c8a837;
   cursor: pointer;
-  margin-top: 2em;
+  display: block;
+  margin: 2em auto 0;
 }
 
 .home-screen .main-start-button:hover {
