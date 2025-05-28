@@ -1,6 +1,6 @@
 import { supabase } from "./supabaseClient.js";
 import { unlockChord } from "./progressUtils.js";
-import { applyRecommendedSelection } from "./growthUtils.js";
+import { applyRecommendedSelection, forceUnlock } from "./growthUtils.js";
 import { showCustomConfirm } from "../components/home.js";
 import { getConsecutiveQualifiedDays } from "./qualifiedStore_supabase.js";
 
@@ -69,6 +69,7 @@ export async function updateGrowthStatusBar(user, target, onUnlocked) {
         if (success) {
           alert(`🎉 ${target.label} を解放しました！`);
           await applyRecommendedSelection(user.id);
+          forceUnlock();
           btn.disabled = true;
           btn.style.display = "none";
           if (onUnlocked) {
