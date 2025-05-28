@@ -149,6 +149,73 @@ export async function countQualifiedDays(userId) {
   return passed;
 }
 
+export async function getUnlockCriteriaStatus(userId) {
+  const from = new Date();
+  from.setDate(from.getDate() - (RECENT_DAYS - 1));
+  const fromStr = from.toISOString().split("T")[0];
+
+  const { data: records } = await supabase
+    .from("training_records")
+    .select("date, count, correct, sets")
+    .eq("user_id", userId)
+    .gte("date", fromStr);
+
+  let recordCount = 0;
+  let daysWithEnoughSets = 0;
+  let totalCorrect = 0;
+  let totalCount = 0;
+  if (records) {
+    recordCount = records.length;
+    daysWithEnoughSets = records.filter(r => (r.sets || 0) >= DAILY_SETS).length;
+    records.forEach(r => {
+      totalCorrect += r.correct;
+      totalCount += r.count;
+    });
+  }
+  const weekRate = totalCount ? totalCorrect / totalCount : 0;
+
+  const { data: sessions } = await supabase
+    .from("training_sessions")
+    .select("session_date, total_count, results_json, stats_json")
+    .eq("user_id", userId)
+    .gte("session_date", fromStr);
+
+  let sessionsOk = true;
+  if (sessions) {
+    for (const row of sessions) {
+      if (!sessionEligible(row)) {
+        sessionsOk = false;
+        break;
+      }
+    }
+  }
+
+  const { data: progress } = await supabase
+    .from("user_chord_progress")
+    .select("unlocked_date")
+    .eq("user_id", userId)
+    .eq("status", "in_progress")
+    .maybeSingle();
+
+  let daysSinceUnlock = null;
+  if (progress && progress.unlocked_date) {
+    const last = new Date(progress.unlocked_date);
+    daysSinceUnlock = (Date.now() - last.getTime()) / 86400000;
+  }
+
+  return {
+    recordCount,
+    requiredDays: RECENT_DAYS,
+    daysWithEnoughSets,
+    requiredSets: DAILY_SETS,
+    weekRate,
+    requiredRate: WEEK_RATE,
+    sessionsOk,
+    daysSinceUnlock,
+    requiredInterval: POST_UNLOCK_DAYS
+  };
+}
+
 export async function updateGrowthStatusBar(user, target, onUnlocked) {
   const msg = document.getElementById("growth-message");
   const btn = document.getElementById("unlock-button");

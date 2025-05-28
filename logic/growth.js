@@ -17,7 +17,10 @@ import {
 import { chords } from "../data/chords.js";
 import { renderHeader } from "../components/header.js";
 import { unlockChord, resetChordProgressToRed } from "../utils/progressUtils.js";
-import { updateGrowthStatusBar } from "../utils/progressStatus.js";
+import {
+  updateGrowthStatusBar,
+  getUnlockCriteriaStatus
+} from "../utils/progressStatus.js";
 import { showCustomConfirm } from "../components/home.js";
 
 export async function renderGrowthScreen(user) {
@@ -137,6 +140,32 @@ export async function renderGrowthScreen(user) {
   debugPanel.appendChild(mockBtn);
   debugPanel.appendChild(logLabel);
   container.appendChild(debugPanel);
+
+  const debugInfo = document.createElement("pre");
+  debugInfo.id = "unlock-debug-info";
+  debugInfo.style.background = "#f8f8f8";
+  debugInfo.style.padding = "0.5em";
+  debugInfo.style.fontSize = "0.85em";
+  debugInfo.style.whiteSpace = "pre-wrap";
+  container.appendChild(debugInfo);
+
+  async function refreshDebugInfo() {
+    const info = await getUnlockCriteriaStatus(user.id);
+    const rate = (info.weekRate * 100).toFixed(1);
+    const reqRate = (info.requiredRate * 100).toFixed(0);
+    const daysSince =
+      info.daysSinceUnlock === null
+        ? "-"
+        : info.daysSinceUnlock.toFixed(1);
+    debugInfo.textContent =
+      `記録日数: ${info.recordCount} / ${info.requiredDays}\n` +
+      `セット達成日数: ${info.daysWithEnoughSets} / ${info.requiredDays}\n` +
+      `週間正答率: ${rate}% / ${reqRate}%\n` +
+      `セッション条件: ${info.sessionsOk ? "✓" : "✗"}\n` +
+      `前回解放からの日数: ${daysSince} / ${info.requiredInterval}`;
+  }
+
+  refreshDebugInfo();
 
   // 和音進捗表示
   const chordStatus = document.createElement("div");
