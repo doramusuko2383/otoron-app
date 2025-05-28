@@ -62,11 +62,16 @@ export async function generateMockGrowthData(userId) {
     d.setDate(now.getDate() - i);
     const dateStr = d.toISOString().split("T")[0];
 
+    // 直近6日間は合格基準を満たす成績、7日目のみ僅かに不足させる
+    const pass = i < 6;
+    const count = 60;
+    const correct = pass ? 59 : 58;
+
     const rec = {
       user_id: userId,
       date: dateStr,
-      count: 60,
-      correct: 58,
+      count,
+      correct,
       sets: 3
     };
     const { error: recErr } = await supabase
@@ -77,8 +82,8 @@ export async function generateMockGrowthData(userId) {
     const ses = {
       user_id: userId,
       session_date: `${dateStr}T12:00:00`,
-      correct_count: 58,
-      total_count: 60,
+      correct_count: correct,
+      total_count: count,
       results_json: { mode: "recommended" },
       stats_json: { dummy: { total: 20 } }
     };
