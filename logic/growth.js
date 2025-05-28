@@ -9,7 +9,11 @@ import {
   getSortedRecordArray,
   applyRecommendedSelection
 } from "../utils/growthUtils.js";
-import { loadGrowthFlags } from "../utils/growthStore_supabase.js";
+import {
+  loadGrowthFlags,
+  markChordAsUnlocked,
+  generateMockGrowthData
+} from "../utils/growthStore_supabase.js";
 import { chords } from "../data/chords.js";
 import { renderHeader } from "../components/header.js";
 import { unlockChord, resetChordProgressToRed } from "../utils/progressUtils.js";
@@ -86,6 +90,53 @@ export async function renderGrowthScreen(user) {
     }
   };
   container.appendChild(resetBtn);
+
+  // 🛠 デバッグ: 任意和音解放やモックデータ生成
+  const debugPanel = document.createElement("div");
+  debugPanel.style.marginBottom = "1em";
+
+  const select = document.createElement("select");
+  chords.forEach(c => {
+    const opt = document.createElement("option");
+    opt.value = c.key;
+    opt.textContent = c.label;
+    select.appendChild(opt);
+  });
+
+  const manualBtn = document.createElement("button");
+  manualBtn.textContent = "🛠 選択和音を解放";
+  manualBtn.style.marginLeft = "0.5em";
+  manualBtn.onclick = async () => {
+    await markChordAsUnlocked(user.id, select.value);
+    alert(`${select.value} を手動で解放しました`);
+    await renderGrowthScreen(user);
+  };
+
+  const mockBtn = document.createElement("button");
+  mockBtn.textContent = "🛠 モック記録生成";
+  mockBtn.style.marginLeft = "0.5em";
+  mockBtn.onclick = async () => {
+    await generateMockGrowthData(user.id);
+    alert("モックデータを生成しました");
+    await renderGrowthScreen(user);
+  };
+
+  const logLabel = document.createElement("label");
+  logLabel.style.marginLeft = "0.5em";
+  const logChk = document.createElement("input");
+  logChk.type = "checkbox";
+  logChk.checked = window.unlockDebugLogs === true;
+  logChk.onchange = () => {
+    window.unlockDebugLogs = logChk.checked;
+  };
+  logLabel.appendChild(logChk);
+  logLabel.appendChild(document.createTextNode("詳細ログ"));
+
+  debugPanel.appendChild(select);
+  debugPanel.appendChild(manualBtn);
+  debugPanel.appendChild(mockBtn);
+  debugPanel.appendChild(logLabel);
+  container.appendChild(debugPanel);
 
   // 和音進捗表示
   const chordStatus = document.createElement("div");
