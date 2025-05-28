@@ -1,6 +1,7 @@
 // utils/trainingStore_supabase.js
 
 import { supabase } from "./supabaseClient.js";
+import { sessionMeetsStats, markQualifiedDayIfNeeded } from "./qualifiedStore_supabase.js";
 
 /**
  * トレーニングセッション結果をSupabaseに保存する関数
@@ -23,6 +24,7 @@ export async function saveTrainingSession({ userId, results, stats, mistakes, co
     totalCount,
     date
   });
+  const isQualified = sessionMeetsStats(stats, totalCount);
   const { data, error } = await supabase.from("training_sessions").insert([
     {
       user_id: userId,
@@ -31,7 +33,8 @@ export async function saveTrainingSession({ userId, results, stats, mistakes, co
       total_count: totalCount,
       results_json: results,
       stats_json: stats,
-      mistakes_json: mistakes
+      mistakes_json: mistakes,
+      is_qualified: isQualified
     }
   ]);
 
@@ -39,5 +42,6 @@ export async function saveTrainingSession({ userId, results, stats, mistakes, co
     console.error("❌ セッション保存に失敗:", error);
   } else {
     console.log("✅ セッション保存に成功:", data);
+    await markQualifiedDayIfNeeded(userId, date);
   }
 }

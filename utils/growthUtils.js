@@ -1,6 +1,8 @@
 import { chords, chordOrder } from "../data/chords.js";
 import { loadTrainingRecords } from "./recordStore_supabase.js";
 import { loadGrowthFlags } from "./growthStore_supabase.js";
+import { getConsecutiveQualifiedDays } from "./qualifiedStore_supabase.js";
+import { supabase } from "./supabaseClient.js";
 import { generateChordQueue } from "./chordQueue.js";
 
 export function getRecommendedChordSet(flags) {
@@ -69,7 +71,7 @@ export function getCurrentTargetChord(flags) {
 export const PASS_THRESHOLD = 0.98;
 export const MIN_COUNT = 40;
 export const MIN_SETS = 2;
-export const REQUIRED_DAYS = 14;
+export const REQUIRED_DAYS = 7;
 export const STORAGE_FORCE_FLAG = "growth_force_unlock";
 
 /**
@@ -85,13 +87,19 @@ export function getToday() {
  * @returns {Promise<boolean>}
  */
 export async function isQualifiedToday(userId) {
-  const data = await loadTrainingRecords(userId);
   const today = getToday();
-  const record = data[today];
-  if (!record) return false;
-  if (record.count < MIN_COUNT || record.sets < MIN_SETS) return false;
-  const rate = record.correct / record.count;
-  return rate >= PASS_THRESHOLD;
+  const { data, error } = await supabase
+    .from("qualified_days")
+    .select("id")
+    .eq("user_id", userId)
+    .eq("qualified_date", today)
+    .maybeSingle();
+
+  if (error) {
+    console.error("❌ qualified today check:", error);
+    return false;
+  }
+  return !!data;
 }
 
 /**
@@ -100,20 +108,7 @@ export async function isQualifiedToday(userId) {
  * @returns {Promise<number>}
  */
 export async function getPassedDays(userId) {
-  const data = await loadTrainingRecords(userId);
-  let passed = 0;
-
-  for (const date in data) {
-    const record = data[date];
-    if (
-      record &&
-      record.count >= MIN_COUNT &&
-      record.sets >= MIN_SETS &&
-      (record.correct / record.count) >= PASS_THRESHOLD
-    ) {
-      passed++;
-    }
-  }
+  const passed = await getConsecutiveQualifiedDays(userId);
 
   const resetFlag = localStorage.getItem(STORAGE_FORCE_FLAG);
   if (resetFlag === "true") {
