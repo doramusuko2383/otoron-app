@@ -63,8 +63,8 @@ html, body {
 }
 
 .home-screen .otolon-face {
-  width: 360px;
-  max-height: 360px;
+  width: 180px;
+  max-height: 180px;
   height: auto;
   display: block;
   margin: 0 auto 0.5em auto;
