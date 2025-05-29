@@ -56,10 +56,17 @@ export async function renderGrowthScreen(user) {
   statusBar.style.margin = "1em 0";
   const msgSpan = document.createElement("span");
   msgSpan.id = "growth-message";
-  const unlockBtn = document.createElement("button");
-  unlockBtn.id = "unlock-button";
-  unlockBtn.textContent = "次の和音を解放する";
+
+  const unlockBtn = document.createElement("div");
+  unlockBtn.id = "unlockBtn";
+  unlockBtn.className = "unlock-button";
+  unlockBtn.textContent = "解放する";
   unlockBtn.style.marginLeft = "1em";
+
+  const progressEl = document.createElement("div");
+  progressEl.className = "progress";
+  unlockBtn.appendChild(progressEl);
+
   statusBar.appendChild(msgSpan);
   statusBar.appendChild(unlockBtn);
   container.appendChild(statusBar);
