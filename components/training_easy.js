@@ -7,6 +7,7 @@ import { resetResultFlag } from "./result.js";
 import { saveSessionToHistory } from "./summary.js";
 import { incrementSetCount, updateTrainingRecord } from "../utils/recordStore_supabase.js";
 import { autoUnlockNextChord } from "../utils/progressUtils.js";
+import { getAudio } from "../utils/audioCache.js";
 
 let questionCount = 0;
 let currentAnswer = null;
@@ -28,7 +29,7 @@ function playSoundThen(name, callback) {
     currentAudio.pause();
     currentAudio.currentTime = 0;
   }
-  currentAudio = new Audio(`audio/${name}.mp3`);
+  currentAudio = getAudio(`audio/${name}.mp3`);
   currentAudio.onended = () => setTimeout(callback, 100);
   currentAudio.onerror = () => {
     console.error("⚠️ 音声ファイルが読み込めませんでした:", name);
@@ -303,7 +304,7 @@ function playChordFile(filename) {
     currentAudio.pause();
     currentAudio.currentTime = 0;
   }
-  currentAudio = new Audio(`audio/${filename}`);
+  currentAudio = getAudio(`audio/${filename}`);
   currentAudio.onerror = () => console.error("音声ファイルが見つかりません:", filename);
   currentAudio.play();
 }

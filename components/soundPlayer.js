@@ -1,3 +1,4 @@
+import { getAudio } from "../utils/audioCache.js";
 const audioBasePath = "./sounds";
 
 function normalizeNoteName(name) {
@@ -17,7 +18,7 @@ function normalizeNoteName(name) {
 export function playNote(noteName) {
   return new Promise((resolve) => {
     const encoded = encodeURIComponent(normalizeNoteName(noteName));
-    const audio = new Audio(`sounds/${encoded}.mp3`);
+    const audio = getAudio(`sounds/${encoded}.mp3`);
     audio.addEventListener("ended", resolve);
     audio.addEventListener("error", () => {
       console.warn(`音声再生エラー: ${noteName}`);

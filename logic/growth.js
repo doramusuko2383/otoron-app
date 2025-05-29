@@ -18,6 +18,7 @@ import {
 import { chords } from "../data/chords.js";
 import { renderHeader } from "../components/header.js";
 import { unlockChord, resetChordProgressToRed } from "../utils/progressUtils.js";
+import { getAudio } from "../utils/audioCache.js";
 import {
   updateGrowthStatusBar,
   getUnlockCriteriaStatus
@@ -194,7 +195,7 @@ export async function renderGrowthScreen(user) {
 
     circle.onclick = () => {
       if (chord.file) {
-        const audio = new Audio(`audio/${chord.file}`);
+        const audio = getAudio(`audio/${chord.file}`);
         audio.play();
       }
     };
