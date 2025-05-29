@@ -55,17 +55,32 @@ export async function getUnlockCriteriaStatus(userId) {
 
 export async function updateGrowthStatusBar(user, target, onUnlocked) {
   const msg = document.getElementById("growth-message");
-  const btn = document.getElementById("unlock-button");
-  if (!msg || !btn) return;
+  const btn = document.getElementById("unlockBtn");
+  const progress = btn?.querySelector(".progress");
+  if (!msg || !btn || !progress) return;
 
   const canUnlock = await checkRecentUnlockCriteria(user.id);
+  const holdTime = 1500;
+  let timer;
+
+  const cancelProgress = () => {
+    clearTimeout(timer);
+    progress.style.transition = "width 0.2s ease-out";
+    progress.style.width = "0%";
+  };
+
   if (canUnlock) {
     msg.textContent = "🎉 合格条件を満たしました。次の和音を解放できます。";
-    btn.disabled = false;
     btn.style.display = "inline-block";
-    btn.onclick = () => {
-      if (!target) return;
-      showCustomConfirm("本当に和音を解放しますか？", async () => {
+
+    btn.onpointerdown = () => {
+      progress.style.transition = `width ${holdTime}ms linear`;
+      progress.style.width = "100%";
+
+      timer = setTimeout(async () => {
+        progress.style.transition = "width 0s";
+        progress.style.width = "0%";
+        if (!target) return;
         const success = await unlockChord(user.id, target.key);
         if (success) {
           const audio = getAudio("audio/unlock_chord.mp3");
@@ -73,7 +88,6 @@ export async function updateGrowthStatusBar(user, target, onUnlocked) {
           alert(`🎉 ${target.label} を解放しました！`);
           await applyRecommendedSelection(user.id);
           forceUnlock();
-          btn.disabled = true;
           btn.style.display = "none";
           if (onUnlocked) {
             await onUnlocked();
@@ -81,12 +95,17 @@ export async function updateGrowthStatusBar(user, target, onUnlocked) {
             await updateGrowthStatusBar(user, target);
           }
         }
-      });
+      }, holdTime);
     };
+
+    btn.onpointerup = cancelProgress;
+    btn.onpointerleave = cancelProgress;
   } else {
     const label = target ? target.label : "";
     msg.textContent = `いま ${label} の解放条件を満たしていません`;
-    btn.disabled = true;
     btn.style.display = "none";
+    btn.onpointerdown = null;
+    btn.onpointerup = null;
+    btn.onpointerleave = null;
   }
 }
