@@ -22,7 +22,9 @@ export async function loadGrowthFlags(userId) {
   const flags = {};
   data.forEach(row => {
     flags[row.chord_key] = {
-      unlocked: row.status === "in_progress"
+      // treat all non-locked statuses as unlocked so previously
+      // completed chords remain unlocked in the UI
+      unlocked: row.status !== "locked"
     };
   });
 
