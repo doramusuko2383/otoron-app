@@ -9,6 +9,12 @@
   gap: 24px;
 }
 
+@media screen and (max-width: 480px) {
+  #chord-settings {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
 .chord-columns-row {
   display: contents;
 }
@@ -37,6 +43,7 @@
   box-sizing: border-box;
   width: 100%;
   color: black;
+  position: relative;
 }
 
 .chord-setting label {
@@ -83,6 +90,15 @@
 .chord-setting input[type='checkbox'] {
   margin: 0;
   display: none;
+}
+
+.chord-setting.checked::after {
+  content: "✔";
+  position: absolute;
+  top: 2px;
+  right: 6px;
+  font-size: 1.1em;
+  color: green;
 }
 
 /* ヘッダー行 */
