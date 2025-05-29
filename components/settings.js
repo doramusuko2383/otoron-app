@@ -212,50 +212,18 @@ buttonGroup.appendChild(resetBtn);
     countInput.style.padding = "4px";
     countInput.style.fontSize = "1em";
 
-    const minusBtn = document.createElement("button");
-    minusBtn.textContent = "-";
-    minusBtn.className = "count-btn";
-    minusBtn.disabled = countInput.disabled;
-
-    const plusBtn = document.createElement("button");
-    plusBtn.textContent = "+";
-    plusBtn.className = "count-btn";
-    plusBtn.disabled = countInput.disabled;
-
     const countWrapper = document.createElement("div");
     countWrapper.className = "count-control";
-    countWrapper.appendChild(minusBtn);
     countWrapper.appendChild(countInput);
-    countWrapper.appendChild(plusBtn);
 
     checkbox.addEventListener("change", () => {
       const disabled = !checkbox.checked;
       countInput.disabled = disabled;
-      minusBtn.disabled = disabled;
-      plusBtn.disabled = disabled;
       if (checkbox.checked && countInput.value === "0") {
         countInput.value = "4";
       }
       div.classList.toggle("checked", checkbox.checked);
       updateSelection();
-    });
-
-    minusBtn.addEventListener("click", () => {
-      if (countInput.disabled) return;
-      let val = parseInt(countInput.value) || 0;
-      if (val > 0) {
-        countInput.value = val - 1;
-        updateSelection();
-      }
-    });
-
-    plusBtn.addEventListener("click", () => {
-      if (countInput.disabled) return;
-      let val = parseInt(countInput.value) || 0;
-      if (val < 20) {
-        countInput.value = val + 1;
-        updateSelection();
-      }
     });
 
     countInput.addEventListener("input", () => {
