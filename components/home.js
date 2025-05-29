@@ -52,7 +52,7 @@ export function renderHomeScreen(user) {
 
   const faceImg = document.createElement("img");
   faceImg.src =
-    timeClass === "night" ? "images/night_otolon.png" : "images/otolon.png";
+    timeClass === "night" ? "images/night_otolon.webp" : "images/otolon.webp";
   faceImg.alt = "おとろん";
   faceImg.className = "otolon-face";
   faceImg.style.marginBottom = "0.5em";
@@ -86,7 +86,7 @@ export function renderHomeScreen(user) {
       document.body.classList.remove(timeClass);
       document.body.classList.add(newClass);
       faceImg.src =
-        newClass === "night" ? "images/night_otolon.png" : "images/otolon.png";
+        newClass === "night" ? "images/night_otolon.webp" : "images/otolon.webp";
       titleText.textContent = `${userName}ちゃん ${getGreeting()}`;
       timeClass = newClass;
     }
