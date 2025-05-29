@@ -180,6 +180,7 @@ buttonGroup.appendChild(resetBtn);
     const isUnlocked = unlockedKeys.includes(chord.key);
     const div = document.createElement("div");
     div.className = `chord-setting`;
+    div.dataset.colorClass = chord.colorClass;
 
     if (!isUnlocked) {
       div.style.opacity = "0.5";
@@ -192,6 +193,9 @@ buttonGroup.appendChild(resetBtn);
 
     const storedItem = storedSelection.find(item => item.name === chord.name);
     checkbox.checked = !!storedItem && isUnlocked;
+    if (checkbox.checked) {
+      div.classList.add(chord.colorClass);
+    }
 
     const label = document.createElement("label");
     label.htmlFor = checkbox.id;
@@ -233,6 +237,7 @@ buttonGroup.appendChild(resetBtn);
       if (checkbox.checked && countInput.value === "0") {
         countInput.value = "4";
       }
+      div.classList.toggle(chord.colorClass, checkbox.checked);
       updateSelection();
     });
 
@@ -309,9 +314,13 @@ function updateSelection() {
   chordDivs.forEach(div => {
     const checkbox = div.querySelector("input[type='checkbox']");
     const input = div.querySelector("input[type='number']");
+    const color = div.dataset.colorClass;
     if (checkbox.checked) {
       const name = checkbox.id.replace("chk-", "");
       selectedChords.push({ name, count: parseInt(input.value) });
+    }
+    if (color) {
+      div.classList.toggle(color, checkbox.checked);
     }
   });
 
