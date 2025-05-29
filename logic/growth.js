@@ -214,26 +214,6 @@ export async function renderGrowthScreen(user) {
     item.appendChild(circle);
     item.appendChild(label);
 
-    // ✅ 「次の和音を解放」ボタン表示（すべて解放済みの場合は出ない）
-    if (target && chord.key === target.key) {
-      const button = document.createElement("button");
-      button.style.marginTop = "4px";
-      button.textContent = "🔓 次の和音を解放する";
-      button.onclick = () => {
-        showCustomConfirm("本当に和音を解放しますか？", async () => {
-          const success = await unlockChord(user.id, chord.key);
-          if (success) {
-            const audio = getAudio("audio/unlock_chord.mp3");
-            audio.play();
-            alert(`🎉 ${chord.label} を解放しました！`);
-            await applyRecommendedSelection(user.id);
-            forceUnlock();
-            await renderGrowthScreen(user);
-          }
-        });
-      };
-      item.appendChild(button);
-    }
 
     chordStatus.appendChild(item);
   }

@@ -17,6 +17,8 @@ export async function checkRecentUnlockCriteria(userId) {
     .select("unlocked_date")
     .eq("user_id", userId)
     .eq("status", "in_progress")
+    .order("unlocked_date", { ascending: false })
+    .limit(1)
     .maybeSingle();
 
   if (progress && progress.unlocked_date) {
@@ -38,6 +40,8 @@ export async function getUnlockCriteriaStatus(userId) {
     .select("unlocked_date")
     .eq("user_id", userId)
     .eq("status", "in_progress")
+    .order("unlocked_date", { ascending: false })
+    .limit(1)
     .maybeSingle();
 
   let daysSinceUnlock = null;

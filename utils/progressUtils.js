@@ -64,6 +64,26 @@ export async function autoUnlockNextChord(user) {
 
 // ✅ 和音を解放（in_progressに）
 export async function unlockChord(userId, chordKey) {
+  // 現在進行中の和音を完了状態に更新
+  const { data: current, error: fetchErr } = await supabase
+    .from("user_chord_progress")
+    .select("chord_key")
+    .eq("user_id", userId)
+    .eq("status", "in_progress");
+
+  if (!fetchErr && current && current.length > 0) {
+    const keys = current
+      .filter(row => row.chord_key !== chordKey)
+      .map(row => row.chord_key);
+    if (keys.length > 0) {
+      await supabase
+        .from("user_chord_progress")
+        .update({ status: "completed" })
+        .eq("user_id", userId)
+        .in("chord_key", keys);
+    }
+  }
+
   const { error } = await supabase
     .from("user_chord_progress")
     .update({
@@ -72,6 +92,7 @@ export async function unlockChord(userId, chordKey) {
     })
     .eq("user_id", userId)
     .eq("chord_key", chordKey);
+
   return !error;
 }
 
