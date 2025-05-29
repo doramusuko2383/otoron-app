@@ -2,6 +2,7 @@ import { supabase } from "./supabaseClient.js";
 import { unlockChord } from "./progressUtils.js";
 import { applyRecommendedSelection, forceUnlock } from "./growthUtils.js";
 import { showCustomConfirm } from "../components/home.js";
+import { getAudio } from "./audioCache.js";
 import { getConsecutiveQualifiedDays } from "./qualifiedStore_supabase.js";
 
 const PASS_DAYS = 7;
@@ -64,9 +65,11 @@ export async function updateGrowthStatusBar(user, target, onUnlocked) {
     btn.style.display = "inline-block";
     btn.onclick = () => {
       if (!target) return;
-      showCustomConfirm(async () => {
+      showCustomConfirm("本当に和音を解放しますか？", async () => {
         const success = await unlockChord(user.id, target.key);
         if (success) {
+          const audio = getAudio("audio/unlock_chord.mp3");
+          audio.play();
           alert(`🎉 ${target.label} を解放しました！`);
           await applyRecommendedSelection(user.id);
           forceUnlock();

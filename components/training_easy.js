@@ -230,7 +230,7 @@ function drawQuizScreen() {
   const quitBtn = document.createElement("button");
   quitBtn.textContent = "やめる";
   quitBtn.onclick = () => {
-    showCustomConfirm(() => {
+    showCustomConfirm("ほんとうに やめちゃうの？", () => {
       quitFlag = true;
       switchScreen("home");
     });

@@ -213,9 +213,11 @@ export async function renderGrowthScreen(user) {
       button.style.marginTop = "4px";
       button.textContent = "🔓 次の和音を解放する";
       button.onclick = () => {
-        showCustomConfirm(async () => {
+        showCustomConfirm("本当に和音を解放しますか？", async () => {
           const success = await unlockChord(user.id, chord.key);
           if (success) {
+            const audio = getAudio("audio/unlock_chord.mp3");
+            audio.play();
             alert(`🎉 ${chord.label} を解放しました！`);
             await applyRecommendedSelection(user.id);
             forceUnlock();

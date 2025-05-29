@@ -94,7 +94,11 @@ export function renderHomeScreen(user) {
 }
 
 // ✅ 他の画面から再利用できるカスタム confirm 関数
-export function showCustomConfirm(onConfirm) {
+export function showCustomConfirm(message, onConfirm) {
+  if (typeof message === "function") {
+    onConfirm = message;
+    message = "本当に和音を解放しますか？";
+  }
   let modal = document.getElementById("custom-confirm");
   if (!modal) {
     modal = document.createElement("div");
@@ -117,9 +121,10 @@ export function showCustomConfirm(onConfirm) {
     box.style.borderRadius = "10px";
     box.style.textAlign = "center";
 
-    const message = document.createElement("p");
-    message.textContent = "本当に和音を解放しますか？";
-    box.appendChild(message);
+    const messageEl = document.createElement("p");
+    messageEl.id = "custom-confirm-message";
+    messageEl.textContent = message;
+    box.appendChild(messageEl);
 
     const buttons = document.createElement("div");
     buttons.style.marginTop = "1em";
@@ -146,6 +151,11 @@ export function showCustomConfirm(onConfirm) {
     box.appendChild(buttons);
     modal.appendChild(box);
     document.body.appendChild(modal);
+  }
+
+  const msgEl = modal.querySelector("#custom-confirm-message");
+  if (msgEl) {
+    msgEl.textContent = message;
   }
 
   modal.callback = onConfirm;
