@@ -37,7 +37,7 @@ html, body {
 }
 
 .home-screen.night::before {
-  background: url('/images/night_bg.png') no-repeat center/cover;
+  background: url('/images/night_bg.webp') no-repeat center/cover;
 }
 
 .home-screen.night {
@@ -45,15 +45,15 @@ html, body {
 }
 
 .home-screen.morning::before {
-  background: url('/images/morning_bg.png') no-repeat center/cover;
+  background: url('/images/morning_bg.webp') no-repeat center/cover;
 }
 
 .home-screen.noon::before {
-  background: url('/images/noon_bg.png') no-repeat center/cover;
+  background: url('/images/noon_bg.webp') no-repeat center/cover;
 }
 
 .home-screen.evening::before {
-  background: url('/images/evening_bg.png') no-repeat center/cover;
+  background: url('/images/evening_bg.webp') no-repeat center/cover;
 }
 
 

@@ -7,7 +7,7 @@ export function renderHeader(container) {
   header.className = "app-header";
   header.innerHTML = `
     <button class="home-icon" id="home-button">
-      <img src="images/otolon_face.png" alt="ホーム" />
+      <img src="images/otolon_face.webp" alt="ホーム" />
     </button>
 
     <button class="training-header-button" id="training-button">
