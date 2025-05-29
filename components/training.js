@@ -335,7 +335,7 @@ function drawQuizScreen() {
   quitBtn.id = "quitBtn";
   quitBtn.textContent = "やめる";
   quitBtn.onclick = () => {
-    showCustomConfirm(() => {
+    showCustomConfirm("ほんとうに やめちゃうの？", () => {
       quitFlag = true;
       switchScreen("home");
     });
