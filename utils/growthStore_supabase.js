@@ -60,15 +60,25 @@ export async function markChordAsUnlocked(userId, chordKey) {
  */
 export async function generateMockGrowthData(userId) {
   const now = new Date();
+
+  // 現在進行中の和音の解放日を7日前に調整して解放条件を満たす
+  const past = new Date(now);
+  past.setDate(now.getDate() - 7);
+  const pastStr = past.toISOString().split("T")[0];
+  await supabase
+    .from("user_chord_progress")
+    .update({ unlocked_date: pastStr })
+    .eq("user_id", userId)
+    .eq("status", "in_progress");
+
+  // 直近7日分すべて合格済みの記録を挿入
   for (let i = 0; i < 7; i++) {
     const d = new Date(now);
     d.setDate(now.getDate() - i);
     const dateStr = d.toISOString().split("T")[0];
 
-    // 直近6日間は合格基準を満たす成績、7日目のみ僅かに不足させる
-    const pass = i < 6;
     const count = 60;
-    const correct = pass ? 59 : 58;
+    const correct = 59;
 
     const rec = {
       user_id: userId,
@@ -89,7 +99,7 @@ export async function generateMockGrowthData(userId) {
       total_count: count,
       results_json: { mode: "recommended" },
       stats_json: { dummy: { total: 20 } },
-      is_qualified: pass
+      is_qualified: true
     };
     const { error: sesErr } = await supabase
       .from("training_sessions")
