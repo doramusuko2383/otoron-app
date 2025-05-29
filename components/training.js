@@ -10,6 +10,7 @@ import { autoUnlockNextChord } from "../utils/progressUtils.js";
 import { saveTrainingSession } from "../utils/trainingStore_supabase.js";
 import { generateRecommendedQueue } from "../utils/growthUtils.js";
 import { loadGrowthFlags } from "../utils/growthStore_supabase.js";
+import { getAudio } from "../utils/audioCache.js";
 
 let questionCount = 0;
 let currentAnswer = null;
@@ -55,7 +56,7 @@ function playSoundThen(name, callback) {
     currentAudio.currentTime = 0;
   }
   const encoded = encodeURIComponent(name);
-  currentAudio = new Audio(`audio/${encoded}.mp3`);
+  currentAudio = getAudio(`audio/${encoded}.mp3`);
   currentAudio.onended = () => setTimeout(callback, 100);
   currentAudio.onerror = () => {
     console.error("⚠️ 音声ファイルが読み込めませんでした:", name);
@@ -408,7 +409,7 @@ function playChordFile(filename) {
     currentAudio.pause();
     currentAudio.currentTime = 0;
   }
-  currentAudio = new Audio(`audio/${filename}`);
+  currentAudio = getAudio(`audio/${filename}`);
   currentAudio.onerror = () => console.error("音声ファイルが見つかりません:", filename);
   currentAudio.play();
 }
@@ -433,7 +434,7 @@ function playNoteFile(note, callback) {
     currentAudio.currentTime = 0;
   }
   const encoded = encodeURIComponent(normalizeNoteName(note));
-  currentAudio = new Audio(`sounds/${encoded}.mp3`);
+  currentAudio = getAudio(`sounds/${encoded}.mp3`);
   currentAudio.onerror = () => console.error("音声ファイルが見つかりません:", note);
   if (callback) {
     currentAudio.onended = () => setTimeout(callback, 100);
