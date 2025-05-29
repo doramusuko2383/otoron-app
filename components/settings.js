@@ -200,26 +200,71 @@ buttonGroup.appendChild(resetBtn);
     const countInput = document.createElement("input");
     countInput.type = "number";
     countInput.min = "0";
+    countInput.max = "20";
+    countInput.step = "1";
     countInput.value = storedItem ? storedItem.count : (checkbox.checked ? "4" : "0");
     countInput.disabled = !checkbox.checked || !isUnlocked;
-    countInput.style.width = "48px";
+    countInput.style.width = "3.5em";
     countInput.style.textAlign = "right";
     countInput.style.padding = "4px";
     countInput.style.fontSize = "1em";
 
+    const minusBtn = document.createElement("button");
+    minusBtn.textContent = "-";
+    minusBtn.className = "count-btn";
+    minusBtn.disabled = countInput.disabled;
+
+    const plusBtn = document.createElement("button");
+    plusBtn.textContent = "+";
+    plusBtn.className = "count-btn";
+    plusBtn.disabled = countInput.disabled;
+
+    const countWrapper = document.createElement("div");
+    countWrapper.className = "count-control";
+    countWrapper.appendChild(minusBtn);
+    countWrapper.appendChild(countInput);
+    countWrapper.appendChild(plusBtn);
+
     checkbox.addEventListener("change", () => {
-      countInput.disabled = !checkbox.checked;
+      const disabled = !checkbox.checked;
+      countInput.disabled = disabled;
+      minusBtn.disabled = disabled;
+      plusBtn.disabled = disabled;
       if (checkbox.checked && countInput.value === "0") {
         countInput.value = "4";
       }
       updateSelection();
     });
 
-    countInput.addEventListener("input", updateSelection);
+    minusBtn.addEventListener("click", () => {
+      if (countInput.disabled) return;
+      let val = parseInt(countInput.value) || 0;
+      if (val > 0) {
+        countInput.value = val - 1;
+        updateSelection();
+      }
+    });
+
+    plusBtn.addEventListener("click", () => {
+      if (countInput.disabled) return;
+      let val = parseInt(countInput.value) || 0;
+      if (val < 20) {
+        countInput.value = val + 1;
+        updateSelection();
+      }
+    });
+
+    countInput.addEventListener("input", () => {
+      let val = parseInt(countInput.value) || 0;
+      if (val < 0) val = 0;
+      if (val > 20) val = 20;
+      countInput.value = val;
+      updateSelection();
+    });
 
     div.appendChild(checkbox);
     div.appendChild(label);
-    div.appendChild(countInput);
+    div.appendChild(countWrapper);
 
     if (chord.type === "white") {
       whiteColumn.appendChild(div);

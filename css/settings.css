@@ -82,6 +82,27 @@
   text-align: right;
   appearance: none;          /* ← iOS や一部ブラウザでの独自スタイル無効化 */
 }
+
+.count-control {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.count-control .count-btn {
+  width: 1.8em;
+  height: 1.8em;
+  font-size: 1em;
+  padding: 0;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.count-control .count-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
 .chord-setting input[type='checkbox'] {
   margin: 0;
 }
