@@ -29,6 +29,20 @@
   padding: 4px;
   text-align: center;
   font-size: 0.9em;
+  position: relative;
+}
+
+.chord-toggle {
+  display: none;
+}
+
+.chord-block.selected::after {
+  content: "✔";
+  position: absolute;
+  top: 2px;
+  right: 4px;
+  font-size: 1.1em;
+  color: green;
 }
 
 .chord-block.locked {

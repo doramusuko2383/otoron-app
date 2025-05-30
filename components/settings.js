@@ -95,6 +95,10 @@ buttonGroup.appendChild(resetBtn);
     document.querySelectorAll('.chord-block').forEach(block => {
       if (block.classList.contains('locked')) return;
       block.querySelector('.count-number').textContent = '4';
+      const cb = block.querySelector('.chord-toggle');
+      if (cb) cb.checked = true;
+      block.classList.add('selected');
+      block.querySelectorAll('button').forEach(b => b.disabled = false);
     });
     updateSelection();
   };
@@ -114,6 +118,10 @@ buttonGroup.appendChild(resetBtn);
     document.querySelectorAll('.chord-block').forEach(block => {
       if (block.classList.contains('locked')) return;
       block.querySelector('.count-number').textContent = String(count);
+      const cb = block.querySelector('.chord-toggle');
+      if (cb) cb.checked = true;
+      block.classList.add('selected');
+      block.querySelectorAll('button').forEach(b => b.disabled = false);
     });
     updateSelection();
   };
@@ -178,6 +186,11 @@ buttonGroup.appendChild(resetBtn);
       block.dataset.name = chord.name;
       if (!isUnlocked) block.classList.add("locked");
 
+      const checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.className = 'chord-toggle';
+      checkbox.disabled = !isUnlocked;
+
       const nameDiv = document.createElement("div");
       nameDiv.className = `chord-name ${chord.colorClass}`;
       nameDiv.textContent = chord.label;
@@ -204,15 +217,40 @@ buttonGroup.appendChild(resetBtn);
 
       minusBtn.onclick = () => change(-1);
       plusBtn.onclick = () => change(1);
+
+      const checked = storedItem && storedItem.count > 0;
+      checkbox.checked = checked;
+      if (checked) block.classList.add('selected');
+
+      function setEnabled(en) {
+        minusBtn.disabled = !en;
+        plusBtn.disabled = !en;
+      }
+
+      setEnabled(checked && isUnlocked);
+
+      checkbox.addEventListener('change', () => {
+        const en = checkbox.checked;
+        if (en && parseInt(numSpan.textContent) === 0) {
+          numSpan.textContent = '4';
+        }
+        if (!en) {
+          numSpan.textContent = '0';
+        }
+        block.classList.toggle('selected', en);
+        setEnabled(en && isUnlocked);
+        updateSelection();
+      });
+
       if (!isUnlocked) {
-        minusBtn.disabled = true;
-        plusBtn.disabled = true;
+        setEnabled(false);
       }
 
       ctrl.appendChild(minusBtn);
       ctrl.appendChild(numSpan);
       ctrl.appendChild(plusBtn);
 
+      block.appendChild(checkbox);
       block.appendChild(nameDiv);
       block.appendChild(ctrl);
       grid.appendChild(block);
@@ -249,9 +287,11 @@ function updateSelection() {
   blocks.forEach(block => {
     const count = parseInt(block.querySelector('.count-number').textContent);
     const name = block.dataset.name;
-    if (count > 0 && !block.classList.contains('locked')) {
+    const checked = block.querySelector('.chord-toggle')?.checked;
+    if (checked && count > 0 && !block.classList.contains('locked')) {
       selectedChords.push({ name, count });
     }
+    block.classList.toggle('selected', checked);
   });
 
   const total = selectedChords.reduce((sum, c) => sum + c.count, 0);
