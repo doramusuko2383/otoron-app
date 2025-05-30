@@ -1,6 +1,7 @@
 // components/result.js
 import { switchScreen } from "../main.js";
 import { lastResults } from "./training.js";
+import { loadLatestTrainingSession } from "../utils/trainingStore_supabase.js";
 import { chords } from "../data/chords.js";
 import { drawStaffFromNotes } from "./resultStaff.js";  // 楽譜描画（必要なら）
 import { renderHeader } from "./header.js";
@@ -34,10 +35,69 @@ function labelNote(n) {
   return noteLabels[pitch] || n;
 }
 
-// ✅ 本番用：こども向けごほうび画面
-export function renderResultScreen() {
-  const results = lastResults;
+export function createResultTable(results) {
   const singleNoteMode = localStorage.getItem('singleNoteMode') === 'on';
+  if (!results.length) {
+    return `<p class="no-training">きょうは まだ トレーニングしてないよ</p>`;
+  }
+
+  const rows = (() => {
+    let rhtml = '';
+    let idx = 0;
+    for (let i = 0; i < results.length; i++) {
+      const r = results[i];
+      if (r.isSingleNote) continue;
+      const noteRes =
+        singleNoteMode && results[i + 1] && results[i + 1].isSingleNote
+          ? results[i + 1]
+          : null;
+      if (noteRes) i++;
+      idx++;
+      rhtml += `
+        <tr class="${r.correct ? 'correct-row' : 'wrong-row'}">
+          <td>${idx}</td>
+          <td>
+            <div class="chord-box ${getColorClass(r.chordName)}">
+              ${getLabelHiragana(r.chordName)}
+            </div>
+          </td>
+          <td>
+            <div class="chord-box ${getColorClass(r.answerName)}">
+              <span class="ans-mark ${r.correct ? 'correct' : 'wrong'}">${r.correct ? '◯' : ''}</span>
+              ${getLabelHiragana(r.answerName)}
+            </div>
+          </td>
+          ${singleNoteMode ? `<td>${noteRes ? labelNote(noteRes.noteQuestion || '') : ''}</td>` : ''}
+          ${singleNoteMode ? `<td>${noteRes ? '<span class="note-answer">' + '<span class="ans-mark ' + (noteRes.correct ? 'correct' : 'wrong') + '">' + (noteRes.correct ? '◯' : '') + '</span>' + labelNote(noteRes.noteAnswer || '') + '</span>' : ''}</td>` : ''}
+        </tr>`;
+    }
+    return rhtml;
+  })();
+
+  return `<table class="result-table">
+      <thead>
+        <tr>
+          <th>じゅんばん</th>
+          <th>わおん</th>
+          <th>かいとう</th>
+          ${singleNoteMode ? '<th>たんおん</th><th>かいとう</th>' : ''}
+        </tr>
+      </thead>
+      <tbody>
+        ${rows}
+      </tbody>
+    </table>`;
+}
+
+// ✅ 本番用：こども向けごほうび画面
+export async function renderResultScreen(user) {
+  let results = lastResults;
+  if (!results.length && user && user.id) {
+    const latest = await loadLatestTrainingSession(user.id);
+    if (latest && Array.isArray(latest.results_json)) {
+      results = latest.results_json;
+    }
+  }
 
 
   const app = document.getElementById("app");
@@ -46,49 +106,7 @@ export function renderResultScreen() {
 
   const container = document.createElement("div");
   container.className = "screen active";
-  const tableHtml = !results.length ?
-    `<p class="no-training">きょうは まだ トレーニングしてないよ</p>` :
-    `<table class="result-table">
-            <thead>
-              <tr>
-                <th>じゅんばん</th>
-                <th>わおん</th>
-                <th>かいとう</th>
-                ${singleNoteMode ? '<th>たんおん</th><th>かいとう</th>' : ''}
-              </tr>
-            </thead>
-            <tbody>
-              ${(() => {
-                let rows = '';
-                let idx = 0;
-                for (let i = 0; i < results.length; i++) {
-                  const r = results[i];
-                  if (r.isSingleNote) continue;
-                  const noteRes = singleNoteMode && results[i + 1] && results[i + 1].isSingleNote ? results[i + 1] : null;
-                  if (noteRes) i++;
-                  idx++;
-                  rows += `
-                <tr class="${r.correct ? 'correct-row' : 'wrong-row'}">
-                  <td>${idx}</td>
-                  <td>
-                    <div class="chord-box ${getColorClass(r.chordName)}">
-                      ${getLabelHiragana(r.chordName)}
-                    </div>
-                  </td>
-                  <td>
-                    <div class="chord-box ${getColorClass(r.answerName)}">
-                      <span class="ans-mark ${r.correct ? 'correct' : 'wrong'}">${r.correct ? '◯' : ''}</span>
-                      ${getLabelHiragana(r.answerName)}
-                    </div>
-                  </td>
-                  ${singleNoteMode ? `<td>${noteRes ? labelNote(noteRes.noteQuestion || '') : ''}</td>` : ''}
-                  ${singleNoteMode ? `<td>${noteRes ? '<span class="note-answer">' + '<span class="ans-mark ' + (noteRes.correct ? 'correct' : 'wrong') + '">' + (noteRes.correct ? '◯' : '') + '</span>' + labelNote(noteRes.noteAnswer || '') + '</span>' : ''}</td>` : ''}
-                </tr>`;
-                }
-                return rows;
-              })()}
-            </tbody>
-          </table>`;
+  const tableHtml = createResultTable(results);
 
   container.innerHTML = `
     <div class="tab-menu">
@@ -127,7 +145,7 @@ export function renderResultScreen() {
   const dates = Object.keys(history).sort();
   const latestDate = dates[dates.length - 1] || new Date().toISOString().slice(0,10);
   const summaryContainer = container.querySelector("#summary .summary-container");
-  renderSummarySection(summaryContainer, latestDate);
+  renderSummarySection(summaryContainer, latestDate, user);
 
   app.querySelectorAll('.tab').forEach(btn => {
     btn.addEventListener('click', () => {

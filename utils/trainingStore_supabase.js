@@ -45,3 +45,41 @@ export async function saveTrainingSession({ userId, results, stats, mistakes, co
     await markQualifiedDayIfNeeded(userId, date);
   }
 }
+
+export async function loadLatestTrainingSession(userId) {
+  const { data, error } = await supabase
+    .from("training_sessions")
+    .select("*")
+    .eq("user_id", userId)
+    .order("session_date", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (error) {
+    console.error("❌ 最新セッション取得失敗:", error);
+    return null;
+  }
+
+  return data;
+}
+
+export async function loadTrainingSessionsForDate(userId, date) {
+  const nextDay = new Date(date);
+  nextDay.setDate(nextDay.getDate() + 1);
+  const nextStr = nextDay.toISOString().split("T")[0];
+
+  const { data, error } = await supabase
+    .from("training_sessions")
+    .select("*")
+    .eq("user_id", userId)
+    .gte("session_date", date)
+    .lt("session_date", nextStr)
+    .order("session_date", { ascending: true });
+
+  if (error) {
+    console.error("❌ セッション一覧取得失敗:", error);
+    return [];
+  }
+
+  return data || [];
+}

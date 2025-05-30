@@ -2,6 +2,9 @@ import { stats, mistakes, firstMistakeInSession, correctCount } from "./training
 import { switchScreen } from "../main.js";
 import { chords } from "../data/chords.js";
 import { renderHeader } from "./header.js";
+import { loadTrainingRecords } from "../utils/recordStore_supabase.js";
+import { loadTrainingSessionsForDate } from "../utils/trainingStore_supabase.js";
+import { createResultTable } from "./result.js";
 
 function getChordDisplayName(name) {
   const chord = chords.find(c => c.name === name);
@@ -47,14 +50,14 @@ export function saveSessionToHistory() {
   localStorage.setItem("training-history", JSON.stringify(history));
 }
 
-export function renderSummaryScreen() {
+export async function renderSummaryScreen(user) {
   const today = new Date().toISOString().slice(0, 10);
-  renderSummaryScreenForDate(today);
+  await renderSummaryScreenForDate(today, user);
 }
 
-export function renderSummarySection(container, date) {
-  const history = JSON.parse(localStorage.getItem("training-history") || "{}");
-  const sessions = history[date] || [];
+export async function renderSummarySection(container, date, user) {
+  const records = await loadTrainingRecords(user.id);
+  const sessions = await loadTrainingSessionsForDate(user.id, date);
 
   container.innerHTML = "";
   container.className = "screen active";
@@ -66,8 +69,8 @@ export function renderSummarySection(container, date) {
   calendarInput.style.display = "block";
   container.appendChild(calendarInput);
 
-  const allDates = Object.keys(history).sort();
-  const enabledDates = allDates.filter(d => history[d]?.length).map(d => d.trim());
+  const allDates = Object.keys(records).sort();
+  const enabledDates = allDates.filter(d => records[d]?.count).map(d => d.trim());
 
   if (window.flatpickrInstance) window.flatpickrInstance.destroy();
 
@@ -83,7 +86,7 @@ export function renderSummarySection(container, date) {
     defaultDate: date,
     disableMobile: true,
     onChange: function (_, dateStr) {
-      renderSummarySection(container, dateStr);
+      renderSummarySection(container, dateStr, user);
     }
   });
 
@@ -104,8 +107,8 @@ export function renderSummarySection(container, date) {
 
   const jpNums = ['一','二','三','四','五','六','七','八','九','十'];
   sessions.forEach((session, sessionIndex) => {
-    const sessionCorrect = session.correctCount ?? Object.values(session.stats).reduce((sum, stat) => sum + stat.correct, 0);
-    const sessionTotal = session.totalQuestions ?? Object.values(session.stats).reduce((sum, stat) => sum + stat.correct + stat.wrong + (stat.unknown || 0), 0);
+    const sessionCorrect = session.correct_count ?? Object.values(session.stats_json || {}).reduce((sum, stat) => sum + (stat.correct || 0), 0);
+    const sessionTotal = session.total_count ?? Object.values(session.stats_json || {}).reduce((sum, stat) => sum + (stat.correct || 0) + (stat.wrong || 0) + (stat.unknown || 0), 0);
     const sessionRate = sessionTotal > 0 ? ((sessionCorrect / sessionTotal) * 100).toFixed(1) : 0;
 
     const sessionSummary = document.createElement("div");
@@ -127,6 +130,23 @@ export function renderSummarySection(container, date) {
     sessionStats.style.margin = "0";
     sessionSummary.appendChild(sessionStats);
 
+    const toggleBtn = document.createElement('button');
+    toggleBtn.textContent = '＋結果一覧';
+    toggleBtn.style.marginLeft = '1em';
+
+    const resultWrap = document.createElement('div');
+    resultWrap.style.display = 'none';
+    resultWrap.innerHTML = createResultTable(session.results_json || []);
+
+    toggleBtn.onclick = () => {
+      const open = resultWrap.style.display !== 'none';
+      resultWrap.style.display = open ? 'none' : 'block';
+      toggleBtn.textContent = open ? '＋結果一覧' : '－結果一覧';
+    };
+
+    sessionSummary.appendChild(toggleBtn);
+    sessionSummary.appendChild(resultWrap);
+
     container.appendChild(sessionSummary);
   });
 }
@@ -134,7 +154,7 @@ export function renderSummarySection(container, date) {
 window.saveSessionToHistory = saveSessionToHistory;
 window.renderSummaryScreen = renderSummaryScreen;
 
-export function renderSummaryScreenForDate(date) {
+export async function renderSummaryScreenForDate(date, user) {
   const app = document.getElementById("app");
   app.innerHTML = "";
   renderHeader(app, renderSummaryScreen);
@@ -142,5 +162,5 @@ export function renderSummaryScreenForDate(date) {
   const container = document.createElement("div");
   app.appendChild(container);
 
-  renderSummarySection(container, date);
+  await renderSummarySection(container, date, user);
 }
