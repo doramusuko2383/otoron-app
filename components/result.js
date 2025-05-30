@@ -1,8 +1,10 @@
 // components/result.js
 import { switchScreen } from "../main.js";
-import { lastResults, stats, correctCount } from "./training.js";
+import { lastResults } from "./training.js";
 import { chords } from "../data/chords.js";
 import { drawStaffFromNotes } from "./resultStaff.js";  // 楽譜描画（必要なら）
+import { renderHeader } from "./header.js";
+import { renderSummarySection } from "./summary.js";
 
 let resultShownInThisSession = false;
 
@@ -34,25 +36,17 @@ function labelNote(n) {
 
 // ✅ 本番用：こども向けごほうび画面
 export function renderResultScreen() {
-  if (resultShownInThisSession) {
-    switchScreen("home");
-    return;
-  }
-
-  resultShownInThisSession = true;
-
   const results = lastResults;
   const singleNoteMode = localStorage.getItem('singleNoteMode') === 'on';
 
-  const totalQuestions = Object.values(stats).reduce((sum, s) => sum + (s.total || 0), 0);
-  const rate = totalQuestions > 0 ? ((correctCount / totalQuestions) * 100).toFixed(1) : '0.0';
-
-  const summaryRows = Object.entries(stats).map(([name, st]) => {
-    return `<tr><td>${getLabelHiragana(name)}</td><td>${st.correct}</td><td>${st.wrong}</td><td>${st.unknown || 0}</td></tr>`;
-  }).join('');
 
   const app = document.getElementById("app");
-  app.innerHTML = `
+  app.innerHTML = "";
+  renderHeader(app);
+
+  const container = document.createElement("div");
+  container.className = "screen active";
+  container.innerHTML = `
     <div class="tab-menu">
       <button class="tab active" data-tab="result">👶 こたえ</button>
       <button class="tab" data-tab="summary">👨‍👩‍👧 くわしく</button>
@@ -105,23 +99,22 @@ export function renderResultScreen() {
             </tbody>
           </table>
 
-          <div class="result-footer">
-            <p>この画面は1回だけのごほうびだよ♪</p>
-          </div>
+          <div class="result-footer"></div>
         </div>
       </div>
       <div id="summary" class="tab-content">
-        <div class="summary-container">
-          <p class="summary-note">これはおうちのひと・せんせい向けです</p>
-          <p class="summary-total">正解数：${correctCount} / ${totalQuestions}（${rate}%）</p>
-          <table class="summary-table">
-            <thead><tr><th>わおん</th><th>◯</th><th>✕</th><th>？</th></tr></thead>
-            <tbody>${summaryRows}</tbody>
-          </table>
-        </div>
+        <div class="summary-container"></div>
       </div>
     </div>
   `;
+
+  app.appendChild(container);
+
+  const history = JSON.parse(localStorage.getItem("training-history") || "{}");
+  const dates = Object.keys(history).sort();
+  const latestDate = dates[dates.length - 1] || new Date().toISOString().slice(0,10);
+  const summaryContainer = container.querySelector("#summary .summary-container");
+  renderSummarySection(summaryContainer, latestDate);
 
   app.querySelectorAll('.tab').forEach(btn => {
     btn.addEventListener('click', () => {
