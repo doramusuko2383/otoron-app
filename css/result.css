@@ -157,3 +157,66 @@
   max-width: 90%;
   max-height: 90%;
 }
+
+/* ===== Tab layout for result/summary ===== */
+.tab-menu {
+  display: flex;
+  justify-content: center;
+  gap: 1em;
+  margin: 1em 0;
+}
+
+.tab-menu .tab {
+  font-size: 1.1rem;
+  padding: 0.6em 1em;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.tab-menu .tab.active {
+  background-color: #ffdede;
+  font-weight: bold;
+}
+
+.tab-contents {
+  margin-top: 1em;
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+.summary-note {
+  text-align: center;
+  margin: 0.5em 0;
+  font-size: 0.9em;
+}
+
+.summary-total {
+  text-align: center;
+  font-weight: bold;
+  margin: 0.5em 0 1em;
+}
+
+.summary-table {
+  margin: 0 auto 1.5em;
+  border-collapse: collapse;
+  font-size: 0.9em;
+}
+
+.summary-table th,
+.summary-table td {
+  border: 1px solid #ccc;
+  padding: 0.3em 0.6em;
+  text-align: center;
+}
+
+.summary-table th {
+  background-color: #f4f4f4;
+}

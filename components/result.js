@@ -1,6 +1,6 @@
 // components/result.js
 import { switchScreen } from "../main.js";
-import { lastResults } from "./training.js";
+import { lastResults, stats, correctCount } from "./training.js";
 import { chords } from "../data/chords.js";
 import { drawStaffFromNotes } from "./resultStaff.js";  // 楽譜描画（必要なら）
 
@@ -44,63 +44,91 @@ export function renderResultScreen() {
   const results = lastResults;
   const singleNoteMode = localStorage.getItem('singleNoteMode') === 'on';
 
+  const totalQuestions = Object.values(stats).reduce((sum, s) => sum + (s.total || 0), 0);
+  const rate = totalQuestions > 0 ? ((correctCount / totalQuestions) * 100).toFixed(1) : '0.0';
+
+  const summaryRows = Object.entries(stats).map(([name, st]) => {
+    return `<tr><td>${getLabelHiragana(name)}</td><td>${st.correct}</td><td>${st.wrong}</td><td>${st.unknown || 0}</td></tr>`;
+  }).join('');
+
   const app = document.getElementById("app");
   app.innerHTML = `
-    <div class="result-container">
-      <h1>おつかれさま！</h1>
-      <p class="praise">がんばったね！</p>
+    <div class="tab-menu">
+      <button class="tab active" data-tab="result">👶 こたえ</button>
+      <button class="tab" data-tab="summary">👨‍👩‍👧 くわしく</button>
+    </div>
+    <div class="tab-contents">
+      <div id="result" class="tab-content active">
+        <div class="result-container">
+          <h1>おつかれさま！</h1>
+          <p class="praise">がんばったね！</p>
 
-      <table class="result-table">
-        <thead>
-          <tr>
-            <th>じゅんばん</th>
-            <th>わおん</th>
-            <th>かいとう</th>
-            ${singleNoteMode ? '<th>たんおん</th><th>かいとう</th>' : ''}
-          </tr>
-        </thead>
-        <tbody>
-          ${(() => {
-            let rows = '';
-            let idx = 0;
-            for (let i = 0; i < results.length; i++) {
-              const r = results[i];
-              if (r.isSingleNote) continue;
-              const noteRes = singleNoteMode && results[i + 1] && results[i + 1].isSingleNote ? results[i + 1] : null;
-              if (noteRes) i++;
-              idx++;
-              rows += `
-            <tr class="${r.correct ? 'correct-row' : 'wrong-row'}">
-              <td>${idx}</td>
-              <td>
-                <div class="chord-box ${getColorClass(r.chordName)}">
-                  ${getLabelHiragana(r.chordName)}
-                </div>
-              </td>
-              <td>
-                <div class="chord-box ${getColorClass(r.answerName)}">
-                  <span class="ans-mark ${r.correct ? 'correct' : 'wrong'}">${r.correct ? '◯' : ''}</span>
-                  ${getLabelHiragana(r.answerName)}
-                </div>
-              </td>
-              ${singleNoteMode ? `<td>${noteRes ? labelNote(noteRes.noteQuestion || '') : ''}</td>` : ''}
-              ${singleNoteMode ? `<td>${noteRes ? '<span class="note-answer">' + '<span class="ans-mark ' + (noteRes.correct ? 'correct' : 'wrong') + '">' + (noteRes.correct ? '◯' : '') + '</span>' + labelNote(noteRes.noteAnswer || '') + '</span>' : ''}</td>` : ''}
-            </tr>`;
-            }
-            return rows;
-          })()}
-        </tbody>
-      </table>
+          <table class="result-table">
+            <thead>
+              <tr>
+                <th>じゅんばん</th>
+                <th>わおん</th>
+                <th>かいとう</th>
+                ${singleNoteMode ? '<th>たんおん</th><th>かいとう</th>' : ''}
+              </tr>
+            </thead>
+            <tbody>
+              ${(() => {
+                let rows = '';
+                let idx = 0;
+                for (let i = 0; i < results.length; i++) {
+                  const r = results[i];
+                  if (r.isSingleNote) continue;
+                  const noteRes = singleNoteMode && results[i + 1] && results[i + 1].isSingleNote ? results[i + 1] : null;
+                  if (noteRes) i++;
+                  idx++;
+                  rows += `
+                <tr class="${r.correct ? 'correct-row' : 'wrong-row'}">
+                  <td>${idx}</td>
+                  <td>
+                    <div class="chord-box ${getColorClass(r.chordName)}">
+                      ${getLabelHiragana(r.chordName)}
+                    </div>
+                  </td>
+                  <td>
+                    <div class="chord-box ${getColorClass(r.answerName)}">
+                      <span class="ans-mark ${r.correct ? 'correct' : 'wrong'}">${r.correct ? '◯' : ''}</span>
+                      ${getLabelHiragana(r.answerName)}
+                    </div>
+                  </td>
+                  ${singleNoteMode ? `<td>${noteRes ? labelNote(noteRes.noteQuestion || '') : ''}</td>` : ''}
+                  ${singleNoteMode ? `<td>${noteRes ? '<span class="note-answer">' + '<span class="ans-mark ' + (noteRes.correct ? 'correct' : 'wrong') + '">' + (noteRes.correct ? '◯' : '') + '</span>' + labelNote(noteRes.noteAnswer || '') + '</span>' : ''}</td>` : ''}
+                </tr>`;
+                }
+                return rows;
+              })()}
+            </tbody>
+          </table>
 
-      <div class="result-footer">
-        <p>この画面は1回だけのごほうびだよ♪</p>
-        <button id="go-summary" class="small-btn">くわしい記録を見る（保護者向け）</button>
+          <div class="result-footer">
+            <p>この画面は1回だけのごほうびだよ♪</p>
+          </div>
+        </div>
+      </div>
+      <div id="summary" class="tab-content">
+        <div class="summary-container">
+          <p class="summary-note">これはおうちのひと・せんせい向けです</p>
+          <p class="summary-total">正解数：${correctCount} / ${totalQuestions}（${rate}%）</p>
+          <table class="summary-table">
+            <thead><tr><th>わおん</th><th>◯</th><th>✕</th><th>？</th></tr></thead>
+            <tbody>${summaryRows}</tbody>
+          </table>
+        </div>
       </div>
     </div>
   `;
 
-  document.getElementById("go-summary").addEventListener("click", () => {
-    switchScreen("summary");
+  app.querySelectorAll('.tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const tab = btn.getAttribute('data-tab');
+      app.querySelectorAll('.tab').forEach(b => b.classList.toggle('active', b === btn));
+      app.querySelectorAll('.tab-content').forEach(c => c.classList.toggle('active', c.id === tab));
+    });
   });
 }
 
