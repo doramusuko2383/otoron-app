@@ -51,18 +51,11 @@ export function renderSummaryScreen() {
   renderSummaryScreenForDate(today);
 }
 
-window.saveSessionToHistory = saveSessionToHistory;
-window.renderSummaryScreen = renderSummaryScreen;
-
-export function renderSummaryScreenForDate(date) {
+export function renderSummarySection(container, date) {
   const history = JSON.parse(localStorage.getItem("training-history") || "{}");
   const sessions = history[date] || [];
 
-  const app = document.getElementById("app");
-  app.innerHTML = "";
-  renderHeader(app, renderSummaryScreen);
-
-  const container = document.createElement("div");
+  container.innerHTML = "";
   container.className = "screen active";
 
   const calendarInput = document.createElement("input");
@@ -77,8 +70,6 @@ export function renderSummaryScreenForDate(date) {
 
   if (window.flatpickrInstance) window.flatpickrInstance.destroy();
 
-  app.appendChild(container);
-
   const todayObj = new Date();
   const twoYearsAgo = new Date();
   twoYearsAgo.setFullYear(todayObj.getFullYear() - 2);
@@ -91,13 +82,11 @@ export function renderSummaryScreenForDate(date) {
     defaultDate: date,
     disableMobile: true,
     onChange: function (_, dateStr) {
-      renderSummaryScreenForDate(dateStr);
+      renderSummarySection(container, dateStr);
     }
   });
 
-  // 🎹 最新セッションの結果（←ここを最新のみに修正）
   const latestSession = sessions[sessions.length - 1] || {};
-  const latestStats = latestSession.stats || {};
   const latestCorrect = latestSession.correctCount || 0;
   const latestTotal = latestSession.totalQuestions || 0;
   const latestRate = latestTotal > 0 ? ((latestCorrect / latestTotal) * 100).toFixed(1) : "0.0";
@@ -114,7 +103,6 @@ export function renderSummaryScreenForDate(date) {
   dayTotal.style.fontWeight = "bold";
   container.appendChild(dayTotal);
 
-  // 各セッションの表示
   sessions.forEach((session, sessionIndex) => {
     const sessionCorrect = session.correctCount ?? Object.values(session.stats).reduce((sum, stat) => sum + stat.correct, 0);
     const sessionTotal = session.totalQuestions ?? Object.values(session.stats).reduce((sum, stat) => sum + stat.correct + stat.wrong + (stat.unknown || 0), 0);
@@ -146,7 +134,6 @@ export function renderSummaryScreenForDate(date) {
     container.appendChild(sessionSummary);
   });
 
-  // 🧮 今回のセッションの詳細（すでに正しく最新を参照）
   const summaryHeading = document.createElement("h3");
   summaryHeading.textContent = "今回のトレーニング結果";
   summaryHeading.style.textAlign = "center";
@@ -154,25 +141,22 @@ export function renderSummaryScreenForDate(date) {
   container.appendChild(summaryHeading);
 
   const summary = document.createElement("p");
-  summary.innerHTML = `
-    トレーニング回数：${sessions.length} 回<br>
-    正解数：${latestCorrect} / ${latestTotal}（${latestRate}%）
-  `;
+  summary.innerHTML = `\n    トレーニング回数：${sessions.length} 回<br>\n    正解数：${latestCorrect} / ${latestTotal}（${latestRate}%）\n  `;
   summary.style.textAlign = "center";
   summary.style.margin = "0.5em 0 1.5em";
   container.appendChild(summary);
+}
 
-  // 🐛 デバッグ：最新セッションの stats 表示
-  //const debug = document.createElement("pre");
-  //debug.style.fontSize = "0.8em";
-  //debug.style.background = "#f9f9f9";
-  //debug.style.border = "1px solid #ccc";
-  //debug.style.padding = "1em";
-  //debug.style.margin = "2em auto";
-  //debug.style.width = "90%";
-  //debug.style.whiteSpace = "pre-wrap";
-  //debug.textContent = `🛠 DEBUG: 最新セッションの stats\n` + JSON.stringify(latestStats, null, 2);
-  //container.appendChild(debug);
+window.saveSessionToHistory = saveSessionToHistory;
+window.renderSummaryScreen = renderSummaryScreen;
 
+export function renderSummaryScreenForDate(date) {
+  const app = document.getElementById("app");
+  app.innerHTML = "";
+  renderHeader(app, renderSummaryScreen);
+
+  const container = document.createElement("div");
   app.appendChild(container);
+
+  renderSummarySection(container, date);
 }

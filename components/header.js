@@ -49,7 +49,7 @@ export function renderHeader(container) {
 
   // ▼ その他画面遷移
   header.querySelector("#settings-btn").onclick = () => switchScreen("settings");
-  header.querySelector("#summary-btn").onclick = () => switchScreen("summary");
+  header.querySelector("#summary-btn").onclick = () => switchScreen("result");
   header.querySelector("#growth-btn").onclick = () => switchScreen("growth");
 
   header.querySelector("#mypage-btn").onclick = () => switchScreen("mypage");
