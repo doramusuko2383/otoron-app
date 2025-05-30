@@ -4,6 +4,7 @@ import { chords } from "../data/chords.js";
 import { renderHeader } from "./header.js";
 import { loadTrainingRecords } from "../utils/recordStore_supabase.js";
 import { loadTrainingSessionsForDate } from "../utils/trainingStore_supabase.js";
+import { generateWeeklyReport } from "../utils/weeklyReport.js";
 import { createResultTable } from "./result.js";
 
 function createMistakeDetailHtml(mistakes) {
@@ -105,6 +106,20 @@ export async function renderSummarySection(container, date, user) {
   calendarInput.style.margin = "0.2em auto 1em";
   calendarInput.style.display = "block";
   container.appendChild(calendarInput);
+
+  const weeklyBtn = document.createElement('button');
+  weeklyBtn.textContent = '📤 週次レポート作成';
+  weeklyBtn.style.display = 'block';
+  weeklyBtn.style.margin = '0 auto 1em';
+  container.appendChild(weeklyBtn);
+
+  weeklyBtn.onclick = () => {
+    const end = date;
+    const startDateObj = new Date(date);
+    startDateObj.setDate(startDateObj.getDate() - 6);
+    const startStr = startDateObj.toISOString().split('T')[0];
+    generateWeeklyReport(user.id, startStr, end);
+  };
 
   const allDates = Object.keys(records).sort();
   const enabledDates = allDates.filter(d => records[d]?.count).map(d => d.trim());
