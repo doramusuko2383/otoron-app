@@ -175,6 +175,7 @@ async function nextQuestion() {
   
     const sound = (correctCount === questionCount) ? "perfect" : "end";
     playSoundThen(sound, () => {
+      sessionStorage.setItem('openResultChild', 'true');
       switchScreen("result");
     });
     return;

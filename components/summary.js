@@ -33,6 +33,7 @@ export function saveSessionToHistory() {
   const today = new Date().toISOString().slice(0, 10);
   const sessionRecord = {
     date: today,
+    timestamp: new Date().toISOString(),
     stats: sanitizedStats,
     mistakes: JSON.parse(JSON.stringify(mistakes)),
     correctCount: correctAnswers,
@@ -86,10 +87,13 @@ export function renderSummarySection(container, date) {
     }
   });
 
-  const latestSession = sessions[sessions.length - 1] || {};
-  const latestCorrect = latestSession.correctCount || 0;
-  const latestTotal = latestSession.totalQuestions || 0;
-  const latestRate = latestTotal > 0 ? ((latestCorrect / latestTotal) * 100).toFixed(1) : "0.0";
+  if (sessions.length === 0) {
+    const msg = document.createElement('p');
+    msg.textContent = '本日はトレーニングしておりません';
+    msg.style.textAlign = 'center';
+    container.appendChild(msg);
+    return;
+  }
 
   const title = document.createElement("h2");
   title.textContent = `🎹 ${date} の最新セッション結果`;
@@ -97,12 +101,8 @@ export function renderSummarySection(container, date) {
   title.style.textAlign = "center";
   container.appendChild(title);
 
-  const dayTotal = document.createElement("p");
-  dayTotal.textContent = `正解数：${latestCorrect} / ${latestTotal}（${latestRate}%）`;
-  dayTotal.style.textAlign = "center";
-  dayTotal.style.fontWeight = "bold";
-  container.appendChild(dayTotal);
 
+  const jpNums = ['一','二','三','四','五','六','七','八','九','十'];
   sessions.forEach((session, sessionIndex) => {
     const sessionCorrect = session.correctCount ?? Object.values(session.stats).reduce((sum, stat) => sum + stat.correct, 0);
     const sessionTotal = session.totalQuestions ?? Object.values(session.stats).reduce((sum, stat) => sum + stat.correct + stat.wrong + (stat.unknown || 0), 0);
@@ -115,7 +115,9 @@ export function renderSummarySection(container, date) {
     sessionSummary.style.borderBottom = "1px solid #eee";
 
     const sessionTitle = document.createElement("h3");
-    sessionTitle.textContent = `セッション ${sessionIndex + 1}`;
+    const t = session.timestamp ? new Date(session.timestamp).toTimeString().slice(0,5) : '';
+    const jp = jpNums[sessionIndex] || (sessionIndex + 1);
+    sessionTitle.textContent = `${jp}回目のトレーニング${t ? ' ' + t : ''}`;
     sessionTitle.style.fontSize = "1em";
     sessionTitle.style.margin = "0 0 0.5em 0";
     sessionSummary.appendChild(sessionTitle);
@@ -125,26 +127,8 @@ export function renderSummarySection(container, date) {
     sessionStats.style.margin = "0";
     sessionSummary.appendChild(sessionStats);
 
-    const storedCount = document.createElement("p");
-    storedCount.textContent = `保存された正解数: ${session.correctCount}`;
-    storedCount.style.color = "#999";
-    storedCount.style.fontSize = "0.8em";
-    sessionSummary.appendChild(storedCount);
-
     container.appendChild(sessionSummary);
   });
-
-  const summaryHeading = document.createElement("h3");
-  summaryHeading.textContent = "今回のトレーニング結果";
-  summaryHeading.style.textAlign = "center";
-  summaryHeading.style.margin = "1.5em 0 0.5em";
-  container.appendChild(summaryHeading);
-
-  const summary = document.createElement("p");
-  summary.innerHTML = `\n    トレーニング回数：${sessions.length} 回<br>\n    正解数：${latestCorrect} / ${latestTotal}（${latestRate}%）\n  `;
-  summary.style.textAlign = "center";
-  summary.style.margin = "0.5em 0 1.5em";
-  container.appendChild(summary);
 }
 
 window.saveSessionToHistory = saveSessionToHistory;
