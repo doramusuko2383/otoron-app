@@ -62,10 +62,16 @@ export async function renderSummarySection(container, date, user) {
   container.innerHTML = "";
   container.className = "screen active";
 
+  const calendarLabel = document.createElement("div");
+  calendarLabel.textContent = "日付を絞って選択";
+  calendarLabel.style.fontSize = "0.7em";
+  calendarLabel.style.textAlign = "center";
+  container.appendChild(calendarLabel);
+
   const calendarInput = document.createElement("input");
   calendarInput.type = "text";
   calendarInput.id = "calendar";
-  calendarInput.style.margin = "1em auto";
+  calendarInput.style.margin = "0.2em auto 1em";
   calendarInput.style.display = "block";
   container.appendChild(calendarInput);
 
@@ -99,7 +105,7 @@ export async function renderSummarySection(container, date, user) {
   }
 
   const title = document.createElement("h2");
-  title.textContent = `🎹 ${date} の最新セッション結果`;
+  title.textContent = `🎹 ${date} の結果`;
   title.style.color = "#333";
   title.style.textAlign = "center";
   container.appendChild(title);
@@ -131,8 +137,12 @@ export async function renderSummarySection(container, date, user) {
     sessionSummary.appendChild(sessionStats);
 
     const toggleBtn = document.createElement('button');
-    toggleBtn.textContent = '＋結果一覧';
+    toggleBtn.textContent = '＋';
     toggleBtn.style.marginLeft = '1em';
+
+    const toggleLabel = document.createElement('span');
+    toggleLabel.textContent = '結果一覧';
+    toggleLabel.style.marginLeft = '0.3em';
 
     const resultWrap = document.createElement('div');
     resultWrap.style.display = 'none';
@@ -141,10 +151,11 @@ export async function renderSummarySection(container, date, user) {
     toggleBtn.onclick = () => {
       const open = resultWrap.style.display !== 'none';
       resultWrap.style.display = open ? 'none' : 'block';
-      toggleBtn.textContent = open ? '＋結果一覧' : '－結果一覧';
+      toggleBtn.textContent = open ? '＋' : '－';
     };
 
     sessionSummary.appendChild(toggleBtn);
+    sessionSummary.appendChild(toggleLabel);
     sessionSummary.appendChild(resultWrap);
 
     container.appendChild(sessionSummary);
