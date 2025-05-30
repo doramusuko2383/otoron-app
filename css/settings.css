@@ -33,16 +33,15 @@
 }
 
 .chord-toggle {
-  display: none;
-}
-
-.chord-block.selected::after {
-  content: "✔";
   position: absolute;
   top: 2px;
-  right: 4px;
-  font-size: 1.1em;
-  color: green;
+  left: 2px;
+}
+
+/* 以前は選択中のブロックに擬似要素でチェックマークを表示していたが、
+   実際のチェックボックスを表示するため不要となった */
+.chord-block.selected::after {
+  display: none;
 }
 
 .chord-block.locked {
