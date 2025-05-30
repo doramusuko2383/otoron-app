@@ -22,6 +22,7 @@ let isForcedAnswer = false;
 let currentUser = null; // ← 追加
 let singleNoteMode = false;
 let chordProgressCount = 0;
+let chordSoundOn = true;
 
 const noteLabels = {
   "C": "ど",
@@ -87,6 +88,7 @@ export async function renderTrainingScreen(user) {
   console.log("🟢 renderTrainingScreen: user.id =", user?.id);
   currentUser = user;
   singleNoteMode = localStorage.getItem("singleNoteMode") === "on";
+  chordSoundOn = localStorage.getItem("chordSound") !== "off";
   const flags = await loadGrowthFlags(user.id);
   chordProgressCount = Object.values(flags).filter(f => f.unlocked).length;
   resetResultFlag();
@@ -239,6 +241,15 @@ function drawQuizScreen() {
   progress.style.width = "60%";
   progress.style.height = "1em";
   header.appendChild(progress);
+
+  const soundToggle = document.createElement('button');
+  soundToggle.textContent = chordSoundOn ? '和音OFF' : '和音ON';
+  soundToggle.onclick = () => {
+    chordSoundOn = !chordSoundOn;
+    localStorage.setItem('chordSound', chordSoundOn ? 'on' : 'off');
+    soundToggle.textContent = chordSoundOn ? '和音OFF' : '和音ON';
+  };
+  header.appendChild(soundToggle);
 
 
   const layout = document.createElement("div");
@@ -406,6 +417,7 @@ if (correctBtn) {
 
 
 function playChordFile(filename) {
+  if (!chordSoundOn) return;
   if (currentAudio) {
     currentAudio.pause();
     currentAudio.currentTime = 0;
