@@ -6,6 +6,37 @@ import { loadTrainingRecords } from "../utils/recordStore_supabase.js";
 import { loadTrainingSessionsForDate } from "../utils/trainingStore_supabase.js";
 import { createResultTable } from "./result.js";
 
+function createMistakeDetailHtml(mistakes) {
+  if (!mistakes) return "";
+  if (typeof mistakes === "string") {
+    try { mistakes = JSON.parse(mistakes); } catch (_) { return ""; }
+  }
+  const items = [];
+  if (mistakes.initial_mistake) {
+    items.push("さいしょのもんだいでまちがえました");
+  }
+  if (Array.isArray(mistakes.inversion_confusions) && mistakes.inversion_confusions.length) {
+    const text = mistakes.inversion_confusions
+      .map(m => `${m.question}→${m.answer}(${m.count})`)
+      .join('、 ');
+    items.push(`転回形のまちがい: ${text}`);
+  }
+  if (Array.isArray(mistakes.top_bottom_confusions) && mistakes.top_bottom_confusions.length) {
+    const text = mistakes.top_bottom_confusions
+      .map(m => `${m.question}→${m.answer}(${m.count})`)
+      .join('、 ');
+    items.push(`上下がおなじ和音: ${text}`);
+  }
+  if (Array.isArray(mistakes.frequent_pairs) && mistakes.frequent_pairs.length) {
+    const text = mistakes.frequent_pairs
+      .map(p => `${p.pair[0]}⇄${p.pair[1]}(${p.count})`)
+      .join('、 ');
+    items.push(`よくまちがえるペア: ${text}`);
+  }
+  if (!items.length) return "";
+  return `<ul class="mistake-details"><li>${items.join('</li><li>')}</li></ul>`;
+}
+
 function getChordDisplayName(name) {
   const chord = chords.find(c => c.name === name);
   if (!chord) return name;
@@ -135,6 +166,13 @@ export async function renderSummarySection(container, date, user) {
     sessionStats.textContent = `正解数：${sessionCorrect} / ${sessionTotal}（${sessionRate}%）`;
     sessionStats.style.margin = "0";
     sessionSummary.appendChild(sessionStats);
+
+    const mistakeHtml = createMistakeDetailHtml(session.mistakes_json);
+    if (mistakeHtml) {
+      const mistakeDiv = document.createElement('div');
+      mistakeDiv.innerHTML = mistakeHtml;
+      sessionSummary.appendChild(mistakeDiv);
+    }
 
     const toggleBtn = document.createElement('button');
     toggleBtn.textContent = '＋';
