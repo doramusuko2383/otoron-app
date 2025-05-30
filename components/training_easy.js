@@ -96,6 +96,7 @@ async function nextQuestion() {
   
     const sound = (correctCount === questionCount) ? "perfect" : "end";
     playSoundThen(sound, () => {
+      sessionStorage.setItem('openResultChild', 'true');
       switchScreen("result");
     });
     return;
@@ -358,6 +359,7 @@ function checkAnswer(selected) {
       const sound = (correctCount === questionCount) ? "perfect" : "end";
       saveSessionToHistory();
       playSoundThen(sound, () => {
+        sessionStorage.setItem('openResultChild', 'true');
         switchScreen("result");
       });
     } else {

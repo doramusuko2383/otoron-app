@@ -46,18 +46,9 @@ export function renderResultScreen() {
 
   const container = document.createElement("div");
   container.className = "screen active";
-  container.innerHTML = `
-    <div class="tab-menu">
-      <button class="tab active" data-tab="result">👶 こたえ</button>
-      <button class="tab" data-tab="summary">👨‍👩‍👧 くわしく</button>
-    </div>
-    <div class="tab-contents">
-      <div id="result" class="tab-content active">
-        <div class="result-container">
-          <h1>おつかれさま！</h1>
-          <p class="praise">がんばったね！</p>
-
-          <table class="result-table">
+  const tableHtml = !results.length ?
+    `<p class="no-training">きょうは まだ トレーニングしてないよ</p>` :
+    `<table class="result-table">
             <thead>
               <tr>
                 <th>じゅんばん</th>
@@ -97,8 +88,17 @@ export function renderResultScreen() {
                 return rows;
               })()}
             </tbody>
-          </table>
+          </table>`;
 
+  container.innerHTML = `
+    <div class="tab-menu">
+      <button class="tab active" data-tab="result">👶 こたえ</button>
+      <button class="tab" data-tab="summary">👨‍👩‍👧 くわしく</button>
+    </div>
+    <div class="tab-contents">
+      <div id="result" class="tab-content active">
+        <div class="result-container">
+          ${tableHtml}
           <div class="result-footer"></div>
         </div>
       </div>
@@ -109,6 +109,19 @@ export function renderResultScreen() {
   `;
 
   app.appendChild(container);
+
+  const openChild = sessionStorage.getItem('openResultChild') === 'true';
+  sessionStorage.removeItem('openResultChild');
+  if (!openChild) {
+    const resultTabBtn = container.querySelector('.tab[data-tab="result"]');
+    const summaryTabBtn = container.querySelector('.tab[data-tab="summary"]');
+    const resultContent = container.querySelector('#result');
+    const summaryContent = container.querySelector('#summary');
+    resultTabBtn.classList.remove('active');
+    summaryTabBtn.classList.add('active');
+    resultContent.classList.remove('active');
+    summaryContent.classList.add('active');
+  }
 
   const history = JSON.parse(localStorage.getItem("training-history") || "{}");
   const dates = Object.keys(history).sort();
