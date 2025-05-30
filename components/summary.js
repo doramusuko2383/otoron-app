@@ -139,6 +139,9 @@ export async function renderSummarySection(container, date, user) {
     const toggleBtn = document.createElement('button');
     toggleBtn.textContent = '＋';
     toggleBtn.style.marginLeft = '1em';
+    toggleBtn.style.fontSize = '0.8em';
+    toggleBtn.style.lineHeight = '1';
+    toggleBtn.style.padding = '0.1em 0.4em';
 
     const toggleLabel = document.createElement('span');
     toggleLabel.textContent = '結果一覧';

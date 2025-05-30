@@ -37,7 +37,21 @@ function labelNote(n) {
 
 export function createResultTable(results) {
   const singleNoteMode = localStorage.getItem('singleNoteMode') === 'on';
-  if (!results.length) {
+
+  // results may come as a JSON string or object. Normalize to an array.
+  if (typeof results === 'string') {
+    try {
+      const parsed = JSON.parse(results);
+      if (Array.isArray(parsed)) results = parsed;
+      else if (Array.isArray(parsed.results)) results = parsed.results;
+    } catch (_) {
+      results = [];
+    }
+  } else if (results && !Array.isArray(results) && Array.isArray(results.results)) {
+    results = results.results;
+  }
+
+  if (!Array.isArray(results) || results.length === 0) {
     return `<p class="no-training">きょうは まだ トレーニングしてないよ</p>`;
   }
 
