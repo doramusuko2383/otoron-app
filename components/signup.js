@@ -2,6 +2,7 @@ import { switchScreen } from "../main.js";
 import { firebaseAuth } from "../firebase/firebase-init.js";
 import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { supabase } from "../utils/supabaseClient.js";
+import { createInitialChordProgress } from "../utils/progressUtils.js";
 
 export function renderSignUpScreen() {
   const app = document.getElementById("app");
@@ -59,17 +60,40 @@ export function renderSignUpScreen() {
     try {
       const result = await signInWithPopup(firebaseAuth, provider);
       const user = result.user;
-
-      const { data: existingUser } = await supabase
+      const { data: existingUser, error } = await supabase
         .from("users")
         .select("*")
         .eq("firebase_uid", user.uid)
         .maybeSingle();
 
+      let userId = existingUser?.id;
+
       if (!existingUser) {
-        await supabase.from("users").insert([
-          { firebase_uid: user.uid, name: user.displayName || "名前未設定" }
-        ]);
+        const { data: inserted, error: insertError } = await supabase
+          .from("users")
+          .insert([
+            { firebase_uid: user.uid, name: user.displayName || "名前未設定" }
+          ])
+          .select()
+          .maybeSingle();
+
+        if (insertError || !inserted) {
+          console.error("❌ Supabaseユーザー登録失敗:", insertError);
+        } else {
+          userId = inserted.id;
+        }
+      }
+
+      if (userId) {
+        const { data: progress, error: progressError } = await supabase
+          .from("user_chord_progress")
+          .select("id")
+          .eq("user_id", userId)
+          .limit(1);
+
+        if (!progressError && (!progress || progress.length === 0)) {
+          await createInitialChordProgress(userId);
+        }
       }
 
       switchScreen("home");

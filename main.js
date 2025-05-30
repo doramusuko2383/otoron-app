@@ -14,7 +14,7 @@ import { renderLoginScreen } from "./components/login.js";
 import { renderIntroScreen } from "./components/intro.js";
 import { renderSignUpScreen } from "./components/signup.js";
 import { supabase } from "./utils/supabaseClient.js";
-import { createInitialChordProgress } from "../utils/progressUtils.js";
+import { createInitialChordProgress } from "./utils/progressUtils.js";
 import { renderMyPageScreen } from "./components/mypage.js";
 import { clearTimeOfDayStyling } from "./utils/timeOfDay.js";
 
