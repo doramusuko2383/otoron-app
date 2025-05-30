@@ -141,7 +141,12 @@ export async function renderSummarySection(container, date, user) {
     toggleBtn.style.marginLeft = '1em';
     toggleBtn.style.fontSize = '0.8em';
     toggleBtn.style.lineHeight = '1';
-    toggleBtn.style.padding = '0.1em 0.4em';
+    toggleBtn.style.display = 'inline-flex';
+    toggleBtn.style.justifyContent = 'center';
+    toggleBtn.style.alignItems = 'center';
+    toggleBtn.style.width = '1.4em';
+    toggleBtn.style.height = '1.4em';
+    toggleBtn.style.padding = '0';
 
     const toggleLabel = document.createElement('span');
     toggleLabel.textContent = '結果一覧';

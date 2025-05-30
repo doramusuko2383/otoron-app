@@ -230,26 +230,20 @@ function drawQuizScreen() {
   header.style.padding = "0 1em";
 
   const counter = document.createElement("h2");
+  counter.id = "progress-counter";
   const total = questionQueue.length + questionCount + 1;
   counter.textContent = `${questionCount} / ${total}`;
   counter.style.fontSize = "1.2em";
   header.appendChild(counter);
 
   const progress = document.createElement("progress");
+  progress.id = "progress-bar";
   progress.value = questionCount;
   progress.max = total;
   progress.style.width = "60%";
   progress.style.height = "1em";
   header.appendChild(progress);
 
-  const soundToggle = document.createElement('button');
-  soundToggle.textContent = chordSoundOn ? '和音OFF' : '和音ON';
-  soundToggle.onclick = () => {
-    chordSoundOn = !chordSoundOn;
-    localStorage.setItem('chordSound', chordSoundOn ? 'on' : 'off');
-    soundToggle.textContent = chordSoundOn ? '和音OFF' : '和音ON';
-  };
-  header.appendChild(soundToggle);
 
 
   const layout = document.createElement("div");
@@ -612,6 +606,15 @@ function showFeedback(message, type = "good") {
   }, 1000);
 }
 
+function updateProgressUI() {
+  const bar = document.getElementById('progress-bar');
+  const counter = document.getElementById('progress-counter');
+  if (bar) bar.value = questionCount;
+  if (counter && bar) {
+    counter.textContent = `${questionCount} / ${bar.max}`;
+  }
+}
+
 function checkAnswer(selected) {
   const name = currentAnswer.name;
   stats[name] = stats[name] || { correct: 0, wrong: 0, total: 0 };
@@ -619,6 +622,7 @@ function checkAnswer(selected) {
   if (isForcedAnswer) {
     isForcedAnswer = false;
     questionCount++;
+    updateProgressUI();
     nextQuestion();
     return;
   }
@@ -639,6 +643,7 @@ function checkAnswer(selected) {
       correctCount++;
     }
     questionCount++;
+    updateProgressUI();
 
     document.querySelectorAll(".square-btn-content").forEach(btn => {
       btn.style.pointerEvents = "none";
