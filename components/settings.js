@@ -242,6 +242,14 @@ buttonGroup.appendChild(resetBtn);
         updateSelection();
       });
 
+      // ブロック全体をクリックして ON/OFF できるようにする
+      block.addEventListener('click', (e) => {
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON') return;
+        if (checkbox.disabled) return;
+        checkbox.checked = !checkbox.checked;
+        checkbox.dispatchEvent(new Event('change'));
+      });
+
       if (!isUnlocked) {
         setEnabled(false);
       }
