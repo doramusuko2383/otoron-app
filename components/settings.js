@@ -92,17 +92,9 @@ buttonGroup.appendChild(resetBtn);
   const debugBtn = document.createElement("button");
   debugBtn.textContent = "🛠 全部選択 (4回)";
   debugBtn.onclick = () => {
-    chords.forEach(chord => {
-      const isUnlocked = unlockedKeys.includes(chord.key);
-      if (!isUnlocked) return;
-
-      const checkbox = document.getElementById(`chk-${chord.name}`);
-      const input = checkbox?.parentElement?.querySelector("input[type='number']");
-      if (checkbox && input) {
-        checkbox.checked = true;
-        input.disabled = false;
-        input.value = "4";
-      }
+    document.querySelectorAll('.chord-block').forEach(block => {
+      if (block.classList.contains('locked')) return;
+      block.querySelector('.count-number').textContent = '4';
     });
     updateSelection();
   };
@@ -119,15 +111,9 @@ buttonGroup.appendChild(resetBtn);
   bulkDropdown.onchange = () => {
     const count = parseInt(bulkDropdown.value);
     if (!count) return;
-    chords.forEach(chord => {
-      const isUnlocked = unlockedKeys.includes(chord.key);
-      if (!isUnlocked) return;
-
-      const checkbox = document.getElementById(`chk-${chord.name}`);
-      const input = checkbox?.parentElement?.querySelector("input[type='number']");
-      if (checkbox && checkbox.checked && input) {
-        input.value = count;
-      }
+    document.querySelectorAll('.chord-block').forEach(block => {
+      if (block.classList.contains('locked')) return;
+      block.querySelector('.count-number').textContent = String(count);
     });
     updateSelection();
   };
@@ -160,100 +146,82 @@ buttonGroup.appendChild(resetBtn);
   const chordSettings = document.createElement("div");
   chordSettings.id = "chord-settings";
 
-  const whiteColumn = document.createElement("div");
-  whiteColumn.className = "chord-column";
-  const blackColumn = document.createElement("div");
-  blackColumn.className = "chord-column";
-  const invColumn = document.createElement("div");
-  invColumn.className = "chord-column-inv";
-
   const trainingMode = sessionStorage.getItem("trainingMode");
   const stored = (trainingMode === "custom")
     ? sessionStorage.getItem("selectedChords")
     : localStorage.getItem("selectedChords");
-  
+
   let storedSelection = stored ? JSON.parse(stored) : [];
-  
+
   selectedChords = [];
 
-  chords.forEach(chord => {
-    const isUnlocked = unlockedKeys.includes(chord.key);
-    const div = document.createElement("div");
-    div.className = `chord-setting`;
+  const groups = [
+    { title: "白鍵", type: "white" },
+    { title: "黒鍵", type: "black-root" },
+    { title: "転回形", type: "black-inv" }
+  ];
 
-    if (!isUnlocked) {
-      div.style.opacity = "0.5";
-    }
+  groups.forEach(g => {
+    const sec = document.createElement("section");
+    sec.className = "chord-group";
+    const h2 = document.createElement("h2");
+    h2.textContent = g.title;
+    sec.appendChild(h2);
 
-    const checkbox = document.createElement("input");
-    checkbox.type = "checkbox";
-    checkbox.id = `chk-${chord.name}`;
-    checkbox.disabled = !isUnlocked;
+    const grid = document.createElement("div");
+    grid.className = "chord-grid";
 
-    const storedItem = storedSelection.find(item => item.name === chord.name);
-    checkbox.checked = !!storedItem && isUnlocked;
-    if (checkbox.checked) {
-      div.classList.add("checked");
-    }
+    chords.filter(c => c.type === g.type).forEach(chord => {
+      const isUnlocked = unlockedKeys.includes(chord.key);
+      const block = document.createElement("div");
+      block.className = "chord-block";
+      block.dataset.name = chord.name;
+      if (!isUnlocked) block.classList.add("locked");
 
-    const label = document.createElement("label");
-    label.htmlFor = checkbox.id;
-    label.textContent = chord.label;
+      const nameDiv = document.createElement("div");
+      nameDiv.className = `chord-name ${chord.colorClass}`;
+      nameDiv.textContent = chord.label;
 
-    const countInput = document.createElement("input");
-    countInput.type = "number";
-    countInput.min = "0";
-    countInput.max = "20";
-    countInput.step = "1";
-    countInput.value = storedItem ? storedItem.count : (checkbox.checked ? "4" : "0");
-    countInput.disabled = !checkbox.checked || !isUnlocked;
-    countInput.style.width = "3.5em";
-    countInput.style.textAlign = "right";
-    countInput.style.padding = "4px";
-    countInput.style.fontSize = "1em";
+      const ctrl = document.createElement("div");
+      ctrl.className = "count-control";
+      const minusBtn = document.createElement("button");
+      minusBtn.textContent = "-";
+      const numSpan = document.createElement("span");
+      numSpan.className = "count-number";
+      const storedItem = storedSelection.find(item => item.name === chord.name);
+      numSpan.textContent = storedItem ? storedItem.count : 0;
+      const plusBtn = document.createElement("button");
+      plusBtn.textContent = "+";
 
-    const countWrapper = document.createElement("div");
-    countWrapper.className = "count-control";
-    countWrapper.appendChild(countInput);
-
-    checkbox.addEventListener("change", () => {
-      const disabled = !checkbox.checked;
-      countInput.disabled = disabled;
-      if (checkbox.checked && countInput.value === "0") {
-        countInput.value = "4";
+      function change(delta) {
+        let val = parseInt(numSpan.textContent) || 0;
+        val += delta;
+        if (val < 0) val = 0;
+        if (val > 5) val = 5;
+        numSpan.textContent = val;
+        updateSelection();
       }
-      div.classList.toggle("checked", checkbox.checked);
-      updateSelection();
+
+      minusBtn.onclick = () => change(-1);
+      plusBtn.onclick = () => change(1);
+      if (!isUnlocked) {
+        minusBtn.disabled = true;
+        plusBtn.disabled = true;
+      }
+
+      ctrl.appendChild(minusBtn);
+      ctrl.appendChild(numSpan);
+      ctrl.appendChild(plusBtn);
+
+      block.appendChild(nameDiv);
+      block.appendChild(ctrl);
+      grid.appendChild(block);
     });
 
-    countInput.addEventListener("input", () => {
-      let val = parseInt(countInput.value) || 0;
-      if (val < 0) val = 0;
-      if (val > 20) val = 20;
-      countInput.value = val;
-      updateSelection();
-    });
-
-    div.appendChild(checkbox);
-    div.appendChild(label);
-    div.appendChild(countWrapper);
-
-    if (chord.type === "white") {
-      whiteColumn.appendChild(div);
-    } else if (chord.type === "black-root") {
-      blackColumn.appendChild(div);
-    } else if (chord.type === "black-inv") {
-      invColumn.appendChild(div);
-    }
+    sec.appendChild(grid);
+    chordSettings.appendChild(sec);
   });
 
-  const upperRow = document.createElement("div");
-  upperRow.className = "chord-columns-row";
-  upperRow.appendChild(whiteColumn);
-  upperRow.appendChild(blackColumn);
-
-  chordSettings.appendChild(upperRow);
-  chordSettings.appendChild(invColumn);
   container.appendChild(chordSettings);
   app.appendChild(container);
 
@@ -275,17 +243,15 @@ buttonGroup.appendChild(resetBtn);
 }
 
 function updateSelection() {
-  const chordDivs = document.querySelectorAll(".chord-setting");
+  const blocks = document.querySelectorAll(".chord-block");
   selectedChords = [];
 
-  chordDivs.forEach(div => {
-    const checkbox = div.querySelector("input[type='checkbox']");
-    const input = div.querySelector("input[type='number']");
-    if (checkbox.checked) {
-      const name = checkbox.id.replace("chk-", "");
-      selectedChords.push({ name, count: parseInt(input.value) });
+  blocks.forEach(block => {
+    const count = parseInt(block.querySelector('.count-number').textContent);
+    const name = block.dataset.name;
+    if (count > 0 && !block.classList.contains('locked')) {
+      selectedChords.push({ name, count });
     }
-    div.classList.toggle("checked", checkbox.checked);
   });
 
   const total = selectedChords.reduce((sum, c) => sum + c.count, 0);
