@@ -2,6 +2,7 @@
 
 import { supabase } from "./supabaseClient.js";
 import { sessionMeetsStats, markQualifiedDayIfNeeded } from "./qualifiedStore_supabase.js";
+import { convertMistakesJsonToStructuredForm } from "./mistakeUtils.js";
 
 /**
  * トレーニングセッション結果をSupabaseに保存する関数
@@ -24,6 +25,7 @@ export async function saveTrainingSession({ userId, results, stats, mistakes, co
     totalCount,
     date
   });
+  const structuredMistakes = convertMistakesJsonToStructuredForm(mistakes, results);
   const isQualified = sessionMeetsStats(stats, totalCount);
   const { data, error } = await supabase.from("training_sessions").insert([
     {
@@ -33,7 +35,7 @@ export async function saveTrainingSession({ userId, results, stats, mistakes, co
       total_count: totalCount,
       results_json: results,
       stats_json: stats,
-      mistakes_json: mistakes,
+      mistakes_json: structuredMistakes,
       is_qualified: isQualified
     }
   ]);
