@@ -1,8 +1,12 @@
 /* ===== common.css (scoped) ===== */
 
+:root {
+  --font-main: 'Kosugi Maru', sans-serif;
+}
+
 /* デフォルト：モバイルファースト（スクロール許可） */
 .app-root {
-  font-family: sans-serif;
+  font-family: var(--font-main);
   margin: 0;
   padding: 0;
   background: #fff8f0;

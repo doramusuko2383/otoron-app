@@ -93,6 +93,18 @@
     padding: 4px;
   }
 }
+
+@media screen and (min-width: 768px) {
+  .training-button-area {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 16px;
+    max-width: 600px;
+  }
+
+  .square-btn-content {
+    font-size: 1rem;
+  }
+}
 .square-btn-content.correct-mark::after {
   content: "✔";
   position: absolute;
