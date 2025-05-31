@@ -111,8 +111,11 @@
 }
 
 /* 正解ボタン強調用 */
+
+/* 正解ボタン強調用 - 押すまで繰り返し揺れる */
 .square-btn-content.correct-highlight {
-  animation: correct-glow 0.8s ease-in-out, correct-shake 0.4s ease-in-out 0s 2;
+  box-shadow: 0 0 15px 5px rgba(255, 255, 0, 0.7);
+  animation: correct-shake-loop 1s ease-in-out infinite;
 }
 
 @keyframes correct-glow {
@@ -126,6 +129,14 @@
   25%      { transform: translateX(-2px); }
   50%      { transform: translateX(2px); }
   75%      { transform: translateX(-2px); }
+}
+
+/* 1秒周期でぷるぷる震えるアニメーション */
+@keyframes correct-shake-loop {
+  0%, 40%, 100% { transform: translateX(0); }
+  10%           { transform: translateX(-2px); }
+  20%           { transform: translateX(2px); }
+  30%           { transform: translateX(-2px); }
 }
 
 /* === chord color classes === */
