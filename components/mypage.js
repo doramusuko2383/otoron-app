@@ -7,6 +7,7 @@ import {
   linkWithCredential,
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { firebaseAuth } from "../firebase/firebase-init.js";
+import { startCheckout } from "../utils/stripeCheckout.js";
 
 export function renderMyPageScreen(user) {
   const app = document.getElementById("app");
@@ -209,29 +210,15 @@ export function renderMyPageScreen(user) {
     const div = document.createElement("div");
     div.className = "tab-section";
 
-    const info = document.createElement("div");
-    info.className = "plan-info";
-    info.innerHTML = `
-      <p>現在のプラン: <strong>プレミアム</strong></p>
-      <p>金額: <strong>500円/月</strong></p>
-      <p>次回請求日: <strong>2024-09-01</strong></p>
-      <p>有効期限: <strong>2024-09-30</strong></p>
-      <p>支払い方法: <strong>Visa •••• 4242</strong></p>
-    `;
-    div.appendChild(info);
+    const subscribeBtn = document.createElement("button");
+    subscribeBtn.textContent = "月額プランに登録";
+    subscribeBtn.onclick = startCheckout;
 
-    const btnWrap = document.createElement("div");
-    btnWrap.className = "plan-buttons";
-    [
-      { id: "change", label: "プランを変更する" },
-      { id: "cancel", label: "プレミア解約する" },
-      { id: "leave", label: "退会する" }
-    ].forEach(b => {
-      const btn = document.createElement("button");
-      btn.textContent = b.label;
-      btnWrap.appendChild(btn);
-    });
-    div.appendChild(btnWrap);
+    const wrap = document.createElement("div");
+    wrap.className = "plan-buttons";
+    wrap.appendChild(subscribeBtn);
+    div.appendChild(wrap);
+
     return div;
   }
 

@@ -1,0 +1,10 @@
+{
+  "name": "otoron-app",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "dependencies": {
+    "stripe": "^12.15.0"
+  }
+}
+
