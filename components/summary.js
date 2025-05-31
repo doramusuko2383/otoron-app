@@ -140,7 +140,7 @@ export async function renderSummarySection(container, date, user) {
     const startDateObj = new Date(date);
     startDateObj.setDate(startDateObj.getDate() - 6);
     const startStr = startDateObj.toISOString().split('T')[0];
-    const text = await generateWeeklyReport(user.id, startStr, end);
+    const text = await generateWeeklyReport(user, startStr, end);
     if (text) {
       reportArea.value = text;
       reportWrap.style.display = 'block';
