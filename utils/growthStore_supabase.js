@@ -2,6 +2,7 @@
 
 import { supabase } from "./supabaseClient.js";
 import { markQualifiedDayIfNeeded } from "./qualifiedStore_supabase.js";
+import { generateRecommendedQueue } from "./growthUtils.js";
 
 /**
  * 和音の進捗（解放状態）を取得
@@ -79,6 +80,10 @@ export async function generateMockGrowthData(userId) {
     { question: "F-A-C", answer: "A-C-F" }
   ];
 
+  const flags = await loadGrowthFlags(userId);
+  let queue = generateRecommendedQueue(flags);
+  if (queue.length === 0) queue = ["C-E-G"];
+
   // 直近7日分の記録を挿入（ミスにバリエーションあり）
   for (let i = 0; i < 7; i++) {
     const d = new Date(now);
@@ -87,13 +92,12 @@ export async function generateMockGrowthData(userId) {
 
     const count = 60;
     const mistakeNum = Math.floor(Math.random() * 2) + 1; // 1 or 2 mistakes
-    const correct = count - mistakeNum;
 
     const rec = {
       user_id: userId,
       date: dateStr,
       count,
-      correct,
+      correct: count - mistakeNum,
       sets: 3
     };
     const { error: recErr } = await supabase
@@ -102,20 +106,40 @@ export async function generateMockGrowthData(userId) {
     if (recErr) console.error("❌ モック記録挿入失敗:", recErr);
 
     const inversionMistakes = [];
-    for (let j = 0; j < mistakeNum; j++) {
-      const m = sampleMistakes[(i + j) % sampleMistakes.length];
-      inversionMistakes.push({ ...m, count: 1 });
+    const results = [];
+    const stats = {};
+
+    for (let q = 0; q < count; q++) {
+      const chordName = queue[q % queue.length];
+      let answerName = chordName;
+      let correctFlag = true;
+
+      if (q < mistakeNum) {
+        const m = sampleMistakes[(i + q) % sampleMistakes.length];
+        answerName = m.answer;
+        correctFlag = false;
+        inversionMistakes.push({ ...m, count: 1 });
+      }
+
+      results.push({ chordName, answerName, correct: correctFlag });
+
+      if (!stats[chordName]) {
+        stats[chordName] = { correct: 0, wrong: 0, unknown: 0, total: 0 };
+      }
+      if (correctFlag) stats[chordName].correct++;
+      else stats[chordName].wrong++;
+      stats[chordName].total++;
     }
 
     const ses = {
       user_id: userId,
       session_date: `${dateStr}T12:00:00`,
-      correct_count: correct,
+      correct_count: count - mistakeNum,
       total_count: count,
-      results_json: { mode: "recommended" },
-      stats_json: { dummy: { total: 20 } },
+      results_json: results,
+      stats_json: stats,
       mistakes_json: { inversion_confusions: inversionMistakes },
-      is_qualified: true
+      is_qualified: (count - mistakeNum) / count >= 0.98
     };
     const { error: sesErr } = await supabase
       .from("training_sessions")
