@@ -15,11 +15,13 @@
   align-items: center;
   font-size: 1.1em;
   margin: 0.5em 0;
-  justify-content: center;
+  justify-content: flex-start; /* 左寄せに変更 */
 }
 
 .group-toggle-btn {
   margin-right: 0.5em;
+  padding: 2px 6px; /* 小さめのボタン */
+  font-size: 0.9em;
 }
 
 .chord-group.collapsed .chord-grid {
@@ -112,6 +114,12 @@
   align-items: center;
   gap: 0.5em;
 }
+.header-button-group button,
+.header-button-group select {
+  padding: 6px 12px;
+  font-size: 1em;
+  height: 2.2em; /* 高さを揃える */
+}
 
 .header-title-line #total-count {
   font-size: 1rem;
@@ -193,5 +201,5 @@
 
 /* その他のトレーニングの見出し */
 .other-training-section h3 {
-  text-align: center;
+  text-align: left; /* 左寄せに変更 */
 }
