@@ -7,6 +7,7 @@ import {
   getTimeOfDay,
   clearTimeOfDayStyling,
 } from "../utils/timeOfDay.js";
+import { getAudio } from "../utils/audioCache.js";
 
 export function renderHomeScreen(user) {
   const app = document.getElementById("app");
@@ -56,6 +57,16 @@ export function renderHomeScreen(user) {
   faceImg.alt = "おとろん";
   faceImg.className = "otolon-face";
   faceImg.style.marginBottom = "0.5em";
+  faceImg.addEventListener("pointerdown", () => {
+    const audio = getAudio("audio/touch.mp3");
+    audio.play().catch((e) => console.warn("touch sound error", e));
+    faceImg.classList.add("bounce");
+    faceImg.addEventListener(
+      "animationend",
+      () => faceImg.classList.remove("bounce"),
+      { once: true }
+    );
+  });
   logoContainer.appendChild(faceImg);
 
   // ✅ トレーニング開始ボタン（ひとつに集約）
