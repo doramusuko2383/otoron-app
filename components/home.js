@@ -30,7 +30,7 @@ export function renderHomeScreen(user) {
   // ✅ あいさつテキスト
   const titleText = document.createElement("h1");
   const userName = user?.name || "";
-  titleText.textContent = `${userName}ちゃん ${getGreeting()}`;
+  titleText.textContent = `${userName}ちゃん<br>${getGreeting()}`;
   titleText.style.fontSize = "1.8rem"; // make greeting text slightly smaller
   titleText.style.margin = "0";
   titleText.style.color = "#543014";
