@@ -89,7 +89,6 @@ export async function updateGrowthStatusBar(user, target, onUnlocked) {
         if (success) {
           const audio = getAudio("audio/unlock_chord.mp3");
           audio.play();
-          alert(`🎉 ${target.label} を解放しました！`);
           await applyRecommendedSelection(user.id);
           forceUnlock();
           btn.style.display = "none";
