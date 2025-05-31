@@ -274,10 +274,10 @@ function drawQuizScreen() {
       }
     });
 
-// 正解のボタンに星を表示
+// 正解ボタンを光らせて強調
 const correctBtn = document.querySelector(`.square-btn-content[data-name="${currentAnswer.name}"]`);
 if (correctBtn) {
-  correctBtn.classList.add("correct-mark");
+  correctBtn.classList.add("correct-highlight");
 }
 
     showFeedback("もういちど", "bad");
@@ -389,7 +389,7 @@ function checkAnswer(selected) {
       // 🔽 ここに追加
   const correctBtn = document.querySelector(`.square-btn-content[data-name="${name}"]`);
   if (correctBtn) {
-    correctBtn.classList.add("correct-mark");
+    correctBtn.classList.add("correct-highlight");
   }
 
     showFeedback("もういちど", "bad");
