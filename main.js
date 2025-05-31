@@ -13,6 +13,7 @@ import { renderGrowthScreen } from "./logic/growth.js";
 import { renderLoginScreen } from "./components/login.js";
 import { renderIntroScreen } from "./components/intro.js";
 import { renderSignUpScreen } from "./components/signup.js";
+import { renderInitialSetupScreen } from "./components/initialSetup.js";
 import { supabase } from "./utils/supabaseClient.js";
 import { createInitialChordProgress } from "./utils/progressUtils.js";
 import { renderMyPageScreen } from "./components/mypage.js";
@@ -66,7 +67,7 @@ export const switchScreen = (screen, user = currentUser, options = {}) => {
   }
 
   if (screen === "intro") renderIntroScreen();
-  else if (screen === "login") renderLoginScreen(app, () => switchScreen("home", user));
+  else if (screen === "login") renderLoginScreen(app, () => {});
   else if (screen === "home") renderHomeScreen(user);
   else if (screen === "training") renderTrainingScreen(user);
   else if (screen === "training_easy") renderTrainingEasy(user);
@@ -75,6 +76,7 @@ export const switchScreen = (screen, user = currentUser, options = {}) => {
   else if (screen === "summary") renderSummaryScreen(user);
   else if (screen === "growth") renderGrowthScreen(user);
   else if (screen === "signup") renderSignUpScreen(user);
+  else if (screen === "setup") renderInitialSetupScreen(user, (u) => switchScreen("home", u));
   else if (screen === "mypage") renderMyPageScreen(user);
   else if (screen === "result") renderResultScreen(user);
   else if (screen === "result_easy") renderTrainingEasyResultScreen(user);
@@ -131,7 +133,11 @@ onAuthStateChanged(auth, async (firebaseUser) => {
   }
 
   currentUser = user;
-  switchScreen("home", user);
+  if (!user.name || user.name === "名前未設定") {
+    switchScreen("setup", user);
+  } else {
+    switchScreen("home", user);
+  }
 });
 
 window.addEventListener("DOMContentLoaded", () => {
