@@ -49,16 +49,20 @@ export async function generateWeeklyReport(userId, startDate, endDate) {
 
   const reportText = `\n【🎼 絶対音感トレーニング週次レポート】\n${userId}（${startDate}〜${endDate}）\n\n🗓 トレーニング実施日数：${totalSessions}日間\n✅ 合格日数：${passedSessions}日間（1日あたり40問以上・98%以上）\n📊 合計出題数：${totalQuestions}問\n🎯 正答率：${accuracy}%\n\n🔓 解放済み和音（色）：\n${chordNames}\n\n🔍 ミス傾向：\n${inversionMistakes.concat(topBottomMistakes).join('\n')}\n${initialMistakeCount > 0 ? `・初回だけミス：${initialMistakeCount}回あり` : ''}\n\n📣 コメント：\n今週もよくがんばりました。来週はさらに安定した結果を目指しましょう！`.trim();
 
+  return reportText;
+}
+
+export async function shareReport(text) {
   if (navigator.share) {
     try {
       await navigator.share({
         title: '絶対音感レポート',
-        text: reportText
+        text
       });
     } catch (err) {
       console.error('❌ 共有に失敗:', err);
     }
   } else {
-    alert('このブラウザは共有機能に対応していません。\n\n' + reportText);
+    alert('このブラウザは共有機能に対応していません。\n\n' + text);
   }
 }
