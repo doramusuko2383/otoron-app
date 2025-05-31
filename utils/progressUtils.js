@@ -25,6 +25,39 @@ export async function createInitialChordProgress(userId) {
   }
 }
 
+// ✅ 経験者向け：任意の和音からスタートできるよう進捗を設定
+export async function applyStartChordIndex(userId, startIndex) {
+  const chordKeys = chords.map((c) => c.key);
+  const completed = chordKeys.slice(0, startIndex);
+  const current = chordKeys[startIndex];
+  const locked = chordKeys.slice(startIndex + 1);
+  const today = new Date().toISOString().split("T")[0];
+
+  if (completed.length > 0) {
+    await supabase
+      .from("user_chord_progress")
+      .update({ status: "completed", unlocked_date: null })
+      .eq("user_id", userId)
+      .in("chord_key", completed);
+  }
+
+  if (current) {
+    await supabase
+      .from("user_chord_progress")
+      .update({ status: "in_progress", unlocked_date: today })
+      .eq("user_id", userId)
+      .eq("chord_key", current);
+  }
+
+  if (locked.length > 0) {
+    await supabase
+      .from("user_chord_progress")
+      .update({ status: "locked", unlocked_date: null })
+      .eq("user_id", userId)
+      .in("chord_key", locked);
+  }
+}
+
 // ✅ 連続合格日数が7日に達したら、次の和音に進める
 export async function autoUnlockNextChord(user) {
   const passed = await getPassedDays(user.id);

@@ -47,7 +47,6 @@ export function renderSignUpScreen() {
     try {
       await createUserWithEmailAndPassword(firebaseAuth, email, password);
       alert("登録が完了しました！");
-      switchScreen("home");
     } catch (e) {
       alert("登録エラー：" + e.message);
     }
@@ -95,8 +94,6 @@ export function renderSignUpScreen() {
           await createInitialChordProgress(userId);
         }
       }
-
-      switchScreen("home");
     } catch (err) {
       alert("Google登録失敗：" + err.message);
     }

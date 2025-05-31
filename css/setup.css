@@ -1,0 +1,48 @@
+.setup-wrapper {
+  max-width: 400px;
+  margin: 100px auto;
+  padding: 2rem;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  font-family: sans-serif;
+  text-align: center;
+}
+
+.setup-wrapper h2 {
+  font-size: 1.6rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.setup-wrapper input,
+.setup-wrapper select {
+  width: 100%;
+  padding: 0.7rem;
+  font-size: 1rem;
+  border: 1px solid #bbb;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+}
+
+.setup-wrapper button {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  background: #ffa500;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.setup-wrapper button:hover {
+  background: #e38c00;
+}
+
+.setup-note {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  color: #555;
+}
