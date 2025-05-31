@@ -160,17 +160,30 @@ buttonGroup.appendChild(resetBtn);
 
   selectedChords = [];
 
+  const hasBlack = unlockedKeys.some(k => chords.find(c => c.key === k && c.type === "black-root"));
+  const hasInv = unlockedKeys.some(k => chords.find(c => c.key === k && c.type === "black-inv"));
+
   const groups = [
-    { title: "白鍵", type: "white" },
-    { title: "黒鍵", type: "black-root" },
-    { title: "転回形", type: "black-inv" }
+    { title: "白鍵", type: "white", open: true },
+    { title: "黒鍵", type: "black-root", open: hasBlack },
+    { title: "転回形", type: "black-inv", open: hasInv }
   ];
 
   groups.forEach(g => {
     const sec = document.createElement("section");
     sec.className = "chord-group";
+    if (!g.open) sec.classList.add("collapsed");
     const h2 = document.createElement("h2");
-    h2.textContent = g.title;
+    const toggleBtn = document.createElement("button");
+    toggleBtn.className = "group-toggle-btn";
+    toggleBtn.textContent = g.open ? "－" : "＋";
+    toggleBtn.onclick = () => {
+      const willOpen = sec.classList.contains("collapsed");
+      sec.classList.toggle("collapsed");
+      toggleBtn.textContent = willOpen ? "－" : "＋";
+    };
+    h2.appendChild(toggleBtn);
+    h2.appendChild(document.createTextNode(g.title));
     sec.appendChild(h2);
 
     const grid = document.createElement("div");
@@ -255,7 +268,11 @@ buttonGroup.appendChild(resetBtn);
       ctrl.appendChild(numSpan);
       ctrl.appendChild(plusBtn);
 
-      block.appendChild(checkbox);
+      const checkboxRow = document.createElement('div');
+      checkboxRow.className = 'checkbox-row';
+      checkboxRow.appendChild(checkbox);
+
+      block.appendChild(checkboxRow);
       block.appendChild(nameDiv);
       block.appendChild(ctrl);
       grid.appendChild(block);

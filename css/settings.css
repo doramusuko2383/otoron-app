@@ -11,9 +11,19 @@
 }
 
 .chord-group h2 {
-  text-align: center;
+  display: flex;
+  align-items: center;
   font-size: 1.1em;
   margin: 0.5em 0;
+  justify-content: center;
+}
+
+.group-toggle-btn {
+  margin-right: 0.5em;
+}
+
+.chord-group.collapsed .chord-grid {
+  display: none;
 }
 
 .chord-grid {
@@ -33,9 +43,13 @@
 }
 
 .chord-toggle {
-  position: absolute;
-  top: 2px;
-  left: 2px;
+  position: relative;
+  margin: 0 auto;
+}
+
+.checkbox-row {
+  text-align: center;
+  margin-bottom: 2px;
 }
 
 /* 以前は選択中のブロックに擬似要素でチェックマークを表示していたが、
@@ -91,6 +105,12 @@
   font-size: 1.2em;
   font-weight: bold;
   white-space: nowrap;
+}
+
+.header-button-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
 }
 
 .header-title-line #total-count {
