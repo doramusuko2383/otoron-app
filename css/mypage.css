@@ -87,3 +87,16 @@
   border-radius: 6px;
   font-size: 1rem;
 }
+
+.password-guide {
+  padding: 1em;
+  margin: 1em;
+  background: #fff4e0;
+  border: 1px solid #ffd599;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+.password-guide button {
+  margin-left: 0.5em;
+  padding: 0.4em 0.8em;
+}
