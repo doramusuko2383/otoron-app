@@ -21,6 +21,8 @@ body {
 
 .screen.active {
   display: flex;
+  flex-direction: column;
+  padding: 8px 16px; /* ← ここを圧縮！上下8px、左右16px */
 }
 
 /* カラーボタン共通 */
