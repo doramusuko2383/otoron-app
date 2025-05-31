@@ -92,7 +92,8 @@ export async function renderSummarySection(container, date, user) {
   const sessions = await loadTrainingSessionsForDate(user.id, date);
 
   container.innerHTML = "";
-  container.className = "screen active";
+  // Add a specific class so CSS rules don't affect other screens
+  container.className = "screen active summary-screen";
 
   const calendarLabel = document.createElement("div");
   calendarLabel.textContent = "日付を絞って選択";
