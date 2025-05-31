@@ -5,6 +5,7 @@ import { switchScreen } from "../main.js";
 import { supabase } from "../utils/supabaseClient.js";
 import { chords, chordOrder } from "../data/chords.js";
 import { generateRecommendedQueue } from "../utils/growthUtils.js"; // use queue util
+import { showCustomConfirm } from "./home.js";
 
 export let selectedChords = [];
 
@@ -127,11 +128,13 @@ buttonGroup.appendChild(resetBtn);
   singleToggle.checked = localStorage.getItem('singleNoteMode') === 'on';
   singleToggle.onchange = () => {
     if (singleToggle.checked) {
-      if (confirm('白鍵全ての絶対音感が身に着いたあとで使ってください')) {
-        localStorage.setItem('singleNoteMode', 'on');
-      } else {
-        singleToggle.checked = false;
-      }
+      showCustomConfirm(
+        '白鍵全ての絶対音感が身に着いたあとで使ってください',
+        () => {
+          localStorage.setItem('singleNoteMode', 'on');
+        },
+        { okText: 'はい', showCancel: false }
+      );
     } else {
       localStorage.removeItem('singleNoteMode');
     }
