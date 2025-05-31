@@ -68,7 +68,8 @@ export async function generateWeeklyReport(user, startDate, endDate) {
 
   const lastTotalQ = lastSessions.reduce((sum, s) => sum + (s.total_count || 0), 0);
   const lastTotalC = lastSessions.reduce((sum, s) => sum + (s.correct_count || 0), 0);
-  const lastWeekAccuracy = lastTotalQ > 0 ? (lastTotalC / lastTotalQ) * 100 : 0;
+  const lastWeekAccuracy =
+    lastTotalQ > 0 ? (lastTotalC / lastTotalQ) * 100 : null;
 
   const chordLabelMap = Object.fromEntries(chords.map(c => [c.key, c.label]));
   const chordNames = progress.map(p => chordLabelMap[p.chord_key] || p.chord_key).join('、');
@@ -158,13 +159,21 @@ export async function generateWeeklyReport(user, startDate, endDate) {
     comments.push('継続回数が少なめです。毎日少しずつでも続けることが上達の鍵です。');
   }
 
-  const rateDiff = accNum - lastWeekAccuracy;
-  if (rateDiff >= 2) {
-    comments.push(`先週から正答率が${rateDiff.toFixed(1)}%向上しました。確実に成長が見られます！`);
-  } else if (rateDiff >= 0.5) {
-    comments.push('前週比で正答率が少し上がっています。地道な努力が実を結びつつあります。');
-  } else if (rateDiff < -1) {
-    comments.push('先週より正答率が少し下がっていますが、焦らずに丁寧に続けましょう。');
+  if (lastWeekAccuracy !== null) {
+    const rateDiff = accNum - lastWeekAccuracy;
+    if (rateDiff >= 2) {
+      comments.push(
+        `先週から正答率が${rateDiff.toFixed(1)}%向上しました。確実に成長が見られます！`
+      );
+    } else if (rateDiff >= 0.5) {
+      comments.push(
+        '前週比で正答率が少し上がっています。地道な努力が実を結びつつあります。'
+      );
+    } else if (rateDiff < -1) {
+      comments.push(
+        '先週より正答率が少し下がっていますが、焦らずに丁寧に続けましょう。'
+      );
+    }
   }
 
   if (nextUnlockChord && remainingPassDays > 0) {
