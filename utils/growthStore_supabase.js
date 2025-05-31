@@ -71,14 +71,23 @@ export async function generateMockGrowthData(userId) {
     .eq("user_id", userId)
     .eq("status", "in_progress");
 
-  // 直近7日分すべて合格済みの記録を挿入
+  const sampleMistakes = [
+    { question: "C-E-G", answer: "E-G-C" },
+    { question: "A-C#-E", answer: "C#-E-A" },
+    { question: "D-F#-A", answer: "F#-A-D" },
+    { question: "E-G#-B", answer: "G#-B-E" },
+    { question: "F-A-C", answer: "A-C-F" }
+  ];
+
+  // 直近7日分の記録を挿入（ミスにバリエーションあり）
   for (let i = 0; i < 7; i++) {
     const d = new Date(now);
     d.setDate(now.getDate() - i);
     const dateStr = d.toISOString().split("T")[0];
 
     const count = 60;
-    const correct = 59;
+    const mistakeNum = Math.floor(Math.random() * 2) + 1; // 1 or 2 mistakes
+    const correct = count - mistakeNum;
 
     const rec = {
       user_id: userId,
@@ -92,6 +101,12 @@ export async function generateMockGrowthData(userId) {
       .upsert(rec, { onConflict: "user_id,date" });
     if (recErr) console.error("❌ モック記録挿入失敗:", recErr);
 
+    const inversionMistakes = [];
+    for (let j = 0; j < mistakeNum; j++) {
+      const m = sampleMistakes[(i + j) % sampleMistakes.length];
+      inversionMistakes.push({ ...m, count: 1 });
+    }
+
     const ses = {
       user_id: userId,
       session_date: `${dateStr}T12:00:00`,
@@ -99,6 +114,7 @@ export async function generateMockGrowthData(userId) {
       total_count: count,
       results_json: { mode: "recommended" },
       stats_json: { dummy: { total: 20 } },
+      mistakes_json: { inversion_confusions: inversionMistakes },
       is_qualified: true
     };
     const { error: sesErr } = await supabase

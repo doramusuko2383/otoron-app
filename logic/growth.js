@@ -230,43 +230,6 @@ export async function renderGrowthScreen(user) {
     container.appendChild(done);
   }
 
-  // 📆 過去7日間履歴
-  const historyTitle = document.createElement("h3");
-  historyTitle.textContent = "📆 過去7日間の履歴";
-  container.appendChild(historyTitle);
-
-  const allRecords = await getSortedRecordArray(user.id);
-  const recent = allRecords.slice(-7).reverse();
-
-  const table = document.createElement("table");
-  table.style.borderCollapse = "collapse";
-  table.style.width = "100%";
-
-  const headerRow = document.createElement("tr");
-  ["日付", "出題数", "正答数", "正答率", "セット数"].forEach(text => {
-    const th = document.createElement("th");
-    th.textContent = text;
-    th.style.border = "1px solid #ccc";
-    th.style.padding = "6px";
-    th.style.background = "#f0f0f0";
-    headerRow.appendChild(th);
-  });
-  table.appendChild(headerRow);
-
-  recent.forEach(r => {
-    const rate = r.count ? ((r.correct / r.count) * 100).toFixed(1) : "0.0";
-    const tr = document.createElement("tr");
-    [r.date, r.count, r.correct, `${rate}%`, r.sets].forEach(text => {
-      const td = document.createElement("td");
-      td.textContent = text;
-      td.style.border = "1px solid #ccc";
-      td.style.padding = "6px";
-      tr.appendChild(td);
-    });
-    table.appendChild(tr);
-  });
-
-  container.appendChild(table);
 
   const backBtn = document.createElement("button");
   backBtn.textContent = "🏠 ホームに戻る";
