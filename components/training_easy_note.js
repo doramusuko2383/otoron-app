@@ -57,6 +57,14 @@ export function renderTrainingScreen(user) {
     <button id="finish-btn">やめる</button>
   `;
 
+  const debugAnswer = document.createElement("div");
+  debugAnswer.style.position = "absolute";
+  debugAnswer.style.top = "10px";
+  debugAnswer.style.right = "10px";
+  debugAnswer.style.fontSize = "0.9em";
+  debugAnswer.style.color = "gray";
+  app.appendChild(debugAnswer);
+
   const whiteOrder = ["C", "D", "E", "F", "G", "A", "B"];
   const blackOrder = [
     { note: "C#", pos: "pos1" },
@@ -125,15 +133,7 @@ export function renderTrainingScreen(user) {
       }, FEEDBACK_DELAY);
     };
 
-    if (correct) {
-      isSoundPlaying = true;
-      playNote(currentNote).then(() => {
-        isSoundPlaying = false;
-        proceed();
-      });
-    } else {
-      proceed();
-    }
+    proceed();
   });
 
   finishBtn.onclick = () => {
@@ -145,6 +145,7 @@ export function renderTrainingScreen(user) {
       noteSequence = getRandomNoteSequence(maxQuestions);
     }
     currentNote = noteSequence.pop();
+    debugAnswer.textContent = `【デバッグ】正解: ${kanaToHiragana(noteLabels[currentNote.replace(/[0-9]/g, "")])}（${currentNote}）`;
     isSoundPlaying = true;
     setInteraction(false);
     playNote(currentNote).then(() => {
