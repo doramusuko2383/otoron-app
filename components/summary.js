@@ -4,7 +4,7 @@ import { chords } from "../data/chords.js";
 import { renderHeader } from "./header.js";
 import { loadTrainingRecords } from "../utils/recordStore_supabase.js";
 import { loadTrainingSessionsForDate } from "../utils/trainingStore_supabase.js";
-import { generateWeeklyReport } from "../utils/weeklyReport.js";
+import { generateWeeklyReport, shareReport } from "../utils/weeklyReport.js";
 import { createResultTable } from "./result.js";
 
 function createMistakeDetailHtml(mistakes) {
@@ -113,12 +113,44 @@ export async function renderSummarySection(container, date, user) {
   weeklyBtn.style.margin = '0 auto 1em';
   container.appendChild(weeklyBtn);
 
-  weeklyBtn.onclick = () => {
+  const reportWrap = document.createElement('div');
+  reportWrap.style.display = 'none';
+  reportWrap.style.margin = '1em 0';
+  reportWrap.style.maxWidth = '600px';
+  reportWrap.style.marginLeft = 'auto';
+  reportWrap.style.marginRight = 'auto';
+
+  const reportArea = document.createElement('textarea');
+  reportArea.id = 'weekly-report-text';
+  reportArea.readOnly = true;
+  reportArea.rows = 10;
+  reportArea.style.width = '100%';
+  reportArea.style.boxSizing = 'border-box';
+  reportWrap.appendChild(reportArea);
+
+  const shareBtn = document.createElement('button');
+  shareBtn.textContent = '共有';
+  shareBtn.style.display = 'block';
+  shareBtn.style.margin = '1em auto 0';
+  reportWrap.appendChild(shareBtn);
+  container.appendChild(reportWrap);
+
+  weeklyBtn.onclick = async () => {
     const end = date;
     const startDateObj = new Date(date);
     startDateObj.setDate(startDateObj.getDate() - 6);
     const startStr = startDateObj.toISOString().split('T')[0];
-    generateWeeklyReport(user.id, startStr, end);
+    const text = await generateWeeklyReport(user.id, startStr, end);
+    if (text) {
+      reportArea.value = text;
+      reportWrap.style.display = 'block';
+    }
+  };
+
+  shareBtn.onclick = () => {
+    if (reportArea.value) {
+      shareReport(reportArea.value);
+    }
   };
 
   const allDates = Object.keys(records).sort();
