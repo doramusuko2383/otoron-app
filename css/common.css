@@ -42,7 +42,7 @@
 /* .screen の基本レイアウト */
 .screen {
   max-width: 900px;
-  margin: 0 auto 2em; /* 上部余白は #app.with-header に委任 */
+  margin: 0 auto; /* 上部余白は #app.with-header に委任 */
   padding: 1em;
   box-sizing: border-box;
 }

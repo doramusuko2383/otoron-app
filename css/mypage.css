@@ -1,6 +1,6 @@
 .mypage-screen {
   max-width: 480px;
-  margin: 0 auto 2em; /* 上部余白は #app.with-header に委任 */
+  margin: 0 auto; /* 上部余白は #app.with-header に委任 */
 }
 
 .mypage-tabs {

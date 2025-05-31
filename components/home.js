@@ -105,11 +105,14 @@ export function renderHomeScreen(user) {
 }
 
 // ✅ 他の画面から再利用できるカスタム confirm 関数
-export function showCustomConfirm(message, onConfirm) {
+export function showCustomConfirm(message, onConfirm, options = {}) {
   if (typeof message === "function") {
     onConfirm = message;
     message = "本当に和音を解放しますか？";
+    options = {};
   }
+  const { okText = "OK", cancelText = "キャンセル", showCancel = true } =
+    options;
   let modal = document.getElementById("custom-confirm");
   if (!modal) {
     modal = document.createElement("div");
@@ -141,7 +144,7 @@ export function showCustomConfirm(message, onConfirm) {
     buttons.style.marginTop = "1em";
 
     const okBtn = document.createElement("button");
-    okBtn.textContent = "OK";
+    okBtn.className = "ok-btn";
     okBtn.style.margin = "0 0.5em";
     okBtn.onclick = () => {
       modal.style.display = "none";
@@ -151,7 +154,7 @@ export function showCustomConfirm(message, onConfirm) {
     };
 
     const cancelBtn = document.createElement("button");
-    cancelBtn.textContent = "キャンセル";
+    cancelBtn.className = "cancel-btn";
     cancelBtn.style.margin = "0 0.5em";
     cancelBtn.onclick = () => {
       modal.style.display = "none";
@@ -167,6 +170,16 @@ export function showCustomConfirm(message, onConfirm) {
   const msgEl = modal.querySelector("#custom-confirm-message");
   if (msgEl) {
     msgEl.textContent = message;
+  }
+
+  const okBtnEl = modal.querySelector(".ok-btn");
+  if (okBtnEl) {
+    okBtnEl.textContent = okText;
+  }
+  const cancelBtnEl = modal.querySelector(".cancel-btn");
+  if (cancelBtnEl) {
+    cancelBtnEl.textContent = cancelText;
+    cancelBtnEl.style.display = showCancel ? "inline-block" : "none";
   }
 
   modal.callback = onConfirm;
