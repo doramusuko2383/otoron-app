@@ -89,19 +89,6 @@ buttonGroup.appendChild(resetBtn);
 
   buttonGroup.className = "header-button-group";
 
-  const debugBtn = document.createElement("button");
-  debugBtn.textContent = "🛠 全部選択 (4回)";
-  debugBtn.onclick = () => {
-    document.querySelectorAll('.chord-block').forEach(block => {
-      if (block.classList.contains('locked')) return;
-      block.querySelector('.count-number').textContent = '4';
-      const cb = block.querySelector('.chord-toggle');
-      if (cb) cb.checked = true;
-      block.classList.add('selected');
-      block.querySelectorAll('button').forEach(b => b.disabled = false);
-    });
-    updateSelection();
-  };
 
   const bulkDropdown = document.createElement("select");
   bulkDropdown.innerHTML = `
@@ -126,28 +113,35 @@ buttonGroup.appendChild(resetBtn);
     updateSelection();
   };
 
-  buttonGroup.appendChild(debugBtn);
   buttonGroup.appendChild(bulkDropdown);
   headerBar.appendChild(titleLine);
   headerBar.appendChild(buttonGroup);
   container.appendChild(headerBar);
 
   const singleWrap = document.createElement('label');
-  singleWrap.style.display = 'flex';
-  singleWrap.style.alignItems = 'center';
-  singleWrap.style.gap = '4px';
-  singleWrap.style.margin = '0.5em 1em';
+  singleWrap.className = 'toggle-wrap';
+
   const singleToggle = document.createElement('input');
   singleToggle.type = 'checkbox';
+  singleToggle.className = 'toggle-input';
   singleToggle.checked = localStorage.getItem('singleNoteMode') === 'on';
   singleToggle.onchange = () => {
     if (singleToggle.checked) {
-      localStorage.setItem('singleNoteMode', 'on');
+      if (confirm('白鍵全ての絶対音感が身に着いたあとで使ってください')) {
+        localStorage.setItem('singleNoteMode', 'on');
+      } else {
+        singleToggle.checked = false;
+      }
     } else {
       localStorage.removeItem('singleNoteMode');
     }
   };
+
+  const slider = document.createElement('span');
+  slider.className = 'toggle-slider';
+
   singleWrap.appendChild(singleToggle);
+  singleWrap.appendChild(slider);
   singleWrap.appendChild(document.createTextNode('単音分化モード'));
   container.appendChild(singleWrap);
 
@@ -273,6 +267,7 @@ buttonGroup.appendChild(resetBtn);
 
   // ✅ その他のトレーニングセクション
   const section = document.createElement("div");
+  section.className = "other-training-section";
   section.innerHTML = `
     <h3>その他のトレーニング</h3>
     <ul>

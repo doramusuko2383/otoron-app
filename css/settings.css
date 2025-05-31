@@ -124,3 +124,54 @@
 .center-button-box select:hover {
   background-color: #f8f8f8;
 }
+
+/* 単音分化モードトグル */
+.toggle-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0.5em 1em;
+  position: relative;
+}
+
+.toggle-input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-slider {
+  position: relative;
+  width: 40px;
+  height: 20px;
+  background-color: #ccc;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.toggle-slider::before {
+  content: '';
+  position: absolute;
+  left: 2px;
+  top: 2px;
+  width: 16px;
+  height: 16px;
+  background-color: #fff;
+  border-radius: 50%;
+  transition: transform 0.3s;
+}
+
+.toggle-input:checked + .toggle-slider {
+  background-color: #4caf50;
+}
+
+.toggle-input:checked + .toggle-slider::before {
+  transform: translateX(20px);
+}
+
+/* その他のトレーニングの見出し */
+.other-training-section h3 {
+  text-align: center;
+}
