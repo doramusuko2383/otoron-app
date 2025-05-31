@@ -6,7 +6,7 @@
   position: relative;
   z-index: 0;
   height: calc(100dvh - 56px);
-  font-family: 'Kosugi Maru', sans-serif;
+  font-family: inherit;
   margin-top: 0; /* 上部余白は #app.with-header に委任 */
   display: flex;
   flex-direction: column;
@@ -127,5 +127,21 @@
   }
   60% {
     transform: translateY(5px) scale(0.95);
+  }
+}
+
+/* --- PC layout tweaks --- */
+@media (min-width: 768px) {
+  .home-screen {
+    padding-top: 4em;
+  }
+
+  .home-screen .logo-container {
+    margin-top: 3em;
+  }
+
+  .home-screen .main-start-button {
+    font-size: 1.4rem;
+    padding: 1em 2em;
   }
 }
