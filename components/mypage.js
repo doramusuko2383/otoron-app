@@ -1,6 +1,12 @@
 // components/mypage.js
 import { renderHeader } from "./header.js";
-
+import {
+  EmailAuthProvider,
+  reauthenticateWithCredential,
+  updatePassword,
+  linkWithCredential,
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { firebaseAuth } from "../firebase/firebase-init.js";
 
 export function renderMyPageScreen(user) {
   const app = document.getElementById("app");
@@ -12,10 +18,16 @@ export function renderMyPageScreen(user) {
 
   const tabHeader = document.createElement("div");
   tabHeader.className = "mypage-tabs";
+
+  const firebaseUser = firebaseAuth.currentUser;
+  const hasPassword = firebaseUser?.providerData.some(
+    (p) => p.providerId === "password"
+  );
+
   const tabs = [
     { id: "profile", label: "プロフィール変更" },
-    { id: "password", label: "パスワード変更" },
-    { id: "plan", label: "プラン・支払い情報" }
+    ...(hasPassword ? [{ id: "password", label: "パスワード変更" }] : []),
+    { id: "plan", label: "プラン・支払い情報" },
   ];
   tabs.forEach((t, i) => {
     const btn = document.createElement("button");
@@ -105,6 +117,7 @@ export function renderMyPageScreen(user) {
       const input = document.createElement("input");
       input.type = "password";
       input.required = true;
+      input.id = "current-pass";
       return input;
     });
     form.appendChild(current);
@@ -139,7 +152,56 @@ export function renderMyPageScreen(user) {
       btn.disabled = !(np && cp && np === cp);
     });
 
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const currentPw = form.querySelector("#current-pass").value;
+      const newPw = form.querySelector("#new-pass").value;
+
+      try {
+        const cred = EmailAuthProvider.credential(
+          firebaseUser.email,
+          currentPw
+        );
+        await reauthenticateWithCredential(firebaseUser, cred);
+        await updatePassword(firebaseUser, newPw);
+        alert("パスワードを変更しました");
+        form.reset();
+        btn.disabled = true;
+      } catch (err) {
+        alert("パスワード変更に失敗しました: " + err.message);
+      }
+    });
+
     div.appendChild(form);
+    return div;
+  }
+
+  function createPasswordGuide() {
+    const div = document.createElement("div");
+    div.className = "tab-section password-guide";
+    const p1 = document.createElement("p");
+    p1.textContent = "このアカウントではパスワードは設定されていません。";
+    const p2 = document.createElement("p");
+    const linkBtn = document.createElement("button");
+    linkBtn.textContent = "こちら";
+    linkBtn.type = "button";
+    linkBtn.onclick = async () => {
+      const newPw = prompt("追加するパスワードを入力してください");
+      if (!newPw) return;
+      try {
+        const cred = EmailAuthProvider.credential(firebaseUser.email, newPw);
+        await linkWithCredential(firebaseUser, cred);
+        alert("パスワードを追加しました");
+        location.reload();
+      } catch (err) {
+        alert("追加に失敗しました: " + err.message);
+      }
+    };
+    p2.textContent = "メールアドレス＋パスワードでのログインを追加する場合は";
+    p2.appendChild(linkBtn);
+    p2.appendChild(document.createTextNode("。"));
+    div.appendChild(p1);
+    div.appendChild(p2);
     return div;
   }
 
@@ -190,9 +252,14 @@ export function renderMyPageScreen(user) {
 
   const sections = {
     profile: createProfileTab(),
-    password: createPasswordTab(),
-    plan: createPlanTab()
+    ...(hasPassword ? { password: createPasswordTab() } : {}),
+    plan: createPlanTab(),
   };
+
+  if (!hasPassword) {
+    const guide = createPasswordGuide();
+    container.insertBefore(guide, contentWrapper);
+  }
 
   function showTab(id) {
     contentWrapper.innerHTML = "";
