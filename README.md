@@ -32,11 +32,11 @@ if (error) {
 アプリが利用する標準の Supabase プロジェクトは下記の URL とキーです。誤って別の DB に切り替えた場合は `utils/supabaseClient.js` をこの設定に戻してください。
 
 ```javascript
-const supabaseUrl = 'https://flnqyramgddjcbbaispx.supabase.co';
-const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZsbnF5cmFtZ2RkamNiYmFpc3B4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgyNjEwMDcsImV4cCI6MjA2MzgzNzAwN30.ARtrCplVHw7Q0gdDjsaoHp6__CNulye_IMWIqFmacqc';
+const supabaseUrl = 'https://xnccwydcesyvqvyqafbg.supabase.co';
+const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhuY2N3eWRjZXN5dnF2eXFhZmJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY4MDExMTEsImV4cCI6MjA2MjM3NzExMX0.84ELOFGZFJaBNaiHM4roAVmw4o4JMEj4mHnxox1k7Gs';
 ```
 
-以前の DB (`https://xnccwydcesyvqvyqafbg.supabase.co`) を使用するとトレーニング画面や育成画面が正しく動作しないため、上記の設定を推奨します。
+以前使用していた `https://flnqyramgddjcbbaispx.supabase.co` プロジェクトは削除済みのため、必ず上記の URL を利用してください。
 
 
 ## Environment Variables
