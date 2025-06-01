@@ -67,14 +67,18 @@ export function renderSignUpScreen() {
 
       let userId = existingUser?.id;
 
-      if (!existingUser) {
-        const { data: inserted, error: insertError } = await supabase
-          .from("users")
-          .insert([
-            { firebase_uid: user.uid, name: user.displayName || "名前未設定" }
-          ])
-          .select()
-          .maybeSingle();
+        if (!existingUser) {
+          const { data: inserted, error: insertError } = await supabase
+            .from("users")
+            .insert([
+              {
+                firebase_uid: user.uid,
+                name: user.displayName || "名前未設定",
+                email: user.email,
+              },
+            ])
+            .select()
+            .maybeSingle();
 
         if (insertError || !inserted) {
           console.error("❌ Supabaseユーザー登録失敗:", insertError);

@@ -117,7 +117,13 @@ onAuthStateChanged(auth, async (firebaseUser) => {
   if (!user) {
     const { data: inserted, error: insertError } = await supabase
       .from("users")
-      .insert([{ firebase_uid: firebaseUser.uid, name: firebaseUser.displayName || "名前未設定" }])
+      .insert([
+        {
+          firebase_uid: firebaseUser.uid,
+          name: firebaseUser.displayName || "名前未設定",
+          email: firebaseUser.email,
+        },
+      ])
       .select()
       .maybeSingle();
 
