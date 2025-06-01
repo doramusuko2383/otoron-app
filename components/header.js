@@ -57,6 +57,7 @@ export function renderHeader(container) {
   header.querySelector("#logout-btn").addEventListener("click", async () => {
     try {
       await signOut(firebaseAuth);
+      sessionStorage.removeItem("currentPassword");
       alert("ログアウトしました！");
       switchScreen("intro");
     } catch (e) {

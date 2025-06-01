@@ -100,3 +100,27 @@
   margin-left: 0.5em;
   padding: 0.4em 0.8em;
 }
+
+.password-input-wrap {
+  position: relative;
+}
+
+.password-input-wrap input {
+  padding-right: 2.5em;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 0.5em;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.password-error {
+  color: red;
+  font-size: 0.8rem;
+  margin-bottom: 0.2em;
+}
