@@ -105,3 +105,21 @@
   color: #999;
   font-size: 0.9rem;
 }
+
+.password-input-wrap {
+  position: relative;
+}
+
+.password-input-wrap input {
+  padding-right: 2.5em;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 0.5em;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
