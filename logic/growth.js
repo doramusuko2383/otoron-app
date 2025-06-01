@@ -71,19 +71,28 @@ export async function renderGrowthScreen(user) {
   statusBar.appendChild(unlockBtn);
   container.appendChild(statusBar);
 
+  // ⭐ 進捗を星で表示
   const progressBar = document.createElement("div");
-  progressBar.style.height = "30px";
-  progressBar.style.background = "#eee";
-  progressBar.style.borderRadius = "10px";
-  progressBar.style.margin = "1em 0";
-  progressBar.style.overflow = "hidden";
+  progressBar.className = "growth-progress";
 
-  const progress = document.createElement("div");
-  progress.style.height = "100%";
-  progress.style.width = `${Math.min((passed / 7) * 100, 100)}%`;
-  progress.style.background = passed >= 7 ? "#4caf50" : "#66bbff";
-  progress.style.transition = "width 0.3s ease";
-  progressBar.appendChild(progress);
+  const face = document.createElement("img");
+  face.src = "images/otolon_face.webp";
+  face.alt = "オトロン";
+  progressBar.appendChild(face);
+
+  const starsWrapper = document.createElement("div");
+  starsWrapper.className = "stars";
+
+  const filled = Math.max(0, Math.min(passed, 7));
+  for (let i = 0; i < 7; i++) {
+    const star = document.createElement("span");
+    star.className = "star";
+    star.textContent = "★";
+    if (i < filled) star.classList.add("filled");
+    starsWrapper.appendChild(star);
+  }
+
+  progressBar.appendChild(starsWrapper);
   container.appendChild(progressBar);
 
   // 🛠 デバッグ: 進捗を赤のみの状態に戻す
