@@ -4,10 +4,13 @@ import {
   EmailAuthProvider,
   reauthenticateWithCredential,
   updatePassword,
+  updateEmail,
   linkWithCredential,
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { firebaseAuth } from "../firebase/firebase-init.js";
 import { startCheckout } from "../utils/stripeCheckout.js";
+import { supabase } from "../utils/supabaseClient.js";
+import { switchScreen } from "../main.js";
 
 export function renderMyPageScreen(user) {
   const app = document.getElementById("app");
@@ -112,6 +115,47 @@ export function renderMyPageScreen(user) {
     saveBtn.textContent = "保存";
     saveBtn.type = "submit";
     form.appendChild(saveBtn);
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const name = nameField.querySelector("input").value.trim();
+      const emailInput = googleOnly
+        ? null
+        : emailField.querySelector("input");
+      const email = emailInput ? emailInput.value.trim() : firebaseUser.email;
+
+      try {
+        const updates = { name };
+        if (!googleOnly) updates.email = email;
+
+        const { data, error } = await supabase
+          .from("users")
+          .update(updates)
+          .eq("id", user.id)
+          .select()
+          .maybeSingle();
+
+        if (error) throw error;
+
+        if (!googleOnly && firebaseUser.email !== email) {
+          const currentPw = sessionStorage.getItem("currentPassword");
+          if (currentPw) {
+            const cred = EmailAuthProvider.credential(
+              firebaseUser.email,
+              currentPw
+            );
+            await reauthenticateWithCredential(firebaseUser, cred);
+          }
+          await updateEmail(firebaseUser, email);
+        }
+
+        const updated = data || { ...user, ...updates };
+        alert("プロフィールを更新しました");
+        switchScreen("mypage", updated, { replace: true });
+      } catch (err) {
+        alert("更新に失敗しました: " + err.message);
+      }
+    });
 
     div.appendChild(form);
     return div;
