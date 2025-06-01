@@ -104,6 +104,7 @@ export function renderLoginScreen(container, onLoginSuccess) {
 
     try {
       await signInWithEmailAndPassword(firebaseAuth, email, password);
+      sessionStorage.setItem("currentPassword", password);
       const user = firebaseAuth.currentUser;
       await ensureUserAndProgress(user);
       onLoginSuccess();

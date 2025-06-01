@@ -114,32 +114,59 @@ export function renderMyPageScreen(user) {
     const form = document.createElement("form");
     form.className = "password-form";
 
-    const current = createField("現在のパスワード", true, () => {
-      const input = document.createElement("input");
-      input.type = "password";
-      input.required = true;
-      input.id = "current-pass";
-      return input;
-    });
-    form.appendChild(current);
+    function createPasswordField(label, id) {
+      const field = document.createElement("div");
+      field.className = "form-field";
 
-    const newpass = createField("新しいパスワード", true, () => {
-      const input = document.createElement("input");
-      input.type = "password";
-      input.required = true;
-      input.id = "new-pass";
-      return input;
-    });
-    form.appendChild(newpass);
+      const labelEl = document.createElement("label");
+      labelEl.textContent = label;
+      const badge = document.createElement("span");
+      badge.className = "required";
+      badge.textContent = "必須";
+      labelEl.appendChild(badge);
+      field.appendChild(labelEl);
 
-    const confirm = createField("新しいパスワード（確認）", true, () => {
+      const wrap = document.createElement("div");
+      wrap.className = "password-input-wrap";
+
       const input = document.createElement("input");
       input.type = "password";
       input.required = true;
-      input.id = "confirm-pass";
-      return input;
-    });
-    form.appendChild(confirm);
+      input.id = id;
+      if (id === "current-pass") {
+        input.value = sessionStorage.getItem("currentPassword") || "";
+      }
+
+      const toggle = document.createElement("button");
+      toggle.type = "button";
+      toggle.className = "toggle-password";
+      toggle.textContent = "\u{1F441}"; // eye icon
+      toggle.onclick = () => {
+        const hidden = input.type === "password";
+        input.type = hidden ? "text" : "password";
+        toggle.textContent = hidden ? "\u{1F648}" : "\u{1F441}"; // 🙈 / 👁
+      };
+
+      wrap.appendChild(input);
+      wrap.appendChild(toggle);
+      field.appendChild(wrap);
+
+      return { field, input };
+    }
+
+    const current = createPasswordField("現在のパスワード", "current-pass");
+    form.appendChild(current.field);
+
+    const newpass = createPasswordField("新しいパスワード", "new-pass");
+    form.appendChild(newpass.field);
+
+    const confirm = createPasswordField("新しいパスワード（確認）", "confirm-pass");
+    const errorMsg = document.createElement("div");
+    errorMsg.className = "password-error";
+    errorMsg.textContent = "確認用パスワードが一致しません";
+    errorMsg.style.display = "none";
+    confirm.field.insertBefore(errorMsg, confirm.field.querySelector(".password-input-wrap"));
+    form.appendChild(confirm.field);
 
     const btn = document.createElement("button");
     btn.textContent = "変更する";
@@ -147,11 +174,25 @@ export function renderMyPageScreen(user) {
     btn.type = "submit";
     form.appendChild(btn);
 
-    form.addEventListener("input", () => {
-      const np = form.querySelector("#new-pass").value;
-      const cp = form.querySelector("#confirm-pass").value;
-      btn.disabled = !(np && cp && np === cp);
-    });
+    function validate() {
+      const np = newpass.input.value;
+      const cp = confirm.input.value;
+      if (!np || !cp) {
+        errorMsg.style.display = "none";
+        btn.disabled = true;
+        return;
+      }
+      if (np !== cp) {
+        errorMsg.style.display = "block";
+        btn.disabled = true;
+      } else {
+        errorMsg.style.display = "none";
+        btn.disabled = false;
+      }
+    }
+
+    form.addEventListener("input", validate);
+    validate();
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -165,9 +206,11 @@ export function renderMyPageScreen(user) {
         );
         await reauthenticateWithCredential(firebaseUser, cred);
         await updatePassword(firebaseUser, newPw);
+        sessionStorage.setItem("currentPassword", newPw);
         alert("パスワードを変更しました");
         form.reset();
-        btn.disabled = true;
+        current.input.value = newPw;
+        validate();
       } catch (err) {
         alert("パスワード変更に失敗しました: " + err.message);
       }
