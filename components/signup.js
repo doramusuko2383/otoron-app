@@ -18,7 +18,10 @@ export function renderSignUpScreen() {
       <input type="email" id="signup-email" required />
 
       <label for="signup-password">パスワード（6文字以上）</label>
-      <input type="password" id="signup-password" required />
+      <div class="password-input-wrap">
+        <input type="password" id="signup-password" required />
+        <button type="button" class="toggle-password material-icons">visibility</button>
+      </div>
 
       <button type="submit" class="signup-button">アカウントを作成</button>
     </form>
@@ -32,6 +35,14 @@ export function renderSignUpScreen() {
   `;
 
   app.appendChild(container);
+
+  const passInput = container.querySelector('#signup-password');
+  const toggleBtn = container.querySelector('.toggle-password');
+  toggleBtn.addEventListener('click', () => {
+    const hidden = passInput.type === 'password';
+    passInput.type = hidden ? 'text' : 'password';
+    toggleBtn.textContent = hidden ? 'visibility_off' : 'visibility';
+  });
 
   // 通常のメールアドレス＋パスワード登録
   const form = container.querySelector(".signup-form");
