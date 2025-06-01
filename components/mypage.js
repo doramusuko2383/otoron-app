@@ -136,9 +136,6 @@ export function renderMyPageScreen(user) {
       labelEl.appendChild(badge);
       field.appendChild(labelEl);
 
-      const wrap = document.createElement("div");
-      wrap.className = "password-input-wrap";
-
       const input = document.createElement("input");
       input.type = "password";
       input.required = true;
@@ -147,19 +144,7 @@ export function renderMyPageScreen(user) {
         input.value = sessionStorage.getItem("currentPassword") || "";
       }
 
-      const toggle = document.createElement("button");
-      toggle.type = "button";
-      toggle.className = "toggle-password";
-      toggle.textContent = "\u{1F441}"; // eye icon
-      toggle.onclick = () => {
-        const hidden = input.type === "password";
-        input.type = hidden ? "text" : "password";
-        toggle.textContent = hidden ? "\u{1F648}" : "\u{1F441}"; // 🙈 / 👁
-      };
-
-      wrap.appendChild(input);
-      wrap.appendChild(toggle);
-      field.appendChild(wrap);
+      field.appendChild(input);
 
       return { field, input };
     }
@@ -175,7 +160,7 @@ export function renderMyPageScreen(user) {
     errorMsg.className = "password-error";
     errorMsg.textContent = "確認用パスワードが一致しません";
     errorMsg.style.display = "none";
-    confirm.field.insertBefore(errorMsg, confirm.field.querySelector(".password-input-wrap"));
+    confirm.field.insertBefore(errorMsg, confirm.field.querySelector("input"));
     form.appendChild(confirm.field);
 
     const btn = document.createElement("button");

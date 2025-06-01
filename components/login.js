@@ -15,10 +15,7 @@ export function renderLoginScreen(container, onLoginSuccess) {
       <h2 class="login-title">ログイン</h2>
       <form class="login-form">
         <input type="email" id="email" placeholder="メールアドレス" required />
-        <div class="password-input-wrap">
-          <input type="password" id="password" placeholder="パスワード" required />
-          <button type="button" class="toggle-password material-icons">visibility</button>
-        </div>
+        <input type="password" id="password" placeholder="パスワード" required />
         <button type="submit">ログイン</button>
       </form>
 
@@ -33,13 +30,7 @@ export function renderLoginScreen(container, onLoginSuccess) {
     </div>
   `;
 
-  const passInput = container.querySelector('#password');
-  const toggleBtn = container.querySelector('.toggle-password');
-  toggleBtn.addEventListener('click', () => {
-    const hidden = passInput.type === 'password';
-    passInput.type = hidden ? 'text' : 'password';
-    toggleBtn.textContent = hidden ? 'visibility_off' : 'visibility';
-  });
+
 
   // 🔽 和音進捗の初期登録（必要なら）
   async function ensureUserAndProgress(user) {

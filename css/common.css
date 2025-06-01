@@ -94,28 +94,4 @@ button:hover {
   }
 }
 
-/* Password input with eye toggle */
-.password-input-wrap {
-  position: relative;
-  width: 100%;
-}
 
-.password-input-wrap input {
-  width: 100%;
-  padding-right: 40px; /* アイコン分の余白 */
-  height: 40px;
-  border-radius: 6px;
-}
-
-.toggle-password {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: transparent;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  height: 24px;
-  width: 24px;
-}
