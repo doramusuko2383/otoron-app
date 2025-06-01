@@ -24,6 +24,9 @@ export function renderMyPageScreen(user) {
   const hasPassword = firebaseUser?.providerData.some(
     (p) => p.providerId === "password"
   );
+  const googleOnly =
+    firebaseUser?.providerData.some((p) => p.providerId === "google.com") &&
+    !hasPassword;
 
   const tabs = [
     { id: "profile", label: "プロフィール変更" },
@@ -89,13 +92,20 @@ export function renderMyPageScreen(user) {
     });
     form.appendChild(yearField);
 
-    const emailField = createField("メールアドレス", true, () => {
-      const input = document.createElement("input");
-      input.type = "email";
-      input.required = true;
-      input.value = user?.email || "";
-      return input;
-    });
+    const emailField = googleOnly
+      ? createField("ログインメールアドレス（変更不可）", null, () => {
+          const span = document.createElement("div");
+          span.className = "email-readonly";
+          span.textContent = firebaseUser.email || user?.email || "";
+          return span;
+        })
+      : createField("メールアドレス", true, () => {
+          const input = document.createElement("input");
+          input.type = "email";
+          input.required = true;
+          input.value = user?.email || "";
+          return input;
+        });
     form.appendChild(emailField);
 
     const saveBtn = document.createElement("button");
@@ -271,10 +281,12 @@ export function renderMyPageScreen(user) {
 
     const label = document.createElement("label");
     label.textContent = labelText;
-    const badge = document.createElement("span");
-    badge.className = required ? "required" : "optional";
-    badge.textContent = required ? "必須" : "任意";
-    label.appendChild(badge);
+    if (required !== null) {
+      const badge = document.createElement("span");
+      badge.className = required ? "required" : "optional";
+      badge.textContent = required ? "必須" : "任意";
+      label.appendChild(badge);
+    }
     wrapper.appendChild(label);
     wrapper.appendChild(inputFactory());
     return wrapper;

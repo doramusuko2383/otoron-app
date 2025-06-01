@@ -124,3 +124,8 @@
   font-size: 0.8rem;
   margin-bottom: 0.2em;
 }
+
+.email-readonly {
+  padding: 0.6em 0;
+  font-size: 1rem;
+}
