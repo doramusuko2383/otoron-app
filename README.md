@@ -38,3 +38,14 @@ const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYm
 
 以前の DB (`https://xnccwydcesyvqvyqafbg.supabase.co`) を使用するとトレーニング画面や育成画面が正しく動作しないため、上記の設定を推奨します。
 
+
+## Environment Variables
+
+Vercel などの環境でデプロイする際は次の環境変数を設定してください。
+
+- `STRIPE_SECRET_KEY`
+- `STRIPE_WEBHOOK_SECRET`
+- `SUPABASE_URL`
+- `SUPABASE_SERVICE_ROLE_KEY`
+
+これらは `.env.example` にも記載しているので参考にしてください。
