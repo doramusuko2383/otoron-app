@@ -20,6 +20,7 @@ export function renderHeader(container) {
         <button id="settings-btn">⚙️ 設定</button>
         <button id="summary-btn">📊 分析画面</button>
         <button id="mypage-btn">👤 マイページ</button>
+        <button id="admin-btn">🛠 管理画面</button>
         <button id="growth-btn">🌱 育成モード</button>
         <button id="logout-btn">🚪 ログアウト</button>
       </div>
@@ -53,6 +54,7 @@ export function renderHeader(container) {
   header.querySelector("#growth-btn").onclick = () => switchScreen("growth");
 
   header.querySelector("#mypage-btn").onclick = () => switchScreen("mypage");
+  header.querySelector("#admin-btn").onclick = () => switchScreen("admin");
   // ▼ ログアウト処理
   header.querySelector("#logout-btn").addEventListener("click", async () => {
     try {

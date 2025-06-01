@@ -35,10 +35,15 @@ export default async function handler(req, res) {
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object;
     const email = session.customer_email;
+    const customerId = session.customer;
 
+    // is_premium と stripe_customer_id を同時に更新
     const { error } = await supabase
       .from('users')
-      .update({ is_premium: true })
+      .update({
+        is_premium: true,
+        stripe_customer_id: customerId,
+      })
       .eq('email', email);
 
     if (error) {
@@ -46,7 +51,9 @@ export default async function handler(req, res) {
       return res.status(500).send('Supabase update failed');
     }
 
-    console.log(`✅ ${email} is now a premium user.`);
+    console.log(
+      `✅ ${email} is now a premium user with customer ID ${customerId}`
+    );
   }
 
   res.status(200).json({ received: true });
