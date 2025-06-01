@@ -17,7 +17,6 @@ import { renderInitialSetupScreen } from "./components/initialSetup.js";
 import { supabase } from "./utils/supabaseClient.js";
 import { createInitialChordProgress } from "./utils/progressUtils.js";
 import { renderMyPageScreen } from "./components/mypage.js";
-import { renderAdminScreen } from "./components/admin.js";
 import { clearTimeOfDayStyling } from "./utils/timeOfDay.js";
 
 
@@ -79,7 +78,6 @@ export const switchScreen = (screen, user = currentUser, options = {}) => {
   else if (screen === "signup") renderSignUpScreen(user);
   else if (screen === "setup") renderInitialSetupScreen(user, (u) => switchScreen("home", u));
   else if (screen === "mypage") renderMyPageScreen(user);
-  else if (screen === "admin") renderAdminScreen(user);
   else if (screen === "result") renderResultScreen(user);
   else if (screen === "result_easy") renderTrainingEasyResultScreen(user);
   else if (screen === "result_full") renderTrainingFullResultScreen(user);
