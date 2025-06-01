@@ -22,7 +22,7 @@ export function renderHomeScreen(user) {
   // ✅ メインコンテンツ（ヘッダーの下に表示）
   const container = document.createElement("div");
   let timeClass = getTimeOfDay();
-  console.log('[home] time class:', timeClass);
+  // console.log('[home] time class:', timeClass);
   container.className = `home-screen active ${timeClass}`;
   document.body.classList.add(timeClass);
   app.appendChild(container);
