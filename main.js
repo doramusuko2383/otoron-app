@@ -41,7 +41,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 window.firebaseAuth = auth;
 
-console.log("🧭 main.js にて全コンポーネント統合済み");
+// console.log("🧭 main.js にて全コンポーネント統合済み");
 
 const DEBUG_AUTO_LOGIN = false;
 
@@ -99,7 +99,7 @@ onAuthStateChanged(auth, async (firebaseUser) => {
     return;
   }
 
-  console.log("🔓 Firebaseログイン済み:", firebaseUser.email);
+  // console.log("🔓 Firebaseログイン済み:", firebaseUser.email);
 
   const { data: existingUser, error } = await supabase
     .from("users")
@@ -131,7 +131,7 @@ onAuthStateChanged(auth, async (firebaseUser) => {
 
     }
   } else {
-    console.log("✅ Supabaseに既存ユーザー:", user);
+    // console.log("✅ Supabaseに既存ユーザー:", user);
   }
 
   currentUser = user;
