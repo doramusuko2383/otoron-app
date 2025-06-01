@@ -21,7 +21,7 @@ export default function Success() {
       backgroundColor: '#fff',
       textAlign: 'center'
     }}>
-      <img src="images/payment-success.webp" alt="決済完了" style={{ maxWidth: '90%', height: 'auto' }} />
+      <img src="images/payment-success.webp" alt="決済完了" style={{ maxWidth: '80%', maxHeight: '80vh', height: 'auto' }} />
       <p style={{ marginTop: '1rem', color: '#666' }}>3秒後にホーム画面に戻ります</p>
     </div>
   );
