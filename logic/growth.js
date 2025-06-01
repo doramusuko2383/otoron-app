@@ -72,13 +72,17 @@ export async function renderGrowthScreen(user) {
   container.appendChild(statusBar);
 
   // ⭐ 進捗を星で表示
-  const progressBar = document.createElement("div");
-  progressBar.className = "growth-progress";
+  const progressWrapper = document.createElement("div");
+  progressWrapper.className = "progress-bar";
 
   const face = document.createElement("img");
   face.src = "images/otolon_face.webp";
   face.alt = "オトロン";
-  progressBar.appendChild(face);
+  face.className = "face-icon";
+  progressWrapper.appendChild(face);
+
+  const progressBar = document.createElement("div");
+  progressBar.className = "growth-progress";
 
   const starsWrapper = document.createElement("div");
   starsWrapper.className = "stars";
@@ -93,7 +97,8 @@ export async function renderGrowthScreen(user) {
   }
 
   progressBar.appendChild(starsWrapper);
-  container.appendChild(progressBar);
+  progressWrapper.appendChild(progressBar);
+  container.appendChild(progressWrapper);
 
   // 🛠 デバッグ: 進捗を赤のみの状態に戻す
   const resetBtn = document.createElement("button");
