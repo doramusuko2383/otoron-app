@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>決済完了</title>
+</head>
+<body style="margin:0;">
+  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;background-color:#fff;text-align:center;">
+    <img src="../images/payment-success.webp" alt="決済完了" style="max-width:90%;height:auto" />
+    <p style="margin-top:1rem;color:#666">3秒後にホーム画面に戻ります</p>
+  </div>
+  <script>
+    setTimeout(() => {
+      window.location.href = '/';
+    }, 3000);
+  </script>
+</body>
+</html>
