@@ -74,8 +74,9 @@ export async function updateGrowthStatusBar(user, target, onUnlocked) {
   };
 
   if (canUnlock) {
-    msg.textContent = "🎉 合格条件を満たしました。次の和音を解放できます。";
-    btn.style.display = "inline-block";
+    msg.textContent = "合格条件（7日間の合格）を満たしました。次の和音を解放できます。";
+    msg.classList.add("can-unlock");
+    btn.style.display = "block";
 
     btn.onpointerdown = () => {
       progress.style.transition = `width ${holdTime}ms linear`;
@@ -108,6 +109,7 @@ export async function updateGrowthStatusBar(user, target, onUnlocked) {
   } else {
     const label = target ? target.label : "";
     msg.textContent = `いま ${label} の解放条件を満たしていません`;
+    msg.classList.remove("can-unlock");
     btn.style.display = "none";
     btn.onpointerdown = null;
     btn.onpointerup = null;
