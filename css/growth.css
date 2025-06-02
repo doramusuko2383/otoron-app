@@ -68,6 +68,7 @@
   align-items: center;
   justify-content: center;
   width: 100%;
+  margin: 1.5em auto;
   padding: 0.5em;
   background: #fff8d6;
   border-radius: 12px;
@@ -129,17 +130,29 @@
   width: 100%;
 }
 
-#growth-message {
-  margin-bottom: 1em;
-  text-align: center;
+.unlock-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5em;
+  max-width: 320px;
 }
 
-#growth-message.can-unlock {
+.unlock-card.highlight {
   background: #ffe6f0;
   border: 2px solid #ff66cc;
   border-radius: 12px;
   padding: 0.75em;
+}
+
+#growth-message {
+  margin-bottom: 0.5em;
+  text-align: center;
+  font-size: 0.9em;
+  line-height: 1.2;
+}
+
+#growth-message.can-unlock {
   color: #d1007d;
   font-weight: bold;
-  max-width: 320px;
 }
