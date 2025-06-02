@@ -130,7 +130,7 @@
 
 .sugoroku-line {
   position: absolute;
-  top: 28px;
+  top: 26px;
   left: 0;
   width: 100%;
   height: 60px;
@@ -146,10 +146,10 @@
 }
 
 .sugoroku-cell {
-  width: 64px;
-  height: 64px;
+  width: 60px;
+  height: 48px;
   border-radius: 50%;
-  border: 3px solid #5b4636;
+  border: 2px solid #5b4636;
   font-weight: bold;
   font-size: 0.9em;
   color: #5b4636;
@@ -166,17 +166,31 @@
 
 .sugoroku-cell.start {
   background-color: #fffde7;
+  position: relative;
+}
+.sugoroku-cell.start::before {
+  content: "🏁";
+  position: absolute;
+  top: -0.6em;
+  left: -0.6em;
 }
 
 .sugoroku-cell:nth-child(odd) {
   background-color: #d9f1ff;
-  margin-top: 0;
+  
 }
 
 .sugoroku-cell:nth-child(even) {
   background-color: #ffe6f0;
-  margin-top: 8px;
 }
+.sugoroku-cell:nth-child(1) { margin-top: 32px; }
+.sugoroku-cell:nth-child(2) { margin-top: 38px; }
+.sugoroku-cell:nth-child(3) { margin-top: 26px; }
+.sugoroku-cell:nth-child(4) { margin-top: 38px; }
+.sugoroku-cell:nth-child(5) { margin-top: 26px; }
+.sugoroku-cell:nth-child(6) { margin-top: 38px; }
+.sugoroku-cell:nth-child(7) { margin-top: 26px; }
+.sugoroku-cell:nth-child(8) { margin-top: 32px; }
 
 .sugoroku-cell.goal {
   background-color: #fff3b0;
@@ -184,7 +198,7 @@
 }
 
 .sugoroku-cell.goal::after {
-  content: "✨";
+  content: "🏁";
   position: absolute;
   top: -0.6em;
   right: -0.6em;
