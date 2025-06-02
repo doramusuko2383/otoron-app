@@ -46,9 +46,8 @@ export function mockGrowthDebug() {
     const d = new Date(now);
     d.setDate(now.getDate() - i);
     const key = d.toISOString().split("T")[0];
-    const pass = i < 6;
     const count = 60;
-    const correct = pass ? 59 : 58;
+    const correct = 59; // 98% 正解で合格
     data[key] = {
       count,
       correct,
