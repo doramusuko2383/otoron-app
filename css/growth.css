@@ -139,18 +139,19 @@
 
 .sugoroku-cells {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
+  gap: 8px;
   position: relative;
   padding: 0 0;
 }
 
 .sugoroku-cell {
-  width: 56px;
-  height: 56px;
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
   border: 3px solid #5b4636;
   font-weight: bold;
-  font-size: 0.75em;
+  font-size: 0.9em;
   color: #5b4636;
   display: flex;
   justify-content: center;
@@ -160,10 +161,12 @@
 
 .sugoroku-cell:nth-child(odd) {
   background-color: #d9f1ff;
+  margin-top: 16px;
 }
 
 .sugoroku-cell:nth-child(even) {
   background-color: #ffe6f0;
+  margin-top: 0;
 }
 
 .sugoroku-cell.goal {
@@ -180,7 +183,7 @@
 
 .sugoroku-walker {
   position: absolute;
-  bottom: 70px;
+  bottom: 60px;
   width: 56px;
   transform: translateX(-50%);
   pointer-events: none;
