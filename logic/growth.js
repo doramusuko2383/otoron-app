@@ -109,6 +109,7 @@ export async function renderGrowthScreen(user) {
     const cell = document.createElement("div");
     cell.className = "sugoroku-cell";
     if (i === 0) {
+      cell.classList.add("start");
       cell.textContent = "START";
     } else if (i === stepCount - 1) {
       cell.classList.add("goal");

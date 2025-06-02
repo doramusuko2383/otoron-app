@@ -159,14 +159,23 @@
   box-sizing: border-box;
 }
 
+.sugoroku-cell.start,
+.sugoroku-cell.goal {
+  border-radius: 12px;
+}
+
+.sugoroku-cell.start {
+  background-color: #fffde7;
+}
+
 .sugoroku-cell:nth-child(odd) {
   background-color: #d9f1ff;
-  margin-top: 16px;
+  margin-top: 0;
 }
 
 .sugoroku-cell:nth-child(even) {
   background-color: #ffe6f0;
-  margin-top: 0;
+  margin-top: 8px;
 }
 
 .sugoroku-cell.goal {
