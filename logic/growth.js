@@ -126,13 +126,12 @@ export async function renderGrowthScreen(user) {
   walker.src = "images/walk.webp";
   walker.alt = "オトロン";
   walker.className = "sugoroku-walker";
-  board.appendChild(walker);
+
+  const currentCell = cells.children[filled];
+  currentCell.style.position = "relative";
+  currentCell.appendChild(walker);
 
   container.appendChild(board);
-
-  // キャラクター位置
-  const percent = (filled / (stepCount - 1)) * 100;
-  walker.style.left = `calc(${percent}% )`;
 
   // 🛠 デバッグ機能
   const debugPanel = document.createElement("div");
