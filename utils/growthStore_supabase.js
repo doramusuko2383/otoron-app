@@ -1,7 +1,7 @@
 // utils/growthStore_supabase.js
 
 import { supabase } from "./supabaseClient.js";
-import { markQualifiedDayIfNeeded, sessionMeetsStats } from "./qualifiedStore_supabase.js";
+import { markQualifiedDayIfNeeded } from "./qualifiedStore_supabase.js";
 import { generateRecommendedQueue } from "./growthUtils.js";
 
 /**
@@ -59,7 +59,7 @@ export async function markChordAsUnlocked(userId, chordKey) {
  * 直近7日分のモック記録を生成（デバッグ用）
  * @param {string} userId
  */
-export async function generateMockGrowthData(userId) {
+export async function generateMockGrowthData(userId, qualifiedDays = 7) {
   const now = new Date();
 
   // 現在進行中の和音の解放日を7日前に調整して解放条件を満たす
@@ -84,14 +84,16 @@ export async function generateMockGrowthData(userId) {
   let queue = generateRecommendedQueue(flags);
   if (queue.length === 0) queue = ["C-E-G"];
 
-  // 直近7日分の記録を挿入（ミスにバリエーションあり）
+  // 直近7日分の記録を挿入
+  // qualifiedDays 回分は合格となるよう調整
   for (let i = 0; i < 7; i++) {
     const d = new Date(now);
     d.setDate(now.getDate() - i);
     const dateStr = d.toISOString().split("T")[0];
 
     const count = 60;
-    const mistakeNum = Math.floor(Math.random() * 2) + 1; // 1 or 2 mistakes
+    const qualified = i < qualifiedDays;
+    const mistakeNum = qualified ? 1 : 3;
 
     const rec = {
       user_id: userId,
@@ -139,7 +141,7 @@ export async function generateMockGrowthData(userId) {
       results_json: results,
       stats_json: stats,
       mistakes_json: { inversion_confusions: inversionMistakes },
-      is_qualified: sessionMeetsStats(stats, count)
+      is_qualified: qualified
     };
     const { error: sesErr } = await supabase
       .from("training_sessions")

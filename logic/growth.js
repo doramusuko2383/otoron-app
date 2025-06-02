@@ -6,23 +6,18 @@ import {
   isQualifiedToday,
   getPassedDays,
   getCurrentTargetChord,
-  getSortedRecordArray,
   applyRecommendedSelection,
   forceUnlock
 } from "../utils/growthUtils.js";
 import {
   loadGrowthFlags,
-  markChordAsUnlocked,
   generateMockGrowthData
 } from "../utils/growthStore_supabase.js";
 import { chords } from "../data/chords.js";
 import { renderHeader } from "../components/header.js";
 import { unlockChord, resetChordProgressToRed } from "../utils/progressUtils.js";
 import { getAudio } from "../utils/audioCache.js";
-import {
-  updateGrowthStatusBar,
-  getUnlockCriteriaStatus
-} from "../utils/progressStatus.js";
+import { updateGrowthStatusBar } from "../utils/progressStatus.js";
 import { showCustomConfirm } from "../components/home.js";
 
 export async function renderGrowthScreen(user) {
@@ -100,50 +95,52 @@ export async function renderGrowthScreen(user) {
   progressWrapper.appendChild(progressBar);
   container.appendChild(progressWrapper);
 
-  // 🛠 デバッグ: 進捗を赤のみの状態に戻す
-  const resetBtn = document.createElement("button");
-  resetBtn.textContent = "🛠 進捗をリセット (赤のみ)";
-  resetBtn.style.marginBottom = "1em";
-  resetBtn.onclick = async () => {
-    const ok = confirm("本当に進捗を赤だけに戻しますか？");
-    if (!ok) return;
-    const success = await resetChordProgressToRed(user.id);
-    if (success) {
-      alert("進捗をリセットしました");
-      await renderGrowthScreen(user);
-    } else {
-      alert("リセットに失敗しました");
-    }
-  };
-  container.appendChild(resetBtn);
-
-  // 🛠 デバッグ: 任意和音解放やモックデータ生成
+  // 🛠 デバッグ機能
   const debugPanel = document.createElement("div");
   debugPanel.style.marginBottom = "1em";
 
-  const select = document.createElement("select");
-  chords.forEach(c => {
-    const opt = document.createElement("option");
-    opt.value = c.key;
-    opt.textContent = c.label;
-    select.appendChild(opt);
+  const actionSelect = document.createElement("select");
+  [
+    { value: "", label: "デバッグ機能（本番モードでは削除）" },
+    { value: "reset", label: "進捗をリセット（赤のみ）" },
+    { value: "unlock", label: "次の和音を解放" },
+    { value: "mock4", label: "モック記録生成（4/7合格）" },
+    { value: "mock7", label: "モック記録生成（7/7合格）" }
+  ].forEach(opt => {
+    const o = document.createElement("option");
+    o.value = opt.value;
+    o.textContent = opt.label;
+    actionSelect.appendChild(o);
   });
 
-  const manualBtn = document.createElement("button");
-  manualBtn.textContent = "🛠 選択和音を解放";
-  manualBtn.style.marginLeft = "0.5em";
-  manualBtn.onclick = async () => {
-    await markChordAsUnlocked(user.id, select.value);
-    alert(`${select.value} を手動で解放しました`);
-    await renderGrowthScreen(user);
-  };
-
-  const mockBtn = document.createElement("button");
-  mockBtn.textContent = "🛠 モック記録生成";
-  mockBtn.style.marginLeft = "0.5em";
-  mockBtn.onclick = async () => {
-    await generateMockGrowthData(user.id);
-    alert("モックデータを生成しました");
+  actionSelect.onchange = async () => {
+    const val = actionSelect.value;
+    actionSelect.value = "";
+    if (!val) return;
+    if (val === "reset") {
+      const ok = confirm("本当に進捗を赤だけに戻しますか？");
+      if (ok) {
+        const success = await resetChordProgressToRed(user.id);
+        alert(success ? "進捗をリセットしました" : "リセットに失敗しました");
+      }
+    } else if (val === "unlock") {
+      const freshFlags = await loadGrowthFlags(user.id);
+      const next = getCurrentTargetChord(freshFlags);
+      if (next) {
+        await unlockChord(user.id, next.key);
+        await applyRecommendedSelection(user.id);
+        forceUnlock();
+        alert(`${next.label} を解放しました`);
+      } else {
+        alert("すべての和音が解放されています");
+      }
+    } else if (val === "mock4") {
+      await generateMockGrowthData(user.id, 4);
+      alert("モックデータ(4/7)を生成しました");
+    } else if (val === "mock7") {
+      await generateMockGrowthData(user.id, 7);
+      alert("モックデータ(7/7)を生成しました");
+    }
     await renderGrowthScreen(user);
   };
 
@@ -158,32 +155,10 @@ export async function renderGrowthScreen(user) {
   logLabel.appendChild(logChk);
   logLabel.appendChild(document.createTextNode("詳細ログ"));
 
-  debugPanel.appendChild(select);
-  debugPanel.appendChild(manualBtn);
-  debugPanel.appendChild(mockBtn);
+  debugPanel.appendChild(actionSelect);
   debugPanel.appendChild(logLabel);
   container.appendChild(debugPanel);
 
-  const debugInfo = document.createElement("pre");
-  debugInfo.id = "unlock-debug-info";
-  debugInfo.style.background = "#f8f8f8";
-  debugInfo.style.padding = "0.5em";
-  debugInfo.style.fontSize = "0.85em";
-  debugInfo.style.whiteSpace = "pre-wrap";
-  container.appendChild(debugInfo);
-
-  async function refreshDebugInfo() {
-    const info = await getUnlockCriteriaStatus(user.id);
-    const daysSince =
-      info.daysSinceUnlock === null
-        ? "-"
-        : info.daysSinceUnlock.toFixed(1);
-    debugInfo.textContent =
-      `連続合格日数: ${info.consecutiveDays} / ${info.requiredDays}\n` +
-      `前回解放からの日数: ${daysSince} / ${info.requiredInterval}`;
-  }
-
-  refreshDebugInfo();
 
   // 和音進捗表示
   const chordStatus = document.createElement("div");
