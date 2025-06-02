@@ -1,16 +1,30 @@
 import { supabase } from "./supabaseClient.js";
 
 const REQUIRED_DAYS = 7;
+const PASS_THRESHOLD = 0.98;
 
 function sessionMeetsStats(stats, totalCount) {
   if (!stats) return false;
-  if (totalCount < 20) return false;
+
+  const chordCount = Object.keys(stats).length;
+  if (chordCount === 0) return false;
+  if (totalCount < chordCount * 4) return false;
+
   const counts = Object.values(stats).map(s => {
-    const total = s.total ?? (s.correct || 0) + (s.wrong || 0) + (s.unknown || 0);
+    const total =
+      s.total ?? (s.correct || 0) + (s.wrong || 0) + (s.unknown || 0);
     return total;
   });
-  if (counts.length === 0) return false;
-  return counts.every(c => c >= 2);
+  if (!counts.every(c => c >= 4)) return false;
+
+  const correctTotal = Object.values(stats).reduce(
+    (sum, s) => sum + (s.correct || 0),
+    0
+  );
+  const accuracy = totalCount > 0 ? correctTotal / totalCount : 0;
+  if (accuracy < PASS_THRESHOLD) return false;
+
+  return true;
 }
 
 export async function markQualifiedDayIfNeeded(userId, isoDate) {
