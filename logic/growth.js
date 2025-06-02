@@ -111,10 +111,10 @@ export async function renderGrowthScreen(user) {
     cell.className = "sugoroku-cell";
     if (i === 0) {
       cell.classList.add("start");
-      cell.textContent = "START";
+      cell.textContent = "スタート";
     } else if (i === stepCount - 1) {
       cell.classList.add("goal");
-      cell.textContent = "GOAL";
+      cell.textContent = "ゴール";
     } else {
       cell.textContent = i.toString();
     }
