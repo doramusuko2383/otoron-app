@@ -120,6 +120,73 @@
   font-size: 24px;
 }
 
+/* === すごろく形式 === */
+.sugoroku-board {
+  position: relative;
+  width: 100%;
+  max-width: 560px;
+  margin: 2em auto;
+}
+
+.sugoroku-line {
+  position: absolute;
+  top: 28px;
+  left: 0;
+  width: 100%;
+  height: 60px;
+  pointer-events: none;
+}
+
+.sugoroku-cells {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  padding: 0 0;
+}
+
+.sugoroku-cell {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 3px solid #5b4636;
+  font-weight: bold;
+  font-size: 0.75em;
+  color: #5b4636;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.sugoroku-cell:nth-child(odd) {
+  background-color: #d9f1ff;
+}
+
+.sugoroku-cell:nth-child(even) {
+  background-color: #ffe6f0;
+}
+
+.sugoroku-cell.goal {
+  background-color: #fff3b0;
+  position: relative;
+}
+
+.sugoroku-cell.goal::after {
+  content: "✨";
+  position: absolute;
+  top: -0.6em;
+  right: -0.6em;
+}
+
+.sugoroku-walker {
+  position: absolute;
+  bottom: 70px;
+  width: 56px;
+  transform: translateX(-50%);
+  pointer-events: none;
+  transition: left 0.3s ease;
+}
+
 /* 今日の情報 */
 .today-info {
   text-align: center;
