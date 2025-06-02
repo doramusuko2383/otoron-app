@@ -56,15 +56,16 @@ export async function markChordAsUnlocked(userId, chordKey) {
 }
 
 /**
- * 直近7日分のモック記録を生成（デバッグ用）
+ * 指定日数分のモック記録を生成（デバッグ用）
  * @param {string} userId
+ * @param {number} [days=7] - 生成する合格記録の日数
  */
-export async function generateMockGrowthData(userId, qualifiedDays = 7) {
+export async function generateMockGrowthData(userId, days = 7) {
   const now = new Date();
 
-  // 現在進行中の和音の解放日を7日前に調整して解放条件を満たす
+  // 現在進行中の和音の解放日を days 日前に調整して解放条件を満たす
   const past = new Date(now);
-  past.setDate(now.getDate() - 7);
+  past.setDate(now.getDate() - days);
   const pastStr = past.toISOString().split("T")[0];
   await supabase
     .from("user_chord_progress")
@@ -84,16 +85,15 @@ export async function generateMockGrowthData(userId, qualifiedDays = 7) {
   let queue = generateRecommendedQueue(flags);
   if (queue.length === 0) queue = ["C-E-G"];
 
-  // 直近7日分の記録を挿入
-  // qualifiedDays 回分は合格となるよう調整
-  for (let i = 0; i < 7; i++) {
+  // 指定日数分の記録を挿入（すべて合格とする）
+  for (let i = 0; i < days; i++) {
     const d = new Date(now);
     d.setDate(now.getDate() - i);
     const dateStr = d.toISOString().split("T")[0];
 
     const count = 60;
-    const qualified = i < qualifiedDays;
-    const mistakeNum = qualified ? 1 : 3;
+    const qualified = true;
+    const mistakeNum = 1;
 
     const rec = {
       user_id: userId,
