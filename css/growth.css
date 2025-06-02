@@ -165,14 +165,9 @@
 }
 
 .sugoroku-cell.start {
-  background-color: #fffde7;
+  background-color: #3399ff;
+  color: #fff;
   position: relative;
-}
-.sugoroku-cell.start::before {
-  content: "🏁";
-  position: absolute;
-  top: -0.6em;
-  left: -0.6em;
 }
 
 .sugoroku-cell:nth-child(odd) {
@@ -193,24 +188,18 @@
 .sugoroku-cell:nth-child(8) { margin-top: 32px; }
 
 .sugoroku-cell.goal {
-  background-color: #fff3b0;
+  background-color: #ff4d4d;
+  color: #fff;
   position: relative;
-}
-
-.sugoroku-cell.goal::after {
-  content: "🏁";
-  position: absolute;
-  top: -0.6em;
-  right: -0.6em;
 }
 
 .sugoroku-walker {
   position: absolute;
-  bottom: 60px;
+  top: 0;
+  left: 50%;
   width: 56px;
-  transform: translateX(-50%);
+  transform: translate(-50%, -100%);
   pointer-events: none;
-  transition: left 0.3s ease;
 }
 
 /* 今日の情報 */
