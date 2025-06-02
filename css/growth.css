@@ -165,7 +165,8 @@
 }
 
 .sugoroku-cell.start {
-  background-color: #004080;
+  /* より濃い青色でスタート地点を強調 */
+  background-color: #00008b;
   color: #fff;
   position: relative;
   width: 72px;
