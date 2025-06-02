@@ -44,12 +44,13 @@
   color: white;
   font-weight: bold;
   font-size: 18px;
-  border-radius: 12px;
+  border-radius: 20px;
   text-align: center;
   line-height: 60px;
   user-select: none;
   overflow: hidden;
   cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .unlock-button .progress {
@@ -65,6 +66,12 @@
 .progress-bar {
   display: flex;
   align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 0.5em;
+  background: #fff8d6;
+  border-radius: 12px;
+  box-sizing: border-box;
 }
 
 .face-icon {
@@ -86,7 +93,7 @@
   background-color: #ffe066;
   background-image: radial-gradient(white 1.5px, transparent 1.5px);
   background-size: 10px 10px;
-  max-width: 100%;
+  width: 100%;
   box-sizing: border-box;
 }
 
@@ -94,6 +101,7 @@
   display: flex;
   flex: 1;
   justify-content: space-between;
+  margin-left: auto;
 }
 
 .growth-progress .star {
@@ -103,4 +111,35 @@
 
 .growth-progress .star.filled {
   color: #FFD700;
+}
+
+/* 今日の情報 */
+.today-info {
+  text-align: center;
+  font-size: 1.1em;
+  margin-bottom: 1em;
+}
+
+/* ステータスバーとメッセージ */
+.status-bar {
+  margin: 1em 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+#growth-message {
+  margin-bottom: 1em;
+  text-align: center;
+}
+
+#growth-message.can-unlock {
+  background: #ffe6f0;
+  border: 2px solid #ff66cc;
+  border-radius: 12px;
+  padding: 0.75em;
+  color: #d1007d;
+  font-weight: bold;
+  max-width: 320px;
 }

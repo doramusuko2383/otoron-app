@@ -45,23 +45,23 @@ export async function renderGrowthScreen(user) {
   container.appendChild(title);
 
   const info = document.createElement("p");
+  info.className = "today-info";
   info.innerHTML = `
     今日の日付: <strong>${today}</strong><br/>
-    合格した日数: <strong>${passed}</strong> / 7日<br/>
     今日の状態: ${qualifiedToday ? "✅ 合格済み" : "❌ 未合格"}
   `;
   container.appendChild(info);
 
   const statusBar = document.createElement("div");
-  statusBar.style.margin = "1em 0";
-  const msgSpan = document.createElement("span");
+  statusBar.className = "status-bar";
+  const msgSpan = document.createElement("div");
   msgSpan.id = "growth-message";
 
   const unlockBtn = document.createElement("div");
   unlockBtn.id = "unlockBtn";
   unlockBtn.className = "unlock-button";
   unlockBtn.textContent = "解放する";
-  unlockBtn.style.marginLeft = "1em";
+  unlockBtn.style.display = "none";
 
   const progressEl = document.createElement("div");
   progressEl.className = "progress";
