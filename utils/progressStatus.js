@@ -64,6 +64,9 @@ export async function updateGrowthStatusBar(user, target, onUnlocked) {
   const progress = btn?.querySelector(".progress");
   if (!msg || !btn || !progress || !card) return;
 
+  const consecutive = await countQualifiedDays(user.id);
+  console.log(`\u73FE\u5728\u306E\u9023\u7D9A\u5408\u683C\u65E5\u6570: ${consecutive}`);
+
   const canUnlock = await checkRecentUnlockCriteria(user.id);
   const holdTime = 1500;
   let timer;
@@ -75,7 +78,7 @@ export async function updateGrowthStatusBar(user, target, onUnlocked) {
   };
 
   if (canUnlock) {
-    msg.textContent = "合格条件（7日間の合格）を達成しました！\n次の和音を解放できます。";
+    msg.textContent = `合格条件（7日間の合格）を達成しました！\n次の和音を解放できます。\n連続合格日数: ${consecutive} 日`;
     msg.classList.add("can-unlock");
     card.classList.add("highlight");
     btn.style.display = "block";
@@ -110,7 +113,7 @@ export async function updateGrowthStatusBar(user, target, onUnlocked) {
     btn.onpointerleave = cancelProgress;
   } else {
     const label = target ? target.label : "";
-    msg.textContent = `いま ${label} の解放条件を満たしていません`;
+    msg.textContent = `いま ${label} の解放条件を満たしていません\n連続合格日数: ${consecutive} 日`;
     msg.classList.remove("can-unlock");
     card.classList.remove("highlight");
     btn.style.display = "none";
