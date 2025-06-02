@@ -49,6 +49,11 @@ export async function renderGrowthScreen(user) {
 
   const statusBar = document.createElement("div");
   statusBar.className = "status-bar";
+
+  const unlockCard = document.createElement("div");
+  unlockCard.className = "unlock-card";
+  unlockCard.id = "unlockCard";
+
   const msgSpan = document.createElement("div");
   msgSpan.id = "growth-message";
 
@@ -62,8 +67,9 @@ export async function renderGrowthScreen(user) {
   progressEl.className = "progress";
   unlockBtn.appendChild(progressEl);
 
-  statusBar.appendChild(msgSpan);
-  statusBar.appendChild(unlockBtn);
+  unlockCard.appendChild(msgSpan);
+  unlockCard.appendChild(unlockBtn);
+  statusBar.appendChild(unlockCard);
   container.appendChild(statusBar);
 
   // ⭐ 進捗を星で表示

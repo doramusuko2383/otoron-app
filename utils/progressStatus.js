@@ -60,8 +60,9 @@ export async function getUnlockCriteriaStatus(userId) {
 export async function updateGrowthStatusBar(user, target, onUnlocked) {
   const msg = document.getElementById("growth-message");
   const btn = document.getElementById("unlockBtn");
+  const card = document.getElementById("unlockCard");
   const progress = btn?.querySelector(".progress");
-  if (!msg || !btn || !progress) return;
+  if (!msg || !btn || !progress || !card) return;
 
   const canUnlock = await checkRecentUnlockCriteria(user.id);
   const holdTime = 1500;
@@ -76,6 +77,7 @@ export async function updateGrowthStatusBar(user, target, onUnlocked) {
   if (canUnlock) {
     msg.textContent = "合格条件（7日間の合格）を満たしました。次の和音を解放できます。";
     msg.classList.add("can-unlock");
+    card.classList.add("highlight");
     btn.style.display = "block";
 
     btn.onpointerdown = () => {
@@ -110,6 +112,7 @@ export async function updateGrowthStatusBar(user, target, onUnlocked) {
     const label = target ? target.label : "";
     msg.textContent = `いま ${label} の解放条件を満たしていません`;
     msg.classList.remove("can-unlock");
+    card.classList.remove("highlight");
     btn.style.display = "none";
     btn.onpointerdown = null;
     btn.onpointerup = null;
