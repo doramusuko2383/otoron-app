@@ -34,17 +34,25 @@ export default async function handler(req, res) {
 
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object;
-    const email = session.customer_email;
+    const email =
+      session.customer_email || session.customer_details?.email || null;
     const customerId = session.customer;
 
     // is_premium と stripe_customer_id を同時に更新
-    const { error } = await supabase
+    let query = supabase
       .from('users')
       .update({
         is_premium: true,
         stripe_customer_id: customerId,
-      })
-      .eq('email', email);
+      });
+
+    if (email) {
+      query = query.eq('email', email);
+    } else {
+      query = query.eq('stripe_customer_id', customerId);
+    }
+
+    const { error } = await query;
 
     if (error) {
       console.error('Supabase update error:', error);

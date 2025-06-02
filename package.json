@@ -4,7 +4,9 @@
   "type": "module",
   "private": true,
   "dependencies": {
-    "stripe": "^12.15.0"
+    "stripe": "^12.15.0",
+    "@supabase/supabase-js": "^2.39.7",
+    "micro": "^9.3.4"
   }
 }
 

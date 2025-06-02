@@ -35,6 +35,34 @@ export default async function handler(req, res) {
   const { type, data } = event;
   const customerId = data?.object?.customer;
 
+  if (type === 'checkout.session.completed') {
+    const session = data.object;
+    const email = session.customer_email || session.customer_details?.email || null;
+    let query = supabase
+      .from('users')
+      .update({
+        is_premium: true,
+        stripe_customer_id: customerId,
+      });
+
+    if (email) {
+      query = query.eq('email', email);
+    } else {
+      query = query.eq('stripe_customer_id', customerId);
+    }
+
+    const { error } = await query;
+    if (error) {
+      console.error('Supabase update error:', error);
+      return res.status(500).send('Supabase update failed');
+    }
+
+    console.log(
+      `\u2705 ${email} is now a premium user with customer ID ${customerId}`
+    );
+  }
+
+
   let isPremium;
   if (type === 'invoice.payment_succeeded') {
     isPremium = true;
