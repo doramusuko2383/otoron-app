@@ -150,14 +150,6 @@ export async function renderGrowthScreen(user) {
     actionSelect.appendChild(o);
   });
 
-  const mock4Btn = document.createElement("button");
-  mock4Btn.textContent = "4日分モック生成";
-  mock4Btn.style.marginLeft = "0.5em";
-  mock4Btn.onclick = async () => {
-    await generateMockGrowthData(user.id, 4);
-    alert("モックデータ(4日分)を生成しました");
-    await renderGrowthScreen(user);
-  };
 
   actionSelect.onchange = async () => {
     const val = actionSelect.value;
@@ -191,7 +183,6 @@ export async function renderGrowthScreen(user) {
   };
 
   debugPanel.appendChild(actionSelect);
-  debugPanel.appendChild(mock4Btn);
   container.appendChild(debugPanel);
 
 
