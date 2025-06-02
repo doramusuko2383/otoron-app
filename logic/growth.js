@@ -150,19 +150,7 @@ export async function renderGrowthScreen(user) {
     await renderGrowthScreen(user);
   };
 
-  const logLabel = document.createElement("label");
-  logLabel.style.marginLeft = "0.5em";
-  const logChk = document.createElement("input");
-  logChk.type = "checkbox";
-  logChk.checked = window.unlockDebugLogs === true;
-  logChk.onchange = () => {
-    window.unlockDebugLogs = logChk.checked;
-  };
-  logLabel.appendChild(logChk);
-  logLabel.appendChild(document.createTextNode("詳細ログ"));
-
   debugPanel.appendChild(actionSelect);
-  debugPanel.appendChild(logLabel);
   container.appendChild(debugPanel);
 
 

@@ -91,8 +91,8 @@
   padding: 0.25em 0.5em;
   border: 2px solid #5b4636;
   border-radius: 12px;
-  background-color: #ffe066;
-  background-image: radial-gradient(white 1.5px, transparent 1.5px);
+  background-color: #fffafc;
+  background-image: radial-gradient(#ffe6f0 1.5px, transparent 1.5px);
   background-size: 10px 10px;
   width: 100%;
   box-sizing: border-box;
@@ -111,7 +111,8 @@
 }
 
 .growth-progress .star.filled {
-  color: #FFD700;
+  color: #f7b500;
+  text-shadow: 0 0 2px #fff;
 }
 
 /* 今日の情報 */
