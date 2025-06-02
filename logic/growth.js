@@ -72,34 +72,46 @@ export async function renderGrowthScreen(user) {
   statusBar.appendChild(unlockCard);
   container.appendChild(statusBar);
 
-  // ⭐ 進捗を星で表示
+  // 🎲 すごろく風の進捗バー
   const progressWrapper = document.createElement("div");
   progressWrapper.className = "progress-bar";
-
-  const face = document.createElement("img");
-  face.src = "images/otolon_face.webp";
-  face.alt = "オトロン";
-  face.className = "face-icon";
-  progressWrapper.appendChild(face);
 
   const progressBar = document.createElement("div");
   progressBar.className = "growth-progress";
 
-  const starsWrapper = document.createElement("div");
-  starsWrapper.className = "stars";
+  const track = document.createElement("div");
+  track.className = "progress-track";
 
-  const filled = Math.max(0, Math.min(passed, 7));
-  for (let i = 0; i < 7; i++) {
-    const star = document.createElement("span");
-    star.className = "star";
-    star.textContent = "★";
-    if (i < filled) star.classList.add("filled");
-    starsWrapper.appendChild(star);
+  const stepCount = 7;
+  const filled = Math.max(0, Math.min(passed, stepCount));
+  for (let i = 0; i < stepCount; i++) {
+    const step = document.createElement("div");
+    step.className = "step";
+    if (i < filled) step.classList.add("filled");
+    track.appendChild(step);
   }
 
-  progressBar.appendChild(starsWrapper);
+  const walker = document.createElement("img");
+  walker.src = "images/walk.webp";
+  walker.alt = "オトロン";
+  walker.className = "walker";
+  track.appendChild(walker);
+
+  progressBar.appendChild(track);
+
+  const goal = document.createElement("span");
+  goal.className = "goal";
+  goal.textContent = "🏁";
+  progressBar.appendChild(goal);
+
   progressWrapper.appendChild(progressBar);
   container.appendChild(progressWrapper);
+
+  // walker position
+  const STEP_WIDTH = 48;
+  const STEP_GAP = 12;
+  const index = Math.min(filled, stepCount - 1);
+  walker.style.left = `${index * (STEP_WIDTH + STEP_GAP) + STEP_WIDTH / 2}px`;
 
   // 🛠 デバッグ機能
   const debugPanel = document.createElement("div");
