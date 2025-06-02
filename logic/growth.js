@@ -111,7 +111,7 @@ export async function renderGrowthScreen(user) {
     { value: "reset", label: "進捗をリセット（赤のみ）" },
     { value: "unlock", label: "次の和音を解放" },
     { value: "mock4", label: "モック記録生成（4日分合格）" },
-    { value: "mock7", label: "モック記録生成（7/7合格）" }
+    { value: "mock7", label: "モック記録生成（7日分合格）" }
   ].forEach(opt => {
     const o = document.createElement("option");
     o.value = opt.value;
@@ -145,7 +145,7 @@ export async function renderGrowthScreen(user) {
       alert("モックデータ(4日分)を生成しました");
     } else if (val === "mock7") {
       await generateMockGrowthData(user.id, 7);
-      alert("モックデータ(7/7)を生成しました");
+      alert("モックデータ(7日分)を生成しました");
     }
     await renderGrowthScreen(user);
   };
