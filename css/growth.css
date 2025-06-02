@@ -165,9 +165,11 @@
 }
 
 .sugoroku-cell.start {
-  background-color: #3399ff;
+  background-color: #004080;
   color: #fff;
   position: relative;
+  width: 72px;
+  white-space: nowrap;
 }
 
 .sugoroku-cell:nth-child(odd) {
@@ -191,6 +193,8 @@
   background-color: #ff4d4d;
   color: #fff;
   position: relative;
+  width: 72px;
+  white-space: nowrap;
 }
 
 .sugoroku-walker {
