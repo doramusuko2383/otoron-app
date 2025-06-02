@@ -72,46 +72,65 @@ export async function renderGrowthScreen(user) {
   statusBar.appendChild(unlockCard);
   container.appendChild(statusBar);
 
-  // 🎲 すごろく風の進捗バー
-  const progressWrapper = document.createElement("div");
-  progressWrapper.className = "progress-bar";
+  // 🎲 すごろく形式の進捗ボード
+  const board = document.createElement("div");
+  board.className = "sugoroku-board";
 
-  const progressBar = document.createElement("div");
-  progressBar.className = "growth-progress";
+  const stepCount = 8; // 0-7
+  const filled = Math.max(0, Math.min(passed, stepCount - 1));
 
-  const track = document.createElement("div");
-  track.className = "progress-track";
-
-  const stepCount = 7;
-  const filled = Math.max(0, Math.min(passed, stepCount));
-  for (let i = 0; i < stepCount; i++) {
-    const step = document.createElement("div");
-    step.className = "step";
-    if (i < filled) step.classList.add("filled");
-    track.appendChild(step);
+  // 波線SVG
+  const spacing = 80;
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.classList.add("sugoroku-line");
+  svg.setAttribute("viewBox", `0 0 ${(stepCount - 1) * spacing} 60`);
+  svg.setAttribute("width", "100%");
+  svg.setAttribute("height", "60");
+  const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  let d = "M0 30";
+  for (let i = 1; i < stepCount; i++) {
+    const x = i * spacing;
+    const cpX = x - spacing / 2;
+    const cpY = i % 2 === 0 ? 10 : 50;
+    d += ` Q ${cpX} ${cpY} ${x} 30`;
   }
+  path.setAttribute("d", d);
+  path.setAttribute("fill", "none");
+  path.setAttribute("stroke", "#5b4636");
+  path.setAttribute("stroke-width", "4");
+  path.setAttribute("stroke-linecap", "round");
+  svg.appendChild(path);
+  board.appendChild(svg);
+
+  // マス目
+  const cells = document.createElement("div");
+  cells.className = "sugoroku-cells";
+  for (let i = 0; i < stepCount; i++) {
+    const cell = document.createElement("div");
+    cell.className = "sugoroku-cell";
+    if (i === 0) {
+      cell.textContent = "START";
+    } else if (i === stepCount - 1) {
+      cell.classList.add("goal");
+      cell.textContent = "GOAL";
+    } else {
+      cell.textContent = i.toString();
+    }
+    cells.appendChild(cell);
+  }
+  board.appendChild(cells);
 
   const walker = document.createElement("img");
   walker.src = "images/walk.webp";
   walker.alt = "オトロン";
-  walker.className = "walker";
-  track.appendChild(walker);
+  walker.className = "sugoroku-walker";
+  board.appendChild(walker);
 
-  progressBar.appendChild(track);
+  container.appendChild(board);
 
-  const goal = document.createElement("span");
-  goal.className = "goal";
-  goal.textContent = "🏁";
-  progressBar.appendChild(goal);
-
-  progressWrapper.appendChild(progressBar);
-  container.appendChild(progressWrapper);
-
-  // walker position
-  const STEP_WIDTH = 48;
-  const STEP_GAP = 12;
-  const index = Math.min(filled, stepCount - 1);
-  walker.style.left = `${index * (STEP_WIDTH + STEP_GAP) + STEP_WIDTH / 2}px`;
+  // キャラクター位置
+  const percent = (filled / (stepCount - 1)) * 100;
+  walker.style.left = `calc(${percent}% )`;
 
   // 🛠 デバッグ機能
   const debugPanel = document.createElement("div");
