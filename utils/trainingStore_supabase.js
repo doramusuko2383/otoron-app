@@ -85,3 +85,43 @@ export async function loadTrainingSessionsForDate(userId, date) {
 
   return data || [];
 }
+
+export async function deleteTrainingDataThisWeek(userId) {
+  const today = new Date();
+  const day = today.getDay(); // 0: Sun
+  const diffToMonday = (day + 6) % 7; // days since Monday
+  const weekStart = new Date(today);
+  weekStart.setDate(today.getDate() - diffToMonday);
+  const nextWeek = new Date(weekStart);
+  nextWeek.setDate(weekStart.getDate() + 7);
+  const startStr = weekStart.toISOString().split("T")[0];
+  const endStr = nextWeek.toISOString().split("T")[0];
+
+  const { error: sesErr } = await supabase
+    .from("training_sessions")
+    .delete()
+    .eq("user_id", userId)
+    .gte("session_date", startStr)
+    .lt("session_date", endStr);
+
+  const { error: recErr } = await supabase
+    .from("training_records")
+    .delete()
+    .eq("user_id", userId)
+    .gte("date", startStr)
+    .lt("date", endStr);
+
+  const { error: qualErr } = await supabase
+    .from("qualified_days")
+    .delete()
+    .eq("user_id", userId)
+    .gte("qualified_date", startStr)
+    .lt("qualified_date", endStr);
+
+  if (sesErr || recErr || qualErr) {
+    console.error("❌ 今週のデータ削除に失敗:", sesErr || recErr || qualErr);
+    return false;
+  }
+
+  return true;
+}

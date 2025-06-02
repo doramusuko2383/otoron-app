@@ -13,6 +13,7 @@ import {
   loadGrowthFlags,
   generateMockGrowthData
 } from "../utils/growthStore_supabase.js";
+import { deleteTrainingDataThisWeek } from "../utils/trainingStore_supabase.js";
 import { chords } from "../data/chords.js";
 import { renderHeader } from "../components/header.js";
 import { unlockChord, resetChordProgressToRed } from "../utils/progressUtils.js";
@@ -141,8 +142,14 @@ export async function renderGrowthScreen(user) {
     { value: "", label: "デバッグ機能（本番モードでは削除）" },
     { value: "reset", label: "進捗をリセット（赤のみ）" },
     { value: "unlock", label: "次の和音を解放" },
-    { value: "mock4", label: "モック記録生成（4日分合格）" },
-    { value: "mock7", label: "モック記録生成（7日分合格）" }
+    { value: "clearWeek", label: "今週のトレーニングデータを削除" },
+    { value: "mock1", label: "モック記録生成（1日分）" },
+    { value: "mock2", label: "モック記録生成（2日分）" },
+    { value: "mock3", label: "モック記録生成（3日分）" },
+    { value: "mock4", label: "モック記録生成（4日分）" },
+    { value: "mock5", label: "モック記録生成（5日分）" },
+    { value: "mock6", label: "モック記録生成（6日分）" },
+    { value: "mock7", label: "モック記録生成（7日分）" }
   ].forEach(opt => {
     const o = document.createElement("option");
     o.value = opt.value;
@@ -172,12 +179,16 @@ export async function renderGrowthScreen(user) {
       } else {
         alert("すべての和音が解放されています");
       }
-    } else if (val === "mock4") {
-      await generateMockGrowthData(user.id, 4);
-      alert("モックデータ(4日分)を生成しました");
-    } else if (val === "mock7") {
-      await generateMockGrowthData(user.id, 7);
-      alert("モックデータ(7日分)を生成しました");
+    } else if (val === "clearWeek") {
+      const ok = confirm("今週のトレーニングデータを本当に削除しますか？");
+      if (ok) {
+        const success = await deleteTrainingDataThisWeek(user.id);
+        alert(success ? "今週のデータを削除しました" : "削除に失敗しました");
+      }
+    } else if (val.startsWith("mock")) {
+      const days = parseInt(val.replace("mock", ""), 10);
+      await generateMockGrowthData(user.id, days);
+      alert(`モックデータ(${days}日分)を生成しました`);
     }
     await renderGrowthScreen(user);
   };
