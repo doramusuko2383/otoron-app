@@ -75,7 +75,7 @@ export async function updateGrowthStatusBar(user, target, onUnlocked) {
   };
 
   if (canUnlock) {
-    msg.textContent = "合格条件（7日間の合格）を満たしました。次の和音を解放できます。";
+    msg.textContent = "合格条件（7日間の合格）を達成しました！\n次の和音を解放できます。";
     msg.classList.add("can-unlock");
     card.classList.add("highlight");
     btn.style.display = "block";
