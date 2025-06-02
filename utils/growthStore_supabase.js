@@ -1,7 +1,7 @@
 // utils/growthStore_supabase.js
 
 import { supabase } from "./supabaseClient.js";
-import { markQualifiedDayIfNeeded } from "./qualifiedStore_supabase.js";
+import { markQualifiedDayIfNeeded, sessionMeetsStats } from "./qualifiedStore_supabase.js";
 import { generateRecommendedQueue } from "./growthUtils.js";
 
 /**
@@ -139,7 +139,7 @@ export async function generateMockGrowthData(userId) {
       results_json: results,
       stats_json: stats,
       mistakes_json: { inversion_confusions: inversionMistakes },
-      is_qualified: (count - mistakeNum) / count >= 0.98
+      is_qualified: sessionMeetsStats(stats, count)
     };
     const { error: sesErr } = await supabase
       .from("training_sessions")
