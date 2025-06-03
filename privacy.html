@@ -4,15 +4,31 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>プライバシーポリシー | オトロン</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/common.css" />
   <link rel="stylesheet" href="css/header.css" />
+  <link rel="stylesheet" href="css/info.css" />
 </head>
 <body class="app-root with-header">
   <header class="app-header">
-    <a class="home-icon" href="/">
+    <a class="home-icon" href="index.html#home">
       <img src="images/otolon_face.webp" alt="ホーム" />
     </a>
-    <a class="training-header-button" href="/">とれーにんぐ</a>
+    <a class="training-header-button" href="index.html#training">とれーにんぐ</a>
+
+    <div class="parent-menu">
+      <button id="parent-menu-btn" aria-label="設定">⚙️</button>
+      <div id="parent-dropdown" class="parent-dropdown">
+        <a href="index.html#settings">⚙️ 設定</a>
+        <a href="index.html#result">📊 分析画面</a>
+        <a href="index.html#mypage">👤 マイページ</a>
+        <a href="index.html#growth">🌱 育成モード</a>
+        <a href="index.html#intro">🚪 ログアウト</a>
+      </div>
+    </div>
+
     <div class="info-menu">
       <button id="info-menu-btn" aria-label="インフォメーション">ℹ️</button>
       <div id="info-dropdown" class="info-dropdown">
@@ -24,7 +40,8 @@
       </div>
     </div>
   </header>
-  <h1>プライバシーポリシー</h1>
+  <main class="info-page">
+    <h1>プライバシーポリシー</h1>
 
   <p>本プライバシーポリシー（以下、「本ポリシー」といいます。）は、オトロン（以下、「本サービス」といいます。）の提供にあたり、ユーザーの個人情報を適切に取り扱う方針を定めたものです。個人運営者である当方は、関連する法令（個人情報保護法など）を遵守し、本サービスを利用するすべてのユーザー（以下、「ユーザー」といいます。）のプライバシーを尊重します。</p>
 
@@ -78,18 +95,7 @@
 
   <h2>第9条（プライバシーポリシーの変更）</h2>
   <p>本ポリシーは、必要に応じて事前の予告なく変更されることがあります。重要な変更がある場合は、Webサイト上またはサービス内で通知します。</p>
+  </main>
 </body>
-<script>
-  const infoBtn = document.getElementById('info-menu-btn');
-  const infoDropdown = document.getElementById('info-dropdown');
-  infoBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    infoDropdown.classList.toggle('show');
-  });
-  document.addEventListener('click', (e) => {
-    if (!infoDropdown.contains(e.target) && e.target !== infoBtn) {
-      infoDropdown.classList.remove('show');
-    }
-  });
-</script>
+<script type="module" src="info-page.js"></script>
 </html>
