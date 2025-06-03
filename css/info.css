@@ -3,8 +3,16 @@
   margin: 1em auto;
   padding: 0 1em 2em;
   box-sizing: border-box;
+  background: #fff;
   color: #543014;
   line-height: 1.7;
+  border-radius: 8px;
+}
+
+/* Ensure readability even when the body has a dark background */
+.app-root.night .info-page {
+  background: #fff;
+  color: #543014;
 }
 
 .info-page h1 {
