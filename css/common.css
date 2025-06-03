@@ -35,7 +35,8 @@
 }
 
 /* ヘッダー表示時に余白を確保 */
-#app.with-header {
+#app.with-header,
+body.with-header {
   padding-top: 56px;
 }
 
