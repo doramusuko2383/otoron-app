@@ -24,20 +24,41 @@ export function renderHeader(container) {
         <button id="logout-btn">🚪 ログアウト</button>
       </div>
     </div>
+
+    <div class="info-menu">
+      <button id="info-menu-btn" aria-label="インフォメーション">ℹ️</button>
+      <div id="info-dropdown" class="info-dropdown">
+        <a href="terms.html">利用規約</a>
+        <a href="privacy.html">プライバシーポリシー</a>
+        <a href="contact.html">お問い合わせ</a>
+        <a href="law.html">特定商取引法に基づく表示</a>
+        <a href="external.html">外部送信ポリシー</a>
+      </div>
+    </div>
   `;
 
   // ▼ ドロップダウン制御（クリックで開閉）
   const parentMenuBtn = header.querySelector("#parent-menu-btn");
   const dropdown = header.querySelector("#parent-dropdown");
+  const infoMenuBtn = header.querySelector("#info-menu-btn");
+  const infoDropdown = header.querySelector("#info-dropdown");
 
   parentMenuBtn.onclick = (e) => {
     e.stopPropagation();
     dropdown.classList.toggle("show");
   };
 
+  infoMenuBtn.onclick = (e) => {
+    e.stopPropagation();
+    infoDropdown.classList.toggle("show");
+  };
+
   document.addEventListener("click", (e) => {
     if (!dropdown.contains(e.target) && e.target !== parentMenuBtn) {
       dropdown.classList.remove("show");
+    }
+    if (!infoDropdown.contains(e.target) && e.target !== infoMenuBtn) {
+      infoDropdown.classList.remove("show");
     }
   });
 
