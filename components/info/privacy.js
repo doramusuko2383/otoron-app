@@ -1,5 +1,4 @@
 import { renderHeader } from "../header.js";
-import { getTimeOfDay } from "../../utils/timeOfDay.js";
 
 export function renderPrivacyScreen() {
   const app = document.getElementById("app");
