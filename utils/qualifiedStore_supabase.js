@@ -1,27 +1,43 @@
 import { supabase } from "./supabaseClient.js";
+import { chords, chordOrder } from "../data/chords.js";
+import { getCounts } from "./chordQueue.js";
 
 const REQUIRED_DAYS = 7;
 const PASS_THRESHOLD = 0.98;
 
+const chordNameOrder = chordOrder
+  .map(key => chords.find(c => c.key === key)?.name)
+  .filter(Boolean);
+
 function sessionMeetsStats(stats, totalCount) {
   if (!stats) return false;
 
-  const chordCount = Object.keys(stats).length;
-  if (chordCount === 0) return false;
-  if (totalCount < chordCount * 4) return false;
+  const names = Object.keys(stats);
+  const n = names.length;
+  if (n === 0) return false;
 
-  const counts = Object.values(stats).map(s => {
-    const total =
-      s.total ?? (s.correct || 0) + (s.wrong || 0) + (s.unknown || 0);
-    return total;
+  const required = getCounts(n);
+  const sorted = chordNameOrder.filter(name => names.includes(name));
+  names.forEach(nm => {
+    if (!sorted.includes(nm)) sorted.push(nm);
   });
-  if (!counts.every(c => c >= 4)) return false;
 
-  const correctTotal = Object.values(stats).reduce(
-    (sum, s) => sum + (s.correct || 0),
-    0
-  );
-  const accuracy = totalCount > 0 ? correctTotal / totalCount : 0;
+  let total = 0;
+  let correctTotal = 0;
+  for (let i = 0; i < sorted.length; i++) {
+    const name = sorted[i];
+    const stat = stats[name] || {};
+    const count =
+      stat.total ?? (stat.correct || 0) + (stat.wrong || 0) + (stat.unknown || 0);
+    if (count < required[i]) return false;
+    total += count;
+    correctTotal += stat.correct || 0;
+  }
+
+  const minTotal = required.reduce((a, b) => a + b, 0);
+  if (totalCount < minTotal) return false;
+
+  const accuracy = total > 0 ? correctTotal / total : 0;
   if (accuracy < PASS_THRESHOLD) return false;
 
   return true;
@@ -35,7 +51,7 @@ export async function markQualifiedDayIfNeeded(userId, isoDate) {
 
   const { data: sessions, error } = await supabase
     .from("training_sessions")
-    .select("is_qualified, results_json")
+    .select("stats_json, total_count")
     .eq("user_id", userId)
     .gte("session_date", dayStart)
     .lt("session_date", nextStr);
@@ -47,17 +63,26 @@ export async function markQualifiedDayIfNeeded(userId, isoDate) {
 
   if (!sessions || sessions.length === 0) return;
 
-  let qualified = false;
-  if (sessions.some(s => s.is_qualified)) {
-    qualified = true;
-  } else if (sessions.length >= 2) {
-    const allRecommended = sessions.every(s => {
-      const mode = s.results_json?.mode || s.results_json?.[0]?.mode;
-      return mode === "recommended";
-    });
-    if (allRecommended) qualified = true;
-  }
+  const aggregated = {};
+  let total = 0;
+  sessions.forEach(s => {
+    total += s.total_count || 0;
+    const st = s.stats_json || {};
+    for (const name in st) {
+      const ent = st[name];
+      const c =
+        ent.total ?? (ent.correct || 0) + (ent.wrong || 0) + (ent.unknown || 0);
+      if (!aggregated[name]) {
+        aggregated[name] = { correct: 0, wrong: 0, unknown: 0, total: 0 };
+      }
+      aggregated[name].correct += ent.correct || 0;
+      aggregated[name].wrong += ent.wrong || 0;
+      aggregated[name].unknown += ent.unknown || 0;
+      aggregated[name].total += c;
+    }
+  });
 
+  const qualified = sessionMeetsStats(aggregated, total);
   if (!qualified) return;
 
   const { data: existing, error: existErr } = await supabase

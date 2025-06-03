@@ -27,7 +27,7 @@ export function generateChordQueue(chordNames) {
   return queue;
 }
 
-function getCounts(n) {
+export function getCounts(n) {
   const counts = [];
   if (n === 1) {
     counts.push(20);
