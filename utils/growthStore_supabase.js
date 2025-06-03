@@ -6,6 +6,7 @@ import {
   sessionMeetsStats
 } from "./qualifiedStore_supabase.js";
 import { generateRecommendedQueue } from "./growthUtils.js";
+import { chordOrder } from "../data/chords.js";
 
 /**
  * 和音の進捗（解放状態）を取得
@@ -102,7 +103,8 @@ export async function generateMockGrowthData(userId, days = 7) {
       date: dateStr,
       count,
       correct: count - mistakeNum,
-      sets: 3
+      sets: 3,
+      chords_required: chordOrder.filter(key => flags[key]?.unlocked)
     };
     const { error: recErr } = await supabase
       .from("training_records")

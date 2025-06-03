@@ -85,24 +85,56 @@ export async function getConsecutiveQualifiedDays(userId, days = REQUIRED_DAYS) 
   from.setDate(today.getDate() - (days - 1));
   const fromStr = from.toISOString().split("T")[0];
 
-  const { data, error } = await supabase
-    .from("qualified_days")
-    .select("qualified_date")
-    .eq("user_id", userId)
-    .gte("qualified_date", fromStr);
+  const [{ data: qualified, error: qErr }, { data: records, error: rErr }, { data: progress, error: pErr }] = await Promise.all([
+    supabase
+      .from("qualified_days")
+      .select("qualified_date")
+      .eq("user_id", userId)
+      .gte("qualified_date", fromStr),
+    supabase
+      .from("training_records")
+      .select("date, chords_required")
+      .eq("user_id", userId)
+      .gte("date", fromStr),
+    supabase
+      .from("user_chord_progress")
+      .select("chord_key, status")
+      .eq("user_id", userId)
+  ]);
 
-  if (error) {
-    console.error("❌ qualified days fetch failed:", error);
+  if (qErr || rErr || pErr) {
+    console.error("❌ qualified days fetch failed:", qErr || rErr || pErr);
     return 0;
   }
 
-  const set = new Set(data.map(d => d.qualified_date));
+  const currentUnlocked = progress
+    .filter(p => p.status !== "locked")
+    .map(p => p.chord_key);
+
+  const currentSet = new Set(currentUnlocked);
+
+  const recordMap = {};
+  records.forEach(r => {
+    recordMap[r.date] = r;
+  });
+
+  const qualifiedSet = new Set(qualified.map(d => d.qualified_date));
+
+  function isValidPassingDay(rec) {
+    if (!rec || !rec.chords_required) return false;
+    const req = Array.isArray(rec.chords_required)
+      ? rec.chords_required
+      : JSON.parse(rec.chords_required || "[]");
+    if (req.length !== currentUnlocked.length) return false;
+    return req.every(ch => currentSet.has(ch));
+  }
+
   let count = 0;
   for (let i = 0; i < days; i++) {
     const d = new Date();
     d.setDate(today.getDate() - i);
     const ds = d.toISOString().split("T")[0];
-    if (set.has(ds)) {
+    if (qualifiedSet.has(ds) && isValidPassingDay(recordMap[ds])) {
       count++;
     } else {
       break;
