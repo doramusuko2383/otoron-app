@@ -164,15 +164,6 @@
   border-radius: 12px;
 }
 
-.sugoroku-cell.start {
-  /* より濃い青色でスタート地点を強調 */
-  background-color: #00008b;
-  color: #fff;
-  position: relative;
-  width: 72px;
-  white-space: nowrap;
-}
-
 .sugoroku-cell:nth-child(odd) {
   background-color: #d9f1ff;
   
@@ -188,7 +179,17 @@
 .sugoroku-cell:nth-child(5) { margin-top: 26px; }
 .sugoroku-cell:nth-child(6) { margin-top: 38px; }
 .sugoroku-cell:nth-child(7) { margin-top: 26px; }
+
 .sugoroku-cell:nth-child(8) { margin-top: 32px; }
+
+.sugoroku-cell.start {
+  /* より濃い青色でスタート地点を強調 */
+  background-color: #00008b;
+  color: #fff;
+  position: relative;
+  width: 72px;
+  white-space: nowrap;
+}
 
 .sugoroku-cell.goal {
   background-color: #ff4d4d;
