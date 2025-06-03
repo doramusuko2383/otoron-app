@@ -18,6 +18,11 @@ import { supabase } from "./utils/supabaseClient.js";
 import { createInitialChordProgress } from "./utils/progressUtils.js";
 import { renderMyPageScreen } from "./components/mypage.js";
 import { clearTimeOfDayStyling } from "./utils/timeOfDay.js";
+import { renderTermsScreen } from "./components/info/terms.js";
+import { renderPrivacyScreen } from "./components/info/privacy.js";
+import { renderContactScreen } from "./components/info/contact.js";
+import { renderLawScreen } from "./components/info/law.js";
+import { renderExternalScreen } from "./components/info/external.js";
 
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
@@ -81,6 +86,11 @@ export const switchScreen = (screen, user = currentUser, options = {}) => {
   else if (screen === "result") renderResultScreen(user);
   else if (screen === "result_easy") renderTrainingEasyResultScreen(user);
   else if (screen === "result_full") renderTrainingFullResultScreen(user);
+  else if (screen === "terms") renderTermsScreen();
+  else if (screen === "privacy") renderPrivacyScreen();
+  else if (screen === "contact") renderContactScreen();
+  else if (screen === "law") renderLawScreen();
+  else if (screen === "external") renderExternalScreen();
 };
 
 // ブラウザ戻る/進む操作に対応

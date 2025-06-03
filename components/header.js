@@ -28,11 +28,11 @@ export function renderHeader(container) {
     <div class="info-menu">
       <button id="info-menu-btn" aria-label="インフォメーション">ℹ️</button>
       <div id="info-dropdown" class="info-dropdown">
-        <a href="terms.html">利用規約</a>
-        <a href="privacy.html">プライバシーポリシー</a>
-        <a href="contact.html">お問い合わせ</a>
-        <a href="law.html">特定商取引法に基づく表示</a>
-        <a href="external.html">外部送信ポリシー</a>
+        <button id="terms-btn">利用規約</button>
+        <button id="privacy-btn">プライバシーポリシー</button>
+        <button id="contact-btn">お問い合わせ</button>
+        <button id="law-btn">特定商取引法に基づく表示</button>
+        <button id="external-btn">外部送信ポリシー</button>
       </div>
     </div>
   `;
@@ -42,6 +42,11 @@ export function renderHeader(container) {
   const dropdown = header.querySelector("#parent-dropdown");
   const infoMenuBtn = header.querySelector("#info-menu-btn");
   const infoDropdown = header.querySelector("#info-dropdown");
+  const termsBtn = header.querySelector("#terms-btn");
+  const privacyBtn = header.querySelector("#privacy-btn");
+  const contactBtn = header.querySelector("#contact-btn");
+  const lawBtn = header.querySelector("#law-btn");
+  const externalBtn = header.querySelector("#external-btn");
 
   parentMenuBtn.onclick = (e) => {
     e.stopPropagation();
@@ -61,6 +66,13 @@ export function renderHeader(container) {
       infoDropdown.classList.remove("show");
     }
   });
+
+  // ▼ 情報ページ遷移
+  termsBtn.onclick = () => switchScreen("terms");
+  privacyBtn.onclick = () => switchScreen("privacy");
+  contactBtn.onclick = () => switchScreen("contact");
+  lawBtn.onclick = () => switchScreen("law");
+  externalBtn.onclick = () => switchScreen("external");
 
   // ▼ ホームアイコン → ホーム画面へ
   header.querySelector("#home-button").onclick = () => switchScreen("home");
