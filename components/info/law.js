@@ -5,7 +5,6 @@ export function renderLawScreen() {
   const app = document.getElementById("app");
   app.innerHTML = "";
   renderHeader(app);
-  document.body.classList.add(getTimeOfDay());
 
   const main = document.createElement("main");
   main.className = "info-page";
