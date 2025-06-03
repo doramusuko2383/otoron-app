@@ -14,17 +14,6 @@ export function renderHeader(container) {
       とれーにんぐ
     </button>
 
-    <div class="parent-menu">
-      <button id="parent-menu-btn" aria-label="設定">⚙️</button>
-      <div id="parent-dropdown" class="parent-dropdown">
-        <button id="settings-btn">⚙️ 設定</button>
-        <button id="summary-btn">📊 分析画面</button>
-        <button id="mypage-btn">👤 マイページ</button>
-        <button id="growth-btn">🌱 育成モード</button>
-        <button id="logout-btn">🚪 ログアウト</button>
-      </div>
-    </div>
-
     <div class="info-menu">
       <button id="info-menu-btn" aria-label="インフォメーション">ℹ️</button>
       <div id="info-dropdown" class="info-dropdown">
@@ -33,6 +22,17 @@ export function renderHeader(container) {
         <button id="contact-btn">お問い合わせ</button>
         <button id="law-btn">特定商取引法に基づく表示</button>
         <button id="external-btn">外部送信ポリシー</button>
+      </div>
+    </div>
+
+    <div class="parent-menu">
+      <button id="parent-menu-btn" aria-label="設定">⚙️</button>
+      <div id="parent-dropdown" class="parent-dropdown">
+        <button id="settings-btn">⚙️ 設定</button>
+        <button id="summary-btn">📊 分析画面</button>
+        <button id="mypage-btn">👤 マイページ</button>
+        <button id="growth-btn">🌱 育成モード</button>
+        <button id="logout-btn">🚪 ログアウト</button>
       </div>
     </div>
   `;
