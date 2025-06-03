@@ -4,8 +4,26 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>外部送信ポリシー | オトロン</title>
+  <link rel="stylesheet" href="css/common.css" />
+  <link rel="stylesheet" href="css/header.css" />
 </head>
-<body>
+<body class="app-root with-header">
+  <header class="app-header">
+    <a class="home-icon" href="/">
+      <img src="images/otolon_face.webp" alt="ホーム" />
+    </a>
+    <a class="training-header-button" href="/">とれーにんぐ</a>
+    <div class="info-menu">
+      <button id="info-menu-btn" aria-label="インフォメーション">ℹ️</button>
+      <div id="info-dropdown" class="info-dropdown">
+        <a href="terms.html">利用規約</a>
+        <a href="privacy.html">プライバシーポリシー</a>
+        <a href="contact.html">お問い合わせ</a>
+        <a href="law.html">特定商取引法に基づく表示</a>
+        <a href="external.html">外部送信ポリシー</a>
+      </div>
+    </div>
+  </header>
   <h1>外部送信ポリシー</h1>
 
   <p>この外部送信ポリシー（以下、「本ポリシー」といいます）は、オトロン（以下、「本サービス」といいます）をご利用いただく際に、ユーザーの端末から第三者に送信される情報とその目的・送信先等についてご案内するものです。</p>
@@ -40,4 +58,17 @@
   <hr />
   <p>2025年6月 作成</p>
 </body>
+<script>
+  const infoBtn = document.getElementById('info-menu-btn');
+  const infoDropdown = document.getElementById('info-dropdown');
+  infoBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    infoDropdown.classList.toggle('show');
+  });
+  document.addEventListener('click', (e) => {
+    if (!infoDropdown.contains(e.target) && e.target !== infoBtn) {
+      infoDropdown.classList.remove('show');
+    }
+  });
+</script>
 </html>
