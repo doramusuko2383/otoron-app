@@ -10,7 +10,12 @@ import { getToday } from "./growthUtils.js";
  * @param {number} params.correct - 正答数の追加値（例: 1）
  * @param {number} params.total - 出題数の追加値（例: 1）
  */
-export async function updateTrainingRecord({ userId, correct = 0, total = 1 }) {
+export async function updateTrainingRecord({
+  userId,
+  correct = 0,
+  total = 1,
+  chordsRequired = []
+}) {
   const today = getToday();
 
   const { data: existing, error: fetchError } = await supabase
@@ -38,13 +43,16 @@ export async function updateTrainingRecord({ userId, correct = 0, total = 1 }) {
   } else {
     const { error: insertError } = await supabase
       .from("training_records")
-      .insert([{
-        user_id: userId,
-        date: today,
-        count: total,
-        correct: correct,
-        sets: 0
-      }]);
+      .insert([
+        {
+          user_id: userId,
+          date: today,
+          count: total,
+          correct: correct,
+          sets: 0,
+          chords_required: chordsRequired
+        }
+      ]);
 
     if (insertError) console.error("❌ 記録新規作成失敗:", insertError);
   }
@@ -98,7 +106,12 @@ export async function loadTrainingRecords(userId) {
     result[r.date] = {
       count: r.count,
       correct: r.correct,
-      sets: r.sets
+      sets: r.sets,
+      chords_required: Array.isArray(r.chords_required)
+        ? r.chords_required
+        : r.chords_required
+        ? JSON.parse(r.chords_required)
+        : []
     };
   });
   return result;
