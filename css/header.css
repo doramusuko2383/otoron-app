@@ -154,6 +154,7 @@
 .info-dropdown button,
 .info-dropdown a {
   display: block;
+  width: 100%;
   padding: 0.8em 1em;
   text-decoration: none;
   background: none;
@@ -216,6 +217,7 @@
 
   .info-dropdown button,
   .info-dropdown a {
+    width: 100%;
     padding: 0.6em 1em;
   }
 }
