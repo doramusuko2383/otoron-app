@@ -68,6 +68,14 @@
   transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
+/* User email display */
+.parent-dropdown .user-email {
+  padding: 0.5em 1em;
+  font-size: 0.9rem;
+  border-bottom: 1px solid #eee;
+  color: #555;
+}
+
 /* ▼ 表示状態 */
 .parent-dropdown.show {
   opacity: 1;
