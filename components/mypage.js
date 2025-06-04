@@ -11,6 +11,7 @@ import { firebaseAuth } from "../firebase/firebase-init.js";
 import { startCheckout } from "../utils/stripeCheckout.js";
 import { supabase } from "../utils/supabaseClient.js";
 import { switchScreen } from "../main.js";
+import { createPlanInfoContent } from "./planInfo.js";
 
 export function renderMyPageScreen(user) {
   const app = document.getElementById("app");
@@ -291,6 +292,10 @@ export function renderMyPageScreen(user) {
   function createPlanTab() {
     const div = document.createElement("div");
     div.className = "tab-section";
+    if (user.is_premium) {
+      createPlanInfoContent(user).then((content) => div.appendChild(content));
+      return div;
+    }
 
     const plans = [
       {
