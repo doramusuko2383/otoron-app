@@ -15,7 +15,10 @@ export function renderLoginScreen(container, onLoginSuccess) {
       <h2 class="login-title">ログイン</h2>
       <form class="login-form">
         <input type="email" id="email" placeholder="メールアドレス" required />
-        <input type="password" id="password" placeholder="パスワード" required />
+        <div class="password-wrapper">
+          <input type="password" id="password" placeholder="パスワード" required />
+          <img src="images/Visibility_off.svg" class="toggle-password" alt="表示切替" />
+        </div>
         <button type="submit">ログイン</button>
       </form>
 
@@ -29,6 +32,14 @@ export function renderLoginScreen(container, onLoginSuccess) {
       </div>
     </div>
   `;
+
+  const pwInput = container.querySelector("#password");
+  const pwToggle = container.querySelector(".toggle-password");
+  pwToggle.addEventListener("click", () => {
+    const visible = pwInput.type === "text";
+    pwInput.type = visible ? "password" : "text";
+    pwToggle.src = visible ? "images/Visibility_off.svg" : "images/Visibility.svg";
+  });
 
 
 

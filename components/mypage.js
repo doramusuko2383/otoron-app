@@ -189,7 +189,21 @@ export function renderMyPageScreen(user) {
         input.value = sessionStorage.getItem("currentPassword") || "";
       }
 
-      field.appendChild(input);
+      const wrap = document.createElement("div");
+      wrap.className = "password-wrapper";
+      const toggle = document.createElement("img");
+      toggle.src = "images/Visibility_off.svg";
+      toggle.alt = "表示切替";
+      toggle.className = "toggle-password";
+      wrap.appendChild(input);
+      wrap.appendChild(toggle);
+      field.appendChild(wrap);
+
+      toggle.addEventListener("click", () => {
+        const visible = input.type === "text";
+        input.type = visible ? "password" : "text";
+        toggle.src = visible ? "images/Visibility_off.svg" : "images/Visibility.svg";
+      });
 
       return { field, input };
     }
