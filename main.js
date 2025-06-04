@@ -92,7 +92,7 @@ export const switchScreen = (screen, user = currentUser, options = {}) => {
   else if (screen === "contact") renderContactScreen();
   else if (screen === "law") renderLawScreen();
   else if (screen === "external") renderExternalScreen();
-  else if (screen === "pricing") renderPricingScreen();
+  else if (screen === "pricing") renderPricingScreen(user);
 };
 
 // ブラウザ戻る/進む操作に対応

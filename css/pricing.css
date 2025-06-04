@@ -77,3 +77,33 @@
   color: #666;
   margin-top: 0.5em;
 }
+
+.plan-info-screen {
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 1em;
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+}
+
+.current-plan {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  padding: 1.2em;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6em;
+}
+
+.plan-info-buttons {
+  display: flex;
+  gap: 0.6em;
+  margin-top: 1em;
+}
+
+.plan-info-buttons button {
+  flex: 1;
+  padding: 0.8em;
+}
