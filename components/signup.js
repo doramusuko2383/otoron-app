@@ -18,7 +18,10 @@ export function renderSignUpScreen() {
       <input type="email" id="signup-email" required />
 
       <label for="signup-password">パスワード（6文字以上）</label>
-      <input type="password" id="signup-password" required />
+      <div class="password-wrapper">
+        <input type="password" id="signup-password" required />
+        <img src="images/Visibility_off.svg" class="toggle-password" alt="表示切替" />
+      </div>
 
       <button type="submit" class="signup-button">アカウントを作成</button>
     </form>
@@ -32,6 +35,14 @@ export function renderSignUpScreen() {
   `;
 
   app.appendChild(container);
+
+  const pwInput = container.querySelector("#signup-password");
+  const pwToggle = container.querySelector(".toggle-password");
+  pwToggle.addEventListener("click", () => {
+    const visible = pwInput.type === "text";
+    pwInput.type = visible ? "password" : "text";
+    pwToggle.src = visible ? "images/Visibility_off.svg" : "images/Visibility.svg";
+  });
 
 
 
