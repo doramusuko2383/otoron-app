@@ -52,12 +52,20 @@ export function renderHeader(container) {
 
   parentMenuBtn.onclick = (e) => {
     e.stopPropagation();
+    const willShow = !dropdown.classList.contains("show");
     dropdown.classList.toggle("show");
+    if (willShow) {
+      infoDropdown.classList.remove("show");
+    }
   };
 
   infoMenuBtn.onclick = (e) => {
     e.stopPropagation();
+    const willShow = !infoDropdown.classList.contains("show");
     infoDropdown.classList.toggle("show");
+    if (willShow) {
+      dropdown.classList.remove("show");
+    }
   };
 
   document.addEventListener("click", (e) => {
