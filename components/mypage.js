@@ -292,15 +292,32 @@ export function renderMyPageScreen(user) {
     const div = document.createElement("div");
     div.className = "tab-section";
 
-    const subscribeBtn = document.createElement("button");
-    subscribeBtn.textContent = "月額プランに登録";
-    subscribeBtn.onclick = startCheckout;
+    const plans = [
+      {
+        label: "1ヶ月プラン（¥1,490）",
+        priceId: "price_1RWGmmGGyh8a8OqPBX1DSJ8I",
+      },
+      {
+        label: "6ヶ月プラン（¥7,740）",
+        priceId: "price_1RWGnSGGyh8a8OqPQxFPJXg0",
+      },
+      {
+        label: "12ヶ月プラン（¥11,880）",
+        priceId: "price_1RWGURGGyh8a8OqPruLWkksD",
+      },
+    ];
 
     const wrap = document.createElement("div");
     wrap.className = "plan-buttons";
-    wrap.appendChild(subscribeBtn);
-    div.appendChild(wrap);
 
+    plans.forEach((p) => {
+      const btn = document.createElement("button");
+      btn.textContent = p.label;
+      btn.onclick = () => startCheckout(p.priceId);
+      wrap.appendChild(btn);
+    });
+
+    div.appendChild(wrap);
     return div;
   }
 

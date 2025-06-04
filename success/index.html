@@ -10,7 +10,47 @@
     <img src="../images/payment-success.webp" alt="決済完了" style="max-width:80%;max-height:80vh;height:auto" />
     <p style="margin-top:1rem;color:#666">3秒後にホーム画面に戻ります</p>
   </div>
-  <script>
+  <script type="module">
+    import { supabase } from '../utils/supabaseClient.js';
+    import { firebaseAuth } from '../firebase/firebase-init.js';
+    import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+
+    const params = new URLSearchParams(location.search);
+    const priceId = params.get('price_id');
+
+    const planMonths = {
+      'price_1RWGmmGGyh8a8OqPBX1DSJ8I': 1,
+      'price_1RWGnSGGyh8a8OqPQxFPJXg0': 6,
+      'price_1RWGURGGyh8a8OqPruLWkksD': 12,
+    };
+
+    function addMonths(date, months) {
+      const d = new Date(date);
+      d.setMonth(d.getMonth() + months);
+      return d;
+    }
+
+    onAuthStateChanged(firebaseAuth, async (firebaseUser) => {
+      if (!firebaseUser || !priceId) return;
+      const { data: user } = await supabase
+        .from('users')
+        .select('id')
+        .eq('firebase_uid', firebaseUser.uid)
+        .maybeSingle();
+      if (!user) return;
+      const paymentDate = new Date();
+      const expireDate = addMonths(paymentDate, planMonths[priceId] || 1);
+      await supabase.from('user_subscriptions').insert([
+        {
+          user_id: user.id,
+          product_id: priceId,
+          price_id: priceId,
+          payment_date: paymentDate.toISOString(),
+          expire_date: expireDate.toISOString(),
+        },
+      ]);
+    });
+
     setTimeout(() => {
       window.location.href = '/';
     }, 3000);
