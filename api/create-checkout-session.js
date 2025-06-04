@@ -9,18 +9,22 @@ export default async function handler(req, res) {
     return res.status(405).send('Method Not Allowed');
   }
 
-  const { email } = req.body;
-  console.log('Received email:', email);
+  const { email, priceId } = req.body;
+  console.log('Received email:', email, 'priceId:', priceId);
 
   try {
     const session = await stripe.checkout.sessions.create({
-      mode: 'subscription',
+      mode: 'payment',
       payment_method_types: ['card'],
-      line_items: [{
-        price: 'price_1RUo5t4aOXt1PnHZ6WGANKa8',
-        quantity: 1,
-      }],
-      success_url: 'https://otoron-app.vercel.app/success',
+      line_items: [
+        {
+          price: priceId,
+          quantity: 1,
+        },
+      ],
+      success_url:
+        'https://otoron-app.vercel.app/success?session_id={CHECKOUT_SESSION_ID}&price_id=' +
+        priceId,
       cancel_url: 'https://otoron-app.vercel.app/cancel',
       customer_email: email,
     });
