@@ -29,6 +29,7 @@ export function renderHeader(container) {
       <div class="parent-menu">
         <button id="parent-menu-btn" aria-label="設定">⚙️</button>
         <div id="parent-dropdown" class="parent-dropdown">
+          <div class="user-email" style="display:none"></div>
           <button id="settings-btn">⚙️ 設定</button>
           <button id="summary-btn">📊 分析画面</button>
           <button id="mypage-btn">👤 マイページ</button>
@@ -98,6 +99,12 @@ export function renderHeader(container) {
   header.querySelector("#pricing-btn").onclick = () => switchScreen("pricing");
 
   header.querySelector("#mypage-btn").onclick = () => switchScreen("mypage");
+  const emailDiv = header.querySelector(".user-email");
+  const email = firebaseAuth.currentUser?.email;
+  if (emailDiv && email) {
+    emailDiv.textContent = email;
+    emailDiv.style.display = "block";
+  }
   // ▼ ログアウト処理
   header.querySelector("#logout-btn").addEventListener("click", async () => {
     try {

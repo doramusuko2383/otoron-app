@@ -122,6 +122,19 @@ onAuthStateChanged(auth, async (firebaseUser) => {
     return;
   }
 
+  // Ensure email is stored when existing user has no email
+  if (existingUser && (!existingUser.email || existingUser.email !== firebaseUser.email)) {
+    const { data: updated, error: updateError } = await supabase
+      .from("users")
+      .update({ email: firebaseUser.email })
+      .eq("id", existingUser.id)
+      .select()
+      .maybeSingle();
+    if (!updateError && updated) {
+      existingUser.email = updated.email;
+    }
+  }
+
   let user = existingUser;
 
   if (!user) {
