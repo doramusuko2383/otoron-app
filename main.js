@@ -23,6 +23,7 @@ import { renderPrivacyScreen } from "./components/info/privacy.js";
 import { renderContactScreen } from "./components/info/contact.js";
 import { renderLawScreen } from "./components/info/law.js";
 import { renderExternalScreen } from "./components/info/external.js";
+import { renderPricingScreen } from "./components/pricing.js";
 
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
@@ -91,6 +92,7 @@ export const switchScreen = (screen, user = currentUser, options = {}) => {
   else if (screen === "contact") renderContactScreen();
   else if (screen === "law") renderLawScreen();
   else if (screen === "external") renderExternalScreen();
+  else if (screen === "pricing") renderPricingScreen();
 };
 
 // ブラウザ戻る/進む操作に対応
