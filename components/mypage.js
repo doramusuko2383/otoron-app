@@ -219,7 +219,8 @@ export function renderMyPageScreen(user) {
     errorMsg.className = "password-error";
     errorMsg.textContent = "確認用パスワードが一致しません";
     errorMsg.style.display = "none";
-    confirm.field.insertBefore(errorMsg, confirm.field.querySelector("input"));
+    const wrapper = confirm.field.querySelector(".password-wrapper");
+    confirm.field.insertBefore(errorMsg, wrapper);
     form.appendChild(confirm.field);
 
     const btn = document.createElement("button");
