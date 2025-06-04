@@ -20,23 +20,25 @@
   font-size: 1.2rem;
 }
 
+
 .header-right {
   display: flex;
   align-items: center;
+  margin-left: auto;
 }
 
 /* ▼ 親メニュー全体 */
 .parent-menu {
-  margin-left: auto;
   position: relative;
   display: inline-block;
+  margin-left: 0.2em;
 }
 
 /* ▼ 親メニューボタン */
 #parent-menu-btn {
   background: transparent;
   border: none;
-  font-size: 1.4rem;
+  font-size: 1.6rem;
   cursor: pointer;
   padding: 0.5em 1em;
   transition: background-color 0.2s ease;
@@ -187,7 +189,7 @@
 /* ▼ モバイル対応 */
 @media (max-width: 600px) {
   #parent-menu-btn {
-    font-size: 1.2rem;
+    font-size: 1.4rem;
     padding: 0.5em 0.8em;
   }
 
