@@ -112,3 +112,35 @@ body {
   margin-left: 0.5em;
 }
 
+/* ============================== */
+/* Training feedback & buttons */
+/* ============================== */
+
+/* Feedback text shown in the center of the screen */
+.feedback-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(255, 255, 255, 0.85);
+  padding: 1em 2em;
+  border-radius: 1em;
+  font-size: 3rem;
+  font-weight: bold;
+  color: #333;
+  z-index: 10;
+  text-align: center;
+}
+
+/* Ensure chord button text remains visible on dark backgrounds */
+.chord-button {
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
+}
+
+/* Distinguish white chord buttons from the page background */
+.chord-button.white {
+  background-color: white;
+  border: 2px solid #999;
+  color: #333;
+}
+
