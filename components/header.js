@@ -33,6 +33,7 @@ export function renderHeader(container) {
           <button id="summary-btn">📊 分析画面</button>
           <button id="mypage-btn">👤 マイページ</button>
           <button id="growth-btn">🌱 育成モード</button>
+          <button id="pricing-btn">💳 プラン</button>
           <button id="logout-btn">🚪 ログアウト</button>
         </div>
       </div>
@@ -94,6 +95,7 @@ export function renderHeader(container) {
   header.querySelector("#settings-btn").onclick = () => switchScreen("settings");
   header.querySelector("#summary-btn").onclick = () => switchScreen("result");
   header.querySelector("#growth-btn").onclick = () => switchScreen("growth");
+  header.querySelector("#pricing-btn").onclick = () => switchScreen("pricing");
 
   header.querySelector("#mypage-btn").onclick = () => switchScreen("mypage");
   // ▼ ログアウト処理
