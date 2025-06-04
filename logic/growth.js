@@ -262,11 +262,6 @@ export async function renderGrowthScreen(user) {
   }
 
 
-  const backBtn = document.createElement("button");
-  backBtn.textContent = "🏠 ホームに戻る";
-  backBtn.onclick = () => switchScreen("home", user);
-  backBtn.style.marginTop = "2em";
-  container.appendChild(backBtn);
 
   app.appendChild(container);
 
