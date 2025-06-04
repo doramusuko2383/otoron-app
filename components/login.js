@@ -53,6 +53,18 @@ export function renderLoginScreen(container, onLoginSuccess) {
       .select("*")
       .eq("firebase_uid", user.uid)
       .maybeSingle();
+
+    if (existingUser && (!existingUser.email || existingUser.email !== user.email)) {
+      const { data: updated } = await supabase
+        .from("users")
+        .update({ email: user.email })
+        .eq("id", existingUser.id)
+        .select()
+        .maybeSingle();
+      if (updated) {
+        existingUser.email = updated.email;
+      }
+    }
   
     let userId;
   
