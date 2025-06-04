@@ -22,6 +22,11 @@
   gap: 1rem;
 }
 
+/* Make submit button align with inputs */
+.login-form button {
+  width: 100%;
+}
+
 .login-form label {
   font-size: 0.9rem;
   color: #444;
