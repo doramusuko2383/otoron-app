@@ -2,7 +2,7 @@ import { signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-aut
 import { firebaseAuth } from "../firebase/firebase-init.js"; // ✅ これだけでOK
 import { switchScreen } from "../main.js";
 
-export function renderHeader(container) {
+export function renderHeader(container, user) {
   const header = document.createElement("header");
   header.className = "app-header";
   header.innerHTML = `
@@ -29,11 +29,11 @@ export function renderHeader(container) {
       <div class="parent-menu">
         <button id="parent-menu-btn" aria-label="設定">⚙️</button>
         <div id="parent-dropdown" class="parent-dropdown">
-          <div class="user-email" style="display:none"></div>
+          <div class="user-info" style="display:none"></div>
           <button id="settings-btn">⚙️ 設定</button>
           <button id="summary-btn">📊 分析画面</button>
-          <button id="mypage-btn">👤 マイページ</button>
           <button id="growth-btn">🌱 育成モード</button>
+          <button id="mypage-btn">👤 マイページ</button>
           <button id="pricing-btn">💳 プラン</button>
           <button id="logout-btn">🚪 ログアウト</button>
         </div>
@@ -99,11 +99,18 @@ export function renderHeader(container) {
   header.querySelector("#pricing-btn").onclick = () => switchScreen("pricing");
 
   header.querySelector("#mypage-btn").onclick = () => switchScreen("mypage");
-  const emailDiv = header.querySelector(".user-email");
-  const email = firebaseAuth.currentUser?.email;
-  if (emailDiv && email) {
-    emailDiv.textContent = email;
-    emailDiv.style.display = "block";
+
+  const userDiv = header.querySelector(".user-info");
+  if (userDiv) {
+    const name =
+      user?.name ||
+      firebaseAuth.currentUser?.displayName ||
+      firebaseAuth.currentUser?.email;
+    if (name) {
+      const icon = user?.is_premium ? "⭐ " : "";
+      userDiv.textContent = icon + name;
+      userDiv.style.display = "block";
+    }
   }
   // ▼ ログアウト処理
   header.querySelector("#logout-btn").addEventListener("click", async () => {

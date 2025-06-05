@@ -262,7 +262,7 @@ window.renderSummaryScreen = renderSummaryScreen;
 export async function renderSummaryScreenForDate(date, user) {
   const app = document.getElementById("app");
   app.innerHTML = "";
-  renderHeader(app, renderSummaryScreen);
+  renderHeader(app, user);
 
   const container = document.createElement("div");
   app.appendChild(container);

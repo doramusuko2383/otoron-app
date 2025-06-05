@@ -17,7 +17,7 @@ export function renderHomeScreen(user) {
   clearTimeOfDayStyling();
 
   // ✅ ヘッダー（固定表示、上部に表示）
-  renderHeader(app);
+  renderHeader(app, user);
 
   // ✅ メインコンテンツ（ヘッダーの下に表示）
   const container = document.createElement("div");

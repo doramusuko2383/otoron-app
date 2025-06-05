@@ -116,7 +116,7 @@ export async function renderResultScreen(user) {
 
   const app = document.getElementById("app");
   app.innerHTML = "";
-  renderHeader(app);
+  renderHeader(app, user);
 
   const container = document.createElement("div");
   container.className = "screen active";
