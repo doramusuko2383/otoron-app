@@ -602,15 +602,17 @@ function showSingleNoteQuiz(chord, onFinish, isLast = false) {
   });
 }
 
-function showFeedback(message, type = "good") {
+function showFeedback(message, type = "good", duration = 1000) {
   const fb = document.getElementById("feedback");
   if (!fb) return;
   fb.textContent = message;
   fb.className = type === "good" ? "good" : "bad";
   fb.style.display = "block";
-  setTimeout(() => {
-    fb.style.display = "none";
-  }, 1000);
+  if (duration !== 0) {
+    setTimeout(() => {
+      fb.style.display = "none";
+    }, duration);
+  }
 }
 
 function updateProgressUI() {
@@ -661,7 +663,7 @@ function checkAnswer(selected) {
       if (questionQueue.length === 0) {
         console.log("📌 nextQuestion: セッション終了に到達");
 
-        showFeedback("トレーニング終了！", "good");
+        showFeedback("トレーニング終了！", "good", 0);
         nextQuestion();
       } else {
         nextQuestion();
