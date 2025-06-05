@@ -76,6 +76,7 @@
   border: 1px solid #ccc;
   border-radius: 6px;
   font-size: 1rem;
+  box-sizing: border-box;
 }
 
 /* Reserve space for the visibility toggle */
