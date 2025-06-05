@@ -103,6 +103,7 @@ button:hover {
 .password-wrapper input {
   width: 100%;
   padding-right: 2.5rem;
+  box-sizing: border-box;
 }
 
 .password-wrapper .toggle-password {
