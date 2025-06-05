@@ -317,15 +317,23 @@ function playChordFile(filename) {
   currentAudio.play();
 }
 
+let feedbackTimeoutId;
 function showFeedback(message, type = "good", duration = 1000) {
   const fb = document.getElementById("feedback");
   if (!fb) return;
+
+  if (feedbackTimeoutId) {
+    clearTimeout(feedbackTimeoutId);
+    feedbackTimeoutId = null;
+  }
+
   fb.textContent = message;
   fb.className = type === "good" ? "good" : "bad";
   fb.style.display = "block";
   if (duration !== 0) {
-    setTimeout(() => {
+    feedbackTimeoutId = setTimeout(() => {
       fb.style.display = "none";
+      feedbackTimeoutId = null;
     }, duration);
   }
 }
