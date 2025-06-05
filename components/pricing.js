@@ -9,7 +9,7 @@ export function renderPricingScreen(user) {
   }
   const app = document.getElementById('app');
   app.innerHTML = '';
-  renderHeader(app);
+  renderHeader(app, user);
 
   const main = document.createElement('main');
   main.className = 'pricing-page';

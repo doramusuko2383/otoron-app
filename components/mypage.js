@@ -16,7 +16,7 @@ import { createPlanInfoContent } from "./planInfo.js";
 export function renderMyPageScreen(user) {
   const app = document.getElementById("app");
   app.innerHTML = "";
-  renderHeader(app, () => renderMyPageScreen(user));
+  renderHeader(app, user);
 
   const container = document.createElement("div");
   container.className = "screen active mypage-screen";
