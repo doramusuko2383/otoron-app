@@ -193,7 +193,7 @@ export async function generateWeeklyReport(user, startDate, endDate) {
   const fullComment = [comments[0], comments[1], ...(comments.slice(2))].join(' ');
 
   const userLabel = userName ? `${userName}ちゃん` : userId;
-  const reportText = `\n【🎼 絶対音感トレーニング週次レポート】\n${userLabel}（${startDate}〜${endDate}）\n\n🗓 トレーニング実施日数：${totalSessions}日間\n✅ 合格日数：${passedDays}日間（1日あたり各和音4問以上・正答率98%以上）\n📊 合計出題数：${totalQuestions}問\n🎯 正答率：${accuracy}%\n\n🔓 解放済み和音（色）：\n${chordNames}\n\n🔍 ミス傾向：\n${inversionMistakes.concat(topBottomMistakes).join('\n')}\n${initialMistakeCount > 0 ? `・初回だけミス：${initialMistakeCount}回あり` : ''}\n\n📣 コメント：\n${fullComment}`.trim();
+  const reportText = `\n【🎼 絶対音感トレーニング週次レポート】\n${userLabel}（${startDate}〜${endDate}）\n\n🗓 トレーニング実施日数：${totalSessions}日間\n✅ 合格日数：${passedDays}日間（1日あたり2回以上のトレーニング・各和音4問以上・正答率98%以上）\n📊 合計出題数：${totalQuestions}問\n🎯 正答率：${accuracy}%\n\n🔓 解放済み和音（色）：\n${chordNames}\n\n🔍 ミス傾向：\n${inversionMistakes.concat(topBottomMistakes).join('\n')}\n${initialMistakeCount > 0 ? `・初回だけミス：${initialMistakeCount}回あり` : ''}\n\n📣 コメント：\n${fullComment}`.trim();
 
   return reportText;
 }
