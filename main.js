@@ -4,8 +4,10 @@ import { renderHomeScreen } from "./components/home.js";
 import { renderTrainingScreen } from "./components/training.js"; // 和音トレーニング
 import { renderTrainingScreen as renderTrainingFull } from "./components/training_full.js"; // 単音（本気）
 import { renderTrainingScreen as renderTrainingEasy } from "./components/training_easy_note.js"; // 単音（簡易）
+import { renderTrainingScreen as renderTrainingWhite } from "./components/training_white_keys.js"; // 白鍵テスト
 import { renderTrainingFullResultScreen } from "./components/result_full.js";
 import { renderTrainingEasyResultScreen } from "./components/result_easy.js";
+import { renderTrainingWhiteResultScreen } from "./components/result_white.js";
 import { renderSettingsScreen } from "./components/settings.js";
 import { renderResultScreen } from "./components/result.js";
 import { renderSummaryScreen } from "./components/summary.js";
@@ -78,6 +80,7 @@ export const switchScreen = (screen, user = currentUser, options = {}) => {
   else if (screen === "training") renderTrainingScreen(user);
   else if (screen === "training_easy") renderTrainingEasy(user);
   else if (screen === "training_full") renderTrainingFull(user);
+  else if (screen === "training_white") renderTrainingWhite(user);
   else if (screen === "settings") renderSettingsScreen(user);
   else if (screen === "summary") renderSummaryScreen(user);
   else if (screen === "growth") renderGrowthScreen(user);
@@ -87,6 +90,7 @@ export const switchScreen = (screen, user = currentUser, options = {}) => {
   else if (screen === "result") renderResultScreen(user);
   else if (screen === "result_easy") renderTrainingEasyResultScreen(user);
   else if (screen === "result_full") renderTrainingFullResultScreen(user);
+  else if (screen === "result_white") renderTrainingWhiteResultScreen(user);
   else if (screen === "terms") renderTermsScreen();
   else if (screen === "privacy") renderPrivacyScreen();
   else if (screen === "contact") renderContactScreen();

@@ -293,12 +293,14 @@ buttonGroup.appendChild(resetBtn);
     <ul>
       <li><button id="btn-easy">単音音あて（簡易モード）</button></li>
       <li><button id="btn-full">単音音あて（本気モード）</button></li>
+      <li><button id="btn-white">白鍵だけの単音テスト</button></li>
     </ul>
   `;
   app.appendChild(section);
 
   document.getElementById("btn-easy").onclick = () => switchScreen("training_easy");
   document.getElementById("btn-full").onclick = () => switchScreen("training_full");
+  document.getElementById("btn-white").onclick = () => switchScreen("training_white");
 
   updateSelection();
 }
