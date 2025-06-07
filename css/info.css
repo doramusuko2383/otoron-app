@@ -29,3 +29,24 @@
 .info-page a {
   color: #0645ad;
 }
+
+.info-page details {
+  margin: 1em 0;
+}
+
+.info-page summary {
+  cursor: pointer;
+  font-weight: bold;
+  padding: 0.4em 0.6em;
+  background: #f3f3f3;
+  border-radius: 4px;
+}
+
+.info-page details[open] summary {
+  background: #e0e0e0;
+}
+
+.info-page details p,
+.info-page details ul {
+  margin: 0.5em 1.2em;
+}

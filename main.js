@@ -25,6 +25,7 @@ import { renderPrivacyScreen } from "./components/info/privacy.js";
 import { renderContactScreen } from "./components/info/contact.js";
 import { renderLawScreen } from "./components/info/law.js";
 import { renderExternalScreen } from "./components/info/external.js";
+import { renderHelpScreen } from "./components/info/help.js";
 import { renderPricingScreen } from "./components/pricing.js";
 
 
@@ -94,6 +95,7 @@ export const switchScreen = (screen, user = currentUser, options = {}) => {
   else if (screen === "terms") renderTermsScreen();
   else if (screen === "privacy") renderPrivacyScreen();
   else if (screen === "contact") renderContactScreen();
+  else if (screen === "help") renderHelpScreen();
   else if (screen === "law") renderLawScreen();
   else if (screen === "external") renderExternalScreen();
   else if (screen === "pricing") renderPricingScreen(user);

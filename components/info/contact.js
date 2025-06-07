@@ -1,4 +1,5 @@
 import { renderHeader } from "../header.js";
+import { switchScreen } from "../../main.js";
 
 export function renderContactScreen() {
   const app = document.getElementById("app");
@@ -16,9 +17,15 @@ export function renderContactScreen() {
     <p>※内容により返信まで数日いただく場合があります。<br>
     ※迷惑メールフォルダもご確認ください。</p>
     <h2>よくあるご質問</h2>
-    <p>お急ぎの方は、<a href="/help.html">ヘルプ・操作マニュアル</a> もあわせてご覧ください。</p>
+    <p>お急ぎの方は、<a href="#" id="help-link">ヘルプ・操作マニュアル</a> もあわせてご覧ください。</p>
     <hr />
     <p>2025年6月 作成</p>
   `;
   app.appendChild(main);
+
+  const helpLink = main.querySelector('#help-link');
+  helpLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    switchScreen('help');
+  });
 }
