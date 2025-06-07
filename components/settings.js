@@ -80,7 +80,7 @@ export async function renderSettingsScreen(user) {
 
   const buttonGroup = document.createElement("div");
 const resetBtn = document.createElement("button");
-resetBtn.textContent = "↩ 推奨出題にする";
+resetBtn.textContent = "推奨出題にする";
 resetBtn.onclick = () => {
   if (confirm("本当に推奨出題にしますか？")) {
     resetToRecommendedChords(unlockedKeys, user); // ← user を渡す！
@@ -93,7 +93,7 @@ buttonGroup.appendChild(resetBtn);
 
   const bulkDropdown = document.createElement("select");
   bulkDropdown.innerHTML = `
-    <option value="">✔ 一括出題回数</option>
+    <option value="">一括出題回数</option>
     <option value="1">1回ずつ</option>
     <option value="2">2回ずつ</option>
     <option value="3">3回ずつ</option>
@@ -308,9 +308,9 @@ buttonGroup.appendChild(resetBtn);
   section.innerHTML = `
     <h3>その他のトレーニング</h3>
     <ul>
-      <li><button id="btn-easy">単音音あて（簡易モード）</button></li>
-      <li><button id="btn-full">単音音あて（本気モード）</button></li>
-      <li><button id="btn-white">白鍵だけの単音テスト</button></li>
+      <li><button id="btn-white">単音テスト（白鍵のみ）</button></li>
+      <li><button id="btn-easy">単音テスト（3オクターブ）</button></li>
+      <li><button id="btn-full">単音テスト（全88鍵）</button></li>
     </ul>
   `;
   app.appendChild(section);

@@ -6,7 +6,7 @@ import { switchScreen } from "../main.js";
 export function renderTrainingEasyResultScreen(user) {
   const app = document.getElementById("app");
   app.innerHTML = `
-    <h2>単音テスト（簡易）結果</h2>
+    <h2>単音テスト（3オクターブ）結果</h2>
     <div class="score-wrapper">
       <img id="score-image" class="score-image" />
     </div>

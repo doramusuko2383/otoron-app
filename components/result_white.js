@@ -6,7 +6,7 @@ import { switchScreen } from "../main.js";
 export function renderTrainingWhiteResultScreen(user) {
   const app = document.getElementById("app");
   app.innerHTML = `
-    <h2>白鍵だけの単音テスト 結果</h2>
+    <h2>単音テスト（白鍵のみ）結果</h2>
     <div class="score-wrapper">
       <img id="score-image" class="score-image" />
     </div>

@@ -2,9 +2,9 @@
 
 import { renderHomeScreen } from "./components/home.js";
 import { renderTrainingScreen } from "./components/training.js"; // 和音トレーニング
-import { renderTrainingScreen as renderTrainingFull } from "./components/training_full.js"; // 単音（本気）
-import { renderTrainingScreen as renderTrainingEasy } from "./components/training_easy_note.js"; // 単音（簡易）
-import { renderTrainingScreen as renderTrainingWhite } from "./components/training_white_keys.js"; // 白鍵テスト
+import { renderTrainingScreen as renderTrainingFull } from "./components/training_full.js"; // 単音（全88鍵）
+import { renderTrainingScreen as renderTrainingEasy } from "./components/training_easy_note.js"; // 単音（3オクターブ）
+import { renderTrainingScreen as renderTrainingWhite } from "./components/training_white_keys.js"; // 単音（白鍵のみ）
 import { renderTrainingFullResultScreen } from "./components/result_full.js";
 import { renderTrainingEasyResultScreen } from "./components/result_easy.js";
 import { renderTrainingWhiteResultScreen } from "./components/result_white.js";
