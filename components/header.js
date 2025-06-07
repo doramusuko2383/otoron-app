@@ -21,6 +21,7 @@ export function renderHeader(container, user) {
           <button id="terms-btn">利用規約</button>
           <button id="privacy-btn">プライバシーポリシー</button>
           <button id="contact-btn">お問い合わせ</button>
+          <button id="help-btn">ヘルプ</button>
           <button id="law-btn">特定商取引法に基づく表示</button>
           <button id="external-btn">外部送信ポリシー</button>
         </div>
@@ -49,6 +50,7 @@ export function renderHeader(container, user) {
   const termsBtn = header.querySelector("#terms-btn");
   const privacyBtn = header.querySelector("#privacy-btn");
   const contactBtn = header.querySelector("#contact-btn");
+  const helpBtn = header.querySelector("#help-btn");
   const lawBtn = header.querySelector("#law-btn");
   const externalBtn = header.querySelector("#external-btn");
 
@@ -83,6 +85,7 @@ export function renderHeader(container, user) {
   termsBtn.onclick = () => switchScreen("terms");
   privacyBtn.onclick = () => switchScreen("privacy");
   contactBtn.onclick = () => switchScreen("contact");
+  helpBtn.onclick = () => switchScreen("help");
   lawBtn.onclick = () => switchScreen("law");
   externalBtn.onclick = () => switchScreen("external");
 
