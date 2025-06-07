@@ -131,6 +131,18 @@ export function renderLoginScreen(container, onLoginSuccess) {
       await signInWithEmailAndPassword(firebaseAuth, email, password);
       sessionStorage.setItem("currentPassword", password);
       const user = firebaseAuth.currentUser;
+      try {
+        const idToken = await user.getIdToken(true);
+        const { error: signInError } = await supabase.auth.signInWithIdToken({
+          provider: "firebase",
+          token: idToken,
+        });
+        if (signInError) {
+          console.error("❌ Supabaseサインイン失敗:", signInError.message);
+        }
+      } catch (e) {
+        console.error("❌ Supabaseサインイン処理でエラー:", e);
+      }
       await ensureUserAndProgress(user);
       onLoginSuccess();
     } catch (err) {
@@ -144,6 +156,18 @@ export function renderLoginScreen(container, onLoginSuccess) {
     try {
       const result = await signInWithPopup(firebaseAuth, provider);
       const user = result.user;
+      try {
+        const idToken = await user.getIdToken(true);
+        const { error: signInError } = await supabase.auth.signInWithIdToken({
+          provider: "firebase",
+          token: idToken,
+        });
+        if (signInError) {
+          console.error("❌ Supabaseサインイン失敗:", signInError.message);
+        }
+      } catch (e) {
+        console.error("❌ Supabaseサインイン処理でエラー:", e);
+      }
       await ensureUserAndProgress(user);
       onLoginSuccess();
     } catch (err) {
