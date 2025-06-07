@@ -90,6 +90,7 @@ export async function generateMockGrowthData(userId, days = 7) {
   if (queue.length === 0) queue = ["C-E-G"];
 
   // 指定日数分の記録を挿入（すべて合格とする）
+  // 各日には最低2セッション生成して合格条件を満たす
   for (let i = 0; i < days; i++) {
     const d = new Date(now);
     d.setDate(now.getDate() - i);
@@ -138,20 +139,23 @@ export async function generateMockGrowthData(userId, days = 7) {
     }
 
     const isQualified = sessionMeetsStats(stats, count);
-    const ses = {
-      user_id: userId,
-      session_date: `${dateStr}T12:00:00`,
-      correct_count: count - mistakeNum,
-      total_count: count,
-      results_json: results,
-      stats_json: stats,
-      mistakes_json: { inversion_confusions: inversionMistakes },
-      is_qualified: isQualified
-    };
-    const { error: sesErr } = await supabase
-      .from("training_sessions")
-      .insert(ses);
-    if (sesErr) console.error("❌ モックセッション挿入失敗:", sesErr);
-    await markQualifiedDayIfNeeded(userId, `${dateStr}T12:00:00`);
+    const sessionTimes = ["T12:00:00", "T18:00:00"];
+    for (const time of sessionTimes) {
+      const ses = {
+        user_id: userId,
+        session_date: `${dateStr}${time}`,
+        correct_count: count - mistakeNum,
+        total_count: count,
+        results_json: results,
+        stats_json: stats,
+        mistakes_json: { inversion_confusions: inversionMistakes },
+        is_qualified: isQualified
+      };
+      const { error: sesErr } = await supabase
+        .from("training_sessions")
+        .insert(ses);
+      if (sesErr) console.error("❌ モックセッション挿入失敗:", sesErr);
+      await markQualifiedDayIfNeeded(userId, `${dateStr}${time}`);
+    }
   }
 }
