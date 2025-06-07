@@ -9,6 +9,10 @@ const PASS_DAYS = 7;
 const POST_UNLOCK_DAYS = 7;
 
 export async function checkRecentUnlockCriteria(userId) {
+  if (!userId) {
+    console.warn("checkRecentUnlockCriteria called without valid user ID");
+    return false;
+  }
   const days = await getConsecutiveQualifiedDays(userId, PASS_DAYS);
   if (days < PASS_DAYS) return false;
 
@@ -29,10 +33,23 @@ export async function checkRecentUnlockCriteria(userId) {
 }
 
 export async function countQualifiedDays(userId) {
+  if (!userId) {
+    console.warn("countQualifiedDays called without valid user ID");
+    return 0;
+  }
   return getConsecutiveQualifiedDays(userId, PASS_DAYS);
 }
 
 export async function getUnlockCriteriaStatus(userId) {
+  if (!userId) {
+    console.warn("getUnlockCriteriaStatus called without valid user ID");
+    return {
+      consecutiveDays: 0,
+      requiredDays: PASS_DAYS,
+      daysSinceUnlock: null,
+      requiredInterval: POST_UNLOCK_DAYS
+    };
+  }
   const consecutiveDays = await getConsecutiveQualifiedDays(userId, PASS_DAYS);
 
   const { data: progress } = await supabase

@@ -87,6 +87,10 @@ export function getToday() {
  * @returns {Promise<boolean>}
  */
 export async function isQualifiedToday(userId) {
+  if (!userId) {
+    console.warn("isQualifiedToday called without valid user ID");
+    return false;
+  }
   const today = getToday();
   const { data, error } = await supabase
     .from("qualified_days")
@@ -108,6 +112,10 @@ export async function isQualifiedToday(userId) {
  * @returns {Promise<number>}
  */
 export async function getPassedDays(userId) {
+  if (!userId) {
+    console.warn("getPassedDays called without valid user ID");
+    return 0;
+  }
   const passed = await getConsecutiveQualifiedDays(userId);
 
   const resetFlag = localStorage.getItem(STORAGE_FORCE_FLAG);
@@ -132,6 +140,10 @@ export function forceUnlock() {
  * @returns {Promise<Array<{date, count, correct, sets}>>}
  */
 export async function getSortedRecordArray(userId) {
+  if (!userId) {
+    console.warn("getSortedRecordArray called without valid user ID");
+    return [];
+  }
   const data = await loadTrainingRecords(userId);
   const sortedKeys = Object.keys(data).sort();
   return sortedKeys.map(date => ({
@@ -145,6 +157,10 @@ export async function getSortedRecordArray(userId) {
  * @param {string} userId - SupabaseユーザーID
  */
 export async function applyRecommendedSelection(userId) {
+  if (!userId) {
+    console.warn("applyRecommendedSelection called without valid user ID");
+    return;
+  }
   const flags = await loadGrowthFlags(userId);
   const queue = generateRecommendedQueue(flags);
 

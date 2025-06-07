@@ -46,6 +46,10 @@ function sessionMeetsStats(stats, totalCount) {
 }
 
 export async function markQualifiedDayIfNeeded(userId, isoDate) {
+  if (!userId) {
+    console.warn("markQualifiedDayIfNeeded called without valid user ID");
+    return;
+  }
   const dayStart = isoDate.split("T")[0];
   const nextDay = new Date(dayStart);
   nextDay.setDate(nextDay.getDate() + 1);
@@ -107,6 +111,10 @@ export async function markQualifiedDayIfNeeded(userId, isoDate) {
 }
 
 export async function getConsecutiveQualifiedDays(userId, days = REQUIRED_DAYS) {
+  if (!userId) {
+    console.warn("getConsecutiveQualifiedDays called without valid user ID");
+    return 0;
+  }
   const today = new Date();
   const from = new Date();
   from.setDate(today.getDate() - (days - 1));

@@ -16,6 +16,10 @@ export async function updateTrainingRecord({
   total = 1,
   chordsRequired = []
 }) {
+  if (!userId) {
+    console.warn("updateTrainingRecord called without valid user ID");
+    return;
+  }
   const today = getToday();
 
   const { data: existing, error: fetchError } = await supabase
@@ -62,6 +66,10 @@ export async function updateTrainingRecord({
  * 今日のセット数（1セット完了）を +1 加算
  */
 export async function incrementSetCount(userId) {
+  if (!userId) {
+    console.warn("incrementSetCount called without valid user ID");
+    return;
+  }
   const today = getToday();
 
   const { data: existing, error: fetchError } = await supabase
@@ -91,6 +99,10 @@ export async function incrementSetCount(userId) {
  * @returns {Promise<Object>} 日付をキーにした記録オブジェクト
  */
 export async function loadTrainingRecords(userId) {
+  if (!userId) {
+    console.warn("loadTrainingRecords called without valid user ID");
+    return {};
+  }
   const { data, error } = await supabase
     .from("training_records")
     .select("*")

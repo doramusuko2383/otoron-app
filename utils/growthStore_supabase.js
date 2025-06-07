@@ -14,6 +14,10 @@ import { chordOrder } from "../data/chords.js";
  * @returns {Promise<Object>} 例: { "aka": { unlocked: true }, ... }
  */
 export async function loadGrowthFlags(userId) {
+  if (!userId) {
+    console.warn("loadGrowthFlags called without valid user ID");
+    return {};
+  }
   const { data, error } = await supabase
     .from("user_chord_progress")
     .select("chord_key, status")
@@ -42,6 +46,10 @@ export async function loadGrowthFlags(userId) {
  * @param {string} chordKey - 和音識別子（例: "aka"）
  */
 export async function markChordAsUnlocked(userId, chordKey) {
+  if (!userId) {
+    console.warn("markChordAsUnlocked called without valid user ID");
+    return;
+  }
   const { error } = await supabase
     .from("user_chord_progress")
     .update({
@@ -65,6 +73,10 @@ export async function markChordAsUnlocked(userId, chordKey) {
  * @param {number} [days=7] - 生成する合格記録の日数
  */
 export async function generateMockGrowthData(userId, days = 7) {
+  if (!userId) {
+    console.warn("generateMockGrowthData called without valid user ID");
+    return;
+  }
   const now = new Date();
 
   // 現在進行中の和音の解放日を days 日前に調整して解放条件を満たす
