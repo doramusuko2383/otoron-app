@@ -21,6 +21,7 @@ let questionQueue = [];
 let isForcedAnswer = false;
 let currentUser = null; // ← 追加
 let singleNoteMode = false;
+let singleNoteStrategy = 'random';
 let chordProgressCount = 0;
 let chordSoundOn = true;
 
@@ -88,6 +89,7 @@ export async function renderTrainingScreen(user) {
   console.log("🟢 renderTrainingScreen: user.id =", user?.id);
   currentUser = user;
   singleNoteMode = localStorage.getItem("singleNoteMode") === "on";
+  singleNoteStrategy = localStorage.getItem("singleNoteStrategy") || 'random';
   chordSoundOn = localStorage.getItem("chordSound") !== "off";
   const flags = await loadGrowthFlags(user.id);
   chordProgressCount = Object.values(flags).filter(f => f.unlocked).length;
@@ -456,7 +458,21 @@ function playNoteFile(note, callback) {
   currentAudio.play();
 }
 
+function noteToMidi(n) {
+  const m = normalizeNoteName(n).match(/^([A-G])([#b]?)(-?\d)$/);
+  if (!m) return 0;
+  const baseMap = { C:0, D:2, E:4, F:5, G:7, A:9, B:11 };
+  let [, p, acc, oct] = m;
+  let val = baseMap[p] + (acc === '#' ? 1 : acc === 'b' ? -1 : 0);
+  return (parseInt(oct,10)+1)*12 + val;
+}
+
 function chooseSingleNote(notes) {
+  if (singleNoteStrategy === 'top') {
+    return notes.reduce((max, n) =>
+      noteToMidi(n) > noteToMidi(max) ? n : max, notes[0]);
+  }
+
   const black = notes.filter(n => n.includes('#') || n.includes('♭'));
   if (black.length > 0 && Math.random() < 0.8) {
     return black[Math.floor(Math.random() * black.length)];

@@ -199,6 +199,16 @@
   transform: translateX(20px);
 }
 
+.single-note-select-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0.5em 1em;
+}
+.single-note-select-wrap select {
+  padding: 6px 12px;
+}
+
 /* その他のトレーニングの見出し */
 .other-training-section h3 {
   text-align: left; /* 左寄せに変更 */

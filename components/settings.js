@@ -148,6 +148,23 @@ buttonGroup.appendChild(resetBtn);
   singleWrap.appendChild(document.createTextNode('単音分化モード'));
   container.appendChild(singleWrap);
 
+  const singleSelectWrap = document.createElement('div');
+  singleSelectWrap.className = 'single-note-select-wrap';
+  const singleSelectLabel = document.createElement('span');
+  singleSelectLabel.textContent = '出題音:';
+  const singleSelect = document.createElement('select');
+  singleSelect.innerHTML = `
+    <option value="random">ランダム</option>
+    <option value="top">最上音のみ</option>
+  `;
+  singleSelect.value = localStorage.getItem('singleNoteStrategy') || 'random';
+  singleSelect.onchange = () => {
+    localStorage.setItem('singleNoteStrategy', singleSelect.value);
+  };
+  singleSelectWrap.appendChild(singleSelectLabel);
+  singleSelectWrap.appendChild(singleSelect);
+  container.appendChild(singleSelectWrap);
+
   const chordSettings = document.createElement("div");
   chordSettings.id = "chord-settings";
 
