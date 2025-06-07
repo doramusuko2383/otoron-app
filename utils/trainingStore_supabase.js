@@ -16,6 +16,10 @@ import { convertMistakesJsonToStructuredForm } from "./mistakeUtils.js";
  * @param {string} param0.date - セッション日時（ISO形式）
  */
 export async function saveTrainingSession({ userId, results, stats, mistakes, correctCount, totalCount, date }) {
+  if (!userId) {
+    console.warn("saveTrainingSession called without valid user ID");
+    return;
+  }
   console.log("🟡 saveTrainingSession 実行:", {
     userId,
     results,
@@ -49,6 +53,10 @@ export async function saveTrainingSession({ userId, results, stats, mistakes, co
 }
 
 export async function loadLatestTrainingSession(userId) {
+  if (!userId) {
+    console.warn("loadLatestTrainingSession called without valid user ID");
+    return null;
+  }
   const { data, error } = await supabase
     .from("training_sessions")
     .select("*")
@@ -66,6 +74,10 @@ export async function loadLatestTrainingSession(userId) {
 }
 
 export async function loadTrainingSessionsForDate(userId, date) {
+  if (!userId) {
+    console.warn("loadTrainingSessionsForDate called without valid user ID");
+    return [];
+  }
   const nextDay = new Date(date);
   nextDay.setDate(nextDay.getDate() + 1);
   const nextStr = nextDay.toISOString().split("T")[0];
@@ -87,6 +99,10 @@ export async function loadTrainingSessionsForDate(userId, date) {
 }
 
 export async function deleteTrainingDataThisWeek(userId) {
+  if (!userId) {
+    console.warn("deleteTrainingDataThisWeek called without valid user ID");
+    return false;
+  }
   const today = new Date();
   const day = today.getDay(); // 0: Sun
   const diffToMonday = (day + 6) % 7; // days since Monday

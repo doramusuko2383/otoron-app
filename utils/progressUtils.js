@@ -5,6 +5,10 @@ import { chords } from "../data/chords.js"; // ✅ 必須
 
 // ✅ 新規ユーザー用：赤からスタート、他はlocked
 export async function createInitialChordProgress(userId) {
+  if (!userId) {
+    console.warn("createInitialChordProgress called without valid user ID");
+    return;
+  }
   const chordKeys = chords.map(chord => chord.key); // すべての和音に対応
 
   const insertData = chordKeys.map((key, index) => ({
@@ -27,6 +31,10 @@ export async function createInitialChordProgress(userId) {
 
 // ✅ 経験者向け：任意の和音からスタートできるよう進捗を設定
 export async function applyStartChordIndex(userId, startIndex) {
+  if (!userId) {
+    console.warn("applyStartChordIndex called without valid user ID");
+    return;
+  }
   const chordKeys = chords.map((c) => c.key);
   const completed = chordKeys.slice(0, startIndex);
   const current = chordKeys[startIndex];
@@ -97,6 +105,10 @@ export async function autoUnlockNextChord(user) {
 
 // ✅ 和音を解放（in_progressに）
 export async function unlockChord(userId, chordKey) {
+  if (!userId) {
+    console.warn("unlockChord called without valid user ID");
+    return false;
+  }
   // 現在進行中の和音を完了状態に更新
   const { data: current, error: fetchErr } = await supabase
     .from("user_chord_progress")
@@ -131,6 +143,10 @@ export async function unlockChord(userId, chordKey) {
 
 // ✅ 和音を再ロック（lockedに）
 export async function lockChord(userId, chordKey) {
+  if (!userId) {
+    console.warn("lockChord called without valid user ID");
+    return false;
+  }
   const { error } = await supabase
     .from("user_chord_progress")
     .update({ status: "locked" })
@@ -141,6 +157,10 @@ export async function lockChord(userId, chordKey) {
 
 // ✅ 進捗をリセットして赤のみ in_progress に戻す（デバッグ用）
 export async function resetChordProgressToRed(userId) {
+  if (!userId) {
+    console.warn("resetChordProgressToRed called without valid user ID");
+    return false;
+  }
   const { error: lockError } = await supabase
     .from("user_chord_progress")
     .update({ status: "locked" })
