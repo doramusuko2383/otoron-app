@@ -21,7 +21,7 @@ let questionQueue = [];
 let isForcedAnswer = false;
 let currentUser = null; // ← 追加
 let singleNoteMode = false;
-let singleNoteStrategy = 'random';
+let singleNoteStrategy = 'top';
 let chordProgressCount = 0;
 let chordSoundOn = true;
 
@@ -89,7 +89,7 @@ export async function renderTrainingScreen(user) {
   console.log("🟢 renderTrainingScreen: user.id =", user?.id);
   currentUser = user;
   singleNoteMode = localStorage.getItem("singleNoteMode") === "on";
-  singleNoteStrategy = localStorage.getItem("singleNoteStrategy") || 'random';
+  singleNoteStrategy = localStorage.getItem("singleNoteStrategy") || 'top';
   chordSoundOn = localStorage.getItem("chordSound") !== "off";
   const flags = await loadGrowthFlags(user.id);
   chordProgressCount = Object.values(flags).filter(f => f.unlocked).length;

@@ -7,7 +7,7 @@ const availableNotes = [
   "C5","D5","E5","F5","G5","A5","B5"
 ];
 
-export function getRandomWhiteNoteSequence(count = 21) {
+export function getRandomWhiteNoteSequence(count = 24) {
   const notes = [...availableNotes];
   for (let i = notes.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
