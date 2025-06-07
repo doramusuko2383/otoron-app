@@ -4,6 +4,8 @@ import { getCounts } from "./chordQueue.js";
 
 const REQUIRED_DAYS = 7;
 const PASS_THRESHOLD = 0.98;
+// A day is only qualified when at least this many sessions were played
+const MIN_SESSIONS_PER_DAY = 2;
 
 const chordNameOrder = chordOrder
   .map(key => chords.find(c => c.key === key)?.name)
@@ -61,7 +63,7 @@ export async function markQualifiedDayIfNeeded(userId, isoDate) {
     return;
   }
 
-  if (!sessions || sessions.length === 0) return;
+  if (!sessions || sessions.length < MIN_SESSIONS_PER_DAY) return;
 
   const aggregated = {};
   let total = 0;
