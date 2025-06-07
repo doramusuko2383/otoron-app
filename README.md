@@ -4,13 +4,15 @@
 
 ## Firebase の ID トークンを Supabase で利用する
 
-Supabase の認証に Firebase の ID トークンを使用するため、Supabase 側でカスタム OIDC プロバイダ `firebase` を追加する必要があります。以下はその設定手順です。
+Supabase の認証に Firebase の ID トークンを使用するため、Supabase 側でカスタム OIDC プロバイダを登録します。**ここで設定する `Slug` は必ず `firebase` としてください。** `supabase.auth.signInWithIdToken` で指定するプロバイダー名と一致しない場合、サインインは失敗します。以下に詳しい設定手順を示します。
+
+Firebase が発行する ID トークンを Supabase で検証するには、トークンの発行元 (`Issuer`) と公開鍵 (`JWKs URL`) を Supabase に登録する必要があります。これにより Supabase は Firebase の署名を検証できるようになります。
 
 1. Supabase ダッシュボードでプロジェクトを開き **Auth** → **Settings** → **External OAuth Providers** の順に移動します。
-2. **Custom OIDC** セクションで新しいプロバイダを追加します。`Slug` を `firebase` とし、`Issuer` には `https://securetoken.google.com/<Firebase プロジェクト ID>` を入力します。
+2. **Custom OIDC** セクションで新しいプロバイダを追加します。**`Slug` は必ず `firebase` と指定**し、`Issuer` には `https://securetoken.google.com/<Firebase プロジェクト ID>` を入力します。
 3. `JWKs URL` には `https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com` を指定し、保存します。
 
-これで Firebase で取得した ID トークンを利用して Supabase にログインできるようになります。
+これで Firebase で取得した ID トークンを利用して Supabase にログインできるようになります。もしカスタムプロバイダーを登録していない場合、サインイン時に `Custom OIDC provider 'firebase' not allowed` と表示され、ログインに失敗するので注意してください。
 
 ## `main.js` での認証処理
 
