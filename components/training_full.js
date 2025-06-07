@@ -47,7 +47,7 @@ export function renderTrainingScreen(user) {
   isSoundPlaying = false;
   questionCount = 0;
   app.innerHTML = `
-    <h2>単音テスト（本気）</h2>
+    <h2>単音テスト（全88鍵）</h2>
     <div id="feedback"></div>
     <div class="piano-container">
       <div class="white-keys"></div>

@@ -39,7 +39,7 @@ export function renderTrainingScreen(user) {
   isSoundPlaying = false;
   questionCount = 0;
   app.innerHTML = `
-    <h2>白鍵だけの単音テスト</h2>
+    <h2>単音テスト（白鍵のみ）</h2>
     <div id="feedback"></div>
     <div class="piano-container">
       <div class="white-keys"></div>
