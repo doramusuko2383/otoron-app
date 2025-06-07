@@ -11,7 +11,7 @@ let isAnswering = false;
 let isSoundPlaying = false;
 let questionCount = 0;
 const FEEDBACK_DELAY = 1000;
-const maxQuestions = 21;
+const maxQuestions = 24;
 
 const noteLabels = {
   "C": "ど",

@@ -157,7 +157,7 @@ buttonGroup.appendChild(resetBtn);
     <option value="random">ランダム</option>
     <option value="top">最上音のみ</option>
   `;
-  singleSelect.value = localStorage.getItem('singleNoteStrategy') || 'random';
+  singleSelect.value = localStorage.getItem('singleNoteStrategy') || 'top';
   singleSelect.onchange = () => {
     localStorage.setItem('singleNoteStrategy', singleSelect.value);
   };
