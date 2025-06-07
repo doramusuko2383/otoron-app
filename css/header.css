@@ -39,6 +39,7 @@
 
 /* ▼ 親メニューボタン */
 #parent-menu-btn {
+  position: relative;
   background: transparent;
   border: none;
   font-size: 1.6rem;
@@ -269,4 +270,28 @@
 
 .training-header-button:hover {
   background-color: #fff3a0;
+}
+
+#growth-btn {
+  position: relative;
+}
+
+.notify-dot {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 10px;
+  height: 10px;
+  background: #ff3b30;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.notify-badge {
+  background: #ff3b30;
+  color: #fff;
+  border-radius: 10px;
+  padding: 0.1em 0.4em;
+  font-size: 0.7rem;
+  margin-left: 0.4em;
 }

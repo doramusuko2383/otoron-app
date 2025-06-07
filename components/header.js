@@ -1,6 +1,9 @@
 import { signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { firebaseAuth } from "../firebase/firebase-init.js"; // ✅ これだけでOK
 import { switchScreen } from "../main.js";
+import { checkRecentUnlockCriteria } from "../utils/progressStatus.js";
+import { loadGrowthFlags } from "../utils/growthStore_supabase.js";
+import { getCurrentTargetChord } from "../utils/growthUtils.js";
 
 export function renderHeader(container, user) {
   const header = document.createElement("header");
@@ -114,6 +117,28 @@ export function renderHeader(container, user) {
       userDiv.textContent = icon + name;
       userDiv.style.display = "block";
     }
+  }
+
+  // ▼ 解放条件を満たした場合の通知バッジ
+  if (user) {
+    Promise.all([
+      checkRecentUnlockCriteria(user.id),
+      loadGrowthFlags(user.id),
+    ])
+      .then(([canUnlock, flags]) => {
+        const target = getCurrentTargetChord(flags);
+        if (canUnlock && target) {
+          const dot = document.createElement("span");
+          dot.className = "notify-dot";
+          parentMenuBtn.appendChild(dot);
+
+          const badge = document.createElement("span");
+          badge.className = "notify-badge";
+          badge.textContent = "!";
+          header.querySelector("#growth-btn").appendChild(badge);
+        }
+      })
+      .catch((e) => console.error("notify", e));
   }
   // ▼ ログアウト処理
   header.querySelector("#logout-btn").addEventListener("click", async () => {
