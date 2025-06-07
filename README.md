@@ -49,3 +49,14 @@ Vercel などの環境でデプロイする際は次の環境変数を設定し�
 - `SUPABASE_SERVICE_ROLE_KEY`
 
 これらは `.env.example` にも記載しているので参考にしてください。
+
+## Supabase Database Schema
+
+`training_records` テーブルには日ごとの成績を保存します。新機能に合わせ、解放したコードのキーを保持する `chords_required` カラムを追加してください。
+
+```sql
+ALTER TABLE training_records ADD COLUMN chords_required jsonb NOT NULL DEFAULT '[]';
+```
+
+`chords_required` にはアンロックされたコードキーを JSON 配列として保存します。既存の行は `UPDATE training_records SET chords_required = '[]';` で空配列に更新してください。
+
