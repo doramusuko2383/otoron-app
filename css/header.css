@@ -10,7 +10,7 @@
   background-color: #ffdede;
   /* 左右の余白をやや狭めてアイコンを左寄せ */
   padding-left: 0.5em;
-  padding-right: 1em;
+  padding-right: 0.4em;
   font-size: 1rem;
   font-weight: bold;
   color: #333;
@@ -27,13 +27,14 @@
   display: flex;
   align-items: center;
   margin-left: auto;
+  gap: 0.2em;
 }
 
 /* ▼ 親メニュー全体 */
 .parent-menu {
   position: relative;
   display: inline-block;
-  margin-left: 0.1em; /* Narrower gap */
+  margin-left: 0; /* Narrower gap */
 }
 
 /* ▼ 親メニューボタン */
