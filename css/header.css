@@ -8,7 +8,9 @@
   justify-content: space-between;
   align-items: center;
   background-color: #ffdede;
-  padding: 0 1.2em; /* ← 横方向のみ */
+  /* 左右の余白をやや狭めてアイコンを左寄せ */
+  padding-left: 0.5em;
+  padding-right: 1em;
   font-size: 1rem;
   font-weight: bold;
   color: #333;
@@ -40,7 +42,8 @@
   border: none;
   font-size: 2rem; /* larger icon */
   cursor: pointer;
-  padding: 0.5em 0.6em; /* reduced horizontal padding */
+  /* クリック範囲を少し小さく */
+  padding: 0.3em 0.4em;
   transition: background-color 0.2s ease;
   border-radius: 5px;
 }
@@ -126,7 +129,8 @@
   border: none;
   font-size: 2rem; /* larger icon */
   cursor: pointer;
-  padding: 0.5em 0.6em; /* reduced horizontal padding */
+  /* クリック範囲を少し小さく */
+  padding: 0.3em 0.4em;
   transition: background-color 0.2s ease;
   border-radius: 5px;
 }
@@ -199,7 +203,7 @@
 @media (max-width: 600px) {
   #parent-menu-btn {
     font-size: 1.8rem;
-    padding: 0.5em 0.6em;
+    padding: 0.3em 0.4em;
   }
 
   .parent-dropdown {
@@ -214,7 +218,7 @@
 
   #info-menu-btn {
     font-size: 1.6rem;
-    padding: 0.5em 0.6em;
+    padding: 0.3em 0.4em;
   }
 
   .info-dropdown {
