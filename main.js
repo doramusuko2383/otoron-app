@@ -29,25 +29,8 @@ import { renderHelpScreen } from "./components/info/help.js";
 import { renderPricingScreen } from "./components/pricing.js";
 
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-import {
-  getAuth,
-  onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyAunlq7BhL9A4JvcXszpYkDoXAPPSvhlxo",
-  authDomain: "otoron-app.firebaseapp.com",
-  projectId: "otoron-app",
-  storageBucket: "otoron-app.appspot.com",
-  messagingSenderId: "572910581480",
-  appId: "1:572910581480:web:3ddfb2b11404713be2fb5d",
-  measurementId: "G-7Q3MX6Z3XK"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-window.firebaseAuth = auth;
+import { firebaseAuth } from "./firebase/firebase-init.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 // console.log("🧭 main.js にて全コンポーネント統合済み");
 
@@ -109,7 +92,7 @@ window.addEventListener("popstate", (e) => {
   }
 });
 
-onAuthStateChanged(auth, async (firebaseUser) => {
+onAuthStateChanged(firebaseAuth, async (firebaseUser) => {
   if (!firebaseUser) {
     console.log("🔒 ログインしていません");
     return;
