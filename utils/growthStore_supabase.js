@@ -155,7 +155,9 @@ export async function generateMockGrowthData(userId, days = 7) {
         .from("training_sessions")
         .insert(ses);
       if (sesErr) console.error("❌ モックセッション挿入失敗:", sesErr);
-      await markQualifiedDayIfNeeded(userId, `${dateStr}${time}`);
     }
+
+    // 両セッションの保存後に日付単位の合格判定を実施
+    await markQualifiedDayIfNeeded(userId, `${dateStr}${sessionTimes[0]}`);
   }
 }
