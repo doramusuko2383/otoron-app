@@ -117,6 +117,19 @@ onAuthStateChanged(auth, async (firebaseUser) => {
 
   // console.log("🔓 Firebaseログイン済み:", firebaseUser.email);
 
+  try {
+    const idToken = await firebaseUser.getIdToken(true);
+    const { error: signInError } = await supabase.auth.signInWithIdToken({
+      provider: "firebase",
+      token: idToken,
+    });
+    if (signInError) {
+      console.error("❌ Supabaseサインイン失敗:", signInError.message);
+    }
+  } catch (err) {
+    console.error("❌ Supabaseサインイン処理でエラー:", err);
+  }
+
   const { data: existingUser, error } = await supabase
     .from("users")
     .select("*")

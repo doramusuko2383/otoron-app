@@ -4,6 +4,7 @@ import { switchScreen } from "../main.js";
 import { checkRecentUnlockCriteria } from "../utils/progressStatus.js";
 import { loadGrowthFlags } from "../utils/growthStore_supabase.js";
 import { getCurrentTargetChord } from "../utils/growthUtils.js";
+import { supabase } from "../utils/supabaseClient.js";
 
 export function renderHeader(container, user) {
   const header = document.createElement("header");
@@ -144,6 +145,14 @@ export function renderHeader(container, user) {
   header.querySelector("#logout-btn").addEventListener("click", async () => {
     try {
       await signOut(firebaseAuth);
+      try {
+        const { error: signOutError } = await supabase.auth.signOut();
+        if (signOutError) {
+          console.error("❌ Supabaseサインアウト失敗:", signOutError.message);
+        }
+      } catch (e) {
+        console.error("❌ Supabaseサインアウト処理でエラー:", e);
+      }
       sessionStorage.removeItem("currentPassword");
       alert("ログアウトしました！");
       switchScreen("intro");
