@@ -9,6 +9,8 @@ import { switchScreen } from "../main.js";
 import { supabase } from "../utils/supabaseClient.js";
 import { chords } from "../data/chords.js";
 
+const DUMMY_PASSWORD = "secure_dummy_password";
+
 export function renderLoginScreen(container, onLoginSuccess) {
   container.innerHTML = `
     <div class="login-wrapper">
@@ -132,13 +134,20 @@ export function renderLoginScreen(container, onLoginSuccess) {
       sessionStorage.setItem("currentPassword", password);
       const user = firebaseAuth.currentUser;
       try {
-        const idToken = await user.getIdToken(true);
-        const { error: signInError } = await supabase.auth.signInWithIdToken({
-          provider: "firebase",
-          token: idToken,
+        const { error: signUpError } = await supabase.auth.signUp({
+          email: user.email,
+          password: DUMMY_PASSWORD,
+        });
+        if (signUpError && signUpError.message !== "User already registered") {
+          console.error("❌ Supabaseユーザー作成失敗:", signUpError.message);
+        }
+
+        const { error: signInError } = await supabase.auth.signInWithPassword({
+          email: user.email,
+          password: DUMMY_PASSWORD,
         });
         if (signInError) {
-          console.error("❌ Supabaseサインイン失敗:", signInError.message);
+          console.error("❌ Supabaseログイン失敗:", signInError.message);
         }
       } catch (e) {
         console.error("❌ Supabaseサインイン処理でエラー:", e);
@@ -157,13 +166,20 @@ export function renderLoginScreen(container, onLoginSuccess) {
       const result = await signInWithPopup(firebaseAuth, provider);
       const user = result.user;
       try {
-        const idToken = await user.getIdToken(true);
-        const { error: signInError } = await supabase.auth.signInWithIdToken({
-          provider: "firebase",
-          token: idToken,
+        const { error: signUpError } = await supabase.auth.signUp({
+          email: user.email,
+          password: DUMMY_PASSWORD,
+        });
+        if (signUpError && signUpError.message !== "User already registered") {
+          console.error("❌ Supabaseユーザー作成失敗:", signUpError.message);
+        }
+
+        const { error: signInError } = await supabase.auth.signInWithPassword({
+          email: user.email,
+          password: DUMMY_PASSWORD,
         });
         if (signInError) {
-          console.error("❌ Supabaseサインイン失敗:", signInError.message);
+          console.error("❌ Supabaseログイン失敗:", signInError.message);
         }
       } catch (e) {
         console.error("❌ Supabaseサインイン処理でエラー:", e);

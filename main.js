@@ -32,6 +32,8 @@ import { renderPricingScreen } from "./components/pricing.js";
 import { firebaseAuth } from "./firebase/firebase-init.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
+const DUMMY_PASSWORD = "secure_dummy_password";
+
 // console.log("🧭 main.js にて全コンポーネント統合済み");
 
 const DEBUG_AUTO_LOGIN = false;
@@ -101,13 +103,20 @@ onAuthStateChanged(firebaseAuth, async (firebaseUser) => {
   // console.log("🔓 Firebaseログイン済み:", firebaseUser.email);
 
   try {
-    const idToken = await firebaseUser.getIdToken(true);
-    const { error: signInError } = await supabase.auth.signInWithIdToken({
-      provider: "firebase",
-      token: idToken,
+    const { error: signUpError } = await supabase.auth.signUp({
+      email: firebaseUser.email,
+      password: DUMMY_PASSWORD,
+    });
+    if (signUpError && signUpError.message !== "User already registered") {
+      console.error("❌ Supabaseユーザー作成失敗:", signUpError.message);
+    }
+
+    const { error: signInError } = await supabase.auth.signInWithPassword({
+      email: firebaseUser.email,
+      password: DUMMY_PASSWORD,
     });
     if (signInError) {
-      console.error("❌ Supabaseサインイン失敗:", signInError.message);
+      console.error("❌ Supabaseログイン失敗:", signInError.message);
     }
   } catch (err) {
     console.error("❌ Supabaseサインイン処理でエラー:", err);
