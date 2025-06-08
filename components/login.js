@@ -134,23 +134,54 @@ export function renderLoginScreen(container, onLoginSuccess) {
       sessionStorage.setItem("currentPassword", password);
       const user = firebaseAuth.currentUser;
       try {
-        const { error: signUpError } = await supabase.auth.signUp({
-          email: user.email,
-          password: DUMMY_PASSWORD,
-        });
-        if (signUpError && signUpError.message !== "User already registered") {
-          console.error("❌ Supabaseユーザー作成失敗:", signUpError.message);
-        }
+        const { data: existingUser } = await supabase
+          .from("users")
+          .select("*")
+          .eq("firebase_uid", user.uid)
+          .maybeSingle();
 
-        const { error: signInError } = await supabase.auth.signInWithPassword({
-          email: user.email,
-          password: DUMMY_PASSWORD,
-        });
-        if (signInError) {
-          console.error("❌ Supabaseログイン失敗:", signInError.message);
+        if (!existingUser) {
+          const { error: signUpError } = await supabase.auth.signUp({
+            email: user.email,
+            password: DUMMY_PASSWORD,
+          });
+          if (signUpError && !signUpError.message.includes("User already registered")) {
+            console.error("❌ Supabaseユーザー作成失敗:", signUpError.message);
+            return;
+          }
+
+          const { error: signInError } = await supabase.auth.signInWithPassword({
+            email: user.email,
+            password: DUMMY_PASSWORD,
+          });
+          if (signInError) {
+            console.error("❌ Supabaseログイン失敗:", signInError.message);
+            return;
+          }
+
+          const { data: inserted, error: insertError } = await supabase
+            .from("users")
+            .insert([{ firebase_uid: user.uid, email: user.email }])
+            .select()
+            .maybeSingle();
+
+          if (insertError || !inserted) {
+            console.error("❌ Supabaseユーザー登録失敗:", insertError);
+            return;
+          }
+        } else {
+          const { error: signInError } = await supabase.auth.signInWithPassword({
+            email: user.email,
+            password: DUMMY_PASSWORD,
+          });
+          if (signInError) {
+            console.error("❌ Supabaseログイン失敗:", signInError.message);
+            return;
+          }
         }
       } catch (e) {
         console.error("❌ Supabaseサインイン処理でエラー:", e);
+        return;
       }
       await ensureUserAndProgress(user);
       onLoginSuccess();
@@ -166,23 +197,54 @@ export function renderLoginScreen(container, onLoginSuccess) {
       const result = await signInWithPopup(firebaseAuth, provider);
       const user = result.user;
       try {
-        const { error: signUpError } = await supabase.auth.signUp({
-          email: user.email,
-          password: DUMMY_PASSWORD,
-        });
-        if (signUpError && signUpError.message !== "User already registered") {
-          console.error("❌ Supabaseユーザー作成失敗:", signUpError.message);
-        }
+        const { data: existingUser } = await supabase
+          .from("users")
+          .select("*")
+          .eq("firebase_uid", user.uid)
+          .maybeSingle();
 
-        const { error: signInError } = await supabase.auth.signInWithPassword({
-          email: user.email,
-          password: DUMMY_PASSWORD,
-        });
-        if (signInError) {
-          console.error("❌ Supabaseログイン失敗:", signInError.message);
+        if (!existingUser) {
+          const { error: signUpError } = await supabase.auth.signUp({
+            email: user.email,
+            password: DUMMY_PASSWORD,
+          });
+          if (signUpError && !signUpError.message.includes("User already registered")) {
+            console.error("❌ Supabaseユーザー作成失敗:", signUpError.message);
+            return;
+          }
+
+          const { error: signInError } = await supabase.auth.signInWithPassword({
+            email: user.email,
+            password: DUMMY_PASSWORD,
+          });
+          if (signInError) {
+            console.error("❌ Supabaseログイン失敗:", signInError.message);
+            return;
+          }
+
+          const { data: inserted, error: insertError } = await supabase
+            .from("users")
+            .insert([{ firebase_uid: user.uid, email: user.email }])
+            .select()
+            .maybeSingle();
+
+          if (insertError || !inserted) {
+            console.error("❌ Supabaseユーザー登録失敗:", insertError);
+            return;
+          }
+        } else {
+          const { error: signInError } = await supabase.auth.signInWithPassword({
+            email: user.email,
+            password: DUMMY_PASSWORD,
+          });
+          if (signInError) {
+            console.error("❌ Supabaseログイン失敗:", signInError.message);
+            return;
+          }
         }
       } catch (e) {
         console.error("❌ Supabaseサインイン処理でエラー:", e);
+        return;
       }
       await ensureUserAndProgress(user);
       onLoginSuccess();
