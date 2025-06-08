@@ -43,10 +43,10 @@
       await supabase.from('user_subscriptions').insert([
         {
           user_id: user.id,
-          product_id: plan,
-          price_id: plan,
-          payment_date: paymentDate.toISOString(),
-          expire_date: expireDate.toISOString(),
+          plan_type: plan,
+          status: 'active',
+          started_at: paymentDate.toISOString(),
+          ended_at: expireDate.toISOString(),
         },
       ]);
     });
