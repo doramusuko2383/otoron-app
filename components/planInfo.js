@@ -11,9 +11,9 @@ const planMap = {
 async function fetchLatestSubscription(userId) {
   const { data, error } = await supabase
     .from('user_subscriptions')
-    .select('price_id, expire_date')
+    .select('plan_type, ended_at')
     .eq('user_id', userId)
-    .order('expire_date', { ascending: false })
+    .order('ended_at', { ascending: false })
     .limit(1)
     .maybeSingle();
   if (error) {
@@ -39,7 +39,7 @@ async function createPlanInfoContent(user) {
     return container;
   }
 
-  const info = planMap[sub.price_id] || {};
+  const info = planMap[sub.plan_type] || {};
 
   const nameEl = document.createElement('div');
   nameEl.className = 'plan-name';
@@ -58,8 +58,8 @@ async function createPlanInfoContent(user) {
     container.appendChild(totalEl);
   }
 
-  if (sub.expire_date) {
-    const exp = new Date(sub.expire_date);
+  if (sub.ended_at) {
+    const exp = new Date(sub.ended_at);
     const expireEl = document.createElement('div');
     expireEl.className = 'expire-date';
     expireEl.textContent = formatDate(exp);
