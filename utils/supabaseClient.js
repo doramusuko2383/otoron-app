@@ -12,6 +12,14 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   },
 });
 
+// Immediately sign out to clear any stale session that might trigger
+// undesired authentication flows such as id_token exchange.
+try {
+  await supabase.auth.signOut();
+} catch (e) {
+  console.warn("[debug] Initial supabase.signOut failed", e);
+}
+
 // ---- debug wrappers ----
 // Log whenever signIn or signInWithIdToken is invoked. This helps detect
 // unexpected authentication flows.
@@ -19,13 +27,17 @@ if (typeof supabase.auth.signIn === "function") {
   const orig = supabase.auth.signIn.bind(supabase.auth);
   supabase.auth.signIn = async (...args) => {
     console.log("[debug] supabase.auth.signIn called", args);
+    if (args[0] && args[0].provider === "firebase") {
+      console.warn("[debug] signIn with provider 'firebase' blocked");
+      return { data: null, error: new Error("signIn with firebase provider disallowed") };
+    }
     return orig(...args);
   };
 }
 if (typeof supabase.auth.signInWithIdToken === "function") {
-  const origId = supabase.auth.signInWithIdToken.bind(supabase.auth);
   supabase.auth.signInWithIdToken = async (...args) => {
     console.log("[debug] supabase.auth.signInWithIdToken called", args);
-    return origId(...args);
+    console.warn("[debug] signInWithIdToken blocked");
+    return { data: null, error: new Error("signInWithIdToken disabled") };
   };
 }
