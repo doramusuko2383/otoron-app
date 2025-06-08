@@ -86,7 +86,6 @@ function shuffleArray(array) {
 }
 
 export async function renderTrainingScreen(user) {
-  console.log("🟢 renderTrainingScreen: user.id =", user?.id);
   currentUser = user;
   singleNoteMode = localStorage.getItem("singleNoteMode") === "on";
   singleNoteStrategy = localStorage.getItem("singleNoteStrategy") || 'top';
@@ -146,11 +145,7 @@ async function nextQuestion() {
     console.error("❌ currentUser が null または id が未定義です");
     return;
   }
-  console.log("🧩 nextQuestion():",
-  "queue.length =", questionQueue.length,
-  "questionCount =", questionCount,
-  "quitFlag =", quitFlag
-);
+  
   alreadyTried = false;
   isForcedAnswer = false;
   if (questionQueue.length === 0 || quitFlag) {
@@ -679,8 +674,6 @@ function checkAnswer(selected) {
 
     const proceed = () => {
       if (questionQueue.length === 0) {
-        console.log("📌 nextQuestion: セッション終了に到達");
-
         showFeedback("トレーニング終了！", "good", 0);
         nextQuestion();
       } else {

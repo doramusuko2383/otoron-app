@@ -82,7 +82,6 @@ export async function updateGrowthStatusBar(user, target, onUnlocked) {
   if (!msg || !btn || !progress || !card) return;
 
   const consecutive = await countQualifiedDays(user.id);
-  console.log(`\u73FE\u5728\u306E\u9023\u7D9A\u5408\u683C\u65E5\u6570: ${consecutive}`);
 
   const canUnlock = await checkRecentUnlockCriteria(user.id);
   const holdTime = 1500;

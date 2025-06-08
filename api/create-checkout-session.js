@@ -9,16 +9,23 @@ const priceMap = {
 };
 
 export default async function handler(req, res) {
-  console.log('Stripe Checkout API called');
-  console.log('Current price map:', priceMap);
 
   if (req.method !== 'POST') {
     return res.status(405).send('Method Not Allowed');
   }
 
-  const { email, plan } = req.body;
+  let body = req.body;
+  if (typeof body === 'string') {
+    try {
+      body = JSON.parse(body);
+    } catch (err) {
+      console.error('Invalid JSON body');
+      return res.status(400).json({ error: 'Invalid request' });
+    }
+  }
+
+  const { email, plan } = body || {};
   const priceId = priceMap[plan];
-  console.log('Received email:', email, 'plan:', plan, '-> priceId:', priceId);
 
   if (!priceId) {
     console.error('Invalid plan received. Plan:', plan, 'Price map:', priceMap);
@@ -42,7 +49,6 @@ export default async function handler(req, res) {
       customer_email: email,
     });
 
-    console.log('Created session:', session.id);
     res.status(200).json({ id: session.id });
   } catch (error) {
     console.error('❌ Error creating Stripe session:', error);

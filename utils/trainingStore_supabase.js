@@ -20,15 +20,7 @@ export async function saveTrainingSession({ userId, results, stats, mistakes, co
     console.warn("saveTrainingSession called without valid user ID");
     return;
   }
-  console.log("🟡 saveTrainingSession 実行:", {
-    userId,
-    results,
-    stats,
-    mistakes,
-    correctCount,
-    totalCount,
-    date
-  });
+  
   const structuredMistakes = convertMistakesJsonToStructuredForm(mistakes, results);
   const isQualified = sessionMeetsStats(stats, totalCount);
   const { data, error } = await supabase.from("training_sessions").insert([
@@ -47,7 +39,6 @@ export async function saveTrainingSession({ userId, results, stats, mistakes, co
   if (error) {
     console.error("❌ セッション保存に失敗:", error);
   } else {
-    console.log("✅ セッション保存に成功:", data);
     await markQualifiedDayIfNeeded(userId, date);
   }
 }

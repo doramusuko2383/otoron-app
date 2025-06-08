@@ -33,8 +33,6 @@ import { renderPricingScreen } from "./components/pricing.js";
 import { firebaseAuth } from "./firebase/firebase-init.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-console.log("\uD83D\uDE9A main.js module loaded");
-
 const DUMMY_PASSWORD = "secure_dummy_password";
 
 // console.log("🧭 main.js にて全コンポーネント統合済み");
@@ -57,11 +55,9 @@ window.addEventListener("error", (e) => {
 let currentUser = null;
 
 export const switchScreen = (screen, user = currentUser, options = {}) => {
-  console.log("🔀 switchScreen called with:", screen);
   const { replace = false } = options;
 
   const app = document.getElementById("app");
-  console.log("switchScreen: app element", app);
   app.innerHTML = "";
 
   if (screen !== "home") {
@@ -78,7 +74,6 @@ export const switchScreen = (screen, user = currentUser, options = {}) => {
   }
 
   if (screen === "intro") {
-    console.log("📺 calling renderIntroScreen");
     renderIntroScreen();
   }
   else if (screen === "login") renderLoginScreen(app, () => {});
@@ -115,9 +110,7 @@ window.addEventListener("popstate", (e) => {
 });
 
 onAuthStateChanged(firebaseAuth, async (firebaseUser) => {
-  console.log("onAuthStateChanged triggered", firebaseUser);
   if (!firebaseUser) {
-    console.log("🔒 ログインしていません");
     return;
   }
 
@@ -145,13 +138,12 @@ onAuthStateChanged(firebaseAuth, async (firebaseUser) => {
 });
 
 const initApp = () => {
-  console.log("🚀 DOMContentLoaded fired");
   const initial = DEBUG_AUTO_LOGIN ? "home" : "intro";
   const hash = location.hash.replace("#", "");
   const startScreen = hash || initial;
-  console.log("➡ startScreen is:", startScreen);
+  
   switchScreen(startScreen, undefined, { replace: true });
-  console.log("switchScreen finished for", startScreen);
+  
 };
 
 if (document.readyState !== "loading") {
@@ -160,6 +152,4 @@ if (document.readyState !== "loading") {
   window.addEventListener("DOMContentLoaded", initApp);
 }
 
-window.addEventListener("load", () => {
-  console.log("\u2728 load event fired");
-});
+window.addEventListener("load", () => {});
