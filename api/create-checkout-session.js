@@ -2,6 +2,12 @@ import Stripe from 'stripe';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
+const priceMap = {
+  plan12: process.env.PRICE_ID_12M,
+  plan6: process.env.PRICE_ID_6M,
+  plan1: process.env.PRICE_ID_1M,
+};
+
 export default async function handler(req, res) {
   console.log('Stripe Checkout API called');
 
@@ -9,8 +15,13 @@ export default async function handler(req, res) {
     return res.status(405).send('Method Not Allowed');
   }
 
-  const { email, priceId } = req.body;
-  console.log('Received email:', email, 'priceId:', priceId);
+  const { email, plan } = req.body;
+  const priceId = priceMap[plan];
+  console.log('Received email:', email, 'plan:', plan, '-> priceId:', priceId);
+
+  if (!priceId) {
+    return res.status(400).json({ error: 'Invalid plan' });
+  }
 
   try {
     const session = await stripe.checkout.sessions.create({
@@ -23,8 +34,8 @@ export default async function handler(req, res) {
         },
       ],
       success_url:
-        'https://otoron-app.vercel.app/success?session_id={CHECKOUT_SESSION_ID}&price_id=' +
-        priceId,
+        'https://otoron-app.vercel.app/success?session_id={CHECKOUT_SESSION_ID}&plan=' +
+        plan,
       cancel_url: 'https://otoron-app.vercel.app/cancel',
       customer_email: email,
     });

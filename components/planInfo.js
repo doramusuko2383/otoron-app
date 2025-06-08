@@ -2,10 +2,10 @@ import { renderHeader } from './header.js';
 import { supabase } from '../utils/supabaseClient.js';
 import { switchScreen } from '../main.js';
 
-const priceMap = {
-  'price_1RWGmmGGyh8a8OqPBX1DSJ8I': { name: '1ヶ月プラン', monthly: 1490, total: 1490 },
-  'price_1RWGnSGGyh8a8OqPQxFPJXg0': { name: '6ヶ月プラン', monthly: 1290, total: 7740 },
-  'price_1RWGURGGyh8a8OqPruLWkksD': { name: '12ヶ月プラン', monthly: 990, total: 11880 },
+const planMap = {
+  plan1: { name: '1ヶ月プラン', monthly: 1490, total: 1490 },
+  plan6: { name: '6ヶ月プラン', monthly: 1290, total: 7740 },
+  plan12: { name: '12ヶ月プラン', monthly: 990, total: 11880 },
 };
 
 async function fetchLatestSubscription(userId) {
@@ -39,7 +39,7 @@ async function createPlanInfoContent(user) {
     return container;
   }
 
-  const info = priceMap[sub.price_id] || {};
+  const info = planMap[sub.price_id] || {};
 
   const nameEl = document.createElement('div');
   nameEl.className = 'plan-name';
