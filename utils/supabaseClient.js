@@ -11,3 +11,21 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     detectSessionInUrl: false,
   },
 });
+
+// ---- debug wrappers ----
+// Log whenever signIn or signInWithIdToken is invoked. This helps detect
+// unexpected authentication flows.
+if (typeof supabase.auth.signIn === "function") {
+  const orig = supabase.auth.signIn.bind(supabase.auth);
+  supabase.auth.signIn = async (...args) => {
+    console.log("[debug] supabase.auth.signIn called", args);
+    return orig(...args);
+  };
+}
+if (typeof supabase.auth.signInWithIdToken === "function") {
+  const origId = supabase.auth.signInWithIdToken.bind(supabase.auth);
+  supabase.auth.signInWithIdToken = async (...args) => {
+    console.log("[debug] supabase.auth.signInWithIdToken called", args);
+    return origId(...args);
+  };
+}
