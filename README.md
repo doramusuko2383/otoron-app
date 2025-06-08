@@ -68,7 +68,7 @@ ALTER TABLE training_records ADD COLUMN chords_required jsonb NOT NULL DEFAULT '
 
 ## Troubleshooting
 
-Supabase へのサインインに失敗し `Custom OIDC provider "firebase" not allowed` と表示される場合、古い実装で `supabase.auth.signInWithIdToken` を使用している可能性があります。現在の実装では Firebase ユーザーのメールアドレスを用いて次のようにダミーパスワードでサインアップ・サインインする方式に切り替えています。
+Supabase へのサインインに失敗し `Custom OIDC provider "firebase" not allowed` と表示される場合は、過去のコードを利用している可能性があります。現在の実装では Firebase ユーザーのメールアドレスを用いて次のようにダミーパスワードでサインアップ・サインインする方式に切り替えています。
 
 ```javascript
 const firebaseUser = firebase.auth().currentUser;
