@@ -3,6 +3,7 @@ import { switchScreen } from '../main.js';
 
 export function renderIntroScreen() {
   const app = document.getElementById('app');
+  console.log('app element:', app);
   app.innerHTML = `
     <div class="intro-wrapper">
       <h1 class="intro-title">絶対音感トレーニング「オトロン」</h1>
