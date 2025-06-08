@@ -202,7 +202,7 @@ onAuthStateChanged(firebaseAuth, async (firebaseUser) => {
   }
 });
 
-window.addEventListener("DOMContentLoaded", () => {
+const initApp = () => {
   console.log("🚀 DOMContentLoaded fired");
   const initial = DEBUG_AUTO_LOGIN ? "home" : "intro";
   const hash = location.hash.replace("#", "");
@@ -210,7 +210,13 @@ window.addEventListener("DOMContentLoaded", () => {
   console.log("➡ startScreen is:", startScreen);
   switchScreen(startScreen, undefined, { replace: true });
   console.log("switchScreen finished for", startScreen);
-});
+};
+
+if (document.readyState !== "loading") {
+  initApp();
+} else {
+  window.addEventListener("DOMContentLoaded", initApp);
+}
 
 window.addEventListener("load", () => {
   console.log("\u2728 load event fired");
