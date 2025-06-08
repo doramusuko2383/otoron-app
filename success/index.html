@@ -18,15 +18,15 @@
     const params = new URLSearchParams(location.search);
     const plan = params.get('plan');
 
-    const planMonths = {
-      plan1: 1,
-      plan6: 6,
-      plan12: 12,
+    const planDays = {
+      plan1: 30,
+      plan6: 180,
+      plan12: 360,
     };
 
-    function addMonths(date, months) {
+    function addDays(date, days) {
       const d = new Date(date);
-      d.setMonth(d.getMonth() + months);
+      d.setDate(d.getDate() + days);
       return d;
     }
 
@@ -39,7 +39,24 @@
         .maybeSingle();
       if (!user) return;
       const paymentDate = new Date();
-      const expireDate = addMonths(paymentDate, planMonths[plan] || 1);
+      const { data: latestSub } = await supabase
+        .from('user_subscriptions')
+        .select('ended_at')
+        .eq('user_id', user.id)
+        .order('ended_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      let baseDate = paymentDate;
+      if (latestSub && latestSub.ended_at) {
+        const currentEnd = new Date(latestSub.ended_at);
+        if (currentEnd > paymentDate) {
+          baseDate = currentEnd;
+        }
+      }
+
+      const expireDate = addDays(baseDate, planDays[plan] || 30);
+
       await supabase.from('user_subscriptions').insert([
         {
           user_id: user.id,
