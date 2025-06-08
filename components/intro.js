@@ -9,11 +9,6 @@ export function renderIntroScreen() {
     return;
   }
 
-  // Debug: minimal content to ensure something is rendered
-  app.innerHTML = '<h1 id="intro-debug">Intro Screen Debug</h1>';
-  const debugElem = document.getElementById('intro-debug');
-  console.log('Intro: debug element inserted?', !!debugElem);
-
   app.innerHTML = `
     <div class="intro-wrapper">
       <h1 class="intro-title">絶対音感トレーニング「オトロン」</h1>
@@ -29,11 +24,21 @@ export function renderIntroScreen() {
     </div>
   `;
 
-  document.getElementById('login-btn').addEventListener('click', () => {
-    switchScreen('login');
-  });
+  const loginBtn = document.getElementById('login-btn');
+  if (loginBtn) {
+    loginBtn.addEventListener('click', () => {
+      switchScreen('login');
+    });
+  } else {
+    console.log('Intro: ボタンがDOMに存在しません (login)');
+  }
 
-  document.getElementById('signup-btn').addEventListener('click', () => {
-    switchScreen('signup');
-  });
+  const signupBtn = document.getElementById('signup-btn');
+  if (signupBtn) {
+    signupBtn.addEventListener('click', () => {
+      switchScreen('signup');
+    });
+  } else {
+    console.log('Intro: ボタンがDOMに存在しません (signup)');
+  }
 }
