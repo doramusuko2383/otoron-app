@@ -16,12 +16,12 @@
     import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
 
     const params = new URLSearchParams(location.search);
-    const priceId = params.get('price_id');
+    const plan = params.get('plan');
 
     const planMonths = {
-      'price_1RWGmmGGyh8a8OqPBX1DSJ8I': 1,
-      'price_1RWGnSGGyh8a8OqPQxFPJXg0': 6,
-      'price_1RWGURGGyh8a8OqPruLWkksD': 12,
+      plan1: 1,
+      plan6: 6,
+      plan12: 12,
     };
 
     function addMonths(date, months) {
@@ -31,7 +31,7 @@
     }
 
     onAuthStateChanged(firebaseAuth, async (firebaseUser) => {
-      if (!firebaseUser || !priceId) return;
+      if (!firebaseUser || !plan) return;
       const { data: user } = await supabase
         .from('users')
         .select('id')
@@ -39,12 +39,12 @@
         .maybeSingle();
       if (!user) return;
       const paymentDate = new Date();
-      const expireDate = addMonths(paymentDate, planMonths[priceId] || 1);
+      const expireDate = addMonths(paymentDate, planMonths[plan] || 1);
       await supabase.from('user_subscriptions').insert([
         {
           user_id: user.id,
-          product_id: priceId,
-          price_id: priceId,
+          product_id: plan,
+          price_id: plan,
           payment_date: paymentDate.toISOString(),
           expire_date: expireDate.toISOString(),
         },

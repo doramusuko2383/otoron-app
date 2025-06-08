@@ -314,27 +314,27 @@ export function renderMyPageScreen(user) {
 
     const plans = [
       {
+        key: "plan12",
         months: 12,
         monthly: 990,
         total: 11880,
         benefit: "約4ヶ月分お得",
-        priceId: "price_1RWGURGGyh8a8OqPruLWkksD",
         recommended: true,
       },
       {
+        key: "plan6",
         months: 6,
         monthly: 1290,
         total: 7740,
         benefit: "約1ヶ月分お得",
-        priceId: "price_1RWGnSGGyh8a8OqPQxFPJXg0",
         recommended: false,
       },
       {
+        key: "plan1",
         months: 1,
         monthly: 1490,
         total: 1490,
         benefit: "",
-        priceId: "price_1RWGmmGGyh8a8OqPBX1DSJ8I",
         recommended: false,
       },
     ];
@@ -378,7 +378,7 @@ export function renderMyPageScreen(user) {
       const btn = document.createElement("button");
       btn.className = "choose-plan";
       btn.textContent = "このプランを選ぶ";
-      btn.onclick = () => startCheckout(p.priceId);
+      btn.onclick = () => startCheckout(p.key);
       card.appendChild(btn);
 
       wrap.appendChild(card);

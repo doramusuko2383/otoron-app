@@ -1,6 +1,6 @@
 import { firebaseAuth } from '../firebase/firebase-init.js';
 
-export async function startCheckout(priceId) {
+export async function startCheckout(plan) {
   const email = firebaseAuth.currentUser?.email || '未取得';
   console.log('✨ checkout email:', email);
   if (!firebaseAuth.currentUser?.email) {
@@ -12,7 +12,7 @@ export async function startCheckout(priceId) {
     const response = await fetch('/api/create-checkout-session', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, priceId })
+      body: JSON.stringify({ email, plan })
     });
 
     const data = await response.json();
