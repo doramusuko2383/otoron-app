@@ -3,7 +3,17 @@ import { switchScreen } from '../main.js';
 
 export function renderIntroScreen() {
   const app = document.getElementById('app');
-  console.log('app element:', app);
+  console.log('Intro: app element:', app);
+  if (!app) {
+    console.error('Intro: #app element not found');
+    return;
+  }
+
+  // Debug: minimal content to ensure something is rendered
+  app.innerHTML = '<h1 id="intro-debug">Intro Screen Debug</h1>';
+  const debugElem = document.getElementById('intro-debug');
+  console.log('Intro: debug element inserted?', !!debugElem);
+
   app.innerHTML = `
     <div class="intro-wrapper">
       <h1 class="intro-title">絶対音感トレーニング「オトロン」</h1>
