@@ -1,6 +1,8 @@
 // components/intro.js
 import { switchScreen } from '../main.js';
 
+console.log("\ud83d\udce6 intro.js has been loaded!");
+
 export function renderIntroScreen() {
   const app = document.getElementById('app');
   console.log('Intro: app element:', app);
