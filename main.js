@@ -54,6 +54,7 @@ window.addEventListener("error", (e) => {
 let currentUser = null;
 
 export const switchScreen = (screen, user = currentUser, options = {}) => {
+  console.log("🔀 switchScreen called with:", screen);
   const { replace = false } = options;
 
   const app = document.getElementById("app");
