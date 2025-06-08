@@ -10,6 +10,7 @@ const priceMap = {
 
 export default async function handler(req, res) {
   console.log('Stripe Checkout API called');
+  console.log('Current price map:', priceMap);
 
   if (req.method !== 'POST') {
     return res.status(405).send('Method Not Allowed');
@@ -20,6 +21,7 @@ export default async function handler(req, res) {
   console.log('Received email:', email, 'plan:', plan, '-> priceId:', priceId);
 
   if (!priceId) {
+    console.error('Invalid plan received. Plan:', plan, 'Price map:', priceMap);
     return res.status(400).json({ error: 'Invalid plan' });
   }
 
