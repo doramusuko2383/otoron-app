@@ -127,8 +127,8 @@ export function renderLoginScreen(container, onLoginSuccess) {
   const form = container.querySelector(".login-form");
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const email = form.querySelector("#email").value;
-    const password = form.querySelector("#password").value;
+    const email = form.querySelector("#email").value.trim();
+    const password = form.querySelector("#password").value.trim();
 
     try {
       await signInWithEmailAndPassword(firebaseAuth, email, password);
