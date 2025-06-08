@@ -1,7 +1,9 @@
 import {
   signInWithEmailAndPassword,
   GoogleAuthProvider,
-  signInWithPopup
+  signInWithPopup,
+  fetchSignInMethodsForEmail,
+  signOut
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 import { firebaseAuth } from "../firebase/firebase-init.js";
@@ -131,6 +133,12 @@ export function renderLoginScreen(container, onLoginSuccess) {
     const password = form.querySelector("#password").value.trim();
 
     try {
+      const methods = await fetchSignInMethodsForEmail(firebaseAuth, email);
+      if (methods.includes('google.com') && !methods.includes('password')) {
+        alert('このメールアドレスはGoogleログイン専用です。Googleログインをご利用ください。');
+        return;
+      }
+
       await signInWithEmailAndPassword(firebaseAuth, email, password);
       sessionStorage.setItem("currentPassword", password);
       const user = firebaseAuth.currentUser;
@@ -153,6 +161,12 @@ export function renderLoginScreen(container, onLoginSuccess) {
     try {
       const result = await signInWithPopup(firebaseAuth, provider);
       const user = result.user;
+      const methods = await fetchSignInMethodsForEmail(firebaseAuth, user.email);
+      if (methods.includes('password') && !methods.includes('google.com')) {
+        await signOut(firebaseAuth);
+        alert('このメールアドレスは既に通常のログインで使用されています。Googleログインはできません。');
+        return;
+      }
       try {
         await ensureSupabaseAuth(user);
       } catch (e) {
@@ -162,7 +176,11 @@ export function renderLoginScreen(container, onLoginSuccess) {
       await ensureUserAndProgress(user);
       onLoginSuccess();
     } catch (err) {
-      alert("Googleログイン失敗：" + err.message);
+      if (err.code === 'auth/account-exists-with-different-credential') {
+        alert('このメールアドレスは既に通常のログインで使用されています。Googleログインはできません。');
+      } else {
+        alert("Googleログイン失敗：" + err.message);
+      }
     }
   });
 
