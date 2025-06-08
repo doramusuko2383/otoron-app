@@ -122,53 +122,31 @@ onAuthStateChanged(firebaseAuth, async (firebaseUser) => {
 
   // console.log("🔓 Firebaseログイン済み:", firebaseUser.email);
 
-  try {
+  const { data: existingUser, error: userCheckError } = await supabase
+    .from("users")
+    .select("id, name, email")
+    .eq("firebase_uid", firebaseUser.uid)
+    .maybeSingle();
+
+  if (userCheckError) {
+    console.error("❌ Supabaseユーザー確認エラー:", userCheckError);
+    return;
+  }
+
+  let user;
+
+  if (!existingUser) {
+    // Supabase Auth にもユーザーを登録
     const { error: signUpError } = await supabase.auth.signUp({
       email: firebaseUser.email,
       password: DUMMY_PASSWORD,
     });
-    if (signUpError && signUpError.message !== "User already registered") {
+    if (signUpError && !signUpError.message.includes("User already registered")) {
       console.error("❌ Supabaseユーザー作成失敗:", signUpError.message);
+      return;
     }
 
-    const { error: signInError } = await supabase.auth.signInWithPassword({
-      email: firebaseUser.email,
-      password: DUMMY_PASSWORD,
-    });
-    if (signInError) {
-      console.error("❌ Supabaseログイン失敗:", signInError.message);
-    }
-  } catch (err) {
-    console.error("❌ Supabaseサインイン処理でエラー:", err);
-  }
-
-  const { data: existingUser, error } = await supabase
-    .from("users")
-    .select("*")
-    .eq("firebase_uid", firebaseUser.uid)
-    .maybeSingle();
-
-  if (error) {
-    console.error("❌ Supabaseユーザー確認エラー:", error);
-    return;
-  }
-
-  // Ensure email is stored when existing user has no email
-  if (existingUser && (!existingUser.email || existingUser.email !== firebaseUser.email)) {
-    const { data: updated, error: updateError } = await supabase
-      .from("users")
-      .update({ email: firebaseUser.email })
-      .eq("id", existingUser.id)
-      .select()
-      .maybeSingle();
-    if (!updateError && updated) {
-      existingUser.email = updated.email;
-    }
-  }
-
-  let user = existingUser;
-
-  if (!user) {
+    // Supabase users テーブルに登録
     const { data: inserted, error: insertError } = await supabase
       .from("users")
       .insert([
@@ -182,16 +160,40 @@ onAuthStateChanged(firebaseAuth, async (firebaseUser) => {
       .maybeSingle();
 
     if (insertError || !inserted) {
-      console.error("❌ Supabaseユーザー登録失敗:", insertError);
+      console.error("❌ Supabase users テーブル登録失敗:", insertError);
       return;
-    } else {
-      console.log("✅ Supabaseにユーザー登録完了");
-      user = inserted;
-      await createInitialChordProgress(user.id);
-
     }
+
+    user = inserted;
+
+    // 初期進捗データ作成
+    await createInitialChordProgress(user.id);
   } else {
-    // console.log("✅ Supabaseに既存ユーザー:", user);
+    // Supabase Auth へログイン（auth.signInWithPassword）
+    const { error: signInError } = await supabase.auth.signInWithPassword({
+      email: firebaseUser.email,
+      password: DUMMY_PASSWORD,
+    });
+    if (signInError) {
+      console.error("❌ Supabaseログイン失敗:", signInError.message);
+      return;
+    }
+
+    // 既存ユーザー情報を使用
+    user = existingUser;
+
+    // Ensure email is stored when existing user has no email
+    if (!user.email || user.email !== firebaseUser.email) {
+      const { data: updated, error: updateError } = await supabase
+        .from("users")
+        .update({ email: firebaseUser.email })
+        .eq("id", user.id)
+        .select()
+        .maybeSingle();
+      if (!updateError && updated) {
+        user.email = updated.email;
+      }
+    }
   }
 
   currentUser = user;
