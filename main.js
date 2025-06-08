@@ -17,6 +17,7 @@ import { renderIntroScreen } from "./components/intro.js";
 import { renderSignUpScreen } from "./components/signup.js";
 import { renderInitialSetupScreen } from "./components/initialSetup.js";
 import { supabase } from "./utils/supabaseClient.js";
+import { ensureSupabaseAuth } from "./utils/supabaseAuthHelper.js";
 import { createInitialChordProgress } from "./utils/progressUtils.js";
 import { renderMyPageScreen } from "./components/mypage.js";
 import { clearTimeOfDayStyling } from "./utils/timeOfDay.js";
@@ -122,88 +123,17 @@ onAuthStateChanged(firebaseAuth, async (firebaseUser) => {
 
   // console.log("🔓 Firebaseログイン済み:", firebaseUser.email);
 
-  const { data: existingUser, error: userCheckError } = await supabase
-    .from("users")
-    .select("id, name, email")
-    .eq("firebase_uid", firebaseUser.uid)
-    .maybeSingle();
-
-  if (userCheckError) {
-    console.error("❌ Supabaseユーザー確認エラー:", userCheckError);
+  let authResult;
+  try {
+    authResult = await ensureSupabaseAuth(firebaseUser);
+  } catch (e) {
+    console.error("❌ Supabase認証処理エラー:", e);
     return;
   }
+  const { user, isNew } = authResult;
 
-  let user;
-
-  if (!existingUser) {
-    // Supabase Auth にユーザー登録（初回のみ）
-    const { error: signUpError } = await supabase.auth.signUp({
-      email: firebaseUser.email,
-      password: DUMMY_PASSWORD,
-    });
-    if (signUpError && !signUpError.message.includes("User already registered")) {
-      console.error("❌ Supabaseユーザー作成失敗:", signUpError.message);
-      return;
-    }
-
-    // Sign in so that we have a valid session
-    const { error: signInError } = await supabase.auth.signInWithPassword({
-      email: firebaseUser.email,
-      password: DUMMY_PASSWORD,
-    });
-    if (signInError) {
-      console.error("❌ Supabaseログイン失敗:", signInError.message);
-      return;
-    }
-
-    // Supabase users テーブルに登録
-    const { data: inserted, error: insertError } = await supabase
-      .from("users")
-      .insert([
-        {
-          firebase_uid: firebaseUser.uid,
-          name: firebaseUser.displayName || "名前未設定",
-          email: firebaseUser.email,
-        },
-      ])
-      .select()
-      .maybeSingle();
-
-    if (insertError || !inserted) {
-      console.error("❌ Supabase users テーブル登録失敗:", insertError);
-      return;
-    }
-
-    user = inserted;
-
-    // 初期進捗データ作成
+  if (isNew) {
     await createInitialChordProgress(user.id);
-  } else {
-    // Supabase Auth へログイン（auth.signInWithPassword）
-    const { error: signInError } = await supabase.auth.signInWithPassword({
-      email: firebaseUser.email,
-      password: DUMMY_PASSWORD,
-    });
-    if (signInError) {
-      console.error("❌ Supabaseログイン失敗:", signInError.message);
-      return;
-    }
-
-    // 既存ユーザー情報を使用
-    user = existingUser;
-
-    // Ensure email is stored when existing user has no email
-    if (!user.email || user.email !== firebaseUser.email) {
-      const { data: updated, error: updateError } = await supabase
-        .from("users")
-        .update({ email: firebaseUser.email })
-        .eq("id", user.id)
-        .select()
-        .maybeSingle();
-      if (!updateError && updated) {
-        user.email = updated.email;
-      }
-    }
   }
 
   currentUser = user;
