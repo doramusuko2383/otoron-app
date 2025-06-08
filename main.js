@@ -38,7 +38,17 @@ const DUMMY_PASSWORD = "secure_dummy_password";
 
 const DEBUG_AUTO_LOGIN = false;
 
-await supabase.auth.signOut();
+window.addEventListener("error", (e) => {
+  console.error("Uncaught error", e.error);
+});
+
+(async () => {
+  try {
+    await supabase.auth.signOut();
+  } catch (e) {
+    console.error("signOut error", e);
+  }
+})();
 
 
 let currentUser = null;
@@ -188,5 +198,6 @@ window.addEventListener("DOMContentLoaded", () => {
   const initial = DEBUG_AUTO_LOGIN ? "home" : "intro";
   const hash = location.hash.replace("#", "");
   const startScreen = hash || initial;
+  console.log("📱 DOMContentLoaded - switching to", startScreen);
   switchScreen(startScreen, undefined, { replace: true });
 });
