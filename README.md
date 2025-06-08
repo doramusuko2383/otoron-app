@@ -2,32 +2,36 @@
 
 このリポジトリは絶対音感トレーニングアプリのソースコードです。Firebase での認証を利用しつつ、Supabase とも連携しています。
 
-## Firebase の ID トークンを Supabase で利用する
+## Firebase ユーザーを Supabase でミラー作成する
 
-Supabase の認証に Firebase の ID トークンを使用するため、Supabase 側でカスタム OIDC プロバイダを登録します。**ここで設定する `Slug` は必ず `firebase` としてください。** `supabase.auth.signInWithIdToken` で指定するプロバイダー名と一致しない場合、サインインは失敗します。以下に詳しい設定手順を示します。
+Firebase 認証でログインしたユーザーのメールアドレスを利用し、Supabase 側にも同じアドレスのユーザーを作成します。ID トークンは使用せず、固定のダミーパスワードでサインアップ・ログインを行います。
 
-Firebase が発行する ID トークンを Supabase で検証するには、トークンの発行元 (`Issuer`) と公開鍵 (`JWKs URL`) を Supabase に登録する必要があります。これにより Supabase は Firebase の署名を検証できるようになります。
+```javascript
+const firebaseUser = firebase.auth().currentUser;
+const dummyPassword = 'secure_dummy_password';
 
-1. Supabase ダッシュボードでプロジェクトを開き **Auth** → **Settings** → **External OAuth Providers** の順に移動します。
-2. **Custom OIDC** セクションで新しいプロバイダを追加します。**`Slug` は必ず `firebase` と指定**し、`Issuer` には `https://securetoken.google.com/<Firebase プロジェクト ID>` を入力します。
-3. `JWKs URL` には `https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com` を指定し、保存します。
+const { error: signUpError } = await supabase.auth.signUp({
+  email: firebaseUser.email,
+  password: dummyPassword
+});
+if (signUpError && signUpError.message !== 'User already registered') {
+  console.error('❌ Supabaseユーザー作成失敗:', signUpError.message);
+}
 
-これで Firebase で取得した ID トークンを利用して Supabase にログインできるようになります。もしカスタムプロバイダーを登録していない場合、サインイン時に `Custom OIDC provider 'firebase' not allowed` と表示され、ログインに失敗するので注意してください。
+const { error: signInError } = await supabase.auth.signInWithPassword({
+  email: firebaseUser.email,
+  password: dummyPassword
+});
+if (signInError) {
+  console.error('❌ Supabaseログイン失敗:', signInError.message);
+}
+```
+
+この処理を実行することで Supabase の API を利用できるようになります。
 
 ## `main.js` での認証処理
 
-Firebase でログイン後、取得した ID トークンを用いて Supabase にサインインします。Supabase ではカスタム OIDC プロバイダー `firebase` を使用するため、`main.js` ではそのプロバイダーを指定してサインインします.
-
-```javascript
-const idToken = await firebaseUser.getIdToken(true);
-const { error } = await supabase.auth.signInWithIdToken({
-  provider: "firebase",
-  token: idToken,
-});
-if (error) {
-  console.error("❌ Supabase sign-in failed:", error.message);
-}
-```
+`main.js` では上記のサインアップ・サインイン処理を行った後、ユーザー情報の登録や画面遷移を行います。
 
 ## Supabase Configuration
 
