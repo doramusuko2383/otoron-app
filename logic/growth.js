@@ -33,7 +33,6 @@ export async function renderGrowthScreen(user) {
   const today = getToday();
   const passed = await getPassedDays(user.id);
   const qualifiedDays = await countQualifiedDays(user.id);
-  console.log(`\u9023\u7D9A\u5408\u683C\u65E5\u6570: ${qualifiedDays}`);
   const qualifiedToday = await isQualifiedToday(user.id);
   const flags = await loadGrowthFlags(user.id);
   const target = getCurrentTargetChord(flags); // ← chordOrder に沿った未解放の最初の1つ
@@ -192,7 +191,6 @@ export async function renderGrowthScreen(user) {
       const days = parseInt(val.replace("mock", ""), 10);
       await generateMockGrowthData(user.id, days);
       const count = await countQualifiedDays(user.id);
-      console.log(`DEBUG: 現在の連続合格日数は ${count} 日です`);
       alert(`モックデータ(${days}日分)を生成しました`);
     }
     await renderGrowthScreen(user);

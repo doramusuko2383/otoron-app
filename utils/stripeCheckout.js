@@ -2,7 +2,6 @@ import { firebaseAuth } from '../firebase/firebase-init.js';
 
 export async function startCheckout(plan) {
   const email = firebaseAuth.currentUser?.email || '未取得';
-  console.log('✨ checkout email:', email);
   if (!firebaseAuth.currentUser?.email) {
     alert('ログイン情報がありません');
     return;

@@ -26,7 +26,6 @@ try {
 if (typeof supabase.auth.signIn === "function") {
   const orig = supabase.auth.signIn.bind(supabase.auth);
   supabase.auth.signIn = async (...args) => {
-    console.log("[debug] supabase.auth.signIn called", args);
     if (args[0] && args[0].provider === "firebase") {
       console.warn("[debug] signIn with provider 'firebase' blocked");
       return { data: null, error: new Error("signIn with firebase provider disallowed") };
@@ -36,7 +35,6 @@ if (typeof supabase.auth.signIn === "function") {
 }
 if (typeof supabase.auth.signInWithIdToken === "function") {
   supabase.auth.signInWithIdToken = async (...args) => {
-    console.log("[debug] supabase.auth.signInWithIdToken called", args);
     console.warn("[debug] signInWithIdToken blocked");
     return { data: null, error: new Error("signInWithIdToken disabled") };
   };

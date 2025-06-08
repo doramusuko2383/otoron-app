@@ -1,11 +1,8 @@
 // components/intro.js
 import { switchScreen } from '../main.js';
 
-console.log("\ud83d\udce6 intro.js has been loaded!");
-
 export function renderIntroScreen() {
   const app = document.getElementById('app');
-  console.log('Intro: app element:', app);
   if (!app) {
     console.error('Intro: #app element not found');
     return;
@@ -31,8 +28,6 @@ export function renderIntroScreen() {
     loginBtn.addEventListener('click', () => {
       switchScreen('login');
     });
-  } else {
-    console.log('Intro: ボタンがDOMに存在しません (login)');
   }
 
   const signupBtn = document.getElementById('signup-btn');
@@ -40,9 +35,5 @@ export function renderIntroScreen() {
     signupBtn.addEventListener('click', () => {
       switchScreen('signup');
     });
-  } else {
-    console.log('Intro: ボタンがDOMに存在しません (signup)');
   }
-
-  console.log('Intro screen rendered');
 }

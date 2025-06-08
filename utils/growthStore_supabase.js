@@ -62,8 +62,6 @@ export async function markChordAsUnlocked(userId, chordKey) {
 
   if (error) {
     console.error(`❌ 和音 ${chordKey} の任意解放に失敗:`, error);
-  } else {
-    console.log(`✅ 和音 ${chordKey} を手動で解放しました`);
   }
 }
 
