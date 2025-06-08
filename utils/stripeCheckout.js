@@ -17,6 +17,10 @@ export async function startCheckout(priceId) {
 
     const data = await response.json();
     if (data.id) {
+      if (typeof window.Stripe !== 'function') {
+        console.warn('Stripe SDK is not loaded; skipping redirect');
+        return;
+      }
       const stripe = Stripe('pk_test_51RUmpu4aOXt1PnHZ4QI4ED8IqIZstCQTAMzMm6isjY34QP5ESFYKClhQSwRI8d52n80G4c2FgPQTvFXLjOQG9Yl400wFCPpXca');
       await stripe.redirectToCheckout({ sessionId: data.id });
     } else {
