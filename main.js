@@ -38,6 +38,8 @@ const DUMMY_PASSWORD = "secure_dummy_password";
 
 const DEBUG_AUTO_LOGIN = false;
 
+await supabase.auth.signOut();
+
 
 let currentUser = null;
 
