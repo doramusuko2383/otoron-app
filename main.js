@@ -72,7 +72,10 @@ export const switchScreen = (screen, user = currentUser, options = {}) => {
     history.pushState(state, "", `#${screen}`);
   }
 
-  if (screen === "intro") renderIntroScreen();
+  if (screen === "intro") {
+    console.log("📺 calling renderIntroScreen");
+    renderIntroScreen();
+  }
   else if (screen === "login") renderLoginScreen(app, () => {});
   else if (screen === "home") renderHomeScreen(user);
   else if (screen === "training") renderTrainingScreen(user);
@@ -195,9 +198,10 @@ onAuthStateChanged(firebaseAuth, async (firebaseUser) => {
 });
 
 window.addEventListener("DOMContentLoaded", () => {
+  console.log("🚀 DOMContentLoaded fired");
   const initial = DEBUG_AUTO_LOGIN ? "home" : "intro";
   const hash = location.hash.replace("#", "");
   const startScreen = hash || initial;
-  console.log("📱 DOMContentLoaded - switching to", startScreen);
+  console.log("➡ startScreen is:", startScreen);
   switchScreen(startScreen, undefined, { replace: true });
 });
