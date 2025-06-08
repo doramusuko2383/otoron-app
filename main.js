@@ -136,13 +136,23 @@ onAuthStateChanged(firebaseAuth, async (firebaseUser) => {
   let user;
 
   if (!existingUser) {
-    // Supabase Auth にもユーザーを登録
+    // Supabase Auth にユーザー登録（初回のみ）
     const { error: signUpError } = await supabase.auth.signUp({
       email: firebaseUser.email,
       password: DUMMY_PASSWORD,
     });
     if (signUpError && !signUpError.message.includes("User already registered")) {
       console.error("❌ Supabaseユーザー作成失敗:", signUpError.message);
+      return;
+    }
+
+    // Sign in so that we have a valid session
+    const { error: signInError } = await supabase.auth.signInWithPassword({
+      email: firebaseUser.email,
+      password: DUMMY_PASSWORD,
+    });
+    if (signInError) {
+      console.error("❌ Supabaseログイン失敗:", signInError.message);
       return;
     }
 
