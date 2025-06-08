@@ -43,4 +43,6 @@ export function renderIntroScreen() {
   } else {
     console.log('Intro: ボタンがDOMに存在しません (signup)');
   }
+
+  console.log('Intro screen rendered');
 }
