@@ -128,12 +128,12 @@ export async function getConsecutiveQualifiedDays(userId, days = REQUIRED_DAYS) 
       .gte("qualified_date", fromStr),
     supabase
       .from("training_records")
-      .select("date, chords_required")
+      .select("date")
       .eq("user_id", userId)
       .gte("date", fromStr),
     supabase
       .from("user_chord_progress")
-      .select("chord_key, status")
+      .select("chord_key, status, unlocked_date")
       .eq("user_id", userId)
   ]);
 
@@ -148,20 +148,20 @@ export async function getConsecutiveQualifiedDays(userId, days = REQUIRED_DAYS) 
 
   const currentSet = new Set(currentUnlocked);
 
-  const recordMap = {};
-  records.forEach(r => {
-    recordMap[r.date] = r;
-  });
+  const recordSet = new Set(records.map(r => r.date));
 
   const qualifiedSet = new Set(qualified.map(d => d.qualified_date));
 
-  function isValidPassingDay(rec) {
-    if (!rec || !rec.chords_required) return false;
-    const req = Array.isArray(rec.chords_required)
-      ? rec.chords_required
-      : JSON.parse(rec.chords_required || "[]");
-    if (req.length !== currentUnlocked.length) return false;
-    return req.every(ch => currentSet.has(ch));
+  function isValidPassingDay(dateStr) {
+    const unlockedOnDate = progress
+      .filter(
+        p =>
+          p.status !== "locked" &&
+          (!p.unlocked_date || p.unlocked_date <= dateStr)
+      )
+      .map(p => p.chord_key);
+    if (unlockedOnDate.length !== currentUnlocked.length) return false;
+    return unlockedOnDate.every(ch => currentSet.has(ch));
   }
 
   let count = 0;
@@ -169,7 +169,7 @@ export async function getConsecutiveQualifiedDays(userId, days = REQUIRED_DAYS) 
     const d = new Date();
     d.setDate(today.getDate() - i);
     const ds = d.toISOString().split("T")[0];
-    if (qualifiedSet.has(ds) && isValidPassingDay(recordMap[ds])) {
+    if (qualifiedSet.has(ds) && recordSet.has(ds) && isValidPassingDay(ds)) {
       count++;
     } else {
       break;

@@ -58,13 +58,12 @@ Vercel などの環境でデプロイする際は次の環境変数を設定し�
 
 ## Supabase Database Schema
 
-`training_records` テーブルには日ごとの成績を保存します。新機能に合わせ、解放したコードのキーを保持する `chords_required` カラムを追加してください。
+`training_records` テーブルには日ごとの成績を保存します。和音の解放状況は
+`user_chord_progress` テーブルで管理しており、各行に `status` と `unlocked_date`
+を持たせています。
 
-```sql
-ALTER TABLE training_records ADD COLUMN chords_required jsonb NOT NULL DEFAULT '[]';
-```
-
-`chords_required` にはアンロックされたコードキーを JSON 配列として保存します。既存の行は `UPDATE training_records SET chords_required = '[]';` で空配列に更新してください。
+以前は `training_records` に `chords_required` カラムを追加する案がありましたが、
+現在の構成では使用していません。
 
 ## Troubleshooting
 

@@ -13,8 +13,7 @@ import { getToday } from "./growthUtils.js";
 export async function updateTrainingRecord({
   userId,
   correct = 0,
-  total = 1,
-  chordsRequired = []
+  total = 1
 }) {
   if (!userId) {
     console.warn("updateTrainingRecord called without valid user ID");
@@ -53,8 +52,7 @@ export async function updateTrainingRecord({
           date: today,
           count: total,
           correct: correct,
-          sets: 0,
-          chords_required: chordsRequired
+          sets: 0
         }
       ]);
 
@@ -118,12 +116,7 @@ export async function loadTrainingRecords(userId) {
     result[r.date] = {
       count: r.count,
       correct: r.correct,
-      sets: r.sets,
-      chords_required: Array.isArray(r.chords_required)
-        ? r.chords_required
-        : r.chords_required
-        ? JSON.parse(r.chords_required)
-        : []
+      sets: r.sets
     };
   });
   return result;
