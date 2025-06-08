@@ -62,7 +62,9 @@ async function createPlanInfoContent(user) {
     const exp = new Date(sub.ended_at);
     const expireEl = document.createElement('div');
     expireEl.className = 'expire-date';
-    expireEl.textContent = formatDate(exp);
+    const diffMs = exp.getTime() - Date.now();
+    const remaining = Math.max(0, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
+    expireEl.textContent = `${formatDate(exp)} (残り${remaining}日)`;
     container.appendChild(expireEl);
   }
 

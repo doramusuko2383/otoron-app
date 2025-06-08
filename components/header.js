@@ -103,7 +103,14 @@ export function renderHeader(container, user) {
   header.querySelector("#settings-btn").onclick = () => switchScreen("settings");
   header.querySelector("#summary-btn").onclick = () => switchScreen("result");
   header.querySelector("#growth-btn").onclick = () => switchScreen("growth");
-  header.querySelector("#pricing-btn").onclick = () => switchScreen("pricing");
+  const pricingBtn = header.querySelector("#pricing-btn");
+  if (pricingBtn) {
+    if (user?.is_premium) {
+      pricingBtn.style.display = "none";
+    } else {
+      pricingBtn.onclick = () => switchScreen("pricing");
+    }
+  }
 
   header.querySelector("#mypage-btn").onclick = () => switchScreen("mypage");
 
