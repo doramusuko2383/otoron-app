@@ -66,3 +66,17 @@ ALTER TABLE training_records ADD COLUMN chords_required jsonb NOT NULL DEFAULT '
 
 `chords_required` にはアンロックされたコードキーを JSON 配列として保存します。既存の行は `UPDATE training_records SET chords_required = '[]';` で空配列に更新してください。
 
+## Troubleshooting
+
+Supabase へのサインインに失敗し `Custom OIDC provider "firebase" not allowed` と表示される場合、古い実装で `supabase.auth.signInWithIdToken` を使用している可能性があります。現在の実装では Firebase ユーザーのメールアドレスを用いて次のようにダミーパスワードでサインアップ・サインインする方式に切り替えています。
+
+```javascript
+const firebaseUser = firebase.auth().currentUser;
+const dummyPassword = 'secure_dummy_password';
+
+await supabase.auth.signUp({ email: firebaseUser.email, password: dummyPassword });
+await supabase.auth.signInWithPassword({ email: firebaseUser.email, password: dummyPassword });
+```
+
+古いコードを利用している場合は、`main.js` などを最新の内容に更新してください。
+
