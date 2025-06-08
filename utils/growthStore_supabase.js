@@ -116,8 +116,7 @@ export async function generateMockGrowthData(userId, days = 7) {
       date: dateStr,
       count,
       correct: count - mistakeNum,
-      sets: 3,
-      chords_required: chordOrder.filter(key => flags[key]?.unlocked)
+      sets: 3
     };
     const { error: recErr } = await supabase
       .from("training_records")

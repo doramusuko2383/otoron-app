@@ -88,14 +88,7 @@ async function nextQuestion() {
     await updateTrainingRecord({
       userId: currentUser.id,
       correct: correctCount,
-      total: questionCount,
-      chordsRequired: Array.from(
-        new Set(
-          selectedChords
-            .map(c => chords.find(ch => ch.name === c.name)?.key)
-            .filter(Boolean)
-        )
-      )
+      total: questionCount
     });
 
     await incrementSetCount(currentUser.id);
