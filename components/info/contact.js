@@ -64,11 +64,11 @@ export function renderContactScreen() {
     submitBtn.textContent = "送信中...";
 
     try {
+      const params = new URLSearchParams({ name, email, message });
       await fetch(GAS_URL, {
         method: "POST",
         mode: "no-cors",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, message })
+        body: params
       });
       form.reset();
       statusEl.textContent = "送信ありがとうございました！";
