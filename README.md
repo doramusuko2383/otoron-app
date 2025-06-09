@@ -69,6 +69,19 @@ Vercel などの環境でデプロイする際は次の環境変数を設定し�
 以前は `training_records` に `chords_required` カラムを追加する案がありましたが、
 現在の構成では使用していません。
 
+## Premium Management
+
+Stripe Checkout 完了時の Webhook では `users` テーブルの `is_premium` を `true`
+に更新します。また有効期限が切れたユーザーを定期的にチェックし、
+`is_premium` を `false` に戻すバッチスクリプト
+`scripts/resetExpiredPremiums.js` を用意しています。
+
+```bash
+npm run reset-expired-premiums
+```
+
+このスクリプトは日次ジョブ等で実行してください。
+
 ## Troubleshooting
 
 Supabase へのサインインに失敗し `Custom OIDC provider "firebase" not allowed` と表示される場合は、過去のコードを利用している可能性があります。現在の実装では Firebase ユーザーのメールアドレスを用いて次のようにダミーパスワードでサインアップ・サインインする方式に切り替えています。

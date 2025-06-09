@@ -39,13 +39,13 @@ export default async function handler(req, res) {
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
 
-  if (event.type === 'checkout.session.completed') {
-    const session = event.data.object;
-    const email =
-      session.customer_email || session.customer_details?.email || null;
-    const customerId = session.customer;
+  const { type, data } = event;
+  const customerId = data?.object?.customer;
 
-    // is_premium と stripe_customer_id を同時に更新
+  if (type === 'checkout.session.completed') {
+    const session = data.object;
+    const email = session.customer_email || session.customer_details?.email || null;
+
     let query = supabase
       .from('users')
       .update({
@@ -66,8 +66,32 @@ export default async function handler(req, res) {
       return res.status(500).send('Supabase update failed');
     }
 
+    console.log(`✅ ${email} is now a premium user with customer ID ${customerId}`);
+  }
+
+  let isPremium;
+  if (type === 'invoice.payment_succeeded') {
+    isPremium = true;
+  } else if (
+    type === 'customer.subscription.deleted' ||
+    type === 'invoice.payment_failed'
+  ) {
+    isPremium = false;
+  }
+
+  if (typeof isPremium === 'boolean' && customerId) {
+    const { error } = await supabase
+      .from('users')
+      .update({ is_premium: isPremium })
+      .eq('stripe_customer_id', customerId);
+
+    if (error) {
+      console.error('Supabase update error:', error);
+      return res.status(500).send('Supabase update failed');
+    }
+
     console.log(
-      `✅ ${email} is now a premium user with customer ID ${customerId}`
+      `Updated user with customer ID ${customerId}: is_premium -> ${isPremium}`
     );
   }
 
