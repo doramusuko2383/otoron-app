@@ -53,10 +53,10 @@ export default async function handler(req, res) {
         stripe_customer_id: customerId,
       });
 
-    if (email) {
-      query = query.eq('email', email);
-    } else {
+    if (customerId) {
       query = query.eq('stripe_customer_id', customerId);
+    } else if (email) {
+      query = query.eq('email', email);
     }
 
     const { error } = await query;
