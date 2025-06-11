@@ -5,6 +5,7 @@ import { checkRecentUnlockCriteria } from "../utils/progressStatus.js";
 import { loadGrowthFlags } from "../utils/growthStore_supabase.js";
 import { getCurrentTargetChord } from "../utils/growthUtils.js";
 import { supabase } from "../utils/supabaseClient.js";
+import { showCustomAlert } from "./home.js";
 
 export function renderHeader(container, user) {
   const header = document.createElement("header");
@@ -161,10 +162,11 @@ export function renderHeader(container, user) {
         console.error("❌ Supabaseサインアウト処理でエラー:", e);
       }
       sessionStorage.removeItem("currentPassword");
-      alert("ログアウトしました！");
-      switchScreen("intro");
+      showCustomAlert("ログアウトしました！", () => {
+        switchScreen("intro");
+      });
     } catch (e) {
-      alert("ログアウトに失敗しました：" + e.message);
+      showCustomAlert("ログアウトに失敗しました：" + e.message);
     }
   });
 
