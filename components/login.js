@@ -11,6 +11,7 @@ import { switchScreen } from "../main.js";
 import { supabase } from "../utils/supabaseClient.js";
 import { ensureSupabaseAuth } from "../utils/supabaseAuthHelper.js";
 import { chords } from "../data/chords.js";
+import { showCustomAlert } from "./home.js";
 
 const DUMMY_PASSWORD = "secure_dummy_password";
 
@@ -135,7 +136,7 @@ export function renderLoginScreen(container, onLoginSuccess) {
     try {
       const methods = await fetchSignInMethodsForEmail(firebaseAuth, email);
       if (methods.includes('google.com') && !methods.includes('password')) {
-        alert('このメールアドレスはGoogleログイン専用です。Googleログインをご利用ください。');
+        showCustomAlert('このメールアドレスはGoogleログイン専用です。Googleログインをご利用ください。');
         return;
       }
 
@@ -151,7 +152,7 @@ export function renderLoginScreen(container, onLoginSuccess) {
       await ensureUserAndProgress(user);
       onLoginSuccess();
     } catch (err) {
-      alert("ログイン失敗：" + err.message);
+      showCustomAlert("ログイン失敗：" + err.message);
     }
   });
 
@@ -164,7 +165,7 @@ export function renderLoginScreen(container, onLoginSuccess) {
       const methods = await fetchSignInMethodsForEmail(firebaseAuth, user.email);
       if (methods.includes('password') && !methods.includes('google.com')) {
         await signOut(firebaseAuth);
-        alert('このメールアドレスは既に通常のログインで使用されています。Googleログインはできません。');
+        showCustomAlert('このメールアドレスは既に通常のログインで使用されています。Googleログインはできません。');
         return;
       }
       try {
@@ -177,9 +178,9 @@ export function renderLoginScreen(container, onLoginSuccess) {
       onLoginSuccess();
     } catch (err) {
       if (err.code === 'auth/account-exists-with-different-credential') {
-        alert('このメールアドレスは既に通常のログインで使用されています。Googleログインはできません。');
+        showCustomAlert('このメールアドレスは既に通常のログインで使用されています。Googleログインはできません。');
       } else {
-        alert("Googleログイン失敗：" + err.message);
+        showCustomAlert("Googleログイン失敗：" + err.message);
       }
     }
   });

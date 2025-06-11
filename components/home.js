@@ -201,3 +201,12 @@ export function showCustomConfirm(message, onConfirm, options = {}) {
   modal.callback = onConfirm;
   modal.style.display = "flex";
 }
+
+export function showCustomAlert(message, onOk, options = {}) {
+  if (typeof message === "function") {
+    onOk = message;
+    message = "";
+    options = {};
+  }
+  showCustomConfirm(message, onOk, { ...options, showCancel: false });
+}
