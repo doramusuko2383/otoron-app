@@ -111,8 +111,12 @@ export function showCustomConfirm(message, onConfirm, options = {}) {
     message = "本当に和音を解放しますか？";
     options = {};
   }
-  const { okText = "OK", cancelText = "キャンセル", showCancel = true } =
-    options;
+  const {
+    title = "",
+    okText = "OK",
+    cancelText = "キャンセル",
+    showCancel = true,
+  } = options;
   let modal = document.getElementById("custom-confirm");
   if (!modal) {
     modal = document.createElement("div");
@@ -134,6 +138,12 @@ export function showCustomConfirm(message, onConfirm, options = {}) {
     box.style.padding = "1.5em";
     box.style.borderRadius = "10px";
     box.style.textAlign = "center";
+
+    const titleNode = document.createElement("h3");
+    titleNode.id = "custom-confirm-title";
+    titleNode.textContent = title;
+    titleNode.style.margin = "0 0 0.5em";
+    box.appendChild(titleNode);
 
     const messageEl = document.createElement("p");
     messageEl.id = "custom-confirm-message";
@@ -165,6 +175,12 @@ export function showCustomConfirm(message, onConfirm, options = {}) {
     box.appendChild(buttons);
     modal.appendChild(box);
     document.body.appendChild(modal);
+  }
+
+  const titleEl = modal.querySelector("#custom-confirm-title");
+  if (titleEl) {
+    titleEl.textContent = title;
+    titleEl.style.display = title ? "block" : "none";
   }
 
   const msgEl = modal.querySelector("#custom-confirm-message");

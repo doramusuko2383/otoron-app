@@ -165,11 +165,13 @@ export async function renderGrowthScreen(user) {
     actionSelect.value = "";
     if (!val) return;
     if (val === "reset") {
-      const ok = confirm("本当に進捗を赤だけに戻しますか？");
-      if (ok) {
-        const success = await resetChordProgressToRed(user.id);
-        alert(success ? "進捗をリセットしました" : "リセットに失敗しました");
-      }
+      showCustomConfirm(
+        "本当に進捗を赤だけに戻しますか？",
+        async () => {
+          const success = await resetChordProgressToRed(user.id);
+          alert(success ? "進捗をリセットしました" : "リセットに失敗しました");
+        }
+      );
     } else if (val === "unlock") {
       const freshFlags = await loadGrowthFlags(user.id);
       const next = getCurrentTargetChord(freshFlags);
@@ -182,11 +184,13 @@ export async function renderGrowthScreen(user) {
         alert("すべての和音が解放されています");
       }
     } else if (val === "clearWeek") {
-      const ok = confirm("今週のトレーニングデータを本当に削除しますか？");
-      if (ok) {
-        const success = await deleteTrainingDataThisWeek(user.id);
-        alert(success ? "今週のデータを削除しました" : "削除に失敗しました");
-      }
+      showCustomConfirm(
+        "今週のトレーニングデータを本当に削除しますか？",
+        async () => {
+          const success = await deleteTrainingDataThisWeek(user.id);
+          alert(success ? "今週のデータを削除しました" : "削除に失敗しました");
+        }
+      );
     } else if (val.startsWith("mock")) {
       const days = parseInt(val.replace("mock", ""), 10);
       await generateMockGrowthData(user.id, days);

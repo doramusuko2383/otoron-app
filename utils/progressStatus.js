@@ -1,7 +1,6 @@
 import { supabase } from "./supabaseClient.js";
 import { unlockChord } from "./progressUtils.js";
 import { applyRecommendedSelection, forceUnlock } from "./growthUtils.js";
-import { showCustomConfirm } from "../components/home.js";
 import { getAudio } from "./audioCache.js";
 import { getConsecutiveQualifiedDays } from "./qualifiedStore_supabase.js";
 
