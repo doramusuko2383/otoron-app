@@ -82,9 +82,9 @@ export async function renderSettingsScreen(user) {
 const resetBtn = document.createElement("button");
 resetBtn.textContent = "推奨出題にする";
 resetBtn.onclick = () => {
-  if (confirm("本当に推奨出題にしますか？")) {
+  showCustomConfirm("本当に推奨出題にしますか？", () => {
     resetToRecommendedChords(unlockedKeys, user); // ← user を渡す！
-  }
+  });
 };
 buttonGroup.appendChild(resetBtn);
 

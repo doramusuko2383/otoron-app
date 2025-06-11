@@ -1,6 +1,7 @@
 import { renderHeader } from './header.js';
 import { supabase } from '../utils/supabaseClient.js';
 import { switchScreen } from '../main.js';
+import { showCustomConfirm } from './home.js';
 
 const planMap = {
   plan1: { name: '1ヶ月プラン', monthly: 1490, total: 1490 },
@@ -80,18 +81,19 @@ async function createPlanInfoContent(user) {
     const cancelBtn = document.createElement('button');
     cancelBtn.textContent = 'プレミア解約する';
     cancelBtn.onclick = async () => {
-      if (!confirm('本当に解約しますか？')) return;
-      const res = await fetch('/api/cancel-subscription', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: user.email }),
+      showCustomConfirm('本当に解約しますか？', async () => {
+        const res = await fetch('/api/cancel-subscription', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: user.email }),
+        });
+        if (res.ok) {
+          alert('解約手続きを受け付けました');
+          switchScreen('home');
+        } else {
+          alert('解約に失敗しました');
+        }
       });
-      if (res.ok) {
-        alert('解約手続きを受け付けました');
-        switchScreen('home');
-      } else {
-        alert('解約に失敗しました');
-      }
     };
     btnWrap.appendChild(cancelBtn);
   }
