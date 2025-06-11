@@ -44,7 +44,8 @@ export default async function handler(req, res) {
 
   if (type === 'checkout.session.completed') {
     const session = data.object;
-    const email = session.customer_email || session.customer_details?.email || null;
+    const email =
+      session.customer_email || session.customer_details?.email || null;
     let query = supabase
       .from('users')
       .update({
@@ -53,7 +54,17 @@ export default async function handler(req, res) {
       });
 
     if (customerId) {
-      query = query.eq('stripe_customer_id', customerId);
+      const { data: userById } = await supabase
+        .from('users')
+        .select('id')
+        .eq('stripe_customer_id', customerId)
+        .maybeSingle();
+
+      if (userById) {
+        query = query.eq('stripe_customer_id', customerId);
+      } else if (email) {
+        query = query.eq('email', email);
+      }
     } else if (email) {
       query = query.eq('email', email);
     }
