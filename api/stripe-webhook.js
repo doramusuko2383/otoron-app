@@ -41,11 +41,13 @@ export default async function handler(req, res) {
 
   const { type, data } = event;
   const customerId = data?.object?.customer;
+  console.log('Stripe event received:', type, 'customerId:', customerId);
 
   if (type === 'checkout.session.completed') {
     const session = data.object;
     const email =
       session.customer_email || session.customer_details?.email || null;
+    console.log('Processing checkout.session.completed', { email, customerId });
 
     let query = supabase
       .from('users')
@@ -63,14 +65,18 @@ export default async function handler(req, res) {
 
       if (userById) {
         query = query.eq('stripe_customer_id', customerId);
+        console.log('Updating user by stripe_customer_id');
       } else if (email) {
         query = query.eq('email', email);
+        console.log('Updating user by email (no existing stripe_customer_id)');
       }
     } else if (email) {
       query = query.eq('email', email);
+      console.log('Updating user by email (no customerId)');
     }
 
-    const { error } = await query;
+    const { data: updated, error } = await query.select();
+    console.log('Supabase update result:', { updated, error });
 
     if (error) {
       console.error('Supabase update error:', error);
@@ -91,10 +97,12 @@ export default async function handler(req, res) {
   }
 
   if (typeof isPremium === 'boolean' && customerId) {
-    const { error } = await supabase
+    const { data: updatedRows, error } = await supabase
       .from('users')
       .update({ is_premium: isPremium })
-      .eq('stripe_customer_id', customerId);
+      .eq('stripe_customer_id', customerId)
+      .select();
+    console.log('Supabase subscription update result:', { updatedRows, error });
 
     if (error) {
       console.error('Supabase update error:', error);
