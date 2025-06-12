@@ -129,6 +129,23 @@ export async function renderTrainingScreen(user) {
     localStorage.setItem("selectedChords", JSON.stringify(recommended));
     questionQueue = [...queue];
   }
+
+  if (selectedChords.length === 0) {
+    const queue = generateRecommendedQueue(flags);
+
+    const countMap = {};
+    queue.forEach(name => {
+      countMap[name] = (countMap[name] || 0) + 1;
+    });
+
+    const fallback = chords
+      .filter(ch => countMap[ch.name])
+      .map(ch => ({ name: ch.name, count: countMap[ch.name] }));
+
+    selectedChords.push(...fallback);
+    localStorage.setItem("selectedChords", JSON.stringify(fallback));
+    questionQueue = queue.length ? [...queue] : createQuestionQueue();
+  }
   questionCount = 0;
   quitFlag = false;
   alreadyTried = false;
