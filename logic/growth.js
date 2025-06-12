@@ -25,7 +25,9 @@ export async function renderGrowthScreen(user) {
   const app = document.getElementById("app");
   app.innerHTML = "";
 
-  renderHeader(app, () => renderGrowthScreen(user));
+  // ヘッダーではユーザー情報が必要なため、コールバックではなく
+  // 取得済みの user オブジェクトをそのまま渡す
+  renderHeader(app, user);
 
   const container = document.createElement("div");
   container.className = "screen active";
