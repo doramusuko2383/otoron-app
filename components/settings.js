@@ -257,6 +257,14 @@ buttonGroup.appendChild(resetBtn);
       setEnabled(checked && isUnlocked);
 
       checkbox.addEventListener('change', () => {
+        if (!checkbox.checked) {
+          const others = document.querySelectorAll('.chord-toggle:checked');
+          if (others.length === 0) {
+            checkbox.checked = true;
+            return;
+          }
+        }
+
         const en = checkbox.checked;
         if (en && parseInt(numSpan.textContent) === 0) {
           numSpan.textContent = '4';
