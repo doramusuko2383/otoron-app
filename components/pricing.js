@@ -1,12 +1,6 @@
 import { renderHeader } from './header.js';
 import { startCheckout } from '../utils/stripeCheckout.js';
-import { renderPlanInfoScreen } from './planInfo.js';
-
 export function renderPricingScreen(user) {
-  if (user?.is_premium) {
-    renderPlanInfoScreen(user);
-    return;
-  }
   const app = document.getElementById('app');
   app.innerHTML = '';
   renderHeader(app, user);
