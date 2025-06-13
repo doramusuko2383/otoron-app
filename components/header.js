@@ -106,10 +106,10 @@ export function renderHeader(container, user) {
   header.querySelector("#growth-btn").onclick = () => switchScreen("growth");
   const pricingBtn = header.querySelector("#pricing-btn");
   if (pricingBtn) {
-    if (user?.is_premium) {
-      pricingBtn.style.display = "none";
-    } else {
+    if (user && !user.is_premium) {
       pricingBtn.onclick = () => switchScreen("pricing");
+    } else {
+      pricingBtn.style.display = "none";
     }
   }
 
