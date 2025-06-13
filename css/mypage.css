@@ -96,7 +96,9 @@
 }
 
 .password-form button:disabled {
-  opacity: 0.7;
+  background: #ccc;
+  color: #fff;
+  cursor: not-allowed;
 }
 
 .password-guide {
