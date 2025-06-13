@@ -17,14 +17,30 @@ const supabase = createClient(
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end('Method Not Allowed');
 
-  const { email } = req.body;
+  const { userId, email } = req.body;
 
-  // Supabaseからcustomer_idとuser_idを取得
-  const { data: user, error } = await supabase
-    .from('users')
-    .select('id, stripe_customer_id')
-    .eq('email', email)
-    .single();
+  let user = null;
+  let error = null;
+
+  if (userId) {
+    const result = await supabase
+      .from('users')
+      .select('id, stripe_customer_id')
+      .eq('id', userId)
+      .maybeSingle();
+    user = result.data;
+    error = result.error;
+  }
+
+  if ((!user || error) && email) {
+    const result = await supabase
+      .from('users')
+      .select('id, stripe_customer_id')
+      .eq('email', email)
+      .maybeSingle();
+    user = result.data;
+    error = result.error;
+  }
 
   if (error || !user?.stripe_customer_id) {
     return res.status(400).json({ error: 'User or customer ID not found' });
