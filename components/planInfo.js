@@ -27,7 +27,7 @@ function formatDate(date) {
   const y = date.getFullYear();
   const m = date.getMonth() + 1;
   const d = date.getDate();
-  return `${y}年${m}月${d}日まで`;
+  return `${y}年${m}月${d}日`;
 }
 
 async function createPlanInfoContent(user) {
@@ -44,19 +44,14 @@ async function createPlanInfoContent(user) {
 
   const nameEl = document.createElement('div');
   nameEl.className = 'plan-name';
-  nameEl.textContent = info.name || '不明なプラン';
+  nameEl.textContent = `ご利用中のプラン：${info.name || '不明なプラン'}`;
   container.appendChild(nameEl);
 
   if (info.monthly) {
     const priceEl = document.createElement('div');
     priceEl.className = 'monthly-price';
-    priceEl.textContent = `税込 ${info.monthly.toLocaleString()}円／月`;
+    priceEl.textContent = `税込 ${info.monthly.toLocaleString()}円／月（一括払い)`;
     container.appendChild(priceEl);
-
-    const totalEl = document.createElement('div');
-    totalEl.className = 'total-price';
-    totalEl.textContent = `一括：${info.total.toLocaleString()}円`;
-    container.appendChild(totalEl);
   }
 
   if (sub.ended_at) {
@@ -65,7 +60,7 @@ async function createPlanInfoContent(user) {
     expireEl.className = 'expire-date';
     const diffMs = exp.getTime() - Date.now();
     const remaining = Math.max(0, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
-    expireEl.textContent = `${formatDate(exp)} (残り${remaining}日)`;
+    expireEl.textContent = `次回更新日：${formatDate(exp)}（残り${remaining}日）`;
     container.appendChild(expireEl);
   }
 
