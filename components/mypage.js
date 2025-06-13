@@ -215,6 +215,14 @@ export function renderMyPageScreen(user) {
     form.appendChild(newpass.field);
 
     const confirm = createPasswordField("新しいパスワード（確認）", "confirm-pass");
+
+    const lengthMsg = document.createElement("div");
+    lengthMsg.className = "password-error";
+    lengthMsg.textContent = "パスワードは6文字以上で入力してください";
+    lengthMsg.style.display = "none";
+    const newWrapper = newpass.field.querySelector(".password-wrapper");
+    newpass.field.insertBefore(lengthMsg, newWrapper);
+
     const errorMsg = document.createElement("div");
     errorMsg.className = "password-error";
     errorMsg.textContent = "確認用パスワードが一致しません";
@@ -230,20 +238,31 @@ export function renderMyPageScreen(user) {
     form.appendChild(btn);
 
     function validate() {
+      const cur = current.input.value;
       const np = newpass.input.value;
       const cp = confirm.input.value;
-      if (!np || !cp) {
-        errorMsg.style.display = "none";
-        btn.disabled = true;
-        return;
+
+      let valid = true;
+
+      if (np.length < 6) {
+        lengthMsg.style.display = "block";
+        valid = false;
+      } else {
+        lengthMsg.style.display = "none";
       }
-      if (np !== cp) {
+
+      if (np && cp && np !== cp) {
         errorMsg.style.display = "block";
-        btn.disabled = true;
+        valid = false;
       } else {
         errorMsg.style.display = "none";
-        btn.disabled = false;
       }
+
+      if (!cur || !np || !cp) {
+        valid = false;
+      }
+
+      btn.disabled = !valid;
     }
 
     form.addEventListener("input", validate);

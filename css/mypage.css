@@ -95,6 +95,10 @@
   width: 100%;
 }
 
+.password-form button:disabled {
+  opacity: 0.7;
+}
+
 .password-guide {
   padding: 1em;
   margin: 1em;
