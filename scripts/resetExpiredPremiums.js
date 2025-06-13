@@ -15,7 +15,7 @@ const supabase = createClient(
 async function resetExpiredPremiums() {
   const { data: subscriptions, error } = await supabase
     .from('user_subscriptions')
-    .select('user_id')
+    .select('user_id, id')
     .lt('ended_at', new Date().toISOString())
     .eq('status', 'active');
 
@@ -25,6 +25,8 @@ async function resetExpiredPremiums() {
   }
 
   const userIds = subscriptions.map((s) => s.user_id);
+  const subIds = subscriptions.map((s) => s.id);
+
   if (userIds.length === 0) {
     console.log('No expired subscriptions found');
     return;
@@ -40,6 +42,12 @@ async function resetExpiredPremiums() {
     console.error('Failed to update users:', updateError);
     process.exit(1);
   }
+
+  await supabase
+    .from('user_subscriptions')
+    .update({ status: 'expired' })
+    .in('id', subIds)
+    .eq('status', 'active');
 
   console.log(`Updated ${userIds.length} users to is_premium=false`);
 }
