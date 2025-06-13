@@ -9,7 +9,7 @@ export function renderContactScreen() {
   renderHeader(app);
 
   const main = document.createElement("main");
-  main.className = "info-page";
+  main.className = "info-page contact-page";
   main.innerHTML = `
     <h1>お問い合わせ</h1>
     <form id="contact-form" class="contact-form">

@@ -69,7 +69,7 @@ export async function renderSettingsScreen(user) {
 
   const container = document.createElement("div");
   container.className = "screen active";
-  container.style.overflow = "hidden";
+  // 画面全体をスクロールできるようにする
 
   const headerBar = document.createElement("div");
   headerBar.className = "header-bar";
