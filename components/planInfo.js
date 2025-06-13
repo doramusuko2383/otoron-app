@@ -88,7 +88,7 @@ async function createPlanInfoContent(user) {
           const res = await fetch('/api/cancel-subscription', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email: user.email }),
+            body: JSON.stringify({ userId: user.id }),
           });
           if (res.ok) {
             const data = await res.json();
