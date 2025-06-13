@@ -12,7 +12,7 @@ const planMap = {
 async function fetchLatestSubscription(userId) {
   const { data, error } = await supabase
     .from('user_subscriptions')
-    .select('plan_type, ended_at')
+    .select('plan_type, ended_at, status')
     .eq('user_id', userId)
     .order('ended_at', { ascending: false })
     .limit(1)
@@ -54,8 +54,10 @@ async function createPlanInfoContent(user) {
     container.appendChild(priceEl);
   }
 
+  let expireDate;
   if (sub.ended_at) {
     const exp = new Date(sub.ended_at);
+    expireDate = exp;
     const expireEl = document.createElement('div');
     expireEl.className = 'expire-date';
     const diffMs = exp.getTime() - Date.now();
@@ -73,24 +75,32 @@ async function createPlanInfoContent(user) {
   btnWrap.appendChild(changeBtn);
 
   if (user.is_premium) {
-    const cancelBtn = document.createElement('button');
-    cancelBtn.textContent = 'プレミア解約する';
-    cancelBtn.onclick = async () => {
-      showCustomConfirm('本当に解約しますか？', async () => {
-        const res = await fetch('/api/cancel-subscription', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: user.email }),
+    if (sub.status === 'cancelled') {
+      const msg = document.createElement('div');
+      msg.textContent = `ご契約は${formatDate(expireDate)}まで有効です。それ以降、自動的に無料プランに戻ります。`;
+      msg.style.marginTop = '1em';
+      btnWrap.appendChild(msg);
+    } else {
+      const cancelBtn = document.createElement('button');
+      cancelBtn.textContent = 'プレミア解約する';
+      cancelBtn.onclick = async () => {
+        showCustomConfirm('本当に解約しますか？', async () => {
+          const res = await fetch('/api/cancel-subscription', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: user.email }),
+          });
+          if (res.ok) {
+            const data = await res.json();
+            alert(`ご契約は${formatDate(new Date(data.current_period_end))}まで有効です。それ以降、自動的に無料プランに戻ります。`);
+            switchScreen('home');
+          } else {
+            alert('解約に失敗しました');
+          }
         });
-        if (res.ok) {
-          alert('解約手続きを受け付けました');
-          switchScreen('home');
-        } else {
-          alert('解約に失敗しました');
-        }
-      });
-    };
-    btnWrap.appendChild(cancelBtn);
+      };
+      btnWrap.appendChild(cancelBtn);
+    }
   }
 
   container.appendChild(btnWrap);

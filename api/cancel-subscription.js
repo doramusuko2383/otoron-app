@@ -19,10 +19,10 @@ export default async function handler(req, res) {
 
   const { email } = req.body;
 
-  // Supabaseからcustomer_idを取得
+  // Supabaseからcustomer_idとuser_idを取得
   const { data: user, error } = await supabase
     .from('users')
-    .select('stripe_customer_id')
+    .select('id, stripe_customer_id')
     .eq('email', email)
     .single();
 
@@ -30,7 +30,7 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'User or customer ID not found' });
   }
 
-  // Stripeからサブスクリプション取得 → キャンセル
+  // Stripeからサブスクリプション取得
   const subscriptions = await stripe.subscriptions.list({
     customer: user.stripe_customer_id,
     status: 'active',
@@ -43,13 +43,20 @@ export default async function handler(req, res) {
 
   const subscription = subscriptions.data[0];
 
-  await stripe.subscriptions.del(subscription.id);
+  // 次回更新を停止 (cancel_at_period_end)
+  const updated = await stripe.subscriptions.update(subscription.id, {
+    cancel_at_period_end: true,
+  });
 
-  // Supabase更新：is_premiumをfalseに
+  // Supabase更新：user_subscriptions.statusを'cancelled'に
   await supabase
-    .from('users')
-    .update({ is_premium: false })
-    .eq('email', email);
+    .from('user_subscriptions')
+    .update({ status: 'cancelled' })
+    .eq('user_id', user.id)
+    .eq('status', 'active');
 
-  return res.status(200).json({ message: 'Subscription canceled' });
+  return res.status(200).json({
+    message: 'Cancellation scheduled',
+    current_period_end: new Date(updated.current_period_end * 1000).toISOString(),
+  });
 }
