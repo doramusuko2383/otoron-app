@@ -183,10 +183,12 @@
     flex-direction: column;
     align-items: center;
   }
+
   .bubble {
-    flex: 0 0 auto;
-    width: auto;
+    width: 100%;
     max-width: 90%;
+    font-size: 0.95em;
+    text-align: left;
   }
 }
 
