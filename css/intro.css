@@ -164,7 +164,7 @@
   padding: 0.8em 1em;
   line-height: 1.6;
   border-radius: 8px;
-  flex: 1 1 200px;
+  flex: 0 0 calc(30% - 1em);
   box-sizing: border-box;
 }
 
@@ -184,7 +184,9 @@
     align-items: center;
   }
   .bubble {
-    max-width: 100%;
+    flex: 0 0 auto;
+    width: auto;
+    max-width: 90%;
   }
 }
 
