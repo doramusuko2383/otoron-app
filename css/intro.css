@@ -206,10 +206,10 @@
 }
 
 .features .step {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 1em;
+  display: flex;
+  flex-direction: column;
   align-items: flex-start;
+  gap: 0.5em;
   padding: 1em;
   margin-bottom: 1em;
   background: #fff;
@@ -230,6 +230,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-bottom: 0.5em;
 }
 /* 🛠️ 重要：step-text に幅と折り返しを指定する */
 .features .step-text {
@@ -250,16 +251,6 @@
   margin: 0;
 }
 
-@media (max-width: 600px) {
-  .features .step {
-    grid-template-columns: 1fr;
-  }
-
-  .features .step-icon {
-    margin-bottom: 0.5em;
-    justify-self: start;
-  }
-}
 
 .result-card > div {
   flex: 1 1 auto;
