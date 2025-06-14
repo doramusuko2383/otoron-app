@@ -37,11 +37,11 @@ export function renderIntroScreen() {
         <p class="trouble-lead">絶対音感に興味はあるけど...</p>
         <h2 class="trouble-title">こんなお悩みありませんか？</h2>
         <div class="trouble-bubbles">
-          <div class="bubble">ちょっと調べたけどレッスンがかなり高額になる...</div>
-          <div class="bubble">教えてくれる先生や教室が近所にない...</div>
-          <div class="bubble">独学でやってみたいけど、どう教えればいいかわからない</div>
-          <div class="bubble">ちゃんと続けられるかが不安...</div>
-          <div class="bubble">既に取り組んでいるけど、毎日のトレーニングの負担が大きい</div>
+          <div class="speech-bubble">ちょっと調べたけどレッスンがかなり高額になる...</div>
+          <div class="speech-bubble">教えてくれる先生や教室が近所にない...</div>
+          <div class="speech-bubble">独学でやってみたいけど、どう教えればいいかわからない</div>
+          <div class="speech-bubble">ちゃんと続けられるかが不安...</div>
+          <div class="speech-bubble">既に取り組んでいるけど、毎日のトレーニングの負担が大きい</div>
         </div>
       </section>
 
