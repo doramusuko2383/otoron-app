@@ -86,30 +86,72 @@ export function renderIntroScreen() {
 
       <section class="faq">
         <h2>よくある質問</h2>
-        <details>
-          <summary>Q1. 2歳半でも使えますか？</summary>
-          <p>はい、ご使用いただけます。オトロンは2歳半〜6歳の「絶対音感の適齢期」に合わせて設計されています。色や音で楽しく反応できるので、文字が読めなくても安心して使えます。</p>
-        </details>
-        <details>
-          <summary>Q2. 音楽の知識がなくても使えますか？</summary>
-          <p>はい、大丈夫です！ 特別な知識がなくても、アプリの指示通りに進めるだけでOK。保護者用の成績表示も「色」や「正答率」で視覚的にわかるようになっています。</p>
-        </details>
-        <details>
-          <summary>Q3. ピアノ教室の教材としても使えますか？</summary>
-          <p>はい、補助教材としてご活用いただける設計にしております。短時間でできるため、レッスンの冒頭や宿題にも最適です。進捗を保護者と共有できるので、ご家庭での練習もスムーズになります。</p>
-        </details>
-        <details>
-          <summary>Q4. どんな端末で使えますか？</summary>
-          <p>スマートフォン（iPhone／Android）、タブレット、パソコンでもご利用いただけます。特にタブレットでの操作が、子どもには見やすくておすすめです。</p>
-        </details>
-        <details>
-          <summary>Q5. 間違えても大丈夫ですか？子どもが自信をなくしませんか？</summary>
-          <p>大丈夫です。オトロンでは、間違えたときも優しくガイドされる設計になっており、子どもが嫌な気持ちにならないよう工夫されています。「できた！」を積み重ねて、自信を育てることを大切にしています。</p>
-        </details>
-        <details>
-          <summary>Q6. 有料版では何ができますか？価格は？</summary>
-          <p>無料体験では一部の和音や機能をご利用いただけます。有料版では、すべての和音や育成モード、進捗管理、共有機能などが解放され、より本格的なトレーニングが可能になります。料金の詳細はアプリ内または登録ページにてご確認ください。</p>
-        </details>
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            <span class="q-icon">Q</span>
+            <span class="q-text">2歳半でも使えますか？</span>
+            <span class="toggle-icon" aria-hidden="true"></span>
+          </button>
+          <div class="faq-answer" hidden>
+            <span class="a-label">A</span>
+            <p>はい、ご使用いただけます。オトロンは2歳半〜6歳の「絶対音感の適齢期」に合わせて設計されています。色や音で楽しく反応できるので、文字が読めなくても安心して使えます。</p>
+          </div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            <span class="q-icon">Q</span>
+            <span class="q-text">音楽の知識がなくても使えますか？</span>
+            <span class="toggle-icon" aria-hidden="true"></span>
+          </button>
+          <div class="faq-answer" hidden>
+            <span class="a-label">A</span>
+            <p>はい、大丈夫です！ 特別な知識がなくても、アプリの指示通りに進めるだけでOK。保護者用の成績表示も「色」や「正答率」で視覚的にわかるようになっています。</p>
+          </div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            <span class="q-icon">Q</span>
+            <span class="q-text">ピアノ教室の教材としても使えますか？</span>
+            <span class="toggle-icon" aria-hidden="true"></span>
+          </button>
+          <div class="faq-answer" hidden>
+            <span class="a-label">A</span>
+            <p>はい、補助教材としてご活用いただける設計にしております。短時間でできるため、レッスンの冒頭や宿題にも最適です。進捗を保護者と共有できるので、ご家庭での練習もスムーズになります。</p>
+          </div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            <span class="q-icon">Q</span>
+            <span class="q-text">どんな端末で使えますか？</span>
+            <span class="toggle-icon" aria-hidden="true"></span>
+          </button>
+          <div class="faq-answer" hidden>
+            <span class="a-label">A</span>
+            <p>スマートフォン（iPhone／Android）、タブレット、パソコンでもご利用いただけます。特にタブレットでの操作が、子どもには見やすくておすすめです。</p>
+          </div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            <span class="q-icon">Q</span>
+            <span class="q-text">間違えても大丈夫ですか？子どもが自信をなくしませんか？</span>
+            <span class="toggle-icon" aria-hidden="true"></span>
+          </button>
+          <div class="faq-answer" hidden>
+            <span class="a-label">A</span>
+            <p>大丈夫です。オトロンでは、間違えたときも優しくガイドされる設計になっており、子どもが嫌な気持ちにならないよう工夫されています。「できた！」を積み重ねて、自信を育てることを大切にしています。</p>
+          </div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            <span class="q-icon">Q</span>
+            <span class="q-text">有料版では何ができますか？価格は？</span>
+            <span class="toggle-icon" aria-hidden="true"></span>
+          </button>
+          <div class="faq-answer" hidden>
+            <span class="a-label">A</span>
+            <p>無料体験では一部の和音や機能をご利用いただけます。有料版では、すべての和音や育成モード、進捗管理、共有機能などが解放され、より本格的なトレーニングが可能になります。料金の詳細はアプリ内または登録ページにてご確認ください。</p>
+          </div>
+        </div>
       </section>
 
       <footer class="lp-footer">
@@ -146,4 +188,19 @@ export function renderIntroScreen() {
       top?.scrollIntoView({ behavior: 'smooth' });
     });
   }
+
+  document.querySelectorAll('.faq-question').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const expanded = btn.getAttribute('aria-expanded') === 'true';
+      btn.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+      const answer = btn.nextElementSibling;
+      if (answer) {
+        if (expanded) {
+          answer.setAttribute('hidden', '');
+        } else {
+          answer.removeAttribute('hidden');
+        }
+      }
+    });
+  });
 }
