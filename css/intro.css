@@ -49,8 +49,9 @@
 }
 
 .hero-visual img {
-  width: 100%;
-  max-width: 800px;
+  width: 25%;
+  max-width: 200px;
+  margin: 0 auto;
 }
 
 .cta-button {
@@ -81,7 +82,9 @@
 }
 
 .step {
-  margin-bottom: 1.5em;
+  margin: 1.2em auto;
+  max-width: 600px;
+  text-align: left;
 }
 
 .result-block {

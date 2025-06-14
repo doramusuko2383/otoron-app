@@ -8,6 +8,8 @@ export function renderIntroScreen() {
     return;
   }
 
+  document.body.classList.add('intro-scroll');
+
   app.classList.add("with-header");
   app.innerHTML = `
     <header class="app-header intro-header">
@@ -62,24 +64,53 @@ export function renderIntroScreen() {
       <section class="result-example">
         <h2>トレーニング結果表示例</h2>
         <div class="result-block">
-          <p>🗓 トレーニング実施日数：8日間</p>
-          <p>✅ 合格日数：0日間（1日あたり2回以上のトレーニング・各和音4問以上・正答率98%以上）</p>
-          <p>📊 合計出題数：0問</p>
-          <p>🎯 正答率：0.0%</p>
-          <p>🔓 解放済み和音（色）：赤、黄色、青</p>
+          <p>🗓 トレーニング実施日数：7日間 </p>
+          <p>✅ 合格日数：7日間（1日あたり2回以上のトレーニング・各和音4問以上・正答率98%以上）</p>
+          <p>📊 合計出題数：840問</p>
+          <p>🎯 正答率：98.3%</p>
+
+          <p>🔓 解放済み和音（色）：</p>
+          <p>赤、黄色、薄橙、藤色、灰色、水色、青、黒、緑、オレンジ、紫、ピンク、茶色、黄緑</p>
+
           <p>🔍 ミス傾向：</p>
-          <p>📣 コメント：</p>
+          <p>・「A-C#-E」→「C#-E-A」（転回形ミス）×6<br>
+             ・「D-F#-A」→「F#-A-D」（転回形ミス）×2<br>
+             ・「E-G#-B」→「G#-B-E」（転回形ミス）×2<br>
+             ・「F-A-C」→「A-C-F」（転回形ミス）×2<br>
+             ・「C-E-G」→「E-G-C」（転回形ミス）×2</p>
+
+          <p>📣 コメント：<br>
+            正答率が非常に高く、音の感覚が安定してきました！ 今週も全日クリアできています。継続して努力を積み上げている姿勢が素晴らしいです。 転回形の和音が少し難しいようです。同じ構成音でも形に注意しましょう。
+          </p>
         </div>
       </section>
 
       <section class="faq">
         <h2>よくある質問</h2>
-        <details><summary>Q. 2歳半でも使えますか？</summary></details>
-        <details><summary>Q. 音楽の知識がなくても使えますか？</summary></details>
-        <details><summary>Q. ピアノ教室の教材として使えますか？</summary></details>
-        <details><summary>Q. どの端末で使えますか？</summary></details>
-        <details><summary>Q. 間違えても大丈夫ですか？</summary></details>
-        <details><summary>Q. 有料版はいくらで、何ができますか？</summary></details>
+        <details>
+          <summary>Q1. 2歳半でも使えますか？</summary>
+          <p>はい、ご使用いただけます。オトロンは2歳半〜6歳の「絶対音感の適齢期」に合わせて設計されています。色や音で楽しく反応できるので、文字が読めなくても安心して使えます。</p>
+        </details>
+        <details>
+          <summary>Q2. 音楽の知識がなくても使えますか？</summary>
+          <p>はい、大丈夫です！ 特別な知識がなくても、アプリの指示通りに進めるだけでOK。保護者用の成績表示も「色」や「正答率」で視覚的にわかるようになっています。</p>
+        </details>
+        <details>
+          <summary>Q3. ピアノ教室の教材としても使えますか？</summary>
+          <p>はい、補助教材としてご活用いただける設計にしております。短時間でできるため、レッスンの冒頭や宿題にも最適です。進捗を保護者と共有できるので、ご家庭での練習もスムーズになります。</p>
+        </details>
+        <details>
+          <summary>Q4. どんな端末で使えますか？</summary>
+          <p>スマートフォン（iPhone／Android）、タブレット、パソコンでもご利用いただけます。特にタブレットでの操作が、子どもには見やすくておすすめです。</p>
+        </details>
+        <details>
+          <summary>Q5. 間違えても大丈夫ですか？子どもが自信をなくしませんか？</summary>
+          <p>大丈夫です。オトロンでは、間違えたときも優しくガイドされる設計になっており、子どもが嫌な気持ちにならないよう工夫されています。「できた！」を積み重ねて、自信を育てることを大切にしています。</p>
+        </details>
+        <details>
+          <summary>Q6. 有料版では何ができますか？価格は？</summary>
+          <p>無料体験では一部の和音や機能をご利用いただけます。有料版では、すべての和音や育成モード、進捗管理、共有機能などが解放され、より本格的なトレーニングが可能になります。料金の詳細はアプリ内または登録ページにてご確認ください。</p>
+        </details>
       </section>
 
       <footer class="lp-footer">
