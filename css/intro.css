@@ -198,18 +198,14 @@
 
 .features .step {
   display: flex;
-  align-items: flex-start;
-  gap: 1em;
+  align-items: center;
+  gap: 0.8em;
   padding: 1em;
-  margin-bottom: 1em;
   background: #fff;
   border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
   max-width: 600px;
-  margin-left: auto;
-  margin-right: auto;
+  margin: 1em auto;
   text-align: left;
-  flex-wrap: wrap;
 }
 .features .step-icon {
   background-color: #ff9900;
@@ -225,10 +221,8 @@
 }
 /* 🛠️ 重要：step-text に幅と折り返しを指定する */
 .features .step-text {
-  flex: 1 1 0;
-  min-width: 0;
+  flex: 1;
   word-break: break-word;
-  white-space: normal;
 }
 .features .step-text h3 {
   font-size: 1.2em;
