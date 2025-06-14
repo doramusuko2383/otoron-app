@@ -216,6 +216,7 @@
   max-width: 600px;
   margin-left: auto;
   margin-right: auto;
+  flex-wrap: nowrap;
 }
 .features .step-icon {
   flex-shrink: 0;
@@ -244,7 +245,7 @@
 
 /* テキストが1文字ずつ縦に折り返されないようにする */
 .features .step-body {
-  flex: 1 1 0;
+  flex: 1 1 auto;
   min-width: 0;
   word-break: break-word;
   white-space: normal;
