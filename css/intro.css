@@ -73,6 +73,8 @@
   margin-bottom: 1em;
   max-width: 90%;
   text-align: center;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 @media (min-width: 768px) {
@@ -198,8 +200,8 @@
 
 @media (min-width: 768px) {
   .bubble {
-    flex: 0 0 calc(33.333% - 1em);
-    max-width: none;
+    flex: 0 0 calc(16.666% - 1em);
+    max-width: 130px;
   }
 }
 
