@@ -33,11 +33,14 @@ export function renderIntroScreen() {
       </section>
 
       <section class="problems">
+        <p class="problem-intro">絶対音感に興味はあるけど...</p>
         <h2>こんなお悩みありませんか？</h2>
         <ul class="problem-list">
-          <li>子どもに絶対音感を身に着かせたいけど、どう教えればいいかわからない</li>
-          <li>絶対音感を教えてくれる教室が近所にない</li>
-          <li>毎日の絶対音感トレーニングの負担が大きい</li>
+          <li>ちょっと調べたけどレッスンがかなり高額になる...</li>
+          <li>教えてくれる先生や教室が近所にない...</li>
+          <li>独学でやってみたいけど、どう教えればいいかわからない</li>
+          <li>ちゃんと続けられるかが不安...</li>
+          <li>既に取り組んでいるけど、毎日のトレーニングの負担が大きい</li>
         </ul>
       </section>
 
