@@ -231,6 +231,13 @@
   align-items: center;
   justify-content: center;
 }
+/* 🛠️ 重要：step-text に幅と折り返しを指定する */
+.features .step-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  word-break: break-word;
+  white-space: normal;
+}
 .features .step-text h3 {
   font-size: 1.2em;
   margin: 0 0 0.3em;
