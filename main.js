@@ -59,6 +59,7 @@ export const switchScreen = (screen, user = currentUser, options = {}) => {
 
   const app = document.getElementById("app");
   app.innerHTML = "";
+  document.body.classList.remove("intro-scroll");
 
   if (screen !== "home") {
     clearTimeOfDayStyling();
@@ -74,6 +75,7 @@ export const switchScreen = (screen, user = currentUser, options = {}) => {
   }
 
   if (screen === "intro") {
+    document.body.classList.add("intro-scroll");
     renderIntroScreen();
   }
   else if (screen === "login") renderLoginScreen(app, () => {});
