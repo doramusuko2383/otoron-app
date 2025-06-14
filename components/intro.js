@@ -25,7 +25,7 @@ export function renderIntroScreen() {
       <section class="hero">
         <h1 class="hero-title">もうドレミは、「ドレミ」から教えない。</h1>
         <p class="hero-sub">2歳からはじめる、色と和音で育てる 絶対音感トレーニングアプリ</p>
-        <p class="highlight">＼遊びながら“聴く力”が伸びる！／</p>
+        <p class="hero-highlight">＼遊びながら“聴く力”が伸びる！／</p>
         <div class="hero-visual">
           <img src="images/otolon.webp" alt="アプリ画面イメージ" />
         </div>
