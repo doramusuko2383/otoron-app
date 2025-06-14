@@ -1,65 +1,102 @@
-.intro-wrapper {
+/* Landing page styles */
+
+.intro-header .header-right {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 4em 1em;
-  min-height: 100vh;
-  box-sizing: border-box;
-  background-color: #fff8f2;
-  font-family: inherit;
+  gap: 0.6em;
+  margin-left: auto;
 }
 
-.intro-title {
-  font-size: 2.2em;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 1rem;
-}
-
-.intro-description {
-  font-size: 1.1em;
-  color: #444;
-  line-height: 1.6;
-  max-width: 600px;
-  margin-bottom: 2em;
-}
-
-.intro-buttons {
-  margin-top: 2em;
-  display: flex;
-  gap: 1.2em;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-/* ボタン共通 */
-.intro-buttons button {
-  font-size: 1.1em;
-  padding: 0.6em 1.4em;
+.intro-header .header-right button {
   border: none;
-  border-radius: 8px;
-  color: white;
+  border-radius: 6px;
+  padding: 0.4em 1em;
+  font-size: 0.9rem;
+  color: #fff;
   cursor: pointer;
-  transition: background-color 0.3s ease;
-  opacity: 1; /* 念のため可視 */
 }
 
-/* ログインボタン用 */
-#login-btn {
+.intro-header #login-btn {
   background-color: #66bbff;
 }
 
-#login-btn:hover {
+.intro-header #login-btn:hover {
   background-color: #42a5f5;
 }
 
-/* 無料会員登録ボタン用 */
-#signup-btn {
+.intro-header #signup-btn {
   background-color: #ff9900;
 }
 
-#signup-btn:hover {
+.intro-header #signup-btn:hover {
   background-color: #e57c00;
+}
+
+.intro-wrapper {
+  padding: 4em 1em;
+  text-align: center;
+  box-sizing: border-box;
+  background-color: #fff8f2;
+}
+
+.hero-title {
+  font-size: 2.2em;
+  margin-bottom: 0.5em;
+}
+
+.hero-sub {
+  font-size: 1.1em;
+  margin-bottom: 1.5em;
+}
+
+.hero-visual img {
+  width: 100%;
+  max-width: 800px;
+}
+
+.cta-button {
+  margin-top: 1.5em;
+  background-color: #ff9900;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.6em 1.4em;
+  font-size: 1.1em;
+  cursor: pointer;
+}
+
+.problems,
+.features,
+.result-example,
+.faq {
+  padding: 3em 0;
+}
+
+.problem-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6em;
+}
+
+.step {
+  margin-bottom: 1.5em;
+}
+
+.result-block {
+  background: #fff;
+  border-radius: 8px;
+  padding: 1em;
+  display: inline-block;
+  text-align: left;
+}
+
+.lp-footer {
+  padding: 2em 0;
+  text-align: center;
+}
+
+.lp-footer .cta-button {
+  margin-bottom: 1em;
 }
