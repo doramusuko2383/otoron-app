@@ -139,3 +139,65 @@
 .lp-footer .cta-button {
   margin-bottom: 1em;
 }
+
+/* FAQ accordion */
+.faq-item {
+  max-width: 600px;
+  margin: 0 auto 1em auto;
+  text-align: left;
+}
+
+.faq-question {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 0.8em;
+  background: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1em;
+}
+
+.faq-question .q-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.4em;
+  height: 1.4em;
+  margin-right: 0.6em;
+  background: #ff9900;
+  color: #fff;
+  border-radius: 50%;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.faq-question .toggle-icon {
+  margin-left: auto;
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
+.faq-question[aria-expanded="true"] .toggle-icon::before {
+  content: "-";
+}
+
+.faq-question[aria-expanded="false"] .toggle-icon::before {
+  content: "+";
+}
+
+.faq-answer {
+  padding: 0.8em 1em 1em 2.4em;
+  font-size: 0.95em;
+  background: #fff8f2;
+}
+
+.faq-answer .a-label {
+  font-weight: bold;
+  margin-right: 0.5em;
+}
+
+.faq-answer[hidden] {
+  display: none;
+}
