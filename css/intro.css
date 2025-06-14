@@ -158,33 +158,37 @@
 
 
 /* お悩み吹き出しエリア */
+
+/* Flex layout to match Jazz Steps */
 .trouble-bubbles {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(200px, 1fr));
-  gap: 1em;
+  display: flex;
+  flex-wrap: wrap;
   justify-content: center;
-  justify-items: center;
+  gap: 1em;
+  max-width: 1000px;
+  margin: 0 auto;
 }
+
 
 .speech-bubble {
   position: relative;
   background: #e6e6e6;
-  padding: 0.8em 1em;
+  border-radius: 1.5em;
+  padding: 1em 1.5em;
+  font-size: 15px;
   line-height: 1.6;
-  border-radius: 8px;
   color: #333;
-  width: 100%;
-  max-width: 260px;
-  box-sizing: border-box;
+  max-width: 320px;
+  flex: 1 1 300px;
   text-align: left;
-  margin-bottom: 1.5em;
 }
+
 
 .speech-bubble::after {
   content: "";
   position: absolute;
   bottom: -12px;
-  left: 1.5em;
+  left: 2em;
   border-width: 12px 12px 0 12px;
   border-style: solid;
   border-color: #e6e6e6 transparent transparent transparent;
@@ -192,10 +196,11 @@
 
 @media (max-width: 600px) {
   .trouble-bubbles {
-    grid-template-columns: 1fr;
+    flex-direction: column;
   }
   .speech-bubble {
     max-width: 100%;
+    flex: 1 1 100%;
     margin-bottom: 1em;
   }
 }
