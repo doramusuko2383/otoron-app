@@ -151,6 +151,9 @@
   font-size: 1.2em;
   color: #333;
   margin: 0 0 0.3em;
+  word-break: normal;
+  white-space: normal;
+  max-width: 100%;
 }
 .step p {
   font-size: 1em;
@@ -172,6 +175,7 @@
   padding: 1em;
   text-align: left;
   max-width: 600px;
+  word-break: break-word;
   margin: 0 auto;
 }
 .result-card {
@@ -192,6 +196,11 @@
 .result-card p {
   margin: 0;
   font-size: 0.95em;
+}
+
+.result-block p {
+  line-height: 1.6;
+  word-break: break-word;
 }
 
 .lp-footer {
