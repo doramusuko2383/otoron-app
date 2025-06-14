@@ -204,56 +204,52 @@
 }
 
 .features .step {
-  display: flex;
-  align-items: flex-start;
+  display: grid;
+  grid-template-columns: auto 1fr;
   gap: 1em;
+  align-items: flex-start;
   padding: 1em;
   margin-bottom: 1em;
   background: #fff;
   border-radius: 8px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-  text-align: left;
   max-width: 600px;
   margin-left: auto;
   margin-right: auto;
-  flex-wrap: nowrap;
+  text-align: left;
 }
 .features .step-icon {
-  flex-shrink: 0;
-  width: 2em;
-  height: 2em;
   background-color: #ff9900;
-  border-radius: 50%;
-  text-align: center;
   color: #fff;
   font-weight: bold;
-  line-height: 2em;
+  border-radius: 50%;
+  width: 2em;
+  height: 2em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-.features .step h3 {
+.features .step-text h3 {
   font-size: 1.2em;
-  color: #333;
   margin: 0 0 0.3em;
-  word-break: normal;
-  white-space: normal;
-  max-width: 100%;
+  color: #333;
 }
-.features .step p {
+.features .step-text p {
   font-size: 1em;
   color: #555;
   line-height: 1.6;
+  margin: 0;
 }
 
-/* テキストが1文字ずつ縦に折り返されないようにする */
-.features .step-body {
-  flex: 1 1 auto;
-  min-width: 0;
-  word-break: break-word;
-  white-space: normal;
-}
+@media (max-width: 600px) {
+  .features .step {
+    grid-template-columns: 1fr;
+  }
 
-/* Ensure flexible containers shrink properly */
-.step-body {
-  min-width: 0;
+  .features .step-icon {
+    margin-bottom: 0.5em;
+    justify-self: start;
+  }
 }
 
 .result-card > div {
