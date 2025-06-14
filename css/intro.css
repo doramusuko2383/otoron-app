@@ -230,7 +230,7 @@
 }
 
 /* テキストが1文字ずつ縦に折り返されないようにする */
-.step > div:not(.step-icon) {
+.step > :not(.step-icon) {
   flex: 1 1 0;
   min-width: 0;
   word-break: break-word;
