@@ -34,15 +34,15 @@ export function renderIntroScreen() {
       </section>
 
       <section class="problems">
-        <p class="problem-intro">絶対音感に興味はあるけど...</p>
-        <h2>こんなお悩みありませんか？</h2>
-        <ul class="problem-list">
-          <li>ちょっと調べたけどレッスンがかなり高額になる...</li>
-          <li>教えてくれる先生や教室が近所にない...</li>
-          <li>独学でやってみたいけど、どう教えればいいかわからない</li>
-          <li>ちゃんと続けられるかが不安...</li>
-          <li>既に取り組んでいるけど、毎日のトレーニングの負担が大きい</li>
-        </ul>
+        <p class="trouble-lead">絶対音感に興味はあるけど...</p>
+        <h2 class="trouble-title">こんなお悩みありませんか？</h2>
+        <div class="trouble-bubbles">
+          <div class="bubble">ちょっと調べたけどレッスンがかなり高額になる...</div>
+          <div class="bubble">教えてくれる先生や教室が近所にない...</div>
+          <div class="bubble">独学でやってみたいけど、どう教えればいいかわからない</div>
+          <div class="bubble">ちゃんと続けられるかが不安...</div>
+          <div class="bubble">既に取り組んでいるけど、毎日のトレーニングの負担が大きい</div>
+        </div>
       </section>
 
       <section class="features">
