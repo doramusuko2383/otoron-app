@@ -24,11 +24,12 @@ export function renderIntroScreen() {
     <div id="lp-top" class="intro-wrapper">
       <section class="hero">
         <h1 class="hero-title">もうドレミは、「ドレミ」から教えない。</h1>
-        <p class="hero-sub">2歳からはじめる、色と和音で育てる絶対音感トレーニングアプリ</p>
+        <p class="hero-sub">2歳からはじめる、色と和音で育てる 絶対音感トレーニングアプリ</p>
+        <p class="highlight">＼遊びながら“聴く力”が伸びる！／</p>
         <div class="hero-visual">
           <img src="images/otolon.webp" alt="アプリ画面イメージ" />
         </div>
-        <button id="hero-cta" class="cta-button">今すぐ無料体験する</button>
+        <button id="hero-cta" class="cta-button">今すぐ無料体験をはじめる！</button>
       </section>
 
       <section class="problems">
@@ -42,45 +43,89 @@ export function renderIntroScreen() {
 
       <section class="features">
         <h2>4ステップで身につく絶対音感</h2>
-        <div class="intro-step">
-          <h3>Step 01：色と和音で楽しくトレーニング</h3>
-          <p>色旗×コードの組み合わせで、小さな子どもでも直感的に音を覚えていける</p>
+        <div class="step">
+          <div class="step-icon">1</div>
+          <div>
+            <h3>色と和音で楽しくトレーニング</h3>
+            <p>色旗×コードの組み合わせで、小さな子どもでも直感的に音を覚えていける</p>
+          </div>
         </div>
-        <div class="intro-step">
-          <h3>Step 02：進捗に応じて和音が増える「育成モード」</h3>
-          <p>毎日のがんばりで和音がアンロックされる、ゲーム感覚の育成モード搭載</p>
+        <div class="step">
+          <div class="step-icon">2</div>
+          <div>
+            <h3>進捗に応じて和音が増える「育成モード」</h3>
+            <p>毎日のがんばりで和音がアンロックされる、ゲーム感覚の育成モード搭載</p>
+          </div>
         </div>
-        <div class="intro-step">
-          <h3>Step 03：結果は保護者と共有して見守れる</h3>
-          <p>分析グラフは未搭載。代わりに、保護者と成績を「共有」できる機能を提供</p>
+        <div class="step">
+          <div class="step-icon">3</div>
+          <div>
+            <h3>結果は保護者と共有して見守れる</h3>
+            <p>分析グラフは未搭載。代わりに、保護者と成績を「共有」できる機能を提供</p>
+          </div>
         </div>
-        <div class="intro-step">
-          <h3>Step 04：単音分化モードあり</h3>
-          <p>和音から単音への移行トレーニングも搭載。柔軟な設定も多数（出題比率、構成音限定など）</p>
+        <div class="step">
+          <div class="step-icon">4</div>
+          <div>
+            <h3>単音分化モードあり</h3>
+            <p>和音から単音への移行トレーニングも搭載。柔軟な設定も多数（出題比率、構成音限定など）</p>
+          </div>
         </div>
+        <button id="step-cta" class="cta-button">アプリの進化を体験してみる</button>
       </section>
 
       <section class="result-example">
         <h2>トレーニング結果表示例</h2>
         <div class="result-block">
-          <p>🗓 トレーニング実施日数：7日間 </p>
-          <p>✅ 合格日数：7日間（1日あたり2回以上のトレーニング・各和音4問以上・正答率98%以上）</p>
-          <p>📊 合計出題数：840問</p>
-          <p>🎯 正答率：98.3%</p>
-
-          <p>🔓 解放済み和音（色）：</p>
-          <p>赤、黄色、薄橙、藤色、灰色、水色、青、黒、緑、オレンジ、紫、ピンク、茶色、黄緑</p>
-
-          <p>🔍 ミス傾向：</p>
-          <p>・「A-C#-E」→「C#-E-A」（転回形ミス）×6<br>
-             ・「D-F#-A」→「F#-A-D」（転回形ミス）×2<br>
-             ・「E-G#-B」→「G#-B-E」（転回形ミス）×2<br>
-             ・「F-A-C」→「A-C-F」（転回形ミス）×2<br>
-             ・「C-E-G」→「E-G-C」（転回形ミス）×2</p>
-
-          <p>📣 コメント：<br>
-            正答率が非常に高く、音の感覚が安定してきました！ 今週も全日クリアできています。継続して努力を積み上げている姿勢が素晴らしいです。 転回形の和音が少し難しいようです。同じ構成音でも形に注意しましょう。
-          </p>
+          <div class="result-card">
+            <span class="result-icon">🗓</span>
+            <div>
+              <h4>トレーニング実施日数</h4>
+              <p>7日間</p>
+            </div>
+          </div>
+          <div class="result-card">
+            <span class="result-icon">✅</span>
+            <div>
+              <h4>合格日数</h4>
+              <p>7日間（条件：1日2回以上＋4問以上＋98%以上）</p>
+            </div>
+          </div>
+          <div class="result-card">
+            <span class="result-icon">📊</span>
+            <div>
+              <h4>合計出題数</h4>
+              <p>840問</p>
+            </div>
+          </div>
+          <div class="result-card">
+            <span class="result-icon">🎯</span>
+            <div>
+              <h4>正答率</h4>
+              <p>98.3%</p>
+            </div>
+          </div>
+          <div class="result-card">
+            <span class="result-icon">🔓</span>
+            <div>
+              <h4>解放済み和音</h4>
+              <p>赤、黄色、薄橙、藤色、灰色、水色、青、黒、緑、オレンジ、紫、ピンク、茶色、黄緑</p>
+            </div>
+          </div>
+          <div class="result-card">
+            <span class="result-icon">🔍</span>
+            <div>
+              <h4>ミス傾向</h4>
+              <p>・「A-C#-E」→「C#-E-A」（転回形ミス）×6<br>・「F-A-C」→「A-C-F」など</p>
+            </div>
+          </div>
+          <div class="result-card">
+            <span class="result-icon">📣</span>
+            <div>
+              <h4>コメント</h4>
+              <p>正答率が非常に高く、音の感覚が安定してきました。特に転回形ミスに注意。</p>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -155,7 +200,7 @@ export function renderIntroScreen() {
       </section>
 
       <footer class="lp-footer">
-        <button id="footer-cta" class="cta-button">無料体験する</button>
+        <button id="footer-cta" class="cta-button">気になる方はこちらから無料体験へ！</button>
         <p>&copy; 2024 Otoron</p>
       </footer>
     </div>
@@ -176,8 +221,9 @@ export function renderIntroScreen() {
   }
 
   const heroCta = document.getElementById('hero-cta');
+  const stepCta = document.getElementById('step-cta');
   const footerCta = document.getElementById('footer-cta');
-  [heroCta, footerCta].forEach((btn) => {
+  [heroCta, stepCta, footerCta].forEach((btn) => {
     if (btn) btn.addEventListener('click', () => switchScreen('signup'));
   });
 
