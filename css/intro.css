@@ -185,9 +185,14 @@
 }
 
 .faq-answer {
-  padding: 0.8em 1em 1em 2.4em;
+  background-color: #fff;
+  margin: 0 1.5em 1em 1.5em;
+  padding: 1em;
+  border-left: 5px solid #ff9900;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
   font-size: 0.95em;
-  background: #fff8f2;
+  color: #333;
 }
 
 .faq-answer .a-label {
