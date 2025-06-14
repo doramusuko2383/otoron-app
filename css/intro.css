@@ -57,6 +57,14 @@
   color: #333;
 }
 
+.note {
+  font-size: 0.9em;
+  text-align: center;
+  color: #666;
+  margin-top: -0.5em;
+  margin-bottom: 1.2em;
+}
+
 .hero-highlight {
   font-size: 1.1em;
   color: #ff9900;
@@ -101,6 +109,21 @@
 .result-example,
 .faq {
   padding: 3em 0;
+}
+
+.age-info {
+  padding: 2em 1em;
+  background: #fff;
+  border-radius: 8px;
+  max-width: 600px;
+  margin: 0 auto 2em;
+  line-height: 1.6;
+}
+
+.age-info h2 {
+  font-size: 1.4em;
+  margin-bottom: 0.8em;
+  text-align: center;
 }
 
 .features {
