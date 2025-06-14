@@ -156,11 +156,14 @@
   margin-bottom: 1.2em;
 }
 
+
+/* お悩み吹き出しエリア */
 .trouble-bubbles {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(200px, 1fr));
   gap: 1em;
   justify-content: center;
+  justify-items: center;
 }
 
 .speech-bubble {
@@ -170,10 +173,11 @@
   line-height: 1.6;
   border-radius: 8px;
   color: #333;
+  width: 100%;
   max-width: 260px;
-  flex: 1 1 200px;
   box-sizing: border-box;
   text-align: left;
+  margin-bottom: 1.5em;
 }
 
 .speech-bubble::after {
@@ -188,11 +192,11 @@
 
 @media (max-width: 600px) {
   .trouble-bubbles {
-    flex-direction: column;
-    align-items: center;
+    grid-template-columns: 1fr;
   }
   .speech-bubble {
     max-width: 100%;
+    margin-bottom: 1em;
   }
 }
 
