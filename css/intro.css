@@ -207,7 +207,7 @@
 
 .features .step {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 1em;
   background: #fff;
   border-radius: 12px;
@@ -216,11 +216,14 @@
   max-width: 600px;
   margin: 1em auto;
   text-align: left;
+  flex-direction: row;
 }
 
 @media (max-width: 600px) {
   .features .step {
     width: 90%;
+    flex-direction: column;
+    align-items: flex-start;
   }
 }
 .features .step-icon {
@@ -238,9 +241,8 @@
 }
 /* 🛠️ 重要：step-text に幅と折り返しを指定する */
 .features .step-text {
-  flex: 1 1 auto;
+  flex: 1;
   min-width: 0;
-  width: 100%;
   word-break: break-word;
   white-space: normal;
 }
