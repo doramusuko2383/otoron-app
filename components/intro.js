@@ -49,28 +49,28 @@ export function renderIntroScreen() {
         <h2>4ステップで身につく絶対音感</h2>
         <div class="step">
           <div class="step-icon">1</div>
-          <div>
+          <div class="step-body">
             <h3>色と和音で楽しくトレーニング</h3>
             <p>色旗×コードの組み合わせで、小さな子どもでも直感的に音を覚えていける</p>
           </div>
         </div>
         <div class="step">
           <div class="step-icon">2</div>
-          <div>
+          <div class="step-body">
             <h3>進捗に応じて和音が増える「育成モード」</h3>
             <p>毎日のがんばりで和音がアンロックされる、ゲーム感覚の育成モード搭載</p>
           </div>
         </div>
         <div class="step">
           <div class="step-icon">3</div>
-          <div>
+          <div class="step-body">
             <h3>結果は保護者と共有して見守れる</h3>
             <p>分析グラフは未搭載。代わりに、保護者と成績を「共有」できる機能を提供</p>
           </div>
         </div>
         <div class="step">
           <div class="step-icon">4</div>
-          <div>
+          <div class="step-body">
             <h3>単音分化モードあり</h3>
             <p>和音から単音への移行トレーニングも搭載。柔軟な設定も多数（出題比率、構成音限定など）</p>
           </div>
