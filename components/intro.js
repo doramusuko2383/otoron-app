@@ -23,7 +23,7 @@ export function renderIntroScreen() {
     </header>
     <div id="lp-top" class="intro-wrapper">
       <section class="hero">
-        <h1 class="hero-title">もうドレミは、「ドレミ」から教えない。</h1>
+        <h1 class="hero-title">もうドレミは、<br>「ドレミ」から教えない。</h1>
         <p class="hero-sub">2歳からはじめる、色と和音で育てる 絶対音感トレーニングアプリ</p>
         <p class="note">※推奨対象年齢：2歳半〜6歳</p>
         <p class="hero-highlight">＼遊びながら“聴く力”が伸びる！／</p>

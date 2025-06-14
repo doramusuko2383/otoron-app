@@ -41,7 +41,7 @@
 .hero-title {
   font-size: 1.6em;
   font-weight: bold;
-  text-align: center;
+  text-align: left;
   line-height: 1.6;
   max-width: 90%;
   margin: 0 auto 0.6em;
@@ -80,6 +80,7 @@
     font-size: 2.4em;
     max-width: 700px;
     line-height: 1.4;
+    text-align: left;
   }
 
   .hero-sub {
@@ -163,10 +164,10 @@
 .bubble {
   position: relative;
   background: #eeeeee;
-  max-width: 260px;
   padding: 0.8em 1em;
   line-height: 1.6;
   border-radius: 8px;
+  max-width: 260px;
   flex: 0 0 calc(30% - 1em);
   box-sizing: border-box;
 }
@@ -195,7 +196,14 @@
   }
 }
 
-.step {
+@media (min-width: 768px) {
+  .bubble {
+    flex: 0 0 calc(33.333% - 1em);
+    max-width: none;
+  }
+}
+
+.features .step {
   display: flex;
   align-items: flex-start;
   gap: 1em;
@@ -208,8 +216,7 @@
   max-width: 600px;
   margin-left: auto;
   margin-right: auto;
-}
-.step-icon {
+.features .step-icon {
   flex-shrink: 0;
   width: 2em;
   height: 2em;
@@ -220,7 +227,7 @@
   font-weight: bold;
   line-height: 2em;
 }
-.step h3 {
+.features .step h3 {
   font-size: 1.2em;
   color: #333;
   margin: 0 0 0.3em;
@@ -228,14 +235,14 @@
   white-space: normal;
   max-width: 100%;
 }
-.step p {
+.features .step p {
   font-size: 1em;
   color: #555;
   line-height: 1.6;
 }
 
 /* テキストが1文字ずつ縦に折り返されないようにする */
-.step-body {
+.features .step-body {
   flex: 1 1 0;
   min-width: 0;
   word-break: break-word;
@@ -351,8 +358,16 @@
 
 .faq-answer .a-label {
   font-weight: bold;
-  display: block;
   margin-bottom: 0.4em;
+  background: #66bbff;
+  color: #fff;
+  width: 1.4em;
+  height: 1.4em;
+  line-height: 1.4em;
+  text-align: center;
+  border-radius: 50%;
+  margin-right: 0.6em;
+  display: inline-block;
 }
 
 .faq-answer[hidden] {
