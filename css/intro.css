@@ -158,6 +158,14 @@
   line-height: 1.6;
 }
 
+/* テキストが1文字ずつ縦に折り返されないようにする */
+.step > div:not(.step-icon),
+.result-card > div {
+  flex: 1 1 auto;
+  min-width: 0;
+  word-break: break-word;
+}
+
 .result-block {
   background: #fff;
   border-radius: 8px;
