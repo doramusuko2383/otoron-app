@@ -251,6 +251,11 @@
   white-space: normal;
 }
 
+/* Ensure flexible containers shrink properly */
+.step-body {
+  min-width: 0;
+}
+
 .result-card > div {
   flex: 1 1 auto;
   min-width: 0;
