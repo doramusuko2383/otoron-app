@@ -239,12 +239,12 @@ export async function renderSummarySection(container, date, user) {
     toggleLabel.style.marginLeft = '0.3em';
 
     const resultWrap = document.createElement('div');
-    resultWrap.style.display = 'none';
+    resultWrap.className = 'result-wrap';
     resultWrap.innerHTML = createResultTable(session.results_json || []);
 
     toggleBtn.onclick = () => {
-      const open = resultWrap.style.display !== 'none';
-      resultWrap.style.display = open ? 'none' : 'block';
+      const open = resultWrap.classList.contains('open');
+      resultWrap.classList.toggle('open', !open);
       toggleBtn.textContent = open ? '＋' : '－';
     };
 
