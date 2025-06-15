@@ -34,16 +34,33 @@
   margin: 1em 0;
 }
 
+
 .info-page summary {
   cursor: pointer;
   font-weight: bold;
-  padding: 0.4em 0.6em;
+  padding: 0.4em 0.6em 0.4em 1.6em;
   background: #f3f3f3;
   border-radius: 4px;
+  list-style: none;
+  position: relative;
+}
+
+.info-page summary::-webkit-details-marker {
+  display: none;
+}
+
+.info-page summary::before {
+  content: "+";
+  position: absolute;
+  left: 0.6em;
 }
 
 .info-page details[open] summary {
   background: #e0e0e0;
+}
+
+.info-page details[open] summary::before {
+  content: "-";
 }
 
 .info-page details p,
