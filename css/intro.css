@@ -1,4 +1,4 @@
-/* Landing page styles */
+a/* Landing page styles */
 
 .intro-header .header-right {
   display: flex;
@@ -98,6 +98,7 @@
   width: 25%;
   max-width: 200px;
   margin: 0 auto;
+  display: block;
 }
 
 .cta-button {
@@ -114,7 +115,7 @@
 .problems,
 .result-example,
 .faq {
-  padding: 3em 0;
+  padding: 3em 1em;
 }
 
 .age-info {
@@ -132,16 +133,94 @@
   text-align: center;
 }
 
-.features {
-  padding: 3em 1em;
-  background-color: #fff8f2;
+/* 4ステップの横並びスタイル修正 */
+.steps-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5em;
+  max-width: 600px;
+  margin: 0 auto;
 }
 
-.features h2 {
-  font-size: 1.6em;
-  margin-bottom: 2em;
+/* 各ステップ */
+.step {
+  background: #fff;
+  padding: 1.2em;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  writing-mode: horizontal-tb;
+  text-orientation: mixed;
 }
 
+/* ステップ番号とタイトルの行 */
+.step-header {
+  display: flex;
+  justify-content: flex-start; /* ←中央から左揃えに変更 */
+  align-items: center;
+  gap: 0.6em;
+  margin: 1em auto 0.2em auto;
+  max-width: 600px;
+}
+
+
+/* ステップ番号 */
+.step-number {
+  background-color: #ff9900;
+  color: white;
+  font-weight: bold;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2em;
+  height: 2em;
+  font-size: 1rem;
+  flex-shrink: 0;
+  margin-right: 0.4em;
+}
+
+/* ステップタイトル */
+.step-title {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #222;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* 説明文（step-description） */
+.step-description {
+  max-width: 600px;
+  margin: 0.2em auto 1em auto;
+  font-size: 1rem;
+  color: #555;
+  line-height: 1.6;
+  text-align: left;  /* ←左寄せ */
+}
+
+/* CTAボタン */
+.step-cta {
+  text-align: center;
+  margin-top: 2em;
+}
+
+.step-cta .cta-button {
+  background-color: #ff9900;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.8em 2em;
+  font-size: 1.1em;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.step-cta .cta-button:hover {
+  background-color: #e57c00;
+}
 
 /* お悩み吹き出し */
 .trouble-lead {
@@ -156,19 +235,12 @@
   margin-bottom: 1.2em;
 }
 
-
-/* お悩み吹き出しエリア */
-
-/* Flex layout to match Jazz Steps */
+/* お悩み吹き出しエリア - 修正版 */
 .trouble-bubbles {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 1em;
   max-width: 1000px;
   margin: 0 auto;
+  text-align: center;
 }
-
 
 .speech-bubble {
   position: relative;
@@ -179,10 +251,13 @@
   line-height: 1.6;
   color: #333;
   max-width: 320px;
-  flex: 1 1 300px;
+  margin: 0 auto 1.5em;
   text-align: left;
+  display: inline-block;
+  vertical-align: top;
+  width: calc(50% - 0.5em);
+  box-sizing: border-box;
 }
-
 
 .speech-bubble::after {
   content: "";
@@ -195,106 +270,49 @@
 }
 
 @media (max-width: 600px) {
-  .trouble-bubbles {
-    flex-direction: column;
-  }
   .speech-bubble {
+    width: 100%;
     max-width: 100%;
-    flex: 1 1 100%;
-    margin-bottom: 1em;
+    display: block;
+    margin: 0 0 1.5em 0;
   }
 }
 
-.features .step {
-  display: flex;
-  align-items: flex-start;
-  gap: 1em;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
-  padding: 1em;
-  max-width: 600px;
-  margin: 1em auto;
-  text-align: left;
-  flex-direction: row;
-}
-
-@media (max-width: 600px) {
-  .features .step {
-    width: 90%;
-    flex-direction: column;
-    align-items: flex-start;
-  }
-}
-.features .step-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 1.4em;
-  height: 1.4em;
-  margin-right: 0.6em;
-  background-color: #ff9900;
-  color: #fff;
-  border-radius: 50%;
-  font-weight: bold;
-  flex-shrink: 0;
-}
-/* 🛠️ 重要：step-text に幅と折り返しを指定する */
-.features .step-text {
-  flex: 1;
-  min-width: 0;
-  word-break: break-word;
-  white-space: normal;
-}
-.features .step-text h3 {
-  margin: 0 0 0.3em;
-  font-size: 1.1em;
-  color: #333;
-}
-.features .step-text p {
-  margin: 0;
-  font-size: 0.95em;
-  color: #555;
-  line-height: 1.6;
-}
-
-
-.result-card > div {
-  flex: 1 1 auto;
-  min-width: 0;
-  word-break: break-word;
-}
-
+/* 結果表示セクション - 修正版 */
 .result-block {
   background: #fff;
   border-radius: 8px;
   padding: 1em;
   text-align: left;
   max-width: 600px;
-  word-break: break-word;
   margin: 0 auto;
 }
+
 .result-card {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.8em;
   margin-bottom: 0.8em;
+  padding: 0.5em 0;
+  border-bottom: 1px solid #f0f0f0;
 }
+
+.result-card:last-child {
+  border-bottom: none;
+}
+
 .result-icon {
-  width: 1.4em;
-  text-align: center;
   font-size: 1.2em;
+  margin-right: 0.5em;
 }
+
 .result-card h4 {
-  margin: 0;
+  margin: 0 0 0.3em 0;
   font-size: 1em;
+  font-weight: bold;
+  display: inline;
 }
+
 .result-card p {
   margin: 0;
   font-size: 0.95em;
-}
-
-.result-block p {
   line-height: 1.6;
   word-break: break-word;
 }
@@ -319,8 +337,7 @@
 }
 
 .faq-question {
-  display: flex;
-  align-items: center;
+  display: block;
   width: 100%;
   padding: 1em;
   border: none;
@@ -328,12 +345,11 @@
   cursor: pointer;
   font-size: 1em;
   text-align: left;
+  position: relative;
 }
 
 .faq-question .q-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  display: inline-block;
   width: 1.4em;
   height: 1.4em;
   margin-right: 0.6em;
@@ -341,11 +357,16 @@
   color: #fff;
   border-radius: 50%;
   font-weight: bold;
-  flex-shrink: 0;
+  text-align: center;
+  line-height: 1.4em;
+  vertical-align: top;
 }
 
 .faq-question .toggle-icon {
-  margin-left: auto;
+  position: absolute;
+  right: 1em;
+  top: 50%;
+  transform: translateY(-50%);
   font-size: 1.2em;
   font-weight: bold;
 }
@@ -358,17 +379,12 @@
   content: "+";
 }
 
-
 .faq-answer {
-  display: flex;
-  align-items: center;
-  gap: 0.8em;
   background: #fff;
   padding: 1em;
   border-top: 1px solid #eee;
   font-size: 0.95em;
   color: #333;
-  border-radius: 0 0 8px 8px;
   line-height: 1.6;
 }
 
@@ -381,12 +397,14 @@
   text-align: center;
   border-radius: 50%;
   font-weight: bold;
-  flex-shrink: 0;
+  display: inline-block;
+  margin-right: 0.6em;
+  vertical-align: top;
 }
 
 .faq-answer p {
   margin: 0;
-  flex: 1;
+  display: inline;
 }
 
 .faq-answer[hidden] {
