@@ -386,6 +386,15 @@ a/* Landing page styles */
   font-size: 0.95em;
   color: #333;
   line-height: 1.6;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease, opacity 0.3s ease;
+}
+
+.faq-answer.show {
+  max-height: 300px;
+  opacity: 1;
 }
 
 .faq-answer .a-label {

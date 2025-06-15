@@ -254,9 +254,14 @@ export function renderIntroScreen() {
       const answer = btn.nextElementSibling;
       if (answer) {
         if (expanded) {
-          answer.setAttribute('hidden', '');
+          answer.classList.remove('show');
+          setTimeout(() => {
+            answer.setAttribute('hidden', '');
+          }, 300);
         } else {
           answer.removeAttribute('hidden');
+          // allow CSS transition to run
+          requestAnimationFrame(() => answer.classList.add('show'));
         }
       }
     });

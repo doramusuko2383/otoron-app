@@ -24,14 +24,19 @@
   font-size: 0.9em;
 }
 
-.chord-group.collapsed .chord-grid {
-  display: none;
-}
-
-.chord-grid {
+.chord-group .chord-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 6px;
+  max-height: 1000px;
+  overflow: hidden;
+  opacity: 1;
+  transition: max-height 0.3s ease, opacity 0.3s ease;
+}
+
+.chord-group.collapsed .chord-grid {
+  max-height: 0;
+  opacity: 0;
 }
 
 .chord-block {
