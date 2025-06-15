@@ -30,42 +30,54 @@
   color: #0645ad;
 }
 
-.info-page details {
+.info-page .help-item {
   margin: 1em 0;
 }
 
-
-.info-page summary {
-  cursor: pointer;
-  font-weight: bold;
-  padding: 0.4em 0.6em 0.4em 1.6em;
+.help-question {
+  display: block;
+  width: 100%;
+  padding: 0.8em 0.8em 0.8em 1.6em;
+  border: none;
   background: #f3f3f3;
   border-radius: 4px;
-  list-style: none;
+  cursor: pointer;
+  font-size: 1em;
+  text-align: left;
   position: relative;
 }
 
-.info-page summary::-webkit-details-marker {
-  display: none;
-}
-
-.info-page summary::before {
+.help-question::before {
   content: "+";
   position: absolute;
   left: 0.6em;
+  font-weight: bold;
 }
 
-.info-page details[open] summary {
-  background: #e0e0e0;
-}
-
-.info-page details[open] summary::before {
+.help-question[aria-expanded="true"]::before {
   content: "-";
 }
 
-.info-page details p,
-.info-page details ul {
-  margin: 0.5em 1.2em;
+.help-answer {
+  background: #fff;
+  padding: 0.8em 1.2em;
+  border-top: 1px solid #eee;
+  font-size: 0.95em;
+  color: #333;
+  line-height: 1.6;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease, opacity 0.3s ease;
+}
+
+.help-answer.show {
+  max-height: 1000px;
+  opacity: 1;
+}
+
+.help-answer[hidden] {
+  display: none;
 }
 
 .contact-form {
