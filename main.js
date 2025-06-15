@@ -18,7 +18,7 @@ import { renderSignUpScreen } from "./components/signup.js";
 import { renderInitialSetupScreen } from "./components/initialSetup.js";
 import { supabase } from "./utils/supabaseClient.js";
 import { ensureSupabaseAuth } from "./utils/supabaseAuthHelper.js";
-import { isAccessAllowed } from "./utils/accessControl.js";
+import { isAccessAllowed, getLockType } from "./utils/accessControl.js";
 import { createInitialChordProgress } from "./utils/progressUtils.js";
 import { renderMyPageScreen } from "./components/mypage.js";
 import { clearTimeOfDayStyling } from "./utils/timeOfDay.js";
@@ -29,6 +29,7 @@ import { renderLawScreen } from "./components/info/law.js";
 import { renderExternalScreen } from "./components/info/external.js";
 import { renderHelpScreen } from "./components/info/help.js";
 import { renderPricingScreen } from "./components/pricing.js";
+import { renderLockScreen } from "./components/lock.js";
 
 
 import { firebaseAuth } from "./firebase/firebase-init.js";
@@ -102,6 +103,7 @@ export const switchScreen = (screen, user = currentUser, options = {}) => {
   else if (screen === "law") renderLawScreen();
   else if (screen === "external") renderExternalScreen();
   else if (screen === "pricing") renderPricingScreen(user);
+  else if (screen === "lock") renderLockScreen(user, options);
 };
 
 // ブラウザ戻る/進む操作に対応
@@ -128,8 +130,9 @@ onAuthStateChanged(firebaseAuth, async (firebaseUser) => {
   }
   const { user, isNew } = authResult;
 
-  if (!isAccessAllowed(user)) {
-    switchScreen("pricing", user);
+  const lockType = getLockType(user);
+  if (lockType) {
+    switchScreen("lock", user, { lockType });
     return;
   }
 
