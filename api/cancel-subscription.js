@@ -17,34 +17,38 @@ const supabase = createClient(
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end('Method Not Allowed');
 
-  const { userId, email } = req.body;
+// ① リクエストから userId と email を受け取る
+const { userId, email } = req.body;
 
-  let user = null;
-  let error = null;
+let user = null;
+let error = null;
 
-  if (userId) {
-    const result = await supabase
-      .from('users')
-      .select('id, stripe_customer_id')
-      .eq('id', userId)
-      .maybeSingle();
-    user = result.data;
-    error = result.error;
-  }
+// ② userId がある場合、それで検索
+if (userId) {
+  const result = await supabase
+    .from('users')
+    .select('id, stripe_customer_id')
+    .eq('id', userId)
+    .maybeSingle();
+  user = result.data;
+  error = result.error;
+}
 
-  if ((!user || error) && email) {
-    const result = await supabase
-      .from('users')
-      .select('id, stripe_customer_id')
-      .eq('email', email)
-      .maybeSingle();
-    user = result.data;
-    error = result.error;
-  }
+// ③ userId が無かった、もしくは見つからなかった場合、email で検索
+if ((!user || error) && email) {
+  const result = await supabase
+    .from('users')
+    .select('id, stripe_customer_id')
+    .eq('email', email)
+    .maybeSingle();
+  user = result.data;
+  error = result.error;
+}
 
-  if (error || !user?.stripe_customer_id) {
-    return res.status(400).json({ error: 'User or customer ID not found' });
-  }
+// ④ 最終チェック
+if (error || !user?.stripe_customer_id) {
+  return res.status(400).json({ error: 'User or customer ID not found' });
+}
 
   // Stripeからサブスクリプション取得
   const subscriptions = await stripe.subscriptions.list({
