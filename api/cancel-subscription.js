@@ -69,11 +69,22 @@ if (error || !user?.stripe_customer_id) {
   });
 
   // Supabase更新：user_subscriptions.statusを'cancelled'に
-  await supabase
+  const { data: updatedRows, error: updateError } = await supabase
     .from('user_subscriptions')
     .update({ status: 'cancelled' })
     .eq('user_id', user.id)
-    .eq('status', 'active');
+    .eq('status', 'active')
+    .select();
+
+  console.log('[DEBUG] user_id:', user.id);
+  console.log('[DEBUG] updated result:', updatedRows);
+  console.log('[DEBUG] error:', updateError);
+
+  if (updateError || updatedRows.length === 0) {
+    return res
+      .status(400)
+      .json({ error: 'No active subscription found or update failed' });
+  }
 
   return res.status(200).json({
     message: 'Cancellation scheduled',
