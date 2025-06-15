@@ -30,6 +30,15 @@
   gap: 0.1em; /* tighter spacing */
 }
 
+.trial-status {
+  font-size: 0.9rem;
+  margin-right: 0.4em;
+}
+
+.trial-status.warning {
+  color: #ff6600;
+}
+
 /* ▼ 親メニュー全体 */
 .parent-menu {
   position: relative;

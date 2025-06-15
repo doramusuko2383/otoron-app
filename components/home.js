@@ -9,7 +9,8 @@ import {
 } from "../utils/timeOfDay.js";
 import { getAudio } from "../utils/audioCache.js";
 
-export function renderHomeScreen(user) {
+export function renderHomeScreen(user, options = {}) {
+  const { showWelcome = false } = options;
   const app = document.getElementById("app");
   app.innerHTML = "";
 
@@ -77,6 +78,12 @@ export function renderHomeScreen(user) {
   logoContainer.appendChild(startButton);
 
   container.appendChild(logoContainer);
+
+  if (showWelcome) {
+    showCustomAlert(
+      "\u2728 ようこそオトロンへ!\n\nあなたは現在\u300c7日間の無料体験\u300dをご利用中です。\n毎日のトレーニングや記録機能を、全て自由にお試しいただけます。\n\n残り日数はホーム画面に表示されます。"
+    );
+  }
 
   // ▼ 時間帯の変化に合わせて背景などを更新
   if (window.homeTimeInterval) {

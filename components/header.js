@@ -20,6 +20,7 @@ export function renderHeader(container, user) {
     </button>
 
     <div class="header-right">
+      <div id="trial-status" class="trial-status" style="display:none"></div>
       <div class="info-menu">
         <button id="info-menu-btn" aria-label="インフォメーション">ℹ️</button>
         <div id="info-dropdown" class="info-dropdown">
@@ -58,6 +59,24 @@ export function renderHeader(container, user) {
   const helpBtn = header.querySelector("#help-btn");
   const lawBtn = header.querySelector("#law-btn");
   const externalBtn = header.querySelector("#external-btn");
+  const trialStatus = header.querySelector("#trial-status");
+
+  if (
+    trialStatus &&
+    user &&
+    user.trial_active &&
+    !user.is_premium &&
+    user.trial_end_date
+  ) {
+    const end = new Date(user.trial_end_date);
+    const now = new Date();
+    const days = Math.ceil((end - now) / (1000 * 60 * 60 * 24));
+    trialStatus.textContent = `無料体験：あと${days}日`;
+    trialStatus.style.display = "block";
+    if (days <= 3) {
+      trialStatus.classList.add("warning");
+    }
+  }
 
   parentMenuBtn.onclick = (e) => {
     e.stopPropagation();

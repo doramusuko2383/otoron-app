@@ -81,7 +81,7 @@ export const switchScreen = (screen, user = currentUser, options = {}) => {
     renderIntroScreen();
   }
   else if (screen === "login") renderLoginScreen(app, () => {});
-  else if (screen === "home") renderHomeScreen(user);
+  else if (screen === "home") renderHomeScreen(user, options);
   else if (screen === "training") renderTrainingScreen(user);
   else if (screen === "training_easy") renderTrainingEasy(user);
   else if (screen === "training_full") renderTrainingFull(user);
@@ -90,7 +90,7 @@ export const switchScreen = (screen, user = currentUser, options = {}) => {
   else if (screen === "summary") renderSummaryScreen(user);
   else if (screen === "growth") renderGrowthScreen(user);
   else if (screen === "signup") renderSignUpScreen(user);
-  else if (screen === "setup") renderInitialSetupScreen(user, (u) => switchScreen("home", u));
+  else if (screen === "setup") renderInitialSetupScreen(user, (u) => switchScreen("home", u, options));
   else if (screen === "mypage") renderMyPageScreen(user);
   else if (screen === "result") renderResultScreen(user);
   else if (screen === "result_easy") renderTrainingEasyResultScreen(user);
@@ -142,9 +142,9 @@ onAuthStateChanged(firebaseAuth, async (firebaseUser) => {
 
   currentUser = user;
   if (!user.name || user.name === "名前未設定") {
-    switchScreen("setup", user);
+    switchScreen("setup", user, { showWelcome: isNew });
   } else {
-    switchScreen("home", user);
+    switchScreen("home", user, { showWelcome: isNew });
   }
 });
 
