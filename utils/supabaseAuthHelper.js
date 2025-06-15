@@ -41,6 +41,7 @@ export async function ensureSupabaseAuth(firebaseUser) {
       throw signInError;
     }
 
+    const trialEnd = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
     const { data: inserted, error: insertError } = await supabase
       .from('users')
       .insert([
@@ -48,6 +49,8 @@ export async function ensureSupabaseAuth(firebaseUser) {
           firebase_uid: firebaseUser.uid,
           name: firebaseUser.displayName || '名前未設定',
           email,
+          trial_active: true,
+          trial_end_date: trialEnd,
         },
       ])
       .select()

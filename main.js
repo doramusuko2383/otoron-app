@@ -18,6 +18,7 @@ import { renderSignUpScreen } from "./components/signup.js";
 import { renderInitialSetupScreen } from "./components/initialSetup.js";
 import { supabase } from "./utils/supabaseClient.js";
 import { ensureSupabaseAuth } from "./utils/supabaseAuthHelper.js";
+import { isAccessAllowed } from "./utils/accessControl.js";
 import { createInitialChordProgress } from "./utils/progressUtils.js";
 import { renderMyPageScreen } from "./components/mypage.js";
 import { clearTimeOfDayStyling } from "./utils/timeOfDay.js";
@@ -126,6 +127,11 @@ onAuthStateChanged(firebaseAuth, async (firebaseUser) => {
     return;
   }
   const { user, isNew } = authResult;
+
+  if (!isAccessAllowed(user)) {
+    switchScreen("pricing", user);
+    return;
+  }
 
   if (isNew) {
     await createInitialChordProgress(user.id);
