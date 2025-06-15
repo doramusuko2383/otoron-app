@@ -45,38 +45,38 @@ export function renderIntroScreen() {
         </div>
       </section>
 
-        <section class="features">
-          <h2>4ステップで身につく絶対音感</h2>
-          <div class="step">
-            <span class="step-icon">1</span>
-            <div class="step-text">
-              <h3>色と和音で楽しくトレーニング</h3>
-              <p>色旗×コードの組み合わせで、小さな子どもでも直感的に音を覚えていける</p>
-            </div>
-          </div>
-          <div class="step">
-            <span class="step-icon">2</span>
-            <div class="step-text">
-              <h3>進捗に応じて和音が増える「育成モード」</h3>
-              <p>毎日のがんばりで和音がアンロックされる、ゲーム感覚の育成モード搭載</p>
-            </div>
-          </div>
-          <div class="step">
-            <span class="step-icon">3</span>
-            <div class="step-text">
-              <h3>結果は保護者と共有して見守れる</h3>
-              <p>分析グラフは未搭載。代わりに、保護者と成績を「共有」できる機能を提供</p>
-            </div>
-          </div>
-          <div class="step">
-            <span class="step-icon">4</span>
-            <div class="step-text">
-              <h3>単音分化モードあり</h3>
-              <p>和音から単音への移行トレーニングも搭載。柔軟な設定も多数（出題比率、構成音限定など）</p>
-            </div>
+      <section class="features">
+        <h2>4ステップで身につく絶対音感</h2>
+
+        <div class="step-header">
+          <span class="step-number">1</span>
+          <h3 class="step-title">色と和音で楽しくトレーニング</h3>
         </div>
-        <button id="step-cta" class="cta-button">アプリの進化を体験してみる</button>
+        <p class="step-description">色旗×コードの組み合わせで、小さな子どもでも直感的に音を覚えていける</p>
+
+        <div class="step-header">
+          <span class="step-number">2</span>
+          <h3 class="step-title">進捗に応じて和音が増える「育成モード」</h3>
+        </div>
+        <p class="step-description">毎日のがんばりで和音がアンロックされる、ゲーム感覚の育成モード搭載</p>
+
+        <div class="step-header">
+          <span class="step-number">3</span>
+          <h3 class="step-title">結果は保護者と共有して見守れる</h3>
+        </div>
+        <p class="step-description">分析グラフは未搭載。代わりに、保護者と成績を「共有」できる機能を提供</p>
+
+        <div class="step-header">
+          <span class="step-number">4</span>
+          <h3 class="step-title">単音分化モードあり</h3>
+        </div>
+        <p class="step-description">和音から単音への移行トレーニングも搭載。柔軟な設定も多数（出題比率、構成音限定など）</p>
+
+        <div class="step-cta">
+          <button id="step-cta" class="cta-button">アプリの進化を体験してみる</button>
+        </div>
       </section>
+
 
       <section class="result-example">
         <h2>トレーニング結果表示例</h2>
