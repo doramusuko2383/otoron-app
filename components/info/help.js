@@ -28,7 +28,7 @@ export function renderHelpScreen() {
 
       <details>
         <summary>回答方法と進行の流れ</summary>
-        <p>和音を聴いたら、その和音に対応する色を声に出してボタンを押してください。最初は赤の和音1つから始め、順に和音を増やしていきます。2週間安定して回答できると、次の和音に進みます。</p>
+        <p>和音を聴いたら、その和音に対応する色を声に出してボタンを押してください。最初は赤の和音1つから始め、順に和音を増やしていきます。2週間安定して回答できると、次の和音に進みます。オトロンでは一週間で次の和音に進める設計にしていますが、聞き分けが完璧でないと思えば日数を伸ばして下さい。</p>
       </details>
 
       <details>
@@ -84,5 +84,16 @@ export function renderHelpScreen() {
     </section>
   `;
   app.appendChild(main);
+
+  const detailsList = main.querySelectorAll("#help-section details");
+  detailsList.forEach((detail) => {
+    detail.addEventListener("toggle", () => {
+      if (detail.open) {
+        detailsList.forEach((d) => {
+          if (d !== detail) d.removeAttribute("open");
+        });
+      }
+    });
+  });
 }
 
