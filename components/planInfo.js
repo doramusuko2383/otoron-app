@@ -91,8 +91,7 @@ async function createPlanInfoContent(user) {
             body: JSON.stringify({ userId: user.id }),
           });
           if (res.ok) {
-            const data = await res.json();
-            alert(`ご契約は${formatDate(new Date(data.current_period_end))}まで有効です。それ以降、自動的に無料プランに戻ります。`);
+            alert('解約処理が完了しました');
             switchScreen('home');
           } else {
             alert('解約に失敗しました');
