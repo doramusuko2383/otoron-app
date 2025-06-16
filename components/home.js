@@ -1,5 +1,5 @@
 import { switchScreen } from "../main.js";
-import { loadGrowthData } from "../utils/growthStore.js";
+import { loadTrainingRecords } from "../utils/recordStore_supabase.js";
 import { getToday } from "../utils/growthUtils.js";
 import { renderHeader } from "./header.js";
 import {
@@ -9,7 +9,7 @@ import {
 } from "../utils/timeOfDay.js";
 import { getAudio } from "../utils/audioCache.js";
 
-export function renderHomeScreen(user, options = {}) {
+export async function renderHomeScreen(user, options = {}) {
   const { showWelcome = false } = options;
   const app = document.getElementById("app");
   app.innerHTML = "";
@@ -40,8 +40,8 @@ export function renderHomeScreen(user, options = {}) {
 
   // ✅ 今日のトレーニング回数
   const today = getToday();
-  const growthData = loadGrowthData();
-  const todayRecord = growthData[today] || { sets: 0 };
+  const records = await loadTrainingRecords(user?.id);
+  const todayRecord = records[today] || { sets: 0 };
 
   const info = document.createElement("p");
   info.className = "today-count";
