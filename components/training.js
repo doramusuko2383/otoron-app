@@ -592,7 +592,7 @@ function showSingleNoteQuiz(chord, onFinish, isLast = false) {
     }
 
     if (correct) {
-      showFeedback('GOOD!', 'good');
+      showFeedback('いいね', 'good');
       const voices = ['good1', 'good2'];
       playSoundThen(voices[Math.floor(Math.random() * voices.length)], () => {
         overlay.remove();
@@ -694,7 +694,7 @@ function checkAnswer(selected) {
 
     const proceed = () => {
       if (questionQueue.length === 0) {
-        showFeedback("トレーニング終了！", "good", 0);
+        showFeedback("がんばったね", "good", 0);
         nextQuestion();
       } else {
         nextQuestion();
@@ -702,7 +702,7 @@ function checkAnswer(selected) {
     };
 
     const voices = ["good1", "good2"];
-    showFeedback("GOOD!", "good");
+    showFeedback("いいね", "good");
     playSoundThen(voices[Math.floor(Math.random() * voices.length)], () => {
       if (singleNoteMode) {
         const isLast = questionQueue.length === 0;
