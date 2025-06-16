@@ -9,7 +9,7 @@ export function renderHelpScreen(user) {
   main.className = "info-page";
   main.innerHTML = `
     <section id="help-section" class="help-container">
-      <h1>絶対音感トレーニング ガイド</h1>
+      <h1>必ずお読みください</h1>
 
       <details>
         <summary>対象年齢と基礎的な考え方</summary>

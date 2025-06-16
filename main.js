@@ -28,6 +28,8 @@ import { renderContactScreen } from "./components/info/contact.js";
 import { renderLawScreen } from "./components/info/law.js";
 import { renderExternalScreen } from "./components/info/external.js";
 import { renderHelpScreen } from "./components/info/help.js";
+import { renderFaqScreen } from "./components/info/faq.js";
+import { renderChordResetScreen } from "./components/info/chordReset.js";
 import { renderPricingScreen } from "./components/pricing.js";
 import { renderLockScreen } from "./components/lock.js";
 
@@ -100,6 +102,8 @@ export const switchScreen = (screen, user = currentUser, options = {}) => {
   else if (screen === "privacy") renderPrivacyScreen(user);
   else if (screen === "contact") renderContactScreen(user);
   else if (screen === "help") renderHelpScreen(user);
+  else if (screen === "faq") renderFaqScreen(user);
+  else if (screen === "chord_reset") renderChordResetScreen(user);
   else if (screen === "law") renderLawScreen(user);
   else if (screen === "external") renderExternalScreen(user);
   else if (screen === "pricing") renderPricingScreen(user);
