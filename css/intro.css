@@ -339,7 +339,7 @@ a/* Landing page styles */
 .faq-question {
   display: block;
   width: 100%;
-  padding: 1em;
+  padding: 1em 2.5em 1em 1em; /* ensure space for the toggle icon */
   border: none;
   background: #f6f6f6;
   cursor: pointer;
