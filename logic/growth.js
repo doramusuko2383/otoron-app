@@ -19,7 +19,7 @@ import { renderHeader } from "../components/header.js";
 import { unlockChord, resetChordProgressToRed } from "../utils/progressUtils.js";
 import { getAudio } from "../utils/audioCache.js";
 import { updateGrowthStatusBar, countQualifiedDays } from "../utils/progressStatus.js";
-import { showCustomConfirm } from "../components/home.js";
+import { showCustomConfirm, showCustomAlert } from "../components/home.js";
 
 export async function renderGrowthScreen(user) {
   const app = document.getElementById("app");
@@ -171,7 +171,9 @@ export async function renderGrowthScreen(user) {
         "本当に進捗を赤だけに戻しますか？",
         async () => {
           const success = await resetChordProgressToRed(user.id);
-          alert(success ? "進捗をリセットしました" : "リセットに失敗しました");
+          showCustomAlert(
+            success ? "進捗をリセットしました" : "リセットに失敗しました"
+          );
         }
       );
     } else if (val === "unlock") {
@@ -181,23 +183,25 @@ export async function renderGrowthScreen(user) {
         await unlockChord(user.id, next.key);
         await applyRecommendedSelection(user.id);
         forceUnlock();
-        alert(`${next.label} を解放しました`);
+        showCustomAlert(`${next.label} を解放しました`);
       } else {
-        alert("すべての和音が解放されています");
+        showCustomAlert("すべての和音が解放されています");
       }
     } else if (val === "clearWeek") {
       showCustomConfirm(
         "今週のトレーニングデータを本当に削除しますか？",
         async () => {
           const success = await deleteTrainingDataThisWeek(user.id);
-          alert(success ? "今週のデータを削除しました" : "削除に失敗しました");
+          showCustomAlert(
+            success ? "今週のデータを削除しました" : "削除に失敗しました"
+          );
         }
       );
     } else if (val.startsWith("mock")) {
       const days = parseInt(val.replace("mock", ""), 10);
       await generateMockGrowthData(user.id, days);
       const count = await countQualifiedDays(user.id);
-      alert(`モックデータ(${days}日分)を生成しました`);
+      showCustomAlert(`モックデータ(${days}日分)を生成しました`);
     }
     await renderGrowthScreen(user);
   };

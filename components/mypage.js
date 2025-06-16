@@ -12,6 +12,7 @@ import { startCheckout } from "../utils/stripeCheckout.js";
 import { supabase } from "../utils/supabaseClient.js";
 import { switchScreen } from "../main.js";
 import { createPlanInfoContent } from "./planInfo.js";
+import { showCustomAlert } from "./home.js";
 
 export function renderMyPageScreen(user) {
   const app = document.getElementById("app");
@@ -151,10 +152,10 @@ export function renderMyPageScreen(user) {
         }
 
         const updated = data || { ...user, ...updates };
-        alert("プロフィールを更新しました");
+        showCustomAlert("プロフィールを更新しました");
         switchScreen("mypage", updated, { replace: true });
       } catch (err) {
-        alert("更新に失敗しました: " + err.message);
+        showCustomAlert("更新に失敗しました: " + err.message);
       }
     });
 
@@ -281,12 +282,12 @@ export function renderMyPageScreen(user) {
         await reauthenticateWithCredential(firebaseUser, cred);
         await updatePassword(firebaseUser, newPw);
         sessionStorage.setItem("currentPassword", newPw);
-        alert("パスワードを変更しました");
+        showCustomAlert("パスワードを変更しました");
         form.reset();
         current.input.value = newPw;
         validate();
       } catch (err) {
-        alert("パスワード変更に失敗しました: " + err.message);
+        showCustomAlert("パスワード変更に失敗しました: " + err.message);
       }
     });
 
@@ -309,10 +310,10 @@ export function renderMyPageScreen(user) {
       try {
         const cred = EmailAuthProvider.credential(firebaseUser.email, newPw);
         await linkWithCredential(firebaseUser, cred);
-        alert("パスワードを追加しました");
+        showCustomAlert("パスワードを追加しました");
         location.reload();
       } catch (err) {
-        alert("追加に失敗しました: " + err.message);
+        showCustomAlert("追加に失敗しました: " + err.message);
       }
     };
     p2.textContent = "メールアドレス＋パスワードでのログインを追加する場合は";

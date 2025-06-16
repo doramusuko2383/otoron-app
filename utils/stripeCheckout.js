@@ -1,9 +1,10 @@
 import { firebaseAuth } from '../firebase/firebase-init.js';
+import { showCustomAlert } from '../components/home.js';
 
 export async function startCheckout(plan) {
   const email = firebaseAuth.currentUser?.email || '未取得';
   if (!firebaseAuth.currentUser?.email) {
-    alert('ログイン情報がありません');
+    showCustomAlert('ログイン情報がありません');
     return;
   }
 
@@ -27,6 +28,6 @@ export async function startCheckout(plan) {
     }
   } catch (err) {
     console.error('Stripe checkout error', err);
-    alert('決済処理でエラーが発生しました');
+    showCustomAlert('決済処理でエラーが発生しました');
   }
 }
