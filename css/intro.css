@@ -389,12 +389,15 @@ a/* Landing page styles */
   max-height: 0;
   opacity: 0;
   overflow: hidden;
-  transition: max-height 0.3s ease, opacity 0.3s ease;
+  transform: translateY(-8px);
+  transition: max-height 0.4s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.4s ease,
+    transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 .faq-answer.show {
-  max-height: 300px;
+  max-height: 400px;
   opacity: 1;
+  transform: translateY(0);
 }
 
 .faq-answer .a-label {

@@ -87,11 +87,29 @@ export function renderHelpScreen() {
 
   const detailsList = main.querySelectorAll("#help-section details");
   detailsList.forEach((detail) => {
-    detail.addEventListener("toggle", () => {
-      if (detail.open) {
+    detail.classList.add("collapsible");
+    const summary = detail.querySelector("summary");
+    const contentWrapper = document.createElement("div");
+    contentWrapper.className = "detail-content";
+    while (summary.nextSibling) {
+      contentWrapper.appendChild(summary.nextSibling);
+    }
+    detail.appendChild(contentWrapper);
+
+    summary.addEventListener("click", (e) => {
+      e.preventDefault();
+      const isOpen = detail.hasAttribute("open");
+      if (isOpen) {
+        detail.classList.add("closing");
+        setTimeout(() => {
+          detail.removeAttribute("open");
+          detail.classList.remove("closing");
+        }, 400);
+      } else {
         detailsList.forEach((d) => {
           if (d !== detail) d.removeAttribute("open");
         });
+        detail.setAttribute("open", "");
       }
     });
   });
