@@ -367,7 +367,7 @@ function checkAnswer(selected) {
     });
 
     if (questionQueue.length === 0) {
-      showFeedback("トレーニング終了！", "good", 0);
+      showFeedback("がんばったね", "good", 0);
       const sound = (correctCount === questionCount) ? "perfect" : "end";
       saveSessionToHistory();
       playSoundThen(sound, () => {
@@ -376,7 +376,7 @@ function checkAnswer(selected) {
       });
     } else {
       const voices = ["good1", "good2"];
-      showFeedback("GOOD!", "good");
+      showFeedback("いいね", "good");
       playSoundThen(voices[Math.floor(Math.random() * voices.length)], () => {
         nextQuestion();
       });
