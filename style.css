@@ -90,7 +90,7 @@ body {
 #feedback.good { color: #4CAF50; }
 #feedback.bad { color: #f44336; }
 
-#bottom-buttons {
+#training-footer {
   position: fixed;
   bottom: 1em;
   left: 0;
