@@ -96,12 +96,12 @@ export const switchScreen = (screen, user = currentUser, options = {}) => {
   else if (screen === "result_easy") renderTrainingEasyResultScreen(user);
   else if (screen === "result_full") renderTrainingFullResultScreen(user);
   else if (screen === "result_white") renderTrainingWhiteResultScreen(user);
-  else if (screen === "terms") renderTermsScreen();
-  else if (screen === "privacy") renderPrivacyScreen();
-  else if (screen === "contact") renderContactScreen();
-  else if (screen === "help") renderHelpScreen();
-  else if (screen === "law") renderLawScreen();
-  else if (screen === "external") renderExternalScreen();
+  else if (screen === "terms") renderTermsScreen(user);
+  else if (screen === "privacy") renderPrivacyScreen(user);
+  else if (screen === "contact") renderContactScreen(user);
+  else if (screen === "help") renderHelpScreen(user);
+  else if (screen === "law") renderLawScreen(user);
+  else if (screen === "external") renderExternalScreen(user);
   else if (screen === "pricing") renderPricingScreen(user);
   else if (screen === "lock") renderLockScreen(user, options);
 };
