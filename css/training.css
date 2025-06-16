@@ -181,7 +181,7 @@
 }
 
 /* 下部の操作ボタンを常に画面下部に固定 */
-#bottom-buttons {
+#training-footer {
   position: fixed;
   bottom: 1em;
   left: 0;
