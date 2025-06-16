@@ -116,6 +116,17 @@
   min-height: 6em;
 }
 
+.link-btn {
+  display: inline-block;
+  padding: 0.8em 1.2em;
+  background: #ffa500;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
 .contact-form button {
   padding: 0.8em;
   background: #ffa500;
