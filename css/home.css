@@ -109,6 +109,17 @@
   margin-top: 0.5em;
 }
 
+.home-screen .trial-info {
+  font-size: 1em;
+  color: #543014;
+  text-align: center;
+  margin-top: 0.3em;
+}
+
+.home-screen .trial-info.warning {
+  color: #ff6600;
+}
+
 @keyframes start-button-pulse {
   0%, 100% {
     transform: scale(1);
