@@ -3,6 +3,7 @@ import { firebaseAuth } from "../firebase/firebase-init.js";
 import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { supabase } from "../utils/supabaseClient.js";
 import { createInitialChordProgress } from "../utils/progressUtils.js";
+import { showCustomAlert } from "./home.js";
 
 export function renderSignUpScreen() {
   const app = document.getElementById("app");
@@ -53,15 +54,15 @@ export function renderSignUpScreen() {
     const email = form.querySelector("#signup-email").value.trim();
     const password = form.querySelector("#signup-password").value.trim();
     if (!email || !password) {
-      alert("メールアドレスとパスワードを入力してください");
+      showCustomAlert("メールアドレスとパスワードを入力してください");
       return;
     }
 
     try {
       await createUserWithEmailAndPassword(firebaseAuth, email, password);
-      alert("登録が完了しました！");
+      showCustomAlert("登録が完了しました！");
     } catch (e) {
-      alert("登録エラー：" + e.message);
+      showCustomAlert("登録エラー：" + e.message);
     }
   });
 
@@ -112,7 +113,7 @@ export function renderSignUpScreen() {
         }
       }
     } catch (err) {
-      alert("Google登録失敗：" + err.message);
+      showCustomAlert("Google登録失敗：" + err.message);
     }
   });
 
