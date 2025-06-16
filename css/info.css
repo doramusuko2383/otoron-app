@@ -30,8 +30,35 @@
   color: #0645ad;
 }
 
+
 .info-page details {
   margin: 1em 0;
+}
+
+/* collapsible help section */
+.info-page details.collapsible {
+  overflow: hidden;
+}
+
+.info-page details.collapsible .detail-content {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transform: translateY(-8px);
+  transition: max-height 0.4s cubic-bezier(0.25, 1, 0.5, 1),
+    opacity 0.4s ease, transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.info-page details.collapsible[open] .detail-content {
+  max-height: 600px;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.info-page details.collapsible.closing .detail-content {
+  max-height: 0;
+  opacity: 0;
+  transform: translateY(-8px);
 }
 
 
@@ -63,8 +90,8 @@
   content: "-";
 }
 
-.info-page details p,
-.info-page details ul {
+.info-page .detail-content p,
+.info-page .detail-content ul {
   margin: 0.5em 1.2em;
 }
 
