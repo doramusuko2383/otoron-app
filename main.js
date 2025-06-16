@@ -47,14 +47,6 @@ window.addEventListener("error", (e) => {
   console.error("Uncaught error", e.error);
 });
 
-(async () => {
-  try {
-    await supabase.auth.signOut();
-  } catch (e) {
-    console.error("signOut error", e);
-  }
-})();
-
 
 let currentUser = null;
 
