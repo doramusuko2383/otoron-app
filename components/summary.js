@@ -205,7 +205,12 @@ export async function renderSummarySection(container, date, user) {
     const sessionTitle = document.createElement("h3");
     const t = session.timestamp ? new Date(session.timestamp).toTimeString().slice(0,5) : '';
     const jp = jpNums[sessionIndex] || (sessionIndex + 1);
-    sessionTitle.textContent = `${jp}回目のトレーニング${t ? ' ' + t : ''}`;
+    const type = session.results_json && session.results_json.type;
+    let typeLabel = '和音トレーニング';
+    if (type === 'note-white') typeLabel = '単音テスト（白鍵）';
+    else if (type === 'note-easy') typeLabel = '単音テスト（3オクターブ）';
+    else if (type === 'note-full') typeLabel = '単音テスト（全88鍵）';
+    sessionTitle.textContent = `${jp}回目: ${typeLabel}${t ? ' ' + t : ''}`;
     sessionTitle.style.fontSize = "1em";
     sessionTitle.style.margin = "0 0 0.5em 0";
     sessionSummary.appendChild(sessionTitle);

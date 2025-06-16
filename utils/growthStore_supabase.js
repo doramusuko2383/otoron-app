@@ -155,7 +155,7 @@ export async function generateMockGrowthData(userId, days = 7) {
         session_date: `${dateStr}${time}`,
         correct_count: count - mistakeNum,
         total_count: count,
-        results_json: results,
+        results_json: { type: 'chord', results },
         stats_json: stats,
         mistakes_json: { inversion_confusions: inversionMistakes },
         is_qualified: isQualified

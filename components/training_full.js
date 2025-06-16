@@ -3,6 +3,7 @@
 import { getRandomNote } from "./question_full.js";
 import { playNote } from "./soundPlayer.js";
 import { switchScreen } from "../main.js";
+import { saveTrainingSession } from "../utils/trainingStore_supabase.js";
 
 let currentNote = null;
 let noteHistory = [];
@@ -38,7 +39,7 @@ function kanaToHiragana(str) {
   );
 }
 
-export function renderTrainingScreen(user) {
+export async function renderTrainingScreen(user) {
   const app = document.getElementById("app");
   // reset session state
   currentNote = null;
@@ -116,7 +117,12 @@ export function renderTrainingScreen(user) {
     setInteraction(false);
     const note = btn.dataset.note;
     const correct = note === currentNote.replace(/[0-9-]/g, "");
-    noteHistory.push({ question: currentNote, answer: note, correct });
+    noteHistory.push({
+      noteQuestion: currentNote,
+      noteAnswer: note,
+      correct,
+      isSingleNote: true
+    });
 
     const feedback = document.getElementById("feedback");
     feedback.textContent = correct ? "🎉 正解!" : "❌ 不正解";
@@ -124,7 +130,7 @@ export function renderTrainingScreen(user) {
 
     isAnswering = true;
     const proceed = () => {
-      setTimeout(() => {
+      setTimeout(async () => {
         feedback.textContent = "";
         isAnswering = false;
         questionCount++;
@@ -132,6 +138,15 @@ export function renderTrainingScreen(user) {
           nextQuestion();
         } else {
           sessionStorage.setItem("noteHistory", JSON.stringify(noteHistory));
+          await saveTrainingSession({
+            userId: user.id,
+            results: { type: 'note-full', results: noteHistory },
+            stats: {},
+            mistakes: {},
+            correctCount: noteHistory.filter(n => n.correct).length,
+            totalCount: noteHistory.length,
+            date: new Date().toISOString()
+          });
           switchScreen("result_full", user);
         }
       }, FEEDBACK_DELAY);
