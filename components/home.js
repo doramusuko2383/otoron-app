@@ -48,6 +48,13 @@ export async function renderHomeScreen(user, options = {}) {
   info.innerHTML = `🎯 きょう の がんばり：<strong>${todayRecord.sets}</strong>かい`;
   container.appendChild(info);
 
+  // Create trial info element ahead of time to preserve layout
+  const trialInfo = document.createElement("p");
+  trialInfo.className = "trial-info";
+  trialInfo.style.visibility = "hidden";
+  trialInfo.style.minHeight = "1.2em"; // reserve space even when hidden
+  container.appendChild(trialInfo);
+
   if (
     user &&
     user.trial_active &&
@@ -57,13 +64,11 @@ export async function renderHomeScreen(user, options = {}) {
     const end = new Date(user.trial_end_date);
     const now = new Date();
     const days = Math.ceil((end - now) / (1000 * 60 * 60 * 24));
-    const trialInfo = document.createElement("p");
-    trialInfo.className = "trial-info";
     if (days <= 3) {
       trialInfo.classList.add("warning");
     }
     trialInfo.textContent = `無料体験期間は残り${days}日`;
-    container.appendChild(trialInfo);
+    trialInfo.style.visibility = "visible";
   }
 
   // ✅ オトロン画像とスタートボタン

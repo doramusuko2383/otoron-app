@@ -114,6 +114,7 @@
   color: #543014;
   text-align: center;
   margin-top: 0.3em;
+  min-height: 1.2em; /* keep layout even when text is hidden */
 }
 
 .home-screen .trial-info.warning {
