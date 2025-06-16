@@ -54,8 +54,14 @@ export function renderTrainingScreen(user) {
     <div class="piano-container">
       <div class="white-keys"></div>
     </div>
-    <button id="finish-btn">やめる</button>
   `;
+
+  const finishBtn = document.createElement("button");
+  finishBtn.id = "finish-btn";
+  finishBtn.textContent = "やめる";
+  const bottomWrap = document.createElement("footer");
+  bottomWrap.id = "training-footer";
+  bottomWrap.appendChild(finishBtn);
 
   const debugAnswer = document.createElement("div");
   debugAnswer.style.position = "absolute";
@@ -64,6 +70,7 @@ export function renderTrainingScreen(user) {
   debugAnswer.style.fontSize = "0.9em";
   debugAnswer.style.color = "gray";
   app.appendChild(debugAnswer);
+  app.appendChild(bottomWrap);
 
   const whiteOrder = ["C", "D", "E", "F", "G", "A", "B"];
   const blackOrder = [
@@ -84,7 +91,6 @@ export function renderTrainingScreen(user) {
   });
 
   const piano = app.querySelector(".piano-container");
-  const finishBtn = document.getElementById("finish-btn");
 
   function setInteraction(enabled) {
     if (enabled) {
