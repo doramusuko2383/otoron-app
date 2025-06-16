@@ -166,31 +166,29 @@ async function nextQuestion() {
   alreadyTried = false;
   isForcedAnswer = false;
   if (questionQueue.length === 0 || quitFlag) {
-
-    // 🔽 ここで一括保存
-    await saveTrainingSession({
-      userId: currentUser.id,
-      results: lastResults,
-      stats,
-      mistakes,
-      correctCount,
-      totalCount: questionCount,
-      date: new Date().toISOString(),
-    });
-
-    saveSessionToHistory();
-
-    await updateTrainingRecord({
-      userId: currentUser.id,
-      correct: correctCount,
-      total: questionCount
-    });
-
-    await incrementSetCount(currentUser.id);
-    await autoUnlockNextChord(currentUser);
-  
     const sound = (correctCount === questionCount) ? "perfect" : "end";
-    playSoundThen(sound, () => {
+    playSoundThen(sound, async () => {
+      await saveTrainingSession({
+        userId: currentUser.id,
+        results: lastResults,
+        stats,
+        mistakes,
+        correctCount,
+        totalCount: questionCount,
+        date: new Date().toISOString(),
+      });
+
+      saveSessionToHistory();
+
+      await updateTrainingRecord({
+        userId: currentUser.id,
+        correct: correctCount,
+        total: questionCount
+      });
+
+      await incrementSetCount(currentUser.id);
+      await autoUnlockNextChord(currentUser);
+
       sessionStorage.setItem('openResultChild', 'true');
       switchScreen("result");
     });
@@ -239,39 +237,6 @@ function drawQuizScreen() {
   feedback.style.display = "none";
   container.appendChild(feedback);
 
-  const header = document.createElement("div");
-  header.style.display = "flex";
-  header.style.justifyContent = "space-between";
-  header.style.alignItems = "center";
-  header.style.width = "100%";
-  header.style.maxWidth = "600px";
-  header.style.margin = "1em auto 0.5em";
-  header.style.padding = "0 1em";
-
-  const counter = document.createElement("h2");
-  counter.id = "progress-counter";
-  const total = questionQueue.length + questionCount + 1;
-  counter.textContent = `${questionCount} / ${total}`;
-  counter.style.fontSize = "1.2em";
-  header.appendChild(counter);
-
-  const progress = document.createElement("progress");
-  progress.id = "progress-bar";
-  progress.value = questionCount;
-  progress.max = total;
-  progress.style.width = "60%";
-  progress.style.height = "1em";
-  header.appendChild(progress);
-
-
-
-  const layout = document.createElement("div");
-  layout.className = "grid-container";
-  layout.style.display = "grid";
-  layout.style.gap = "12px";
-  layout.style.width = "100%";
-  layout.style.margin = "0 auto";
-
   const btnCount = selectedChords.length;
   let cols = 5;
   if (btnCount === 1) {
@@ -285,7 +250,53 @@ function drawQuizScreen() {
   } else {
     cols = 5; // 5×5 grid for 10 or more
   }
+
+  const widthMap = {
+    1: "240px",
+    2: "320px",
+    3: "360px",
+    4: "480px",
+    5: "500px",
+  };
+
+  const maxWidth = widthMap[cols];
+
+  const header = document.createElement("div");
+  header.style.display = "flex";
+  header.style.alignItems = "center";
+  header.style.width = "100%";
+  header.style.maxWidth = maxWidth;
+  header.style.margin = "1em auto 0.5em";
+  header.style.boxSizing = "border-box";
+  header.style.padding = "0 4px";
+
+  const counter = document.createElement("h2");
+  counter.id = "progress-counter";
+  const total = questionQueue.length + questionCount + 1;
+  counter.textContent = `${questionCount} / ${total}`;
+  counter.style.fontSize = "1.2em";
+  header.appendChild(counter);
+
+  const progress = document.createElement("progress");
+  progress.id = "progress-bar";
+  progress.value = questionCount;
+  progress.max = total;
+  progress.style.flexGrow = "1";
+  progress.style.width = "100%";
+  progress.style.height = "1em";
+  progress.style.marginLeft = "1em";
+  header.appendChild(progress);
+
+
+
+  const layout = document.createElement("div");
+  layout.className = "grid-container";
+  layout.style.display = "grid";
+  layout.style.gap = "12px";
+  layout.style.width = "100%";
+  layout.style.margin = "0 auto";
   layout.classList.add(`cols-${cols}`);
+  layout.style.maxWidth = maxWidth;
 
   const order = [
     "C-E-G", "C-F-A", "B-D-G", "A-C-F", "D-G-B",
@@ -695,22 +706,28 @@ function checkAnswer(selected) {
     const proceed = () => {
       if (questionQueue.length === 0) {
         showFeedback("がんばったね", "good", 0);
-        nextQuestion();
-      } else {
-        nextQuestion();
       }
+      nextQuestion();
     };
 
-    const voices = ["good1", "good2"];
-    showFeedback("いいね", "good");
-    playSoundThen(voices[Math.floor(Math.random() * voices.length)], () => {
+    const isLast = questionQueue.length === 0;
+    if (isLast) {
       if (singleNoteMode) {
-        const isLast = questionQueue.length === 0;
-        showSingleNoteQuiz(currentAnswer, proceed, isLast);
+        showSingleNoteQuiz(currentAnswer, proceed, true);
       } else {
         proceed();
       }
-    });
+    } else {
+      const voices = ["good1", "good2"];
+      showFeedback("いいね", "good");
+      playSoundThen(voices[Math.floor(Math.random() * voices.length)], () => {
+        if (singleNoteMode) {
+          showSingleNoteQuiz(currentAnswer, proceed, false);
+        } else {
+          proceed();
+        }
+      });
+    }
   } else {
     alreadyTried = true;
     stats[name].wrong++;
