@@ -275,14 +275,14 @@ function drawQuizScreen() {
   progressWrapper.className = "progress-wrapper";
   progressWrapper.style.flexGrow = "1";
   progressWrapper.style.position = "relative";
-  progressWrapper.style.marginLeft = "1em";
+  progressWrapper.style.marginLeft = "0";
 
   const progress = document.createElement("progress");
   progress.id = "progress-bar";
   progress.value = questionCount;
   progress.max = total;
   progress.style.width = "100%";
-  progress.style.height = "1.5em";
+  progress.style.height = "2em";
   progressWrapper.appendChild(progress);
 
   const counter = document.createElement("span");
