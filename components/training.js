@@ -270,22 +270,34 @@ function drawQuizScreen() {
   header.style.boxSizing = "border-box";
   header.style.padding = "0 4px";
 
-  const counter = document.createElement("h2");
-  counter.id = "progress-counter";
   const total = questionQueue.length + questionCount + 1;
-  counter.textContent = `${questionCount} / ${total}`;
-  counter.style.fontSize = "1.2em";
-  header.appendChild(counter);
+  const progressWrapper = document.createElement("div");
+  progressWrapper.className = "progress-wrapper";
+  progressWrapper.style.flexGrow = "1";
+  progressWrapper.style.position = "relative";
+  progressWrapper.style.marginLeft = "1em";
 
   const progress = document.createElement("progress");
   progress.id = "progress-bar";
   progress.value = questionCount;
   progress.max = total;
-  progress.style.flexGrow = "1";
   progress.style.width = "100%";
-  progress.style.height = "1em";
-  progress.style.marginLeft = "1em";
-  header.appendChild(progress);
+  progress.style.height = "1.5em";
+  progressWrapper.appendChild(progress);
+
+  const counter = document.createElement("span");
+  counter.id = "progress-counter";
+  counter.textContent = `${questionCount} / ${total}`;
+  counter.style.position = "absolute";
+  counter.style.left = "50%";
+  counter.style.top = "50%";
+  counter.style.transform = "translate(-50%, -50%)";
+  counter.style.fontSize = "0.9em";
+  counter.style.fontWeight = "bold";
+  counter.style.pointerEvents = "none";
+  progressWrapper.appendChild(counter);
+
+  header.appendChild(progressWrapper);
 
 
 
