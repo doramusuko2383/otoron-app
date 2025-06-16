@@ -170,7 +170,7 @@ async function nextQuestion() {
     playSoundThen(sound, async () => {
       await saveTrainingSession({
         userId: currentUser.id,
-        results: lastResults,
+        results: { type: 'chord', results: lastResults },
         stats,
         mistakes,
         correctCount,

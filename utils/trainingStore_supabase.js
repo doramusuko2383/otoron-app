@@ -21,7 +21,10 @@ export async function saveTrainingSession({ userId, results, stats, mistakes, co
     return;
   }
   
-  const structuredMistakes = convertMistakesJsonToStructuredForm(mistakes, results);
+  const answerList = Array.isArray(results)
+    ? results
+    : (results && Array.isArray(results.results) ? results.results : []);
+  const structuredMistakes = convertMistakesJsonToStructuredForm(mistakes, answerList);
   const isQualified = sessionMeetsStats(stats, totalCount);
   const { data, error } = await supabase.from("training_sessions").insert([
     {

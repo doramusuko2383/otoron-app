@@ -55,6 +55,24 @@ export function createResultTable(results) {
     return `<p class="no-training">きょうは まだ トレーニングしてないよ</p>`;
   }
 
+  const onlySingle = results.every(r => r.isSingleNote);
+  if (onlySingle) {
+    const rows = results
+      .map((r, i) => `
+        <tr class="${r.correct ? 'correct-row' : 'wrong-row'}">
+          <td>${i + 1}</td>
+          <td>${labelNote(r.noteQuestion || '')}</td>
+          <td><span class="ans-mark ${r.correct ? 'correct' : 'wrong'}">${r.correct ? '◯' : ''}</span>${labelNote(r.noteAnswer || '')}</td>
+        </tr>`)
+      .join('');
+    return `<table class="result-table">
+        <thead>
+          <tr><th>じゅんばん</th><th>もんだい</th><th>こたえ</th></tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>`;
+  }
+
   const rows = (() => {
     let rhtml = '';
     let idx = 0;
@@ -108,7 +126,7 @@ export async function renderResultScreen(user) {
   let results = lastResults;
   if (!results.length && user && user.id) {
     const latest = await loadLatestTrainingSession(user.id);
-    if (latest && Array.isArray(latest.results_json)) {
+    if (latest && latest.results_json) {
       results = latest.results_json;
     }
   }
