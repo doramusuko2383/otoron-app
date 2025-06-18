@@ -103,6 +103,10 @@ button:hover {
     overflow-y: auto;
   }
 
+  .app-root.summary-scroll {
+    overflow-y: auto;
+  }
+
   .screen {
     height: calc(100dvh - 56px); /* ヘッダーを除く高さ */
     overflow-y: auto;

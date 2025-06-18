@@ -56,6 +56,7 @@ export const switchScreen = (screen, user = currentUser, options = {}) => {
   const app = document.getElementById("app");
   app.innerHTML = "";
   document.body.classList.remove("intro-scroll");
+  document.body.classList.remove("summary-scroll");
 
   if (screen !== "home") {
     clearTimeOfDayStyling();
@@ -81,7 +82,10 @@ export const switchScreen = (screen, user = currentUser, options = {}) => {
   else if (screen === "training_full") renderTrainingFull(user);
   else if (screen === "training_white") renderTrainingWhite(user);
   else if (screen === "settings") renderSettingsScreen(user);
-  else if (screen === "summary") renderSummaryScreen(user);
+  else if (screen === "summary") {
+    document.body.classList.add("summary-scroll");
+    renderSummaryScreen(user);
+  }
   else if (screen === "growth") renderGrowthScreen(user);
   else if (screen === "signup") renderSignUpScreen(user);
   else if (screen === "setup") renderInitialSetupScreen(user, (u) => switchScreen("home", u, options));
