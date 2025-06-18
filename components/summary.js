@@ -87,13 +87,19 @@ export async function renderSummaryScreen(user) {
   await renderSummaryScreenForDate(today, user);
 }
 
-export async function renderSummarySection(container, date, user) {
+export async function renderSummarySection(container, date, user, options = {}) {
+  const { standalone = true } = options;
+
   const records = await loadTrainingRecords(user.id);
   const sessions = await loadTrainingSessionsForDate(user.id, date);
 
   container.innerHTML = "";
   // Add a specific class so CSS rules don't affect other screens
-  container.className = "screen active summary-screen";
+  if (standalone) {
+    container.className = "screen active summary-screen";
+  } else {
+    container.className = "summary-screen";
+  }
 
   const calendarLabel = document.createElement("div");
   calendarLabel.textContent = "日付を絞って選択";

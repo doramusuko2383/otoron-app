@@ -177,7 +177,7 @@ export async function renderResultScreen(user) {
   const dates = Object.keys(history).sort();
   const latestDate = dates[dates.length - 1] || new Date().toISOString().slice(0,10);
   const summaryContainer = container.querySelector("#summary .summary-container");
-  renderSummarySection(summaryContainer, latestDate, user);
+  renderSummarySection(summaryContainer, latestDate, user, { standalone: false });
 
   app.querySelectorAll('.tab').forEach(btn => {
     btn.addEventListener('click', () => {
