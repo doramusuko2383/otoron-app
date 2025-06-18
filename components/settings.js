@@ -169,16 +169,9 @@ buttonGroup.appendChild(resetBtn);
   singleSelectWrap.appendChild(singleSelect);
   container.appendChild(singleSelectWrap);
 
-  const board = document.createElement("div");
-  board.className = "board";
-  const boardTitle = document.createElement("h2");
-  boardTitle.textContent = "出題設定ボード";
-  board.appendChild(boardTitle);
-
   const mainSection = document.createElement("div");
   mainSection.className = "main-section";
-  board.appendChild(mainSection);
-
+  
   const trainingMode = sessionStorage.getItem("trainingMode");
   const stored = (trainingMode === "custom")
     ? sessionStorage.getItem("selectedChords")
@@ -336,7 +329,7 @@ buttonGroup.appendChild(resetBtn);
   `;
 
   mainSection.appendChild(section);
-  container.appendChild(board);
+  container.appendChild(mainSection);
   app.appendChild(container);
 
   document.getElementById("btn-easy").onclick = () => switchScreen("training_easy");
