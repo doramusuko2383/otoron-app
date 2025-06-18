@@ -112,6 +112,6 @@ button#dummy-button {
 }
 
 .result-wrap.open {
-  max-height: 1000px;
+  max-height: none;
   opacity: 1;
 }
