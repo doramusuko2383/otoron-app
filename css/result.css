@@ -34,7 +34,7 @@
 .result-table {
   margin: 2em auto;
   border-collapse: collapse;
-  width: auto;
+  width: 100%;
   font-size: 0.85em;
   table-layout: fixed;
 }
