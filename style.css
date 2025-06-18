@@ -875,6 +875,12 @@ button:hover {
   text-align: center;
 }
 
+/* Ensure bullet lists aren't flush against the edge on wide screens */
+.info-page.full-page ul {
+  text-align: left;
+  padding-left: 1.4em;
+}
+
 @media (min-width: 768px) {
   .info-page {
     max-width: none;
