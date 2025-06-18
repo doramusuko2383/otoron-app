@@ -3,6 +3,7 @@
   text-align: center;
   padding: 2em;
   background-color: #fffaf5;
+  box-sizing: border-box;
 }
 
 /* テーブル横スクロール用ラッパー */
@@ -234,4 +235,10 @@
 
 .summary-table th {
   background-color: #f4f4f4;
+}
+
+@media (max-width: 600px) {
+  .result-container {
+    padding: 1em;
+  }
 }
