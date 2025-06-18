@@ -2093,17 +2093,32 @@ a/* Landing page styles */
 }
 /* ===== settings.css ===== */
 
-/* 出題数設定エリア */
-#chord-settings {
-  max-width: 860px;
+/* 出題設定ボード全体 */
+.board {
   margin: 1em auto;
+  padding: 1em;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.6);
+  max-width: 960px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.board h2 {
+  text-align: center;
+  margin-bottom: 1em;
+  font-size: 1.4em;
+}
+
+/* PCで横並びにするメインセクション */
+.main-section {
   display: flex;
-  gap: 1em;
   flex-wrap: wrap;
+  justify-content: center;
+  gap: 24px;
 }
 
 @media (min-width: 768px) {
-  #chord-settings {
+  .main-section {
     flex-wrap: nowrap;
   }
 }
@@ -2111,10 +2126,10 @@ a/* Landing page styles */
 .chord-group {
   margin-bottom: 1.5em;
   flex: 1 1 260px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
+  border-radius: 12px;
   background: #fff;
   padding: 0.5em;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
 
 .chord-group h2 {
@@ -2390,6 +2405,17 @@ a/* Landing page styles */
   font-size: 16px;
   margin-bottom: 8px;
 }
+
+/* カード型の各セクション */
+.white-key-section,
+.black-key-section,
+.inversion-section,
+.other-training {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  padding: 16px;
+}
 .setup-wrapper {
   max-width: 400px;
   margin: 100px auto;
@@ -2406,6 +2432,11 @@ a/* Landing page styles */
   font-size: 1.6rem;
   margin-bottom: 1rem;
   color: #333;
+}
+
+/* 温かみのある背景 */
+.settings-screen {
+  background: linear-gradient(135deg, #fff5e3, #ffe8ec);
 }
 
 .setup-wrapper input,

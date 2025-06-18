@@ -169,11 +169,15 @@ buttonGroup.appendChild(resetBtn);
   singleSelectWrap.appendChild(singleSelect);
   container.appendChild(singleSelectWrap);
 
+  const board = document.createElement("div");
+  board.className = "board";
+  const boardTitle = document.createElement("h2");
+  boardTitle.textContent = "出題設定ボード";
+  board.appendChild(boardTitle);
+
   const mainSection = document.createElement("div");
   mainSection.className = "main-section";
-  mainSection.style.display = "flex";
-  mainSection.style.gap = "24px";
-  mainSection.style.alignItems = "flex-start";
+  board.appendChild(mainSection);
 
   const trainingMode = sessionStorage.getItem("trainingMode");
   const stored = (trainingMode === "custom")
@@ -332,7 +336,7 @@ buttonGroup.appendChild(resetBtn);
   `;
 
   mainSection.appendChild(section);
-  container.appendChild(mainSection);
+  container.appendChild(board);
   app.appendChild(container);
 
   document.getElementById("btn-easy").onclick = () => switchScreen("training_easy");
