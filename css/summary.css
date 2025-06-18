@@ -6,6 +6,7 @@
   margin: 0 auto;
   font-family: inherit;
   background: #fffaf5;
+  width: 100%;
 }
 
 @media (min-width: 768px) {

@@ -38,13 +38,15 @@
 #app.with-header,
 body.with-header {
   padding-top: 56px;
+  overflow-x: hidden;
 }
 
 /* .screen の基本レイアウト */
 .screen {
-  max-width: 900px;
+  max-width: 960px;
   margin: 0 auto; /* 上部余白は #app.with-header に委任 */
-  padding: 1em;
+  padding: 16px;
+  width: 100%;
   box-sizing: border-box;
 }
 
@@ -96,20 +98,12 @@ button:hover {
 /* PC版のみ：app-root はスクロールさせず、.screen に任せる */
 @media (min-width: 768px) {
   .app-root {
-    overflow-y: hidden;
-  }
-
-  .app-root.intro-scroll {
-    overflow-y: auto;
-  }
-
-  .app-root.summary-scroll {
     overflow-y: auto;
   }
 
   .screen {
-    height: calc(100dvh - 56px); /* ヘッダーを除く高さ */
-    overflow-y: auto;
+    height: auto;
+    overflow-y: visible;
   }
 }
 
@@ -2581,6 +2575,7 @@ a/* Landing page styles */
   margin: 0 auto;
   font-family: inherit;
   background: #fffaf5;
+  width: 100%;
 }
 
 #calendar,
