@@ -6,7 +6,7 @@ export function renderLawScreen(user) {
   renderHeader(app, user);
 
   const main = document.createElement("main");
-  main.className = "info-page";
+  main.className = "info-page center-page";
   main.innerHTML = `
     <h1>特定商取引法に基づく表示</h1>
     <h2>事業者</h2>
