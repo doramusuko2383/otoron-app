@@ -2122,17 +2122,59 @@ a/* Landing page styles */
 
 .chord-block {
   border: 1px solid #ccc;
-  border-radius: 6px;
+  border-radius: 12px;
   background: #fff;
   padding: 4px;
   text-align: center;
   font-size: 0.9em;
   position: relative;
+  transition: filter 0.2s, opacity 0.2s;
+}
+
+.chord-block:not(.selected) {
+  filter: grayscale(1);
+  opacity: 0.6;
 }
 
 .chord-toggle {
+  appearance: none;
   position: relative;
   margin: 0 auto;
+  width: 36px;
+  height: 18px;
+  background-color: #ccc;
+  border-radius: 18px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.chord-toggle::before {
+  content: '';
+  position: absolute;
+  left: 2px;
+  top: 2px;
+  width: 14px;
+  height: 14px;
+  background-color: #fff;
+  border-radius: 50%;
+  transition: transform 0.3s;
+}
+
+.chord-toggle:checked {
+  background-color: #4caf50;
+}
+
+.chord-toggle:checked::before {
+  transform: translateX(18px);
+}
+
+.chord-toggle:disabled {
+  background-color: #eee;
+  cursor: not-allowed;
+}
+
+.chord-toggle:disabled::before {
+  background-color: #ccc;
 }
 
 .checkbox-row {
