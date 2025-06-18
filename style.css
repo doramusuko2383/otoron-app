@@ -1905,14 +1905,18 @@ a/* Landing page styles */
 /* 列幅調整：1列目だけ小さく */
 .result-table th:nth-child(1),
 .result-table td:nth-child(1) {
-  width: 40px;
+  width: 70px;
 }
 
 .result-table th:nth-child(2),
 .result-table td:nth-child(2),
 .result-table th:nth-child(3),
-.result-table td:nth-child(3) {
-  width: 60px;
+.result-table td:nth-child(3),
+.result-table th:nth-child(4),
+.result-table td:nth-child(4),
+.result-table th:nth-child(5),
+.result-table td:nth-child(5) {
+  width: 80px;
 }
 
 /* セルの余白を最小限に */
