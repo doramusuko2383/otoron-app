@@ -98,8 +98,8 @@ export async function renderHomeScreen(user, options = {}) {
   startButton.className = "main-start-button"; // CSSでデザイン指定
   startButton.onclick = () => switchScreen("training");
 
-  logoContainer.appendChild(startButton);
   logoContainer.appendChild(faceImg);
+  logoContainer.appendChild(startButton);
 
   container.appendChild(logoContainer);
 

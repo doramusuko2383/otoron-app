@@ -727,7 +727,7 @@ button:hover {
 
 .home-screen .logo-container {
   text-align: center;
-  margin-top: 6em; /* Adjust position further down */
+  margin-top: 8em; /* Place slightly below center */
 }
 
 .home-screen .otolon-face {
@@ -767,7 +767,7 @@ button:hover {
   box-shadow: 0 4px #c8a837;
   cursor: pointer;
   display: block;
-  margin: 2.5em auto 0.5em;
+  margin: 1em auto 0.5em;
   animation: start-button-pulse 1.8s ease-in-out infinite;
   transform-origin: center;
 }
@@ -823,12 +823,13 @@ button:hover {
   }
 
   .home-screen .logo-container {
-    margin-top: 3em;
+    margin-top: 5em;
   }
 
   .home-screen .main-start-button {
     font-size: 1.4rem;
     padding: 1em 2em;
+    margin: 1em auto 0.5em;
   }
 }
 .info-page {
