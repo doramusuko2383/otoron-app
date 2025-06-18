@@ -169,8 +169,11 @@ buttonGroup.appendChild(resetBtn);
   singleSelectWrap.appendChild(singleSelect);
   container.appendChild(singleSelectWrap);
 
-  const chordSettings = document.createElement("div");
-  chordSettings.id = "chord-settings";
+  const mainSection = document.createElement("div");
+  mainSection.className = "main-section";
+  mainSection.style.display = "flex";
+  mainSection.style.gap = "24px";
+  mainSection.style.alignItems = "flex-start";
 
   const trainingMode = sessionStorage.getItem("trainingMode");
   const stored = (trainingMode === "custom")
@@ -308,12 +311,17 @@ buttonGroup.appendChild(resetBtn);
     });
 
     sec.appendChild(grid);
-    chordSettings.appendChild(sec);
+    const wrapper = document.createElement("div");
+    if (g.type === "white") wrapper.className = "white-key-section";
+    else if (g.type === "black-root") wrapper.className = "black-key-section";
+    else wrapper.className = "inversion-section";
+    wrapper.appendChild(sec);
+    mainSection.appendChild(wrapper);
   });
 
   // ✅ その他のトレーニングセクション
   const section = document.createElement("div");
-  section.className = "other-training-section";
+  section.className = "other-training";
   section.innerHTML = `
     <h3>その他のトレーニング</h3>
     <ul>
@@ -323,8 +331,8 @@ buttonGroup.appendChild(resetBtn);
     </ul>
   `;
 
-  chordSettings.appendChild(section);
-  container.appendChild(chordSettings);
+  mainSection.appendChild(section);
+  container.appendChild(mainSection);
   app.appendChild(container);
 
   document.getElementById("btn-easy").onclick = () => switchScreen("training_easy");
