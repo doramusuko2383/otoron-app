@@ -2134,11 +2134,12 @@ a/* Landing page styles */
   border: 1px solid #ccc;
   border-radius: 12px;
   background: #fff;
-  padding: 4px;
+  padding: 8px;
   text-align: center;
   font-size: 0.9em;
   position: relative;
   transition: filter 0.2s, opacity 0.2s;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .chord-block:not(.selected) {
@@ -2189,7 +2190,7 @@ a/* Landing page styles */
 
 .checkbox-row {
   text-align: center;
-  margin-bottom: 2px;
+  margin-bottom: 6px;
 }
 
 /* 以前は選択中のブロックに擬似要素でチェックマークを表示していたが、
@@ -2204,7 +2205,7 @@ a/* Landing page styles */
 
 .chord-name {
   font-weight: bold;
-  margin-bottom: 2px;
+  margin-bottom: 4px;
   border-radius: 4px;
   white-space: nowrap; /* Prevent chord names from wrapping */
 }
@@ -2213,7 +2214,7 @@ a/* Landing page styles */
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
 }
 
 .count-control button {
@@ -2350,6 +2351,17 @@ a/* Landing page styles */
 /* その他のトレーニングの見出し */
 .other-training-section h3 {
   text-align: left; /* 左寄せに変更 */
+}
+.other-training-section {
+  flex: 1 1 260px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background: #fff;
+  padding: 1em;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75em;
 }
 .setup-wrapper {
   max-width: 400px;

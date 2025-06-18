@@ -311,8 +311,6 @@ buttonGroup.appendChild(resetBtn);
     chordSettings.appendChild(sec);
   });
 
-  container.appendChild(chordSettings);
-
   // ✅ その他のトレーニングセクション
   const section = document.createElement("div");
   section.className = "other-training-section";
@@ -324,7 +322,9 @@ buttonGroup.appendChild(resetBtn);
       <li><button id="btn-full">単音テスト（全88鍵）</button></li>
     </ul>
   `;
-  container.appendChild(section);
+
+  chordSettings.appendChild(section);
+  container.appendChild(chordSettings);
   app.appendChild(container);
 
   document.getElementById("btn-easy").onclick = () => switchScreen("training_easy");
