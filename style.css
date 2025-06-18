@@ -1728,6 +1728,7 @@ a/* Landing page styles */
   .pricing-page {
     flex-direction: row;
     justify-content: center;
+    max-width: 800px;
   }
   .pricing-page .plan-card {
     flex: 1;
@@ -1785,7 +1786,7 @@ a/* Landing page styles */
 }
 
 .plan-card button {
-  margin-top: 0.6em;
+  margin-top: auto;
   padding: 0.8em;
   font-size: 1rem;
   background: #ffa500;
@@ -1797,6 +1798,15 @@ a/* Landing page styles */
 
 .plan-card button:hover {
   background: #e38c00;
+}
+
+.plan-card:not(.recommended) button {
+  background: #ccc;
+  color: #666;
+}
+
+.plan-card:not(.recommended) button:hover {
+  background: #bbb;
 }
 
 .plan-note {
