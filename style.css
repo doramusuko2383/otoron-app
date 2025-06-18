@@ -2445,6 +2445,22 @@ a/* Landing page styles */
   min-height: 100vh;
 }
 
+@media (max-width: 768px) {
+  .main-section {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .white-key-section,
+  .black-key-section,
+  .inversion-section,
+  .other-training {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+}
+
 .setup-wrapper input,
 .setup-wrapper select {
   width: 100%;
