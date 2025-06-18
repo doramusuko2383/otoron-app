@@ -8,6 +8,15 @@
   background: #fffaf5;
 }
 
+@media (min-width: 768px) {
+  .summary-screen {
+    max-width: none;
+    margin: 0;
+    height: auto;
+    overflow-y: visible;
+  }
+}
+
 #calendar,
 #from-date,
 #to-date {

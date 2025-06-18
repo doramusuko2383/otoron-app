@@ -103,6 +103,10 @@ button:hover {
     overflow-y: auto;
   }
 
+  .app-root.summary-scroll {
+    overflow-y: auto;
+  }
+
   .screen {
     height: calc(100dvh - 56px); /* ヘッダーを除く高さ */
     overflow-y: auto;
@@ -2851,5 +2855,11 @@ button.disabled {
   .plan-info-screen {
     max-width: none;
     margin: 0;
+  }
+
+  /* Allow the analysis page to use the full page height */
+  .summary-screen {
+    height: auto;
+    overflow-y: visible;
   }
 }
