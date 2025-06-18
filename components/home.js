@@ -91,14 +91,15 @@ export async function renderHomeScreen(user, options = {}) {
       { once: true }
     );
   });
-  logoContainer.appendChild(faceImg);
 
   // ✅ トレーニング開始ボタン（ひとつに集約）
   const startButton = document.createElement("button");
   startButton.textContent = "とれーにんぐ かいし";
   startButton.className = "main-start-button"; // CSSでデザイン指定
   startButton.onclick = () => switchScreen("training");
+
   logoContainer.appendChild(startButton);
+  logoContainer.appendChild(faceImg);
 
   container.appendChild(logoContainer);
 
