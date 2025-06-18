@@ -85,7 +85,7 @@ export async function generateMockGrowthData(userId, days = 7) {
     .from("user_chord_progress")
     .update({ unlocked_date: pastStr })
     .eq("user_id", userId)
-    .eq("status", "in_progress");
+    .not("status", "eq", "locked");
 
   const sampleMistakes = [
     { question: "C-E-G", answer: "E-G-C" },
