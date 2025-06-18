@@ -55,17 +55,20 @@ export function renderFaqScreen(user) {
   main.appendChild(heading);
 
   faqs.forEach((faq) => {
-    const section = document.createElement("section");
-    section.id = faq.id;
+    const detail = document.createElement("details");
+    detail.id = faq.id;
+    detail.classList.add("collapsible");
 
-    const qEl = document.createElement("h2");
-    qEl.textContent = `Q. ${faq.question}`;
+    const summary = document.createElement("summary");
+    summary.textContent = `Q. ${faq.question}`;
+    detail.appendChild(summary);
+
+    const contentWrapper = document.createElement("div");
+    contentWrapper.className = "detail-content";
 
     const aEl = document.createElement("p");
     aEl.innerText = faq.answer;
-
-    section.appendChild(qEl);
-    section.appendChild(aEl);
+    contentWrapper.appendChild(aEl);
 
     if (faq.button) {
       const btn = document.createElement("button");
@@ -75,10 +78,32 @@ export function renderFaqScreen(user) {
       btn.addEventListener("click", faq.button.action);
       const p = document.createElement("p");
       p.appendChild(btn);
-      section.appendChild(p);
+      contentWrapper.appendChild(p);
     }
 
-    main.appendChild(section);
+    detail.appendChild(contentWrapper);
+    main.appendChild(detail);
+  });
+
+  const detailsList = main.querySelectorAll("details.collapsible");
+  detailsList.forEach((detail) => {
+    const summary = detail.querySelector("summary");
+    summary.addEventListener("click", (e) => {
+      e.preventDefault();
+      const isOpen = detail.hasAttribute("open");
+      if (isOpen) {
+        detail.classList.add("closing");
+        setTimeout(() => {
+          detail.removeAttribute("open");
+          detail.classList.remove("closing");
+        }, 400);
+      } else {
+        detailsList.forEach((d) => {
+          if (d !== detail) d.removeAttribute("open");
+        });
+        detail.setAttribute("open", "");
+      }
+    });
   });
 
   app.appendChild(main);
