@@ -903,6 +903,7 @@ button:hover {
   border-radius: 4px;
   list-style: none;
   position: relative;
+  text-align: left; /* 左寄せ */
 }
 
 .info-page summary::-webkit-details-marker {
