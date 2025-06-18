@@ -337,3 +337,20 @@
   background: linear-gradient(135deg, #fff5e3, #ffe8ec);
   min-height: 100vh;
 }
+
+/* スマホ向けレイアウト調整 */
+@media (max-width: 768px) {
+  .main-section {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .white-key-section,
+  .black-key-section,
+  .inversion-section,
+  .other-training {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+}
