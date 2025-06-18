@@ -2471,6 +2471,12 @@ a/* Landing page styles */
   }
 }
 
+@media (max-width: 600px) {
+  .inversion-section {
+    display: none;
+  }
+}
+
 .setup-wrapper input,
 .setup-wrapper select {
   width: 100%;
