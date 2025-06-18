@@ -9,6 +9,15 @@
   border-radius: 8px;
 }
 
+@media (min-width: 768px) {
+  .info-page {
+    max-width: none;
+    margin-left: 0;
+    margin-right: 0;
+    border-radius: 0;
+  }
+}
+
 /* Ensure readability even when the body has a dark background */
 .app-root.night .info-page {
   background: #fff;
