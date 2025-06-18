@@ -65,7 +65,7 @@
 .info-page summary {
   cursor: pointer;
   font-weight: bold;
-  padding: 0.4em 0.6em 0.4em 1.6em;
+  padding: 0.4em 0.6em 0.4em 1.8em;
   background: #f3f3f3;
   border-radius: 4px;
   list-style: none;
@@ -76,18 +76,30 @@
   display: none;
 }
 
-.info-page summary::before {
-  content: "+";
+/* plus/minus icon */
+.info-page summary::before,
+.info-page summary::after {
+  content: "";
   position: absolute;
-  left: 0.6em;
+  top: 50%;
+  left: 0.8em;
+  width: 10px;
+  height: 2px;
+  margin-top: -1px;
+  background: currentColor;
+  transition: transform 0.25s ease;
+}
+
+.info-page summary::after {
+  transform: rotate(90deg);
 }
 
 .info-page details[open] summary {
   background: #e0e0e0;
 }
 
-.info-page details[open] summary::before {
-  content: "-";
+.info-page details[open] summary::after {
+  transform: rotate(90deg) scaleX(0);
 }
 
 .info-page .detail-content p,
