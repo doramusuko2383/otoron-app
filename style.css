@@ -2055,19 +2055,26 @@ a/* Landing page styles */
 
 /* 出題数設定エリア */
 #chord-settings {
-  max-width: 600px;
+  max-width: 860px;
   margin: 1em auto;
+  display: flex;
+  gap: 1em;
+  flex-wrap: wrap;
 }
 
 @media (min-width: 768px) {
   #chord-settings {
-    max-width: none;
-    margin: 1em 0;
+    flex-wrap: nowrap;
   }
 }
 
 .chord-group {
   margin-bottom: 1.5em;
+  flex: 1 1 260px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background: #fff;
+  padding: 0.5em;
 }
 
 .chord-group h2 {
