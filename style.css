@@ -98,20 +98,12 @@ button:hover {
 /* PC版のみ：app-root はスクロールさせず、.screen に任せる */
 @media (min-width: 768px) {
   .app-root {
-    overflow-y: hidden;
-  }
-
-  .app-root.intro-scroll {
-    overflow-y: auto;
-  }
-
-  .app-root.summary-scroll {
     overflow-y: auto;
   }
 
   .screen {
-    height: calc(100dvh - 56px); /* ヘッダーを除く高さ */
-    overflow-y: auto;
+    height: auto;
+    overflow-y: visible;
   }
 }
 
