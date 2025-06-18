@@ -2131,7 +2131,7 @@ a/* Landing page styles */
 
 .chord-group {
   margin-bottom: 1.5em;
-  flex: 1 1 260px;
+  flex: 1 1 200px;
   border-radius: 12px;
   background: #fff;
   padding: 0.5em;
@@ -2410,6 +2410,7 @@ a/* Landing page styles */
   font-weight: bold;
   font-size: 16px;
   margin-bottom: 8px;
+  white-space: nowrap;
 }
 
 /* カード型の各セクション */
