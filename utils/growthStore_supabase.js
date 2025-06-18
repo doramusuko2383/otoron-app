@@ -170,3 +170,85 @@ export async function generateMockGrowthData(userId, days = 7) {
     await markQualifiedDayIfNeeded(userId, `${dateStr}${sessionTimes[0]}`);
   }
 }
+
+/**
+ * 単音テスト3種のモックデータを生成（正解率90%程度）
+ * @param {string} userId
+ */
+export async function generateMockSingleNoteData(userId) {
+  if (!userId) {
+    console.warn("generateMockSingleNoteData called without valid user ID");
+    return;
+  }
+
+  const now = new Date();
+  const dateStr = now.toISOString().split("T")[0];
+  const sessionTypes = ['note-white', 'note-easy', 'note-full'];
+  const total = 20;
+  const correctCount = Math.round(total * 0.9);
+  const mistakeNum = total - correctCount;
+
+  for (let i = 0; i < sessionTypes.length; i++) {
+    const results = [];
+    for (let q = 0; q < total; q++) {
+      const correct = q >= mistakeNum;
+      results.push({
+        noteQuestion: 'C4',
+        noteAnswer: correct ? 'C4' : 'D4',
+        correct,
+        isSingleNote: true
+      });
+    }
+
+    const ses = {
+      user_id: userId,
+      session_date: new Date(now.getTime() + i * 60000).toISOString(),
+      correct_count: correctCount,
+      total_count: total,
+      results_json: { type: sessionTypes[i], results },
+      stats_json: {},
+      mistakes_json: {},
+      is_qualified: false
+    };
+    const { error: sesErr } = await supabase
+      .from('training_sessions')
+      .insert(ses);
+    if (sesErr) console.error('❌ モック単音セッション挿入失敗:', sesErr);
+  }
+
+  const addTotal = total * sessionTypes.length;
+  const addCorrect = correctCount * sessionTypes.length;
+  const { data: existing, error: recErr } = await supabase
+    .from('training_records')
+    .select('*')
+    .eq('user_id', userId)
+    .eq('date', dateStr)
+    .maybeSingle();
+
+  if (recErr) {
+    console.error('❌ モック記録取得失敗:', recErr);
+    return;
+  }
+
+  if (existing) {
+    const { error: updateErr } = await supabase
+      .from('training_records')
+      .update({
+        count: existing.count + addTotal,
+        correct: existing.correct + addCorrect
+      })
+      .eq('id', existing.id);
+    if (updateErr) console.error('❌ モック記録更新失敗:', updateErr);
+  } else {
+    const { error: insertErr } = await supabase
+      .from('training_records')
+      .insert({
+        user_id: userId,
+        date: dateStr,
+        count: addTotal,
+        correct: addCorrect,
+        sets: 0
+      });
+    if (insertErr) console.error('❌ モック記録挿入失敗:', insertErr);
+  }
+}
