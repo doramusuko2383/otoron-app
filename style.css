@@ -1732,6 +1732,7 @@ a/* Landing page styles */
   .pricing-page {
     flex-direction: row;
     justify-content: center;
+    flex-wrap: wrap;
     max-width: 800px;
   }
   .pricing-page .plan-card {
@@ -1781,7 +1782,7 @@ a/* Landing page styles */
 }
 
 .recommend-badge {
-  align-self: flex-start;
+  align-self: center;
   background: #ff9900;
   color: #fff;
   border-radius: 999px;
@@ -1818,6 +1819,7 @@ a/* Landing page styles */
   text-align: center;
   color: #666;
   margin-top: 0.5em;
+  width: 100%;
 }
 
 .plan-info-screen {
