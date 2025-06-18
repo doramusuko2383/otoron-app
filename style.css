@@ -2438,6 +2438,7 @@ a/* Landing page styles */
 /* 温かみのある背景 */
 .settings-screen {
   background: linear-gradient(135deg, #fff5e3, #ffe8ec);
+  min-height: 100vh;
 }
 
 .setup-wrapper input,
