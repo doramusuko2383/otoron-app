@@ -5,6 +5,12 @@
   background-color: #fffaf5;
 }
 
+/* テーブル横スクロール用ラッパー */
+.result-scroll-wrap {
+  overflow-x: auto;
+  width: 100%;
+}
+
 /* メッセージ強調 */
 .praise {
   font-size: 1.8em;
@@ -35,6 +41,7 @@
   margin: 2em auto;
   border-collapse: collapse;
   width: 100%;
+  min-width: 600px;
   font-size: 0.85em;
   table-layout: fixed;
 }

@@ -148,7 +148,9 @@ export async function renderResultScreen(user) {
     <div class="tab-contents">
       <div id="result" class="tab-content active">
         <div class="result-container">
-          ${tableHtml}
+          <div class="result-scroll-wrap">
+            ${tableHtml}
+          </div>
           <div class="result-footer"></div>
         </div>
       </div>
