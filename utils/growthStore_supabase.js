@@ -87,14 +87,6 @@ export async function generateMockGrowthData(userId, days = 7) {
     .eq("user_id", userId)
     .not("status", "eq", "locked");
 
-  const sampleMistakes = [
-    { question: "C-E-G", answer: "E-G-C" },
-    { question: "A-C#-E", answer: "C#-E-A" },
-    { question: "D-F#-A", answer: "F#-A-D" },
-    { question: "E-G#-B", answer: "G#-B-E" },
-    { question: "F-A-C", answer: "A-C-F" }
-  ];
-
   const flags = await loadGrowthFlags(userId);
   let queue = generateRecommendedQueue(flags);
   if (queue.length === 0) queue = ["C-E-G"];
@@ -131,10 +123,10 @@ export async function generateMockGrowthData(userId, days = 7) {
       let correctFlag = true;
 
       if (q < mistakeNum) {
-        const m = sampleMistakes[(i + q) % sampleMistakes.length];
-        answerName = m.answer;
+        const wrongIdx = (q + 1) % queue.length;
+        answerName = queue[wrongIdx];
         correctFlag = false;
-        inversionMistakes.push({ ...m, count: 1 });
+        inversionMistakes.push({ question: chordName, answer: answerName, count: 1 });
       }
 
       results.push({ chordName, answerName, correct: correctFlag });
