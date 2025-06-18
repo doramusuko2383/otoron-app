@@ -6,7 +6,7 @@ export function renderPrivacyScreen(user) {
   renderHeader(app, user);
 
   const main = document.createElement("main");
-  main.className = "info-page center-page";
+  main.className = "info-page full-page";
   main.innerHTML = `
     <h1>プライバシーポリシー</h1>
     <p>本プライバシーポリシー（以下、「本ポリシー」といいます。）は、オトロン（以下、「本サービス」といいます。）の提供にあたり、ユーザーの個人情報を適切に取り扱う方針を定めたものです。個人運営者である当方は、関連する法令（個人情報保護法など）を遵守し、本サービスを利用するすべてのユーザー（以下、「ユーザー」といいます。）のプライバシーを尊重します。</p>
