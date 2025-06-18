@@ -80,7 +80,8 @@ export async function renderSettingsScreen(user) {
 
   const buttonGroup = document.createElement("div");
 const resetBtn = document.createElement("button");
-resetBtn.textContent = "推奨出題にする";
+resetBtn.className = "shadow-button";
+resetBtn.innerHTML = "✅ 推奨出題";
 resetBtn.onclick = () => {
   showCustomConfirm("本当に推奨出題にしますか？", () => {
     resetToRecommendedChords(unlockedKeys, user); // ← user を渡す！
@@ -145,7 +146,10 @@ buttonGroup.appendChild(resetBtn);
 
   singleWrap.appendChild(singleToggle);
   singleWrap.appendChild(slider);
-  singleWrap.appendChild(document.createTextNode('単音分化モード'));
+  const singleLabel = document.createElement('span');
+  singleLabel.className = 'toggle-label';
+  singleLabel.innerHTML = '🎵 単音分化モード';
+  singleWrap.appendChild(singleLabel);
   container.appendChild(singleWrap);
 
   const singleSelectWrap = document.createElement('div');
