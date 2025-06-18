@@ -48,6 +48,16 @@ body.with-header {
   box-sizing: border-box;
 }
 
+/* PC版で横幅いっぱいに使う画面 */
+@media (min-width: 768px) {
+  .settings-screen,
+  .summary-screen,
+  .mypage-screen {
+    max-width: none;
+    margin: 0;
+  }
+}
+
 /* 見出し統一（任意） */
 .screen h1,
 .screen h2 {
@@ -1691,6 +1701,17 @@ a/* Landing page styles */
   gap: 1em;
 }
 
+@media (min-width: 768px) {
+  .pricing-page {
+    flex-direction: row;
+    justify-content: center;
+  }
+  .pricing-page .plan-card {
+    flex: 1;
+    max-width: 240px;
+  }
+}
+
 .plan-card {
   background: #fff;
   border-radius: 12px;
@@ -2027,6 +2048,13 @@ a/* Landing page styles */
 #chord-settings {
   max-width: 600px;
   margin: 1em auto;
+}
+
+@media (min-width: 768px) {
+  #chord-settings {
+    max-width: none;
+    margin: 1em 0;
+  }
 }
 
 .chord-group {
