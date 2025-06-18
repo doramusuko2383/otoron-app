@@ -53,7 +53,7 @@
 
 .home-screen .logo-container {
   text-align: center;
-  margin-top: 6em; /* Adjust position further down */
+  margin-top: 4em; /* Move closer to the center */
 }
 
 .home-screen .otolon-face {
@@ -149,7 +149,7 @@
   }
 
   .home-screen .logo-container {
-    margin-top: 3em;
+    margin-top: 2em;
   }
 
   .home-screen .main-start-button {
