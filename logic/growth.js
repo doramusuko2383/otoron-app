@@ -11,7 +11,8 @@ import {
 } from "../utils/growthUtils.js";
 import {
   loadGrowthFlags,
-  generateMockGrowthData
+  generateMockGrowthData,
+  generateMockSingleNoteData
 } from "../utils/growthStore_supabase.js";
 import { deleteTrainingDataThisWeek } from "../utils/trainingStore_supabase.js";
 import { chords } from "../data/chords.js";
@@ -153,7 +154,8 @@ export async function renderGrowthScreen(user) {
     { value: "mock4", label: "モック記録生成（4日分）" },
     { value: "mock5", label: "モック記録生成（5日分）" },
     { value: "mock6", label: "モック記録生成（6日分）" },
-    { value: "mock7", label: "モック記録生成（7日分）" }
+    { value: "mock7", label: "モック記録生成（7日分）" },
+    { value: "mockNote", label: "単音テストダミーデータ" }
   ].forEach(opt => {
     const o = document.createElement("option");
     o.value = opt.value;
@@ -193,6 +195,9 @@ export async function renderGrowthScreen(user) {
           alert(success ? "今週のデータを削除しました" : "削除に失敗しました");
         }
       );
+    } else if (val === "mockNote") {
+      await generateMockSingleNoteData(user.id);
+      alert("単音テストのダミーデータを生成しました");
     } else if (val.startsWith("mock")) {
       const days = parseInt(val.replace("mock", ""), 10);
       await generateMockGrowthData(user.id, days);
