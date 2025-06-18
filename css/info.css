@@ -9,12 +9,26 @@
   border-radius: 8px;
 }
 
+/* Pages that should stay centered even on large screens */
+.info-page.center-page {
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 8px;
+}
+
 @media (min-width: 768px) {
   .info-page {
     max-width: none;
     margin-left: 0;
     margin-right: 0;
     border-radius: 0;
+  }
+  .info-page.center-page {
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 8px;
   }
 }
 
