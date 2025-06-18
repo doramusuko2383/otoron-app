@@ -2842,3 +2842,14 @@ button#dummy-button {
 button.disabled {
   opacity: 0.5;
 }
+
+/* PC表示では分析画面・マイページ・プランページを横幅いっぱいに */
+@media (min-width: 768px) {
+  .summary-screen,
+  .mypage-screen,
+  .pricing-page,
+  .plan-info-screen {
+    max-width: none;
+    margin: 0;
+  }
+}
