@@ -41,15 +41,16 @@ export async function renderGrowthScreen(user) {
   const target = getCurrentTargetChord(flags); // ← chordOrder に沿った未解放の最初の1つ
 
   const title = document.createElement("h2");
-  title.textContent = "🎯 育成モード進捗と履歴";
+  title.textContent = "🎯 育成モード";
   container.appendChild(title);
 
   const info = document.createElement("p");
   info.className = "today-info";
+  const targetLabel = target ? `${target.label}の和音に挑戦中` : "";
   info.innerHTML = `
     今日の日付: <strong>${today}</strong><br/>
-    今日の状態: ${qualifiedToday ? "✅ 合格済み" : "❌ 未合格"}<br/>
-    連続合格日数: ${qualifiedDays} 日
+    ${targetLabel}<br/>
+    連続合格日数: ${qualifiedDays}/7日
   `;
   container.appendChild(info);
 
