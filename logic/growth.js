@@ -46,11 +46,12 @@ export async function renderGrowthScreen(user) {
 
   const info = document.createElement("p");
   info.className = "today-info";
-  const targetLabel = target ? `${target.label}の和音に挑戦中` : "";
+  const targetLabel = target ? `いま ${target.label}の和音に挑戦中` : "";
   info.innerHTML = `
     今日の日付: <strong>${today}</strong><br/>
-    ${targetLabel}<br/>
-    連続合格日数: ${qualifiedDays}/7日
+    連続合格日数: ${qualifiedDays}/7日<br/>
+    <br/>
+    ${targetLabel}
   `;
   container.appendChild(info);
 
