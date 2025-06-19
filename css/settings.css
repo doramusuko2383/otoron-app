@@ -334,7 +334,7 @@
 
 /* 温かみのある背景 */
 .settings-screen {
-  background: linear-gradient(135deg, #ffd9b3, #ffb3c6);
+  background: linear-gradient(135deg, #fff1e6, #ffe6f2); /* 柔らかいグラデーション */
   min-height: 100vh;
 }
 
