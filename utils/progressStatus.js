@@ -128,7 +128,7 @@ export async function updateGrowthStatusBar(user, target, onUnlocked) {
     btn.onpointerleave = cancelProgress;
   } else {
     const label = target ? target.label : "";
-    msg.textContent = `いま ${label} の解放条件を満たしていません\n連続合格日数: ${consecutive} 日`;
+    msg.textContent = `いま ${label}の和音に挑戦中`;
     msg.classList.remove("can-unlock");
     card.classList.remove("highlight");
     btn.style.display = "none";
