@@ -6,29 +6,9 @@ import { chords } from "../data/chords.js";
 import { drawStaffFromNotes } from "./resultStaff.js";  // 楽譜描画（必要なら）
 import { renderHeader } from "./header.js";
 import { renderSummarySection } from "./summary.js";
+import { kanaToHiragana, noteLabels } from "../utils/noteUtils.js";
 
 let resultShownInThisSession = false;
-
-const noteLabels = {
-  "C": "ど",
-  "D": "れ",
-  "E": "み",
-  "F": "ふぁ",
-  "G": "そ",
-  "A": "ら",
-  "B": "し",
-  "C#": "ちす", "Db": "ちす",
-  "D#": "えす", "Eb": "えす",
-  "F#": "ふぃす", "Gb": "ふぃす",
-  "G#": "じす", "Ab": "じす",
-  "A#": "べー", "Bb": "べー"
-};
-
-function kanaToHiragana(str) {
-  return str.replace(/[ァ-ン]/g, ch =>
-    String.fromCharCode(ch.charCodeAt(0) - 0x60)
-  );
-}
 
 function labelNote(n) {
   const pitch = n ? n.replace(/\d/g, '') : '';

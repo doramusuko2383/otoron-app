@@ -11,6 +11,7 @@ import { saveTrainingSession } from "../utils/trainingStore_supabase.js";
 import { generateRecommendedQueue } from "../utils/growthUtils.js";
 import { loadGrowthFlags } from "../utils/growthStore_supabase.js";
 import { getAudio } from "../utils/audioCache.js";
+import { kanaToHiragana, noteLabels } from "../utils/noteUtils.js";
 
 let questionCount = 0;
 let currentAnswer = null;
@@ -24,27 +25,6 @@ let singleNoteMode = false;
 let singleNoteStrategy = 'top';
 let chordProgressCount = 0;
 let chordSoundOn = true;
-
-const noteLabels = {
-  "C": "ど",
-  "D": "れ",
-  "E": "み",
-  "F": "ふぁ",
-  "G": "そ",
-  "A": "ら",
-  "B": "し",
-  "C#": "ちす", "Db": "ちす",
-  "D#": "えす", "Eb": "えす",
-  "F#": "ふぃす", "Gb": "ふぃす",
-  "G#": "じす", "Ab": "じす",
-  "A#": "べー", "Bb": "べー"
-};
-
-function kanaToHiragana(str) {
-  return str.replace(/[ァ-ン]/g, ch =>
-    String.fromCharCode(ch.charCodeAt(0) - 0x60)
-  );
-}
 
 export const stats = {};
 export const mistakes = {};
