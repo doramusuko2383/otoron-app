@@ -281,6 +281,20 @@
   border-radius: 6px;
 }
 
+/* 和音進捗表示のグリッド */
+.chord-status-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  padding: 0 16px;
+  box-sizing: border-box;
+}
+
+.chord-status-grid > div {
+  margin: 4px;
+}
+
 /* === confetti effect for unlock === */
 .confetti-container {
   position: fixed;
