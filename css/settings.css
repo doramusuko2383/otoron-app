@@ -303,6 +303,7 @@
   cursor: pointer;
 }
 .other-training h3 {
+  font-family: var(--font-heading);
   font-weight: bold;
   font-size: 16px;
   margin-bottom: 8px;

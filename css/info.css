@@ -55,12 +55,14 @@
 }
 
 .info-page h1 {
+  font-family: var(--font-heading);
   text-align: center;
   font-size: 1.6rem;
   margin-bottom: 0.8em;
 }
 
 .info-page h2 {
+  font-family: var(--font-heading);
   margin-top: 1.4em;
   font-size: 1.3rem;
 }
