@@ -60,6 +60,7 @@ body.with-header {
 @media (min-width: 768px) {
   .settings-screen,
   .summary-screen,
+  .result-screen,
   .mypage-screen {
     max-width: none;
     margin: 0;
@@ -2550,6 +2551,11 @@ a/* Landing page styles */
   min-height: 100vh;
 }
 
+.result-screen {
+  background: linear-gradient(135deg, #fff1e6, #ffe6f2);
+  min-height: 100vh;
+}
+
 /* Ensure the gradient covers the very top behind the fixed header */
 .screen.active.growth-screen {
   margin-top: -56px; /* pull background up under the header */
@@ -3110,6 +3116,7 @@ button.disabled {
 @media (min-width: 768px) {
   .summary-screen,
   .growth-screen,
+  .result-screen,
   .mypage-screen,
   .pricing-page,
   .plan-info-screen {
