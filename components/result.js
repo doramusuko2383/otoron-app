@@ -67,7 +67,7 @@ export function createResultTable(results) {
       .join('');
     return `<table class="result-table">
         <thead>
-          <tr><th>じゅんばん</th><th>もんだい</th><th>こたえ</th></tr>
+          <tr><th>No.</th><th>もんだい</th><th>こたえ</th></tr>
         </thead>
         <tbody>${rows}</tbody>
       </table>`;
@@ -109,7 +109,7 @@ export function createResultTable(results) {
   return `<table class="result-table">
       <thead>
         <tr>
-          <th>じゅんばん</th>
+          <th>No.</th>
           <th>わおん</th>
           <th>かいとう</th>
           ${singleNoteMode ? '<th>たんおん</th><th>かいとう</th>' : ''}
