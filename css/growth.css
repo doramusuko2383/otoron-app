@@ -269,11 +269,14 @@
   font-weight: bold;
 }
 
+#growth-message.current-target {
+  font-size: 1.1em;
+  font-weight: bold;
+}
+
 /* 現在挑戦中の和音表示を強調 */
 .current-target .chord {
   font-weight: bold;
-  background: #333;
-  color: white;
   padding: 2px 6px;
   border-radius: 6px;
 }
