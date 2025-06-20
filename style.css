@@ -423,12 +423,16 @@ button:hover {
 .chord-status-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 10px;
   margin: 1.5em auto;
   justify-content: center;
   padding: 0 16px;
   box-sizing: border-box;
   max-width: 100%;
+}
+
+.chord-status-grid > div {
+  margin: 4px;
 }
 .app-header {
   position: fixed;
