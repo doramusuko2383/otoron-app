@@ -144,7 +144,10 @@ export async function getSortedRecordArray(userId) {
     console.warn("getSortedRecordArray called without valid user ID");
     return [];
   }
-  const data = await loadTrainingRecords(userId);
+  const sinceDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+    .toISOString()
+    .slice(0, 10);
+  const data = await loadTrainingRecords(userId, sinceDate);
   const sortedKeys = Object.keys(data).sort();
   return sortedKeys.map(date => ({
     date,

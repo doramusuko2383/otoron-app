@@ -96,15 +96,21 @@ export async function incrementSetCount(userId) {
  * 全トレーニング記録を取得（進捗判定・表示用）
  * @returns {Promise<Object>} 日付をキーにした記録オブジェクト
  */
-export async function loadTrainingRecords(userId) {
+export async function loadTrainingRecords(userId, sinceDate) {
   if (!userId) {
     console.warn("loadTrainingRecords called without valid user ID");
     return {};
   }
-  const { data, error } = await supabase
+  let query = supabase
     .from("training_records")
-    .select("*")
+    .select("date,count,correct,sets")
     .eq("user_id", userId);
+
+  if (sinceDate) {
+    query = query.gte("date", sinceDate);
+  }
+
+  const { data, error } = await query;
 
   if (error) {
     console.error("❌ 記録読み込み失敗:", error);

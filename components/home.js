@@ -40,7 +40,10 @@ export async function renderHomeScreen(user, options = {}) {
 
   // ✅ 今日のトレーニング回数
   const today = getToday();
-  const records = await loadTrainingRecords(user?.id);
+  const sinceDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+    .toISOString()
+    .slice(0, 10);
+  const records = await loadTrainingRecords(user?.id, sinceDate);
   const todayRecord = records[today] || { sets: 0 };
 
   const info = document.createElement("p");
