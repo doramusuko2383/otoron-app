@@ -1,4 +1,5 @@
 import { renderHeader } from "../header.js";
+import { switchScreen } from "../../main.js";
 
 export function renderPrivacyScreen(user) {
   const app = document.getElementById("app");
@@ -43,15 +44,31 @@ export function renderPrivacyScreen(user) {
     <h2>第6条（安全管理措置）</h2>
     <p>ユーザーの個人情報は、適切なセキュリティ対策を講じて管理します。万一、漏えい、滅失、毀損が発生した場合には、速やかに通知し、再発防止策を講じます。</p>
     <h2>第7条（利用者の権利）</h2>
-    <p>ユーザーは、自己の個人情報について、開示、訂正、利用停止、削除を求めることができます。お問い合わせは下記連絡先までご連絡ください。</p>
+    <p>ユーザーは、自己の個人情報について、開示、訂正、利用停止、削除を求めることができます。お問い合わせは<a href="#" id="contact-link">お問い合わせフォーム</a>からご連絡ください。</p>
     <h2>第8条（未成年の利用）</h2>
     <p>20歳未満のユーザーは、保護者の同意を得た上で本サービスを利用してください。</p>
     <h2>第9条（問い合わせ窓口）</h2>
-    <p>個人情報に関する問い合わせは、<strong>otoron.app@example.com</strong> までお願いいたします。</p>
+    <p>個人情報に関する問い合わせは、<a href="#" id="contact-link2">お問い合わせフォームはこちら</a>からお願いいたします。<br>
+    ※セキュリティ保護とスムーズな対応のため、メールアドレスでの直接対応は行っておりません。</p>
     <h2>第10条（プライバシーポリシーの変更）</h2>
     <p>本ポリシーは、法令の改正などに応じて必要に応じて改定されます。重要な変更がある場合には、本サービス内またはWebサイト上でお知らせいたします。</p>
     <hr />
     <p>2025年6月 作成</p>
   `;
+
+  const link1 = main.querySelector("#contact-link");
+  if (link1) {
+    link1.addEventListener("click", (e) => {
+      e.preventDefault();
+      switchScreen("contact");
+    });
+  }
+  const link2 = main.querySelector("#contact-link2");
+  if (link2) {
+    link2.addEventListener("click", (e) => {
+      e.preventDefault();
+      switchScreen("contact");
+    });
+  }
   app.appendChild(main);
 }

@@ -1,4 +1,5 @@
 import { renderHeader } from "../header.js";
+import { switchScreen } from "../../main.js";
 
 export function renderLawScreen(user) {
   const app = document.getElementById("app");
@@ -13,9 +14,11 @@ export function renderLawScreen(user) {
     <p>個人運営（氏名・住所は取引時に請求があれば開示いたします）</p>
     <h2>運営責任者</h2>
     <p>オトロン運営者</p>
-    <h2>連絡先</h2>
-    <p>メールアドレス：<strong>otoron.app@example.com</strong><br>
-    お問い合わせはメールにてお願いいたします。</p>
+    <h2>お問い合わせ</h2>
+    <p>ご質問やご要望は、以下のフォームからご連絡ください。<br>
+    通常、2〜3営業日以内にご返信いたします。</p>
+    <p><a href="#" id="contact-link">お問い合わせフォームはこちら</a></p>
+    <p>※セキュリティ保護とスムーズな対応のため、メールアドレスでの直接対応は行っておりません。</p>
     <h2>販売価格</h2>
     <p>有料プランを導入した場合、価格はアプリ内またはWebサイト上の各サービス紹介ページに表示されます。</p>
     <h2>商品以外の必要料金</h2>
@@ -38,5 +41,13 @@ export function renderLawScreen(user) {
     <hr />
     <p>2025年6月 作成</p>
   `;
+
+  const contactLink = main.querySelector("#contact-link");
+  if (contactLink) {
+    contactLink.addEventListener("click", (e) => {
+      e.preventDefault();
+      switchScreen("contact");
+    });
+  }
   app.appendChild(main);
 }
