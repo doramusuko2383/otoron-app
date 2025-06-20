@@ -4,6 +4,7 @@ import { getRandomWhiteNoteSequence } from "./question_white.js";
 import { playNote } from "./soundPlayer.js";
 import { switchScreen } from "../main.js";
 import { saveTrainingSession } from "../utils/trainingStore_supabase.js";
+import { kanaToHiragana, noteLabels } from "../utils/noteUtils.js";
 
 let currentNote = null;
 let noteSequence = [];
@@ -14,21 +15,6 @@ let questionCount = 0;
 const FEEDBACK_DELAY = 1000;
 const maxQuestions = 24;
 
-const noteLabels = {
-  "C": "ど",
-  "D": "れ",
-  "E": "み",
-  "F": "ふぁ",
-  "G": "そ",
-  "A": "ら",
-  "B": "し"
-};
-
-function kanaToHiragana(str) {
-  return str.replace(/[ァ-ン]/g, ch =>
-    String.fromCharCode(ch.charCodeAt(0) - 0x60)
-  );
-}
 
 export async function renderTrainingScreen(user) {
   const app = document.getElementById("app");
