@@ -28,7 +28,7 @@ async function resetExpiredPremiums() {
   const subIds = subscriptions.map((s) => s.id);
 
   if (userIds.length === 0) {
-    console.log('No expired subscriptions found');
+    console.log('No expired subs');
     return;
   }
 
@@ -49,7 +49,7 @@ async function resetExpiredPremiums() {
     .in('id', subIds)
     .eq('status', 'active');
 
-  console.log(`Updated ${userIds.length} users to is_premium=false`);
+  console.log(`Reset ${userIds.length} users`);
 }
 
 resetExpiredPremiums();
