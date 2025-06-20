@@ -223,6 +223,7 @@ export async function renderGrowthScreen(user) {
 
     const circle = document.createElement("div");
     circle.classList.add("growth-chord-circle");
+    circle.textContent = chord.label;
 
     const isUnlocked = flags[chord.key]?.unlocked === true;
 
@@ -246,12 +247,7 @@ export async function renderGrowthScreen(user) {
       }
     };
 
-    const label = document.createElement("div");
-    label.style.fontSize = "0.85em";
-    label.textContent = chord.label;
-
     item.appendChild(circle);
-    item.appendChild(label);
 
 
     chordStatus.appendChild(item);
