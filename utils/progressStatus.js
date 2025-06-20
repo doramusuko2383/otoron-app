@@ -131,7 +131,8 @@ export async function updateGrowthStatusBar(user, target, onUnlocked) {
     btn.onpointerleave = cancelProgress;
   } else {
     const label = target ? target.label : "";
-    msg.innerHTML = `いま <span class="chord">${label}</span> の和音に挑戦中`;
+    const colorClass = target ? target.colorClass : "";
+    msg.innerHTML = `いま <span class="chord ${colorClass}">${label}</span> の和音に挑戦中`;
     msg.classList.remove("can-unlock");
     msg.classList.add("current-target");
     card.classList.remove("highlight");
