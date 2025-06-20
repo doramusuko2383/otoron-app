@@ -62,6 +62,15 @@
 .plan-buttons button {
   padding: 0.8em;
 }
+
+@media (min-width: 768px) {
+  .plan-buttons {
+    flex-direction: row;
+  }
+  .plan-buttons button {
+    flex: 1;
+  }
+}
 .profile-form,
 .password-form {
   max-width: 360px;
