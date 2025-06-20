@@ -137,7 +137,7 @@ export async function renderResultScreen(user) {
   renderHeader(app, user);
 
   const container = document.createElement("div");
-  container.className = "screen active";
+  container.className = "screen active result-screen";
   const tableHtml = createResultTable(results);
 
   container.innerHTML = `
