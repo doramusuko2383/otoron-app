@@ -434,6 +434,18 @@ button:hover {
 .chord-status-grid > div {
   margin: 4px;
 }
+
+/* line break elements for desktop layout */
+.chord-row-break {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .chord-row-break {
+    flex-basis: 100%;
+    height: 0;
+  }
+}
 .app-header {
   position: fixed;
   top: 0;
