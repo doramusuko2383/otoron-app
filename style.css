@@ -8,6 +8,8 @@
   --color-primary: #ff9900;
   --color-accent: #FFD44C;
   --color-background: #fff8f0;
+  --color-night-bg: #1a1a2a;
+  --color-night-text: #f0f0f0;
 }
 
 /* デフォルト：モバイルファースト（スクロール許可） */
@@ -45,7 +47,8 @@ body {
 }
 
 .app-root.night {
-  background: #1a1a2a;
+  background: var(--color-night-bg);
+  color: var(--color-night-text);
   /* Night theme previously enforced white text globally which caused
      readability issues on light elements. Text color is now left
      unchanged so individual screens can style themselves. */
@@ -826,7 +829,7 @@ button:hover {
 }
 
 .home-screen.night {
-  color: #fff;
+  color: var(--color-night-text);
 }
 
 .home-screen.morning::before {
