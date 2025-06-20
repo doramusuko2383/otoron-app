@@ -1,12 +1,12 @@
 import { renderHeader } from "../header.js";
 
-export function renderTermsScreen() {
+export function renderTermsScreen(user) {
   const app = document.getElementById("app");
   app.innerHTML = "";
-  renderHeader(app);
+  renderHeader(app, user);
 
   const main = document.createElement("main");
-  main.className = "info-page";
+  main.className = "info-page full-page";
   main.innerHTML = `
     <h1>利用規約</h1>
     <p>この利用規約（以下、「本規約」といいます。）は、オトロン（以下、「本サービス」といいます。）の利用条件を定めるものであり、本サービスを利用するすべてのユーザー（以下、「ユーザー」といいます。）に適用されます。本サービスは、個人により運営されており、関連する法令およびガイドライン（消費者契約法、電気通信事業法など）を遵守しています。</p>

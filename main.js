@@ -18,6 +18,7 @@ import { renderSignUpScreen } from "./components/signup.js";
 import { renderInitialSetupScreen } from "./components/initialSetup.js";
 import { supabase } from "./utils/supabaseClient.js";
 import { ensureSupabaseAuth } from "./utils/supabaseAuthHelper.js";
+import { isAccessAllowed, getLockType } from "./utils/accessControl.js";
 import { createInitialChordProgress } from "./utils/progressUtils.js";
 import { renderMyPageScreen } from "./components/mypage.js";
 import { clearTimeOfDayStyling } from "./utils/timeOfDay.js";
@@ -27,7 +28,10 @@ import { renderContactScreen } from "./components/info/contact.js";
 import { renderLawScreen } from "./components/info/law.js";
 import { renderExternalScreen } from "./components/info/external.js";
 import { renderHelpScreen } from "./components/info/help.js";
+import { renderFaqScreen } from "./components/info/faq.js";
+import { renderChordResetScreen } from "./components/info/chordReset.js";
 import { renderPricingScreen } from "./components/pricing.js";
+import { renderLockScreen } from "./components/lock.js";
 
 
 import { firebaseAuth } from "./firebase/firebase-init.js";
@@ -43,14 +47,6 @@ window.addEventListener("error", (e) => {
   console.error("Uncaught error", e.error);
 });
 
-(async () => {
-  try {
-    await supabase.auth.signOut();
-  } catch (e) {
-    console.error("signOut error", e);
-  }
-})();
-
 
 let currentUser = null;
 
@@ -60,6 +56,7 @@ export const switchScreen = (screen, user = currentUser, options = {}) => {
   const app = document.getElementById("app");
   app.innerHTML = "";
   document.body.classList.remove("intro-scroll");
+  document.body.classList.remove("summary-scroll");
 
   if (screen !== "home") {
     clearTimeOfDayStyling();
@@ -79,28 +76,34 @@ export const switchScreen = (screen, user = currentUser, options = {}) => {
     renderIntroScreen();
   }
   else if (screen === "login") renderLoginScreen(app, () => {});
-  else if (screen === "home") renderHomeScreen(user);
+  else if (screen === "home") renderHomeScreen(user, options);
   else if (screen === "training") renderTrainingScreen(user);
   else if (screen === "training_easy") renderTrainingEasy(user);
   else if (screen === "training_full") renderTrainingFull(user);
   else if (screen === "training_white") renderTrainingWhite(user);
   else if (screen === "settings") renderSettingsScreen(user);
-  else if (screen === "summary") renderSummaryScreen(user);
+  else if (screen === "summary") {
+    document.body.classList.add("summary-scroll");
+    renderSummaryScreen(user);
+  }
   else if (screen === "growth") renderGrowthScreen(user);
   else if (screen === "signup") renderSignUpScreen(user);
-  else if (screen === "setup") renderInitialSetupScreen(user, (u) => switchScreen("home", u));
+  else if (screen === "setup") renderInitialSetupScreen(user, (u) => switchScreen("home", u, options));
   else if (screen === "mypage") renderMyPageScreen(user);
   else if (screen === "result") renderResultScreen(user);
   else if (screen === "result_easy") renderTrainingEasyResultScreen(user);
   else if (screen === "result_full") renderTrainingFullResultScreen(user);
   else if (screen === "result_white") renderTrainingWhiteResultScreen(user);
-  else if (screen === "terms") renderTermsScreen();
-  else if (screen === "privacy") renderPrivacyScreen();
-  else if (screen === "contact") renderContactScreen();
-  else if (screen === "help") renderHelpScreen();
-  else if (screen === "law") renderLawScreen();
-  else if (screen === "external") renderExternalScreen();
+  else if (screen === "terms") renderTermsScreen(user);
+  else if (screen === "privacy") renderPrivacyScreen(user);
+  else if (screen === "contact") renderContactScreen(user);
+  else if (screen === "help") renderHelpScreen(user);
+  else if (screen === "faq") renderFaqScreen(user);
+  else if (screen === "chord_reset") renderChordResetScreen(user);
+  else if (screen === "law") renderLawScreen(user);
+  else if (screen === "external") renderExternalScreen(user);
   else if (screen === "pricing") renderPricingScreen(user);
+  else if (screen === "lock") renderLockScreen(user, options);
 };
 
 // ブラウザ戻る/進む操作に対応
@@ -127,15 +130,21 @@ onAuthStateChanged(firebaseAuth, async (firebaseUser) => {
   }
   const { user, isNew } = authResult;
 
+  const lockType = getLockType(user);
+  if (lockType) {
+    switchScreen("lock", user, { lockType });
+    return;
+  }
+
   if (isNew) {
     await createInitialChordProgress(user.id);
   }
 
   currentUser = user;
   if (!user.name || user.name === "名前未設定") {
-    switchScreen("setup", user);
+    switchScreen("setup", user, { showWelcome: isNew });
   } else {
-    switchScreen("home", user);
+    switchScreen("home", user, { showWelcome: isNew });
   }
 });
 

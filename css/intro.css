@@ -1,4 +1,4 @@
-a/* Landing page styles */
+aa/* Landing page styles */
 
 .intro-header .header-right {
   display: flex;
@@ -24,7 +24,7 @@ a/* Landing page styles */
 }
 
 .intro-header #signup-btn {
-  background-color: #ff9900;
+  background-color: var(--color-primary);
 }
 
 .intro-header #signup-btn:hover {
@@ -68,7 +68,7 @@ a/* Landing page styles */
 
 .hero-highlight {
   font-size: 1.1em;
-  color: #ff9900;
+  color: var(--color-primary);
   font-weight: bold;
   margin-bottom: 1em;
   max-width: 90%;
@@ -103,7 +103,7 @@ a/* Landing page styles */
 
 .cta-button {
   margin-top: 1.5em;
-  background-color: #ff9900;
+  background-color: var(--color-primary);
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -133,94 +133,16 @@ a/* Landing page styles */
   text-align: center;
 }
 
-/* 4ステップの横並びスタイル修正 */
-.steps-container {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5em;
-  max-width: 600px;
-  margin: 0 auto;
+.features {
+  padding: 3em 1em;
+  background-color: #fff8f2;
 }
 
-/* 各ステップ */
-.step {
-  background: #fff;
-  padding: 1.2em;
-  border-radius: 12px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-  display: flex;
-  flex-direction: column;
-  text-align: left;
-  writing-mode: horizontal-tb;
-  text-orientation: mixed;
+.features h2 {
+  font-size: 1.6em;
+  margin-bottom: 2em;
 }
 
-/* ステップ番号とタイトルの行 */
-.step-header {
-  display: flex;
-  justify-content: flex-start; /* ←中央から左揃えに変更 */
-  align-items: center;
-  gap: 0.6em;
-  margin: 1em auto 0.2em auto;
-  max-width: 600px;
-}
-
-
-/* ステップ番号 */
-.step-number {
-  background-color: #ff9900;
-  color: white;
-  font-weight: bold;
-  border-radius: 50%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 2em;
-  height: 2em;
-  font-size: 1rem;
-  flex-shrink: 0;
-  margin-right: 0.4em;
-}
-
-/* ステップタイトル */
-.step-title {
-  font-size: 1.1rem;
-  font-weight: bold;
-  color: #222;
-  margin: 0;
-  line-height: 1.4;
-}
-
-/* 説明文（step-description） */
-.step-description {
-  max-width: 600px;
-  margin: 0.2em auto 1em auto;
-  font-size: 1rem;
-  color: #555;
-  line-height: 1.6;
-  text-align: left;  /* ←左寄せ */
-}
-
-/* CTAボタン */
-.step-cta {
-  text-align: center;
-  margin-top: 2em;
-}
-
-.step-cta .cta-button {
-  background-color: #ff9900;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  padding: 0.8em 2em;
-  font-size: 1.1em;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.step-cta .cta-button:hover {
-  background-color: #e57c00;
-}
 
 /* お悩み吹き出し */
 .trouble-lead {
@@ -339,7 +261,7 @@ a/* Landing page styles */
 .faq-question {
   display: block;
   width: 100%;
-  padding: 1em;
+  padding: 1em 2.5em 1em 1em; /* ensure space for the toggle icon */
   border: none;
   background: #f6f6f6;
   cursor: pointer;
@@ -353,7 +275,7 @@ a/* Landing page styles */
   width: 1.4em;
   height: 1.4em;
   margin-right: 0.6em;
-  background: #ff9900;
+  background: var(--color-primary);
   color: #fff;
   border-radius: 50%;
   font-weight: bold;
@@ -386,6 +308,18 @@ a/* Landing page styles */
   font-size: 0.95em;
   color: #333;
   line-height: 1.6;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transform: translateY(-8px);
+  transition: max-height 0.4s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.4s ease,
+    transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.faq-answer.show {
+  max-height: 400px;
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .faq-answer .a-label {

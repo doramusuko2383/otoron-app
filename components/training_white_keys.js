@@ -3,6 +3,8 @@
 import { getRandomWhiteNoteSequence } from "./question_white.js";
 import { playNote } from "./soundPlayer.js";
 import { switchScreen } from "../main.js";
+import { saveTrainingSession } from "../utils/trainingStore_supabase.js";
+import { kanaToHiragana, noteLabels } from "../utils/noteUtils.js";
 
 let currentNote = null;
 let noteSequence = [];
@@ -13,23 +15,8 @@ let questionCount = 0;
 const FEEDBACK_DELAY = 1000;
 const maxQuestions = 24;
 
-const noteLabels = {
-  "C": "ど",
-  "D": "れ",
-  "E": "み",
-  "F": "ふぁ",
-  "G": "そ",
-  "A": "ら",
-  "B": "し"
-};
 
-function kanaToHiragana(str) {
-  return str.replace(/[ァ-ン]/g, ch =>
-    String.fromCharCode(ch.charCodeAt(0) - 0x60)
-  );
-}
-
-export function renderTrainingScreen(user) {
+export async function renderTrainingScreen(user) {
   const app = document.getElementById("app");
   // reset session state
   currentNote = null;
@@ -44,8 +31,14 @@ export function renderTrainingScreen(user) {
     <div class="piano-container">
       <div class="white-keys"></div>
     </div>
-    <button id="finish-btn">やめる</button>
   `;
+
+  const finishBtn = document.createElement("button");
+  finishBtn.id = "finish-btn";
+  finishBtn.textContent = "やめる";
+  const bottomWrap = document.createElement("footer");
+  bottomWrap.id = "training-footer";
+  bottomWrap.appendChild(finishBtn);
 
   const debugAnswer = document.createElement("div");
   debugAnswer.style.position = "absolute";
@@ -54,6 +47,7 @@ export function renderTrainingScreen(user) {
   debugAnswer.style.fontSize = "0.9em";
   debugAnswer.style.color = "gray";
   app.appendChild(debugAnswer);
+  app.appendChild(bottomWrap);
 
   const whiteOrder = ["C", "D", "E", "F", "G", "A", "B"];
 
@@ -67,7 +61,6 @@ export function renderTrainingScreen(user) {
   });
 
   const piano = app.querySelector(".piano-container");
-  const finishBtn = document.getElementById("finish-btn");
 
   function setInteraction(enabled) {
     if (enabled) {
@@ -87,7 +80,12 @@ export function renderTrainingScreen(user) {
     setInteraction(false);
     const note = btn.dataset.note;
     const correct = note === currentNote.replace(/[0-9]/g, "");
-    noteHistory.push({ question: currentNote, answer: note, correct });
+    noteHistory.push({
+      noteQuestion: currentNote,
+      noteAnswer: note,
+      correct,
+      isSingleNote: true
+    });
 
     const feedback = document.getElementById("feedback");
     feedback.textContent = correct ? "🎉 正解!" : "❌ 不正解";
@@ -95,7 +93,7 @@ export function renderTrainingScreen(user) {
 
     isAnswering = true;
     const proceed = () => {
-      setTimeout(() => {
+      setTimeout(async () => {
         feedback.textContent = "";
         isAnswering = false;
         questionCount++;
@@ -103,6 +101,15 @@ export function renderTrainingScreen(user) {
           nextQuestion();
         } else {
           sessionStorage.setItem("noteHistory", JSON.stringify(noteHistory));
+          await saveTrainingSession({
+            userId: user.id,
+            results: { type: 'note-white', results: noteHistory },
+            stats: {},
+            mistakes: {},
+            correctCount: noteHistory.filter(n => n.correct).length,
+            totalCount: noteHistory.length,
+            date: new Date().toISOString()
+          });
           switchScreen("result_white", user);
         }
       }, FEEDBACK_DELAY);

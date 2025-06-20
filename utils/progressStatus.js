@@ -3,6 +3,7 @@ import { unlockChord } from "./progressUtils.js";
 import { applyRecommendedSelection, forceUnlock } from "./growthUtils.js";
 import { getAudio } from "./audioCache.js";
 import { getConsecutiveQualifiedDays } from "./qualifiedStore_supabase.js";
+import { launchConfetti } from "./confetti.js";
 
 const PASS_DAYS = 7;
 const POST_UNLOCK_DAYS = 7;
@@ -95,6 +96,7 @@ export async function updateGrowthStatusBar(user, target, onUnlocked) {
   if (canUnlock) {
     msg.textContent = `合格条件（7日間の合格）を達成しました！\n次の和音を解放できます。\n連続合格日数: ${consecutive} 日`;
     msg.classList.add("can-unlock");
+    msg.classList.remove("current-target");
     card.classList.add("highlight");
     btn.style.display = "block";
 
@@ -112,6 +114,7 @@ export async function updateGrowthStatusBar(user, target, onUnlocked) {
           const applause = getAudio("audio/applause.mp3");
           audio.play();
           applause.play();
+          launchConfetti();
           await applyRecommendedSelection(user.id);
           forceUnlock();
           btn.style.display = "none";
@@ -128,8 +131,10 @@ export async function updateGrowthStatusBar(user, target, onUnlocked) {
     btn.onpointerleave = cancelProgress;
   } else {
     const label = target ? target.label : "";
-    msg.textContent = `いま ${label} の解放条件を満たしていません\n連続合格日数: ${consecutive} 日`;
+    const colorClass = target ? target.colorClass : "";
+    msg.innerHTML = `いま <span class="chord ${colorClass}">${label}</span> の和音に挑戦中`;
     msg.classList.remove("can-unlock");
+    msg.classList.add("current-target");
     card.classList.remove("highlight");
     btn.style.display = "none";
     btn.onpointerdown = null;

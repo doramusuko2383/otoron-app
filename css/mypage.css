@@ -1,6 +1,8 @@
 .mypage-screen {
   max-width: 480px;
   margin: 0 auto; /* 上部余白は #app.with-header に委任 */
+  background: linear-gradient(135deg, #fff1e6, #ffe6f2);
+  min-height: 100vh;
 }
 
 .mypage-tabs {
@@ -18,7 +20,7 @@
 
 .mypage-tab-button.active {
   background: #fff;
-  border-bottom: 2px solid #ff9900;
+  border-bottom: 2px solid var(--color-primary);
   font-weight: bold;
 }
 
@@ -59,6 +61,15 @@
 
 .plan-buttons button {
   padding: 0.8em;
+}
+
+@media (min-width: 768px) {
+  .plan-buttons {
+    flex-direction: row;
+  }
+  .plan-buttons button {
+    flex: 1;
+  }
 }
 .profile-form,
 .password-form {

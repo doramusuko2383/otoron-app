@@ -153,6 +153,11 @@ export async function getConsecutiveQualifiedDays(userId, days = REQUIRED_DAYS) 
   const qualifiedSet = new Set(qualified.map(d => d.qualified_date));
 
   function isValidPassingDay(dateStr) {
+    // if any chord was unlocked on this exact day, treat it as not qualified
+    if (progress.some(p => p.status !== "locked" && p.unlocked_date === dateStr)) {
+      return false;
+    }
+
     const unlockedOnDate = progress
       .filter(
         p =>
@@ -160,6 +165,7 @@ export async function getConsecutiveQualifiedDays(userId, days = REQUIRED_DAYS) 
           (!p.unlocked_date || p.unlocked_date <= dateStr)
       )
       .map(p => p.chord_key);
+
     if (unlockedOnDate.length !== currentUnlocked.length) return false;
     return unlockedOnDate.every(ch => currentSet.has(ch));
   }

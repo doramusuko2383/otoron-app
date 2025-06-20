@@ -87,13 +87,22 @@ export async function renderSummaryScreen(user) {
   await renderSummaryScreenForDate(today, user);
 }
 
-export async function renderSummarySection(container, date, user) {
-  const records = await loadTrainingRecords(user.id);
+export async function renderSummarySection(container, date, user, options = {}) {
+  const { standalone = true } = options;
+
+  const sinceDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+    .toISOString()
+    .slice(0, 10);
+  const records = await loadTrainingRecords(user.id, sinceDate);
   const sessions = await loadTrainingSessionsForDate(user.id, date);
 
   container.innerHTML = "";
   // Add a specific class so CSS rules don't affect other screens
-  container.className = "screen active summary-screen";
+  if (standalone) {
+    container.className = "screen active summary-screen";
+  } else {
+    container.className = "summary-screen";
+  }
 
   const calendarLabel = document.createElement("div");
   calendarLabel.textContent = "日付を絞って選択";
@@ -205,7 +214,12 @@ export async function renderSummarySection(container, date, user) {
     const sessionTitle = document.createElement("h3");
     const t = session.timestamp ? new Date(session.timestamp).toTimeString().slice(0,5) : '';
     const jp = jpNums[sessionIndex] || (sessionIndex + 1);
-    sessionTitle.textContent = `${jp}回目のトレーニング${t ? ' ' + t : ''}`;
+    const type = session.results_json && session.results_json.type;
+    let typeLabel = '和音トレーニング';
+    if (type === 'note-white') typeLabel = '単音テスト（白鍵）';
+    else if (type === 'note-easy') typeLabel = '単音テスト（3オクターブ）';
+    else if (type === 'note-full') typeLabel = '単音テスト（全88鍵）';
+    sessionTitle.textContent = `${jp}回目: ${typeLabel}${t ? ' ' + t : ''}`;
     sessionTitle.style.fontSize = "1em";
     sessionTitle.style.margin = "0 0 0.5em 0";
     sessionSummary.appendChild(sessionTitle);
@@ -239,12 +253,12 @@ export async function renderSummarySection(container, date, user) {
     toggleLabel.style.marginLeft = '0.3em';
 
     const resultWrap = document.createElement('div');
-    resultWrap.style.display = 'none';
+    resultWrap.className = 'result-wrap';
     resultWrap.innerHTML = createResultTable(session.results_json || []);
 
     toggleBtn.onclick = () => {
-      const open = resultWrap.style.display !== 'none';
-      resultWrap.style.display = open ? 'none' : 'block';
+      const open = resultWrap.classList.contains('open');
+      resultWrap.classList.toggle('open', !open);
       toggleBtn.textContent = open ? '＋' : '－';
     };
 

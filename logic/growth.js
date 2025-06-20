@@ -11,7 +11,8 @@ import {
 } from "../utils/growthUtils.js";
 import {
   loadGrowthFlags,
-  generateMockGrowthData
+  generateMockGrowthData,
+  generateMockSingleNoteData
 } from "../utils/growthStore_supabase.js";
 import { deleteTrainingDataThisWeek } from "../utils/trainingStore_supabase.js";
 import { chords } from "../data/chords.js";
@@ -30,7 +31,7 @@ export async function renderGrowthScreen(user) {
   renderHeader(app, user);
 
   const container = document.createElement("div");
-  container.className = "screen active";
+  container.className = "screen active growth-screen";
 
   const today = getToday();
   const passed = await getPassedDays(user.id);
@@ -40,15 +41,14 @@ export async function renderGrowthScreen(user) {
   const target = getCurrentTargetChord(flags); // ← chordOrder に沿った未解放の最初の1つ
 
   const title = document.createElement("h2");
-  title.textContent = "🎯 育成モード進捗と履歴";
+  title.textContent = "🎯 育成モード";
   container.appendChild(title);
 
-  const info = document.createElement("p");
+  const info = document.createElement("div");
   info.className = "today-info";
   info.innerHTML = `
-    今日の日付: <strong>${today}</strong><br/>
-    今日の状態: ${qualifiedToday ? "✅ 合格済み" : "❌ 未合格"}<br/>
-    連続合格日数: ${qualifiedDays} 日
+    <div>今日の日付: <strong>${today}</strong></div>
+    <div>連続合格日数: ${qualifiedDays}/7日</div>
   `;
   container.appendChild(info);
 
@@ -153,7 +153,8 @@ export async function renderGrowthScreen(user) {
     { value: "mock4", label: "モック記録生成（4日分）" },
     { value: "mock5", label: "モック記録生成（5日分）" },
     { value: "mock6", label: "モック記録生成（6日分）" },
-    { value: "mock7", label: "モック記録生成（7日分）" }
+    { value: "mock7", label: "モック記録生成（7日分）" },
+    { value: "mockNote", label: "単音テストダミーデータ" }
   ].forEach(opt => {
     const o = document.createElement("option");
     o.value = opt.value;
@@ -193,6 +194,9 @@ export async function renderGrowthScreen(user) {
           alert(success ? "今週のデータを削除しました" : "削除に失敗しました");
         }
       );
+    } else if (val === "mockNote") {
+      await generateMockSingleNoteData(user.id);
+      alert("単音テストのダミーデータを生成しました");
     } else if (val.startsWith("mock")) {
       const days = parseInt(val.replace("mock", ""), 10);
       await generateMockGrowthData(user.id, days);
@@ -208,17 +212,15 @@ export async function renderGrowthScreen(user) {
 
   // 和音進捗表示
   const chordStatus = document.createElement("div");
-  chordStatus.style.display = "grid";
-  chordStatus.style.gridTemplateColumns = "repeat(auto-fit, minmax(90px, 1fr))";
-  chordStatus.style.gap = "10px";
-  chordStatus.style.marginTop = "1.5em";
+  chordStatus.className = "chord-status-grid";
 
-  for (const chord of chords) {
+  chords.forEach((chord, index) => {
     const item = document.createElement("div");
     item.style.textAlign = "center";
 
     const circle = document.createElement("div");
     circle.classList.add("growth-chord-circle");
+    circle.textContent = chord.label;
 
     const isUnlocked = flags[chord.key]?.unlocked === true;
 
@@ -242,16 +244,16 @@ export async function renderGrowthScreen(user) {
       }
     };
 
-    const label = document.createElement("div");
-    label.style.fontSize = "0.85em";
-    label.textContent = chord.label;
-
     item.appendChild(circle);
-    item.appendChild(label);
-
 
     chordStatus.appendChild(item);
-  }
+
+    if (index === 8 || index === 13) {
+      const br = document.createElement("div");
+      br.className = "chord-row-break";
+      chordStatus.appendChild(br);
+    }
+  });
 
   container.appendChild(chordStatus);
 

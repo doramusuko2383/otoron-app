@@ -11,6 +11,7 @@ import { saveTrainingSession } from "../utils/trainingStore_supabase.js";
 import { generateRecommendedQueue } from "../utils/growthUtils.js";
 import { loadGrowthFlags } from "../utils/growthStore_supabase.js";
 import { getAudio } from "../utils/audioCache.js";
+import { kanaToHiragana, noteLabels } from "../utils/noteUtils.js";
 
 let questionCount = 0;
 let currentAnswer = null;
@@ -24,27 +25,6 @@ let singleNoteMode = false;
 let singleNoteStrategy = 'top';
 let chordProgressCount = 0;
 let chordSoundOn = true;
-
-const noteLabels = {
-  "C": "ど",
-  "D": "れ",
-  "E": "み",
-  "F": "ふぁ",
-  "G": "そ",
-  "A": "ら",
-  "B": "し",
-  "C#": "ちす", "Db": "ちす",
-  "D#": "えす", "Eb": "えす",
-  "F#": "ふぃす", "Gb": "ふぃす",
-  "G#": "じす", "Ab": "じす",
-  "A#": "べー", "Bb": "べー"
-};
-
-function kanaToHiragana(str) {
-  return str.replace(/[ァ-ン]/g, ch =>
-    String.fromCharCode(ch.charCodeAt(0) - 0x60)
-  );
-}
 
 export const stats = {};
 export const mistakes = {};
@@ -166,31 +146,29 @@ async function nextQuestion() {
   alreadyTried = false;
   isForcedAnswer = false;
   if (questionQueue.length === 0 || quitFlag) {
-
-    // 🔽 ここで一括保存
-    await saveTrainingSession({
-      userId: currentUser.id,
-      results: lastResults,
-      stats,
-      mistakes,
-      correctCount,
-      totalCount: questionCount,
-      date: new Date().toISOString(),
-    });
-
-    saveSessionToHistory();
-
-    await updateTrainingRecord({
-      userId: currentUser.id,
-      correct: correctCount,
-      total: questionCount
-    });
-
-    await incrementSetCount(currentUser.id);
-    await autoUnlockNextChord(currentUser);
-  
     const sound = (correctCount === questionCount) ? "perfect" : "end";
-    playSoundThen(sound, () => {
+    playSoundThen(sound, async () => {
+      await saveTrainingSession({
+        userId: currentUser.id,
+        results: { type: 'chord', results: lastResults },
+        stats,
+        mistakes,
+        correctCount,
+        totalCount: questionCount,
+        date: new Date().toISOString(),
+      });
+
+      saveSessionToHistory();
+
+      await updateTrainingRecord({
+        userId: currentUser.id,
+        correct: correctCount,
+        total: questionCount
+      });
+
+      await incrementSetCount(currentUser.id);
+      await autoUnlockNextChord(currentUser);
+
       sessionStorage.setItem('openResultChild', 'true');
       switchScreen("result");
     });
@@ -204,6 +182,9 @@ function showQuiz() {
   const nextChordName = questionQueue.pop();
   currentAnswer = chords.find(c => c.name === nextChordName);
   drawQuizScreen();
+  questionCount++;
+  updateProgressUI();
+
   playChordFile(currentAnswer.file);
 }
 
@@ -219,6 +200,8 @@ function drawQuizScreen() {
   container.style.padding = "1em 0 6em";
   // Avoid potential horizontal scroll on mobile
   container.style.width = "100%";
+  container.style.maxWidth = "100%";
+  container.style.overflow = "hidden";
 
   const feedback = document.createElement("div");
   feedback.id = "feedback";
@@ -234,39 +217,6 @@ function drawQuizScreen() {
   feedback.style.display = "none";
   container.appendChild(feedback);
 
-  const header = document.createElement("div");
-  header.style.display = "flex";
-  header.style.justifyContent = "space-between";
-  header.style.alignItems = "center";
-  header.style.width = "100%";
-  header.style.maxWidth = "600px";
-  header.style.margin = "1em auto 0.5em";
-  header.style.padding = "0 1em";
-
-  const counter = document.createElement("h2");
-  counter.id = "progress-counter";
-  const total = questionQueue.length + questionCount + 1;
-  counter.textContent = `${questionCount} / ${total}`;
-  counter.style.fontSize = "1.2em";
-  header.appendChild(counter);
-
-  const progress = document.createElement("progress");
-  progress.id = "progress-bar";
-  progress.value = questionCount;
-  progress.max = total;
-  progress.style.width = "60%";
-  progress.style.height = "1em";
-  header.appendChild(progress);
-
-
-
-  const layout = document.createElement("div");
-  layout.className = "grid-container";
-  layout.style.display = "grid";
-  layout.style.gap = "12px";
-  layout.style.width = "100%";
-  layout.style.margin = "0 auto";
-
   const btnCount = selectedChords.length;
   let cols = 5;
   if (btnCount === 1) {
@@ -280,7 +230,65 @@ function drawQuizScreen() {
   } else {
     cols = 5; // 5×5 grid for 10 or more
   }
+
+  const widthMap = {
+    1: "240px",
+    2: "320px",
+    3: "360px",
+    4: "480px",
+    5: "500px",
+  };
+
+  const maxWidth = widthMap[cols];
+
+  const header = document.createElement("div");
+  header.style.display = "flex";
+  header.style.alignItems = "center";
+  header.style.width = "100%";
+  header.style.maxWidth = maxWidth;
+  header.style.margin = "1em auto 0.5em";
+  header.style.boxSizing = "border-box";
+  header.style.padding = "0 4px";
+
+  const total = questionQueue.length + questionCount + 1;
+  const progressWrapper = document.createElement("div");
+  progressWrapper.className = "progress-wrapper";
+  progressWrapper.style.flexGrow = "1";
+  progressWrapper.style.position = "relative";
+  progressWrapper.style.marginLeft = "0";
+
+  const progress = document.createElement("progress");
+  progress.id = "progress-bar";
+  progress.value = questionCount;
+  progress.max = total;
+  progress.style.width = "100%";
+  progress.style.height = "2em";
+  progressWrapper.appendChild(progress);
+
+  const counter = document.createElement("span");
+  counter.id = "progress-counter";
+  counter.textContent = `${questionCount} / ${total}`;
+  counter.style.position = "absolute";
+  counter.style.left = "50%";
+  counter.style.top = "50%";
+  counter.style.transform = "translate(-50%, -50%)";
+  counter.style.fontSize = "0.9em";
+  counter.style.fontWeight = "bold";
+  counter.style.pointerEvents = "none";
+  progressWrapper.appendChild(counter);
+
+  header.appendChild(progressWrapper);
+
+
+
+  const layout = document.createElement("div");
+  layout.className = "grid-container";
+  layout.style.display = "grid";
+  layout.style.gap = "12px";
+  layout.style.width = "100%";
+  layout.style.margin = "0 auto";
   layout.classList.add(`cols-${cols}`);
+  layout.style.maxWidth = maxWidth;
 
   const order = [
     "C-E-G", "C-F-A", "B-D-G", "A-C-F", "D-G-B",
@@ -411,8 +419,8 @@ if (correctBtn) {
     });
   };
 
-  const bottomWrap = document.createElement("div");
-  bottomWrap.id = "bottom-buttons";
+  const bottomWrap = document.createElement("footer");
+  bottomWrap.id = "training-footer";
   bottomWrap.appendChild(unknownBtn);
   bottomWrap.appendChild(quitBtn);
 
@@ -587,7 +595,7 @@ function showSingleNoteQuiz(chord, onFinish, isLast = false) {
     }
 
     if (correct) {
-      showFeedback('GOOD!', 'good');
+      showFeedback('いいね', 'good');
       const voices = ['good1', 'good2'];
       playSoundThen(voices[Math.floor(Math.random() * voices.length)], () => {
         overlay.remove();
@@ -660,8 +668,7 @@ function checkAnswer(selected) {
 
   if (isForcedAnswer) {
     isForcedAnswer = false;
-    questionCount++;
-    updateProgressUI();
+
     nextQuestion();
     return;
   }
@@ -681,8 +688,7 @@ function checkAnswer(selected) {
     if (!alreadyTried) {
       correctCount++;
     }
-    questionCount++;
-    updateProgressUI();
+
 
     document.querySelectorAll(".square-btn-content").forEach(btn => {
       btn.style.pointerEvents = "none";
@@ -691,23 +697,29 @@ function checkAnswer(selected) {
 
     const proceed = () => {
       if (questionQueue.length === 0) {
-        showFeedback("トレーニング終了！", "good", 0);
-        nextQuestion();
-      } else {
-        nextQuestion();
+        showFeedback("がんばったね", "good", 0);
       }
+      nextQuestion();
     };
 
-    const voices = ["good1", "good2"];
-    showFeedback("GOOD!", "good");
-    playSoundThen(voices[Math.floor(Math.random() * voices.length)], () => {
+    const isLast = questionQueue.length === 0;
+    if (isLast) {
       if (singleNoteMode) {
-        const isLast = questionQueue.length === 0;
-        showSingleNoteQuiz(currentAnswer, proceed, isLast);
+        showSingleNoteQuiz(currentAnswer, proceed, true);
       } else {
         proceed();
       }
-    });
+    } else {
+      const voices = ["good1", "good2"];
+      showFeedback("いいね", "good");
+      playSoundThen(voices[Math.floor(Math.random() * voices.length)], () => {
+        if (singleNoteMode) {
+          showSingleNoteQuiz(currentAnswer, proceed, false);
+        } else {
+          proceed();
+        }
+      });
+    }
   } else {
     alreadyTried = true;
     stats[name].wrong++;

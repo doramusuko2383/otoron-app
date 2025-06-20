@@ -1,14 +1,23 @@
+/* 育成画面全体の背景 */
+.growth-screen {
+  background: linear-gradient(135deg, #fff1e6, #ffe6f2);
+  min-height: 100vh;
+}
+
 /* ✅ 和音サークル共通 */
 .growth-chord-circle {
-  width: 36px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 72px;
   height: 36px;
-  border-radius: 50%;
+  border-radius: 9999px;
   margin: 0 auto;
   border: 2px solid #aaa;
   cursor: pointer;
-  line-height: 36px;
+  line-height: normal;
   text-align: center;
-  font-size: 1.2em;
+  font-size: 0.9em;
   transition: background-color 0.3s ease;
 }
 
@@ -210,9 +219,18 @@
 
 /* 今日の情報 */
 .today-info {
+  margin: 0 auto 1em;
+  padding: 0.75em;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
   text-align: center;
-  font-size: 1.1em;
-  margin-bottom: 1em;
+  font-size: 1.05em;
+  max-width: 320px;
+}
+
+.today-info div {
+  margin: 0.25em 0;
 }
 
 /* ステータスバーとメッセージ */
@@ -249,4 +267,66 @@
 #growth-message.can-unlock {
   color: #d1007d;
   font-weight: bold;
+}
+
+#growth-message.current-target {
+  font-size: 1.1em;
+  font-weight: bold;
+}
+
+/* 現在挑戦中の和音表示を強調 */
+.current-target .chord {
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 6px;
+}
+
+/* 和音進捗表示のグリッド */
+.chord-status-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  padding: 0 16px;
+  box-sizing: border-box;
+}
+
+.chord-status-grid > div {
+  margin: 4px;
+}
+
+.chord-row-break {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .chord-row-break {
+    display: block;
+    flex-basis: 100%;
+    height: 0;
+  }
+}
+
+/* === confetti effect for unlock === */
+.confetti-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 2000;
+}
+.confetti-piece {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  opacity: 0.9;
+  animation: confetti-fall 1.2s linear forwards;
+}
+@keyframes confetti-fall {
+  from { transform: translateY(-10vh) rotate(0deg); }
+  to   { transform: translateY(100vh) rotate(720deg); }
 }

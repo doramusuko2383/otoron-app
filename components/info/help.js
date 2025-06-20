@@ -1,15 +1,15 @@
 import { renderHeader } from "../header.js";
 
-export function renderHelpScreen() {
+export function renderHelpScreen(user) {
   const app = document.getElementById("app");
   app.innerHTML = "";
-  renderHeader(app);
+  renderHeader(app, user);
 
   const main = document.createElement("main");
   main.className = "info-page";
   main.innerHTML = `
     <section id="help-section" class="help-container">
-      <h1>絶対音感トレーニング ガイド</h1>
+      <h1>必ずお読みください</h1>
 
       <details>
         <summary>対象年齢と基礎的な考え方</summary>
@@ -28,7 +28,7 @@ export function renderHelpScreen() {
 
       <details>
         <summary>回答方法と進行の流れ</summary>
-        <p>和音を聴いたら、その和音に対応する色を声に出してボタンを押してください。最初は赤の和音1つから始め、順に和音を増やしていきます。2週間安定して回答できると、次の和音に進みます。</p>
+        <p>和音を聴いたら、その和音に対応する色を声に出してボタンを押してください。最初は赤の和音1つから始め、順に和音を増やしていきます。2週間安定して回答できると、次の和音に進みます。オトロンでは一週間で次の和音に進める設計にしていますが、聞き分けが完璧でないと思えば日数を伸ばして下さい。</p>
       </details>
 
       <details>
@@ -79,10 +79,39 @@ export function renderHelpScreen() {
 
       <details>
         <summary>このガイドについて</summary>
-        <p>本ガイドは江口式絶対音感教育の考え方を参考に、オトロン独自の設計と実践に基づき再構成されたものです。</p>
+        <p>本ガイドは、幼児期における和音認知訓練の実践的知見を参考に、オトロン独自の方法で再構成されたものです。</p>
       </details>
     </section>
   `;
   app.appendChild(main);
+
+  const detailsList = main.querySelectorAll("#help-section details");
+  detailsList.forEach((detail) => {
+    detail.classList.add("collapsible");
+    const summary = detail.querySelector("summary");
+    const contentWrapper = document.createElement("div");
+    contentWrapper.className = "detail-content";
+    while (summary.nextSibling) {
+      contentWrapper.appendChild(summary.nextSibling);
+    }
+    detail.appendChild(contentWrapper);
+
+    summary.addEventListener("click", (e) => {
+      e.preventDefault();
+      const isOpen = detail.hasAttribute("open");
+      if (isOpen) {
+        detail.classList.add("closing");
+        setTimeout(() => {
+          detail.removeAttribute("open");
+          detail.classList.remove("closing");
+        }, 400);
+      } else {
+        detailsList.forEach((d) => {
+          if (d !== detail) d.removeAttribute("open");
+        });
+        detail.setAttribute("open", "");
+      }
+    });
+  });
 }
 

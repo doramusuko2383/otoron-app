@@ -23,6 +23,14 @@ const STATIC_ASSETS = [
   '/css/info.css',
   '/css/pricing.css',
   '/css/setup.css',
+  // frequently used audio files preloaded for faster playback
+  '/audio/touch.mp3',
+  '/audio/good1.mp3',
+  '/audio/good2.mp3',
+  '/audio/perfect.mp3',
+  '/audio/end.mp3',
+  '/audio/applause.mp3',
+  '/audio/unlock_chord.mp3',
 ];
 
 self.addEventListener('install', event => {

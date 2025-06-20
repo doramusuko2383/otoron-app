@@ -78,7 +78,7 @@ async function createPlanInfoContent(user) {
     if (sub.status === 'cancelled') {
       const msg = document.createElement('div');
       msg.textContent = `ご契約は${formatDate(expireDate)}まで有効です。それ以降、自動的に無料プランに戻ります。`;
-      msg.style.marginTop = '1em';
+      msg.className = 'plan-info-msg';
       btnWrap.appendChild(msg);
     } else {
       const cancelBtn = document.createElement('button');
@@ -91,8 +91,7 @@ async function createPlanInfoContent(user) {
             body: JSON.stringify({ userId: user.id }),
           });
           if (res.ok) {
-            const data = await res.json();
-            alert(`ご契約は${formatDate(new Date(data.current_period_end))}まで有効です。それ以降、自動的に無料プランに戻ります。`);
+            alert('解約処理が完了しました');
             switchScreen('home');
           } else {
             alert('解約に失敗しました');

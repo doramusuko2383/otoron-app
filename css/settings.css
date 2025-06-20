@@ -1,13 +1,42 @@
 /* ===== settings.css ===== */
 
-/* 出題数設定エリア */
-#chord-settings {
-  max-width: 600px;
+/* 出題設定ボード全体 */
+.board {
   margin: 1em auto;
+  padding: 1em;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.6);
+  max-width: 960px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.board h2 {
+  text-align: center;
+  margin-bottom: 1em;
+  font-size: 1.4em;
+}
+
+/* PCで横並びにするメインセクション */
+.main-section {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 24px;
+}
+
+@media (min-width: 768px) {
+  .main-section {
+    flex-wrap: nowrap;
+  }
 }
 
 .chord-group {
   margin-bottom: 1.5em;
+  flex: 1 1 260px;
+  border-radius: 12px;
+  background: #fff;
+  padding: 0.5em;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
 
 .chord-group h2 {
@@ -24,34 +53,73 @@
   font-size: 0.9em;
 }
 
-.chord-group.collapsed .chord-grid {
-  display: none;
-}
-
-.chord-grid {
+.chord-group .chord-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 6px;
+  max-height: 1000px;
+  overflow: hidden;
+  opacity: 1;
+  transition: max-height 0.3s ease, opacity 0.3s ease;
+}
+
+.chord-group.collapsed .chord-grid {
+  max-height: 0;
+  opacity: 0;
 }
 
 .chord-block {
   border: 1px solid #ccc;
-  border-radius: 6px;
+  border-radius: 8px;
   background: #fff;
-  padding: 4px;
+  padding: 8px;
   text-align: center;
   font-size: 0.9em;
   position: relative;
+  transition: filter 0.2s, opacity 0.2s;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.chord-block:not(.selected) {
+  filter: grayscale(1);
+  opacity: 0.6;
 }
 
 .chord-toggle {
+  appearance: none;
   position: relative;
   margin: 0 auto;
+  width: 36px;
+  height: 18px;
+  background-color: #ccc;
+  border-radius: 18px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.chord-toggle::before {
+  content: '';
+  position: absolute;
+  left: 2px;
+  top: 2px;
+  width: 14px;
+  height: 14px;
+  background-color: #fff;
+  border-radius: 50%;
+  transition: transform 0.3s;
+}
+
+.chord-toggle:checked {
+  background-color: #4caf50;
+}
+
+.chord-toggle:checked::before {
+  transform: translateX(18px);
 }
 
 .checkbox-row {
   text-align: center;
-  margin-bottom: 2px;
+  margin-bottom: 6px;
 }
 
 /* 以前は選択中のブロックに擬似要素でチェックマークを表示していたが、
@@ -66,25 +134,29 @@
 
 .chord-name {
   font-weight: bold;
-  margin-bottom: 2px;
+  margin-bottom: 4px;
   border-radius: 4px;
   white-space: nowrap; /* Prevent chord names from wrapping */
 }
 
 .count-control {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
 }
 
 .count-control button {
   padding: 2px 6px;
+  font-size: 1em;
 }
 
 .count-number {
   min-width: 1.2em;
   text-align: center;
+  font-size: 1.2em;
+  font-weight: bold;
 }
 
 /* ヘッダー行 */
@@ -209,7 +281,82 @@
   padding: 6px 12px;
 }
 
-/* その他のトレーニングの見出し */
-.other-training-section h3 {
-  text-align: left; /* 左寄せに変更 */
+/* その他のトレーニング */
+.other-training {
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  font-size: 14px;
+  width: 240px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
+.other-training button {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  background: #f5f5f5;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  cursor: pointer;
+}
+.other-training h3 {
+  font-family: var(--font-heading);
+  font-weight: bold;
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+
+/* カード型の各セクション */
+.white-key-section,
+.black-key-section,
+.inversion-section {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  padding: 16px;
+  flex: 1 1 280px;
+  box-sizing: border-box;
+}
+
+.shadow-button {
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.toggle-label {
+  font-weight: bold;
+}
+
+/* 温かみのある背景 */
+.settings-screen {
+  background: linear-gradient(135deg, #fff1e6, #ffe6f2); /* 柔らかいグラデーション */
+  min-height: 100vh;
+}
+
+/* スマホ向けレイアウト調整 */
+@media (max-width: 768px) {
+  .main-section {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .white-key-section,
+  .black-key-section,
+  .inversion-section,
+  .other-training {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    padding: 0;
+    background: transparent;
+    box-shadow: none;
+    border-radius: 0;
+  }
+}
+

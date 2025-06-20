@@ -1,8 +1,27 @@
+.result-screen {
+  background: linear-gradient(135deg, #fff1e6, #ffe6f2);
+  min-height: 100vh;
+}
+
+@media (min-width: 768px) {
+  .result-screen {
+    max-width: none;
+    margin: 0;
+  }
+}
+
 /* 結果画面全体のレイアウト */
 .result-container {
   text-align: center;
-  padding: 2em;
-  background-color: #fffaf5;
+  padding: 1em 0;
+  background-color: transparent;
+  box-sizing: border-box;
+}
+
+/* テーブル横スクロール用ラッパー */
+.result-scroll-wrap {
+  overflow-x: auto;
+  width: 100%;
 }
 
 /* メッセージ強調 */
@@ -34,7 +53,8 @@
 .result-table {
   margin: 2em auto;
   border-collapse: collapse;
-  width: auto;
+  width: 100%;
+  min-width: 600px;
   font-size: 0.85em;
   table-layout: fixed;
 }
@@ -184,7 +204,7 @@
 
 .tab-menu .tab.active {
   background-color: #fff;
-  border-top-color: #ff9900;
+  border-top-color: var(--color-primary);
   font-weight: bold;
 }
 
@@ -227,4 +247,10 @@
 
 .summary-table th {
   background-color: #f4f4f4;
+}
+
+@media (max-width: 600px) {
+  .result-container {
+    padding: 0.5em 0;
+  }
 }

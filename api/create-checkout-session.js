@@ -9,7 +9,6 @@ const priceMap = {
 };
 
 export default async function handler(req, res) {
-
   if (req.method !== 'POST') {
     return res.status(405).send('Method Not Allowed');
   }
@@ -43,10 +42,10 @@ export default async function handler(req, res) {
         },
       ],
       success_url:
-        'https://otoron-app.vercel.app/success?session_id={CHECKOUT_SESSION_ID}&plan=' +
-        plan,
+        'https://otoron-app.vercel.app/success?session_id={CHECKOUT_SESSION_ID}&plan=' + plan,
       cancel_url: 'https://otoron-app.vercel.app/cancel',
       customer_email: email,
+      customer_creation: 'always', // ✅ これが重要！
     });
 
     res.status(200).json({ id: session.id });

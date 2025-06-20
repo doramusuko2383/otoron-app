@@ -85,15 +85,7 @@ export async function generateMockGrowthData(userId, days = 7) {
     .from("user_chord_progress")
     .update({ unlocked_date: pastStr })
     .eq("user_id", userId)
-    .eq("status", "in_progress");
-
-  const sampleMistakes = [
-    { question: "C-E-G", answer: "E-G-C" },
-    { question: "A-C#-E", answer: "C#-E-A" },
-    { question: "D-F#-A", answer: "F#-A-D" },
-    { question: "E-G#-B", answer: "G#-B-E" },
-    { question: "F-A-C", answer: "A-C-F" }
-  ];
+    .not("status", "eq", "locked");
 
   const flags = await loadGrowthFlags(userId);
   let queue = generateRecommendedQueue(flags);
@@ -131,10 +123,10 @@ export async function generateMockGrowthData(userId, days = 7) {
       let correctFlag = true;
 
       if (q < mistakeNum) {
-        const m = sampleMistakes[(i + q) % sampleMistakes.length];
-        answerName = m.answer;
+        const wrongIdx = (q + 1) % queue.length;
+        answerName = queue[wrongIdx];
         correctFlag = false;
-        inversionMistakes.push({ ...m, count: 1 });
+        inversionMistakes.push({ question: chordName, answer: answerName, count: 1 });
       }
 
       results.push({ chordName, answerName, correct: correctFlag });
@@ -155,7 +147,7 @@ export async function generateMockGrowthData(userId, days = 7) {
         session_date: `${dateStr}${time}`,
         correct_count: count - mistakeNum,
         total_count: count,
-        results_json: results,
+        results_json: { type: 'chord', results },
         stats_json: stats,
         mistakes_json: { inversion_confusions: inversionMistakes },
         is_qualified: isQualified
@@ -168,5 +160,87 @@ export async function generateMockGrowthData(userId, days = 7) {
 
     // 両セッションの保存後に日付単位の合格判定を実施
     await markQualifiedDayIfNeeded(userId, `${dateStr}${sessionTimes[0]}`);
+  }
+}
+
+/**
+ * 単音テスト3種のモックデータを生成（正解率90%程度）
+ * @param {string} userId
+ */
+export async function generateMockSingleNoteData(userId) {
+  if (!userId) {
+    console.warn("generateMockSingleNoteData called without valid user ID");
+    return;
+  }
+
+  const now = new Date();
+  const dateStr = now.toISOString().split("T")[0];
+  const sessionTypes = ['note-white', 'note-easy', 'note-full'];
+  const total = 20;
+  const correctCount = Math.round(total * 0.9);
+  const mistakeNum = total - correctCount;
+
+  for (let i = 0; i < sessionTypes.length; i++) {
+    const results = [];
+    for (let q = 0; q < total; q++) {
+      const correct = q >= mistakeNum;
+      results.push({
+        noteQuestion: 'C4',
+        noteAnswer: correct ? 'C4' : 'D4',
+        correct,
+        isSingleNote: true
+      });
+    }
+
+    const ses = {
+      user_id: userId,
+      session_date: new Date(now.getTime() + i * 60000).toISOString(),
+      correct_count: correctCount,
+      total_count: total,
+      results_json: { type: sessionTypes[i], results },
+      stats_json: {},
+      mistakes_json: {},
+      is_qualified: false
+    };
+    const { error: sesErr } = await supabase
+      .from('training_sessions')
+      .insert(ses);
+    if (sesErr) console.error('❌ モック単音セッション挿入失敗:', sesErr);
+  }
+
+  const addTotal = total * sessionTypes.length;
+  const addCorrect = correctCount * sessionTypes.length;
+  const { data: existing, error: recErr } = await supabase
+    .from('training_records')
+    .select('*')
+    .eq('user_id', userId)
+    .eq('date', dateStr)
+    .maybeSingle();
+
+  if (recErr) {
+    console.error('❌ モック記録取得失敗:', recErr);
+    return;
+  }
+
+  if (existing) {
+    const { error: updateErr } = await supabase
+      .from('training_records')
+      .update({
+        count: existing.count + addTotal,
+        correct: existing.correct + addCorrect
+      })
+      .eq('id', existing.id);
+    if (updateErr) console.error('❌ モック記録更新失敗:', updateErr);
+  } else {
+    const { error: insertErr } = await supabase
+      .from('training_records')
+      .insert({
+        user_id: userId,
+        date: dateStr,
+        count: addTotal,
+        correct: addCorrect,
+        sets: 0
+      });
+    if (insertErr) console.error('❌ モック記録挿入失敗:', insertErr);
   }
 }

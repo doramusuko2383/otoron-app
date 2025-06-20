@@ -68,7 +68,7 @@ export async function renderSettingsScreen(user) {
   renderHeader(app, user);
 
   const container = document.createElement("div");
-  container.className = "screen active";
+  container.className = "screen active settings-screen";
   // 画面全体をスクロールできるようにする
 
   const headerBar = document.createElement("div");
@@ -80,7 +80,8 @@ export async function renderSettingsScreen(user) {
 
   const buttonGroup = document.createElement("div");
 const resetBtn = document.createElement("button");
-resetBtn.textContent = "推奨出題にする";
+resetBtn.className = "shadow-button";
+resetBtn.innerHTML = "✅ 推奨出題";
 resetBtn.onclick = () => {
   showCustomConfirm("本当に推奨出題にしますか？", () => {
     resetToRecommendedChords(unlockedKeys, user); // ← user を渡す！
@@ -145,7 +146,10 @@ buttonGroup.appendChild(resetBtn);
 
   singleWrap.appendChild(singleToggle);
   singleWrap.appendChild(slider);
-  singleWrap.appendChild(document.createTextNode('単音分化モード'));
+  const singleLabel = document.createElement('span');
+  singleLabel.className = 'toggle-label';
+  singleLabel.innerHTML = '🎵 単音分化モード';
+  singleWrap.appendChild(singleLabel);
   container.appendChild(singleWrap);
 
   const singleSelectWrap = document.createElement('div');
@@ -165,9 +169,9 @@ buttonGroup.appendChild(resetBtn);
   singleSelectWrap.appendChild(singleSelect);
   container.appendChild(singleSelectWrap);
 
-  const chordSettings = document.createElement("div");
-  chordSettings.id = "chord-settings";
-
+  const mainSection = document.createElement("div");
+  mainSection.className = "main-section";
+  
   const trainingMode = sessionStorage.getItem("trainingMode");
   const stored = (trainingMode === "custom")
     ? sessionStorage.getItem("selectedChords")
@@ -304,14 +308,17 @@ buttonGroup.appendChild(resetBtn);
     });
 
     sec.appendChild(grid);
-    chordSettings.appendChild(sec);
+    const wrapper = document.createElement("div");
+    if (g.type === "white") wrapper.className = "white-key-section";
+    else if (g.type === "black-root") wrapper.className = "black-key-section";
+    else wrapper.className = "inversion-section";
+    wrapper.appendChild(sec);
+    mainSection.appendChild(wrapper);
   });
-
-  container.appendChild(chordSettings);
 
   // ✅ その他のトレーニングセクション
   const section = document.createElement("div");
-  section.className = "other-training-section";
+  section.className = "other-training";
   section.innerHTML = `
     <h3>その他のトレーニング</h3>
     <ul>
@@ -320,7 +327,9 @@ buttonGroup.appendChild(resetBtn);
       <li><button id="btn-full">単音テスト（全88鍵）</button></li>
     </ul>
   `;
-  container.appendChild(section);
+
+  mainSection.appendChild(section);
+  container.appendChild(mainSection);
   app.appendChild(container);
 
   document.getElementById("btn-easy").onclick = () => switchScreen("training_easy");

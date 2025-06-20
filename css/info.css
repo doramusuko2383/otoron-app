@@ -9,6 +9,45 @@
   border-radius: 8px;
 }
 
+/* Pages that should stay centered even on large screens */
+.info-page.center-page {
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 8px;
+}
+
+/* Full width pages with centered text */
+.info-page.full-page {
+  max-width: none;
+  margin: 0;
+  padding-left: 0;
+  padding-right: 0;
+  border-radius: 0;
+  text-align: center;
+}
+
+/* Ensure bullet lists aren't flush against the edge on wide screens */
+.info-page.full-page ul {
+  text-align: left;
+  padding-left: 1.4em;
+}
+
+@media (min-width: 768px) {
+  .info-page {
+    max-width: none;
+    margin-left: 0;
+    margin-right: 0;
+    border-radius: 0;
+  }
+  .info-page.center-page {
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 8px;
+  }
+}
+
 /* Ensure readability even when the body has a dark background */
 .app-root.night .info-page {
   background: #fff;
@@ -16,12 +55,14 @@
 }
 
 .info-page h1 {
+  font-family: var(--font-heading);
   text-align: center;
   font-size: 1.6rem;
   margin-bottom: 0.8em;
 }
 
 .info-page h2 {
+  font-family: var(--font-heading);
   margin-top: 1.4em;
   font-size: 1.3rem;
 }
@@ -30,24 +71,81 @@
   color: #0645ad;
 }
 
+
 .info-page details {
   margin: 1em 0;
 }
 
+/* collapsible help section */
+.info-page details.collapsible {
+  overflow: hidden;
+}
+
+.info-page details.collapsible .detail-content {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transform: translateY(-8px);
+  transition: max-height 0.4s cubic-bezier(0.25, 1, 0.5, 1),
+    opacity 0.4s ease, transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.info-page details.collapsible[open] .detail-content {
+  max-height: 600px;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.info-page details.collapsible.closing .detail-content {
+  max-height: 0;
+  opacity: 0;
+  transform: translateY(-8px);
+}
+
+
 .info-page summary {
   cursor: pointer;
   font-weight: bold;
-  padding: 0.4em 0.6em;
+  padding: 0.4em 0.6em 0.4em 1.8em;
   background: #f3f3f3;
   border-radius: 4px;
+  list-style: none;
+  position: relative;
+  text-align: left; /* 左寄せ */
+}
+
+.info-page summary::-webkit-details-marker {
+  display: none;
+}
+
+/* plus/minus icon */
+.info-page summary::before,
+.info-page summary::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0.8em;
+  width: 10px;
+  height: 2px;
+  margin-top: -1px;
+  background: currentColor;
+  transition: transform 0.25s ease;
+}
+
+.info-page summary::after {
+  transform: rotate(90deg);
 }
 
 .info-page details[open] summary {
   background: #e0e0e0;
 }
 
-.info-page details p,
-.info-page details ul {
+.info-page details[open] summary::after {
+  transform: rotate(90deg) scaleX(0);
+}
+
+.info-page .detail-content p,
+.info-page .detail-content ul {
   margin: 0.5em 1.2em;
 }
 
@@ -70,6 +168,17 @@
 
 .contact-form textarea {
   min-height: 6em;
+}
+
+.link-btn {
+  display: inline-block;
+  padding: 0.8em 1.2em;
+  background: #ffa500;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
 }
 
 .contact-form button {

@@ -35,7 +35,7 @@
 }
 
 .home-screen.night {
-  color: #fff;
+  color: var(--color-night-text);
 }
 
 .home-screen.morning::before {
@@ -53,7 +53,7 @@
 
 .home-screen .logo-container {
   text-align: center;
-  margin-top: 6em; /* Adjust position further down */
+  margin-top: 4em; /* Move closer to the center */
 }
 
 .home-screen .otolon-face {
@@ -71,8 +71,15 @@
 
 .home-screen .home-title {
   font-size: 2.4rem;
-  color: #FFD44C;
+  color: var(--color-accent);
   margin: 0.5em 0 0.2em 0;
+  text-align: center;
+}
+
+.home-screen .greeting {
+  font-size: 1.8rem;
+  margin: 0;
+  color: #543014;
   text-align: center;
 }
 
@@ -84,7 +91,7 @@
 }
 
 .home-screen .main-start-button {
-  background-color: #FFD44C;
+  background-color: var(--color-accent);
   color: #543014;
   font-size: 1.2rem;
   padding: 0.8em 1.5em;
@@ -93,7 +100,7 @@
   box-shadow: 0 4px #c8a837;
   cursor: pointer;
   display: block;
-  margin: 2.5em auto 0;
+  margin: 2.5em auto 0.5em;
   animation: start-button-pulse 1.8s ease-in-out infinite;
   transform-origin: center;
 }
@@ -107,6 +114,18 @@
   color: #543014;
   text-align: center;
   margin-top: 0.5em;
+}
+
+.home-screen .trial-info {
+  font-size: 1em;
+  color: #543014;
+  text-align: center;
+  margin-top: 0.3em;
+  min-height: 1.2em; /* keep layout even when text is hidden */
+}
+
+.home-screen .trial-info.warning {
+  color: #ff6600;
 }
 
 @keyframes start-button-pulse {
@@ -137,7 +156,7 @@
   }
 
   .home-screen .logo-container {
-    margin-top: 3em;
+    margin-top: 2em;
   }
 
   .home-screen .main-start-button {

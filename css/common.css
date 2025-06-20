@@ -1,21 +1,29 @@
 /* ===== common.css (scoped) ===== */
 
 :root {
-  --font-main: 'Kosugi Maru', sans-serif;
+  --font-body: 'Kosugi Maru', 'Noto Sans JP', sans-serif;
+  --font-heading: var(--font-body);
+  --font-main: var(--font-body);
+  /* Theming variables */
+  --color-primary: #ff9900;
+  --color-accent: #FFD44C;
+  --color-background: #fff8f0;
+  --color-night-bg: #1a1a2a;
+  --color-night-text: #f0f0f0;
 }
 
 /* デフォルト：モバイルファースト（スクロール許可） */
 .app-root {
-  font-family: var(--font-main);
+  font-family: var(--font-body);
   margin: 0;
   padding: 0;
-  background: #fff8f0;
+  background: var(--color-background);
   overflow-x: hidden;
   overflow-y: auto; /* ← モバイルでスクロールできるように */
 }
 
 .app-root.morning {
-  background: #fff8f0;
+  background: var(--color-background);
 }
 
 
@@ -28,7 +36,8 @@
 }
 
 .app-root.night {
-  background: #1a1a2a;
+  background: var(--color-night-bg);
+  color: var(--color-night-text);
   /* Night theme previously enforced white text globally which caused
      readability issues on light elements. Text color is now left
      unchanged so individual screens can style themselves. */
@@ -38,19 +47,22 @@
 #app.with-header,
 body.with-header {
   padding-top: 56px;
+  overflow-x: hidden;
 }
 
 /* .screen の基本レイアウト */
 .screen {
-  max-width: 900px;
+  max-width: 960px;
   margin: 0 auto; /* 上部余白は #app.with-header に委任 */
-  padding: 1em;
+  padding: 16px;
+  width: 100%;
   box-sizing: border-box;
 }
 
 /* 見出し統一（任意） */
 .screen h1,
 .screen h2 {
+  font-family: var(--font-heading);
   text-align: center;
   margin-bottom: 1em;
 }
@@ -86,16 +98,12 @@ button:hover {
 /* PC版のみ：app-root はスクロールさせず、.screen に任せる */
 @media (min-width: 768px) {
   .app-root {
-    overflow-y: hidden;
-  }
-
-  .app-root.intro-scroll {
     overflow-y: auto;
   }
 
   .screen {
-    height: calc(100dvh - 56px); /* ヘッダーを除く高さ */
-    overflow-y: auto;
+    height: auto;
+    overflow-y: visible;
   }
 }
 
@@ -118,6 +126,43 @@ button:hover {
   width: 24px;
   height: 24px;
   cursor: pointer;
+}
+
+/* Modal styles */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal.hidden {
+  display: none;
+}
+
+.modal-box {
+  background: #fff;
+  padding: 1.5em;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.modal-title {
+  margin: 0 0 0.5em;
+}
+
+.modal-buttons {
+  margin-top: 1em;
+}
+
+.modal-buttons button {
+  margin: 0 0.5em;
 }
 
 

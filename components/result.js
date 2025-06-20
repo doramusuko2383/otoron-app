@@ -6,29 +6,9 @@ import { chords } from "../data/chords.js";
 import { drawStaffFromNotes } from "./resultStaff.js";  // 楽譜描画（必要なら）
 import { renderHeader } from "./header.js";
 import { renderSummarySection } from "./summary.js";
+import { kanaToHiragana, noteLabels } from "../utils/noteUtils.js";
 
 let resultShownInThisSession = false;
-
-const noteLabels = {
-  "C": "ど",
-  "D": "れ",
-  "E": "み",
-  "F": "ふぁ",
-  "G": "そ",
-  "A": "ら",
-  "B": "し",
-  "C#": "ちす", "Db": "ちす",
-  "D#": "えす", "Eb": "えす",
-  "F#": "ふぃす", "Gb": "ふぃす",
-  "G#": "じす", "Ab": "じす",
-  "A#": "べー", "Bb": "べー"
-};
-
-function kanaToHiragana(str) {
-  return str.replace(/[ァ-ン]/g, ch =>
-    String.fromCharCode(ch.charCodeAt(0) - 0x60)
-  );
-}
 
 function labelNote(n) {
   const pitch = n ? n.replace(/\d/g, '') : '';
@@ -53,6 +33,24 @@ export function createResultTable(results) {
 
   if (!Array.isArray(results) || results.length === 0) {
     return `<p class="no-training">きょうは まだ トレーニングしてないよ</p>`;
+  }
+
+  const onlySingle = results.every(r => r.isSingleNote);
+  if (onlySingle) {
+    const rows = results
+      .map((r, i) => `
+        <tr class="${r.correct ? 'correct-row' : 'wrong-row'}">
+          <td>${i + 1}</td>
+          <td>${labelNote(r.noteQuestion || '')}</td>
+          <td><span class="ans-mark ${r.correct ? 'correct' : 'wrong'}">${r.correct ? '◯' : ''}</span>${labelNote(r.noteAnswer || '')}</td>
+        </tr>`)
+      .join('');
+    return `<table class="result-table">
+        <thead>
+          <tr><th>No.</th><th>もんだい</th><th>こたえ</th></tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>`;
   }
 
   const rows = (() => {
@@ -91,7 +89,7 @@ export function createResultTable(results) {
   return `<table class="result-table">
       <thead>
         <tr>
-          <th>じゅんばん</th>
+          <th>No.</th>
           <th>わおん</th>
           <th>かいとう</th>
           ${singleNoteMode ? '<th>たんおん</th><th>かいとう</th>' : ''}
@@ -108,7 +106,7 @@ export async function renderResultScreen(user) {
   let results = lastResults;
   if (!results.length && user && user.id) {
     const latest = await loadLatestTrainingSession(user.id);
-    if (latest && Array.isArray(latest.results_json)) {
+    if (latest && latest.results_json) {
       results = latest.results_json;
     }
   }
@@ -119,7 +117,7 @@ export async function renderResultScreen(user) {
   renderHeader(app, user);
 
   const container = document.createElement("div");
-  container.className = "screen active";
+  container.className = "screen active result-screen";
   const tableHtml = createResultTable(results);
 
   container.innerHTML = `
@@ -130,7 +128,9 @@ export async function renderResultScreen(user) {
     <div class="tab-contents">
       <div id="result" class="tab-content active">
         <div class="result-container">
-          ${tableHtml}
+          <div class="result-scroll-wrap">
+            ${tableHtml}
+          </div>
           <div class="result-footer"></div>
         </div>
       </div>
@@ -159,7 +159,7 @@ export async function renderResultScreen(user) {
   const dates = Object.keys(history).sort();
   const latestDate = dates[dates.length - 1] || new Date().toISOString().slice(0,10);
   const summaryContainer = container.querySelector("#summary .summary-container");
-  renderSummarySection(summaryContainer, latestDate, user);
+  renderSummarySection(summaryContainer, latestDate, user, { standalone: false });
 
   app.querySelectorAll('.tab').forEach(btn => {
     btn.addEventListener('click', () => {

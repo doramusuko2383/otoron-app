@@ -5,7 +5,18 @@
   max-width: 960px;
   margin: 0 auto;
   font-family: inherit;
-  background: #fffaf5;
+  background: linear-gradient(135deg, #fff1e6, #ffe6f2);
+  min-height: 100vh;
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .summary-screen {
+    max-width: none;
+    margin: 0;
+    height: auto;
+    overflow-y: visible;
+  }
 }
 
 #calendar,
@@ -102,4 +113,25 @@ button#dummy-button {
 
 .range-box button {
   flex-shrink: 0;
+}
+
+.result-wrap {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease, opacity 0.3s ease;
+}
+
+.result-wrap.open {
+  max-height: none;
+  opacity: 1;
+}
+
+@media (max-width: 600px) {
+  /* shrink answer tables on small screens */
+  .summary-screen .result-table {
+    transform: scale(0.8);
+    transform-origin: left top;
+    width: 125%;
+  }
 }

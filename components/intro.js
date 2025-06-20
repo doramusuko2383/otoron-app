@@ -135,10 +135,10 @@ export function renderIntroScreen() {
 
       <section class="age-info">
         <h2>なぜ2歳半〜6歳が絶対音感の適齢期なの？</h2>
-        <p>絶対音感の習得は、生まれつきの才能ではなく「何歳のうちに訓練を始めたか」が大きく関わっています。一般に、2歳半〜6歳頃までは「耳の臨界期」と呼ばれ、音の高さ・響きの違いを区別する力が自然に育ちやすい時期とされています。</p>
+        <p>絶対音感の習得は、生まれつきの才能ではなく、「何歳のうちに訓練を始めたか」が大きく関係しています。一般に、2歳半〜6歳頃までは「耳の臨界期」と呼ばれ、音の高さや響きの違いを区別する力が自然に育ちやすい時期とされています。</p>
         <p>この時期に、楽しく・繰り返し・感覚的に音を聴く体験を積むことで、音の記憶や聴き分け能力が脳内に定着しやすくなるのです。</p>
         <p>一方で、7歳以降になると相対音感に頼る傾向が強まり、絶対音感の習得が難しくなることが多いとされています。</p>
-        <p>そのため、「楽しく遊びながら耳を育てられる」時期にスタートすることがとても大切なのです。※江口式、鈴木式、海外の音楽心理学研究などでも「2歳半〜6歳が絶対音感習得の黄金期」とされています。</p>
+        <p>そのため、「楽しく遊びながら耳を育てられる」時期にスタートすることがとても大切なのです。<br>※この臨界期の考え方は、日本国内の音楽教育法や海外の音楽心理学研究などにおいても広く言及されています。</p>
       </section>
 
       <section class="faq">
@@ -206,7 +206,7 @@ export function renderIntroScreen() {
           </button>
           <div class="faq-answer" hidden>
             <span class="a-label">A</span>
-            <p>無料体験では一部の和音や機能をご利用いただけます。有料版では、すべての和音や育成モード、進捗管理、共有機能などが解放され、より本格的なトレーニングが可能になります。料金の詳細はアプリ内または登録ページにてご確認ください。</p>
+            <p>無料体験では、1日のトレーニング回数に<strong>2回の制限</strong>がありますが、その他の機能は<strong>7日間すべてご利用いただけます</strong>。有料版では、トレーニング回数の制限がなくなり、引き続きすべての機能（全和音・育成モード・進捗管理・共有機能など）をご利用いただけます。料金の詳細はアプリ内または登録ページにてご確認ください。</p>
           </div>
         </div>
       </section>
@@ -254,9 +254,14 @@ export function renderIntroScreen() {
       const answer = btn.nextElementSibling;
       if (answer) {
         if (expanded) {
-          answer.setAttribute('hidden', '');
+          answer.classList.remove('show');
+          setTimeout(() => {
+            answer.setAttribute('hidden', '');
+          }, 300);
         } else {
           answer.removeAttribute('hidden');
+          // allow CSS transition to run
+          requestAnimationFrame(() => answer.classList.add('show'));
         }
       }
     });

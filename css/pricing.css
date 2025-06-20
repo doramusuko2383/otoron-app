@@ -5,6 +5,23 @@
   display: flex;
   flex-direction: column;
   gap: 1em;
+  background: linear-gradient(135deg, #fff1e6, #ffe6f2);
+  min-height: 100vh;
+}
+
+@media (min-width: 768px) {
+  .pricing-page {
+    flex-direction: row;
+    justify-content: center;
+    flex-wrap: nowrap;
+    gap: 1em;
+    max-width: none;
+  }
+
+  .pricing-page .plan-card {
+    flex: none;
+    width: 240px;
+  }
 }
 
 .plan-card {
@@ -19,7 +36,7 @@
 }
 
 .plan-card.recommended {
-  border: 2px solid #ff9900;
+  border: 2px solid var(--color-primary);
 }
 
 .plan-title {
@@ -48,8 +65,8 @@
 }
 
 .recommend-badge {
-  align-self: flex-start;
-  background: #ff9900;
+  align-self: center;
+  background: var(--color-primary);
   color: #fff;
   border-radius: 999px;
   padding: 0.2em 0.8em;
@@ -57,7 +74,7 @@
 }
 
 .plan-card button {
-  margin-top: 0.6em;
+  margin-top: auto;
   padding: 0.8em;
   font-size: 1rem;
   background: #ffa500;
@@ -71,11 +88,21 @@
   background: #e38c00;
 }
 
+.plan-card:not(.recommended) button {
+  background: #ccc;
+  color: #666;
+}
+
+.plan-card:not(.recommended) button:hover {
+  background: #bbb;
+}
+
 .plan-note {
   font-size: 0.8rem;
   text-align: center;
   color: #666;
   margin-top: 0.5em;
+  width: 100%;
 }
 
 .plan-info-screen {
@@ -106,4 +133,8 @@
 .plan-info-buttons button {
   flex: 1;
   padding: 0.8em;
+}
+
+.plan-info-msg {
+  margin-top: 1em;
 }

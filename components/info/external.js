@@ -1,12 +1,12 @@
 import { renderHeader } from "../header.js";
 
-export function renderExternalScreen() {
+export function renderExternalScreen(user) {
   const app = document.getElementById("app");
   app.innerHTML = "";
-  renderHeader(app);
+  renderHeader(app, user);
 
   const main = document.createElement("main");
-  main.className = "info-page";
+  main.className = "info-page full-page";
   main.innerHTML = `
     <h1>外部送信ポリシー</h1>
     <p>この外部送信ポリシー（以下、「本ポリシー」といいます）は、オトロン（以下、「本サービス」といいます）をご利用いただく際に、ユーザーの端末から第三者に送信される情報とその目的・送信先等についてご案内するものです。</p>

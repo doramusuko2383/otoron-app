@@ -109,6 +109,8 @@ function showQuiz() {
   const nextChordName = questionQueue.pop();
   currentAnswer = chords.find(c => c.name === nextChordName);
   drawQuizScreen();
+  questionCount++;
+  updateProgressUI();
   playChordFile(currentAnswer.file);
 }
 
@@ -124,6 +126,8 @@ function drawQuizScreen() {
   container.style.padding = "1em 0 6em";
   // Avoid potential horizontal scroll on mobile
   container.style.width = "100%";
+  container.style.maxWidth = "100%";
+  container.style.overflow = "hidden";
 
   const feedback = document.createElement("div");
   feedback.id = "feedback";
@@ -287,8 +291,8 @@ if (correctBtn) {
     });
   };
 
-  const bottomWrap = document.createElement("div");
-  bottomWrap.id = "bottom-buttons";
+  const bottomWrap = document.createElement("footer");
+  bottomWrap.id = "training-footer";
   bottomWrap.appendChild(unknownBtn);
   bottomWrap.appendChild(quitBtn);
 
@@ -337,7 +341,6 @@ function checkAnswer(selected) {
 
   if (isForcedAnswer) {
     isForcedAnswer = false;
-    questionCount++;
     nextQuestion();
     return;
   }
@@ -357,7 +360,6 @@ function checkAnswer(selected) {
     if (!alreadyTried) {
       correctCount++;
     }
-    questionCount++;
 
     document.querySelectorAll(".square-btn-content").forEach(btn => {
       btn.style.pointerEvents = "none";
@@ -365,7 +367,7 @@ function checkAnswer(selected) {
     });
 
     if (questionQueue.length === 0) {
-      showFeedback("トレーニング終了！", "good", 0);
+      showFeedback("がんばったね", "good", 0);
       const sound = (correctCount === questionCount) ? "perfect" : "end";
       saveSessionToHistory();
       playSoundThen(sound, () => {
@@ -374,7 +376,7 @@ function checkAnswer(selected) {
       });
     } else {
       const voices = ["good1", "good2"];
-      showFeedback("GOOD!", "good");
+      showFeedback("いいね", "good");
       playSoundThen(voices[Math.floor(Math.random() * voices.length)], () => {
         nextQuestion();
       });

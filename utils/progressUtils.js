@@ -182,3 +182,48 @@ export async function resetChordProgressToRed(userId) {
 
   return true;
 }
+
+// ✅ 進捗を全削除して任意の開始和音までを unlocked で再登録
+export async function resetProgressAndUnlock(userId, startIndex) {
+  if (!userId) {
+    console.warn("resetProgressAndUnlock called without valid user ID");
+    return false;
+  }
+
+  const tables = [
+    "training_sessions",
+    "training_records",
+    "qualified_days",
+    "user_chord_progress"
+  ];
+
+  const results = await Promise.all(
+    tables.map(tbl =>
+      supabase.from(tbl).delete().eq("user_id", userId)
+    )
+  );
+  if (results.some(r => r.error)) {
+    console.error("❌ データ削除失敗:", results.map(r => r.error).find(e => e));
+    return false;
+  }
+
+  const today = new Date().toISOString().split("T")[0];
+  const chordKeys = chords.map(c => c.key);
+  const insertData = chordKeys.map((key, idx) => ({
+    user_id: userId,
+    chord_key: key,
+    status: idx <= startIndex ? "unlocked" : "locked",
+    unlocked_date: idx <= startIndex ? today : null
+  }));
+
+  const { error } = await supabase
+    .from("user_chord_progress")
+    .insert(insertData);
+
+  if (error) {
+    console.error("❌ 進捗再登録失敗:", error);
+    return false;
+  }
+
+  return true;
+}

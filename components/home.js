@@ -1,5 +1,5 @@
 import { switchScreen } from "../main.js";
-import { loadGrowthData } from "../utils/growthStore.js";
+import { loadTrainingRecords } from "../utils/recordStore_supabase.js";
 import { getToday } from "../utils/growthUtils.js";
 import { renderHeader } from "./header.js";
 import {
@@ -9,7 +9,8 @@ import {
 } from "../utils/timeOfDay.js";
 import { getAudio } from "../utils/audioCache.js";
 
-export function renderHomeScreen(user) {
+export async function renderHomeScreen(user, options = {}) {
+  const { showWelcome = false } = options;
   const app = document.getElementById("app");
   app.innerHTML = "";
 
@@ -31,21 +32,43 @@ export function renderHomeScreen(user) {
   const titleText = document.createElement("h1");
   const userName = user?.name || "";
 　titleText.innerHTML = `${userName}ちゃん<br>${getGreeting()}`;
-  titleText.style.fontSize = "1.8rem"; // make greeting text slightly smaller
-  titleText.style.margin = "0";
-  titleText.style.color = "#543014";
-  titleText.style.textAlign = "center";
+  titleText.className = "greeting";
   container.appendChild(titleText);
 
   // ✅ 今日のトレーニング回数
   const today = getToday();
-  const growthData = loadGrowthData();
-  const todayRecord = growthData[today] || { sets: 0 };
+  const sinceDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+    .toISOString()
+    .slice(0, 10);
+  const records = await loadTrainingRecords(user?.id, sinceDate);
+  const todayRecord = records[today] || { sets: 0 };
 
   const info = document.createElement("p");
   info.className = "today-count";
   info.innerHTML = `🎯 きょう の がんばり：<strong>${todayRecord.sets}</strong>かい`;
   container.appendChild(info);
+
+  // Create trial info element ahead of time to preserve layout
+  const trialInfo = document.createElement("p");
+  trialInfo.className = "trial-info";
+  trialInfo.style.visibility = "hidden";
+  container.appendChild(trialInfo);
+
+  if (
+    user &&
+    user.trial_active &&
+    !user.is_premium &&
+    user.trial_end_date
+  ) {
+    const end = new Date(user.trial_end_date);
+    const now = new Date();
+    const days = Math.ceil((end - now) / (1000 * 60 * 60 * 24));
+    if (days <= 3) {
+      trialInfo.classList.add("warning");
+    }
+    trialInfo.textContent = `無料体験期間は残り${days}日`;
+    trialInfo.style.visibility = "visible";
+  }
 
   // ✅ オトロン画像とスタートボタン
   const logoContainer = document.createElement("div");
@@ -56,7 +79,6 @@ export function renderHomeScreen(user) {
     timeClass === "night" ? "images/night_otolon.webp" : "images/otolon.webp";
   faceImg.alt = "おとろん";
   faceImg.className = "otolon-face";
-  faceImg.style.marginBottom = "0.5em";
   faceImg.addEventListener("pointerdown", () => {
     const audio = getAudio("audio/touch.mp3");
     audio.play().catch((e) => console.warn("touch sound error", e));
@@ -67,16 +89,23 @@ export function renderHomeScreen(user) {
       { once: true }
     );
   });
-  logoContainer.appendChild(faceImg);
 
   // ✅ トレーニング開始ボタン（ひとつに集約）
   const startButton = document.createElement("button");
   startButton.textContent = "とれーにんぐ かいし";
   startButton.className = "main-start-button"; // CSSでデザイン指定
   startButton.onclick = () => switchScreen("training");
+
+  logoContainer.appendChild(faceImg);
   logoContainer.appendChild(startButton);
 
   container.appendChild(logoContainer);
+
+  if (showWelcome) {
+    showCustomAlert(
+      "\u2728 ようこそオトロンへ!\n\nあなたは現在\u300c7日間の無料体験\u300dをご利用中です。\n毎日のトレーニングや記録機能を、全て自由にお試しいただけます。\n\n残り日数はホーム画面に表示されます。"
+    );
+  }
 
   // ▼ 時間帯の変化に合わせて背景などを更新
   if (window.homeTimeInterval) {
@@ -121,41 +150,28 @@ export function showCustomConfirm(message, onConfirm, options = {}) {
   if (!modal) {
     modal = document.createElement("div");
     modal.id = "custom-confirm";
-    modal.style.position = "fixed";
-    modal.style.top = "0";
-    modal.style.left = "0";
-    // Prevent potential overflow caused by viewport units
-    modal.style.width = "100%";
-    modal.style.height = "100%";
-    modal.style.background = "rgba(0,0,0,0.6)";
-    modal.style.display = "flex";
-    modal.style.justifyContent = "center";
-    modal.style.alignItems = "center";
-    modal.style.zIndex = "1000";
+    modal.className = "modal";
 
     const box = document.createElement("div");
-    box.style.background = "#fff";
-    box.style.padding = "1.5em";
-    box.style.borderRadius = "10px";
-    box.style.textAlign = "center";
+    box.className = "modal-box";
 
     const titleNode = document.createElement("h3");
     titleNode.id = "custom-confirm-title";
     titleNode.textContent = title;
-    titleNode.style.margin = "0 0 0.5em";
+    titleNode.className = "modal-title";
     box.appendChild(titleNode);
 
     const messageEl = document.createElement("p");
     messageEl.id = "custom-confirm-message";
     messageEl.textContent = message;
+    messageEl.className = "modal-message";
     box.appendChild(messageEl);
 
     const buttons = document.createElement("div");
-    buttons.style.marginTop = "1em";
+    buttons.className = "modal-buttons";
 
     const okBtn = document.createElement("button");
     okBtn.className = "ok-btn";
-    okBtn.style.margin = "0 0.5em";
     okBtn.onclick = () => {
       modal.style.display = "none";
       if (typeof modal.callback === "function") {
@@ -165,7 +181,6 @@ export function showCustomConfirm(message, onConfirm, options = {}) {
 
     const cancelBtn = document.createElement("button");
     cancelBtn.className = "cancel-btn";
-    cancelBtn.style.margin = "0 0.5em";
     cancelBtn.onclick = () => {
       modal.style.display = "none";
     };
