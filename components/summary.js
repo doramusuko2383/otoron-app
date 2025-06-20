@@ -90,7 +90,10 @@ export async function renderSummaryScreen(user) {
 export async function renderSummarySection(container, date, user, options = {}) {
   const { standalone = true } = options;
 
-  const records = await loadTrainingRecords(user.id);
+  const sinceDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+    .toISOString()
+    .slice(0, 10);
+  const records = await loadTrainingRecords(user.id, sinceDate);
   const sessions = await loadTrainingSessionsForDate(user.id, date);
 
   container.innerHTML = "";
