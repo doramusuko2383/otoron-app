@@ -1880,8 +1880,8 @@ a/* Landing page styles */
 /* 結果画面全体のレイアウト */
 .result-container {
   text-align: center;
-  padding: 2em;
-  background-color: #fffaf5;
+  padding: 1em 0;
+  background-color: transparent;
   box-sizing: border-box;
 }
 
@@ -2122,7 +2122,7 @@ a/* Landing page styles */
 
 @media (max-width: 600px) {
   .result-container {
-    padding: 1em;
+    padding: 0.5em 0;
   }
   .result-table {
     font-size: 0.7em;
