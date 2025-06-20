@@ -71,7 +71,7 @@
 
 .home-screen .home-title {
   font-size: 2.4rem;
-  color: #FFD44C;
+  color: var(--color-accent);
   margin: 0.5em 0 0.2em 0;
   text-align: center;
 }
@@ -84,7 +84,7 @@
 }
 
 .home-screen .main-start-button {
-  background-color: #FFD44C;
+  background-color: var(--color-accent);
   color: #543014;
   font-size: 1.2rem;
   padding: 0.8em 1.5em;
