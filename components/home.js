@@ -32,10 +32,7 @@ export async function renderHomeScreen(user, options = {}) {
   const titleText = document.createElement("h1");
   const userName = user?.name || "";
 　titleText.innerHTML = `${userName}ちゃん<br>${getGreeting()}`;
-  titleText.style.fontSize = "1.8rem"; // make greeting text slightly smaller
-  titleText.style.margin = "0";
-  titleText.style.color = "#543014";
-  titleText.style.textAlign = "center";
+  titleText.className = "greeting";
   container.appendChild(titleText);
 
   // ✅ 今日のトレーニング回数
@@ -55,7 +52,6 @@ export async function renderHomeScreen(user, options = {}) {
   const trialInfo = document.createElement("p");
   trialInfo.className = "trial-info";
   trialInfo.style.visibility = "hidden";
-  trialInfo.style.minHeight = "1.2em"; // reserve space even when hidden
   container.appendChild(trialInfo);
 
   if (
@@ -83,7 +79,6 @@ export async function renderHomeScreen(user, options = {}) {
     timeClass === "night" ? "images/night_otolon.webp" : "images/otolon.webp";
   faceImg.alt = "おとろん";
   faceImg.className = "otolon-face";
-  faceImg.style.marginBottom = "0.5em";
   faceImg.addEventListener("pointerdown", () => {
     const audio = getAudio("audio/touch.mp3");
     audio.play().catch((e) => console.warn("touch sound error", e));
@@ -155,41 +150,28 @@ export function showCustomConfirm(message, onConfirm, options = {}) {
   if (!modal) {
     modal = document.createElement("div");
     modal.id = "custom-confirm";
-    modal.style.position = "fixed";
-    modal.style.top = "0";
-    modal.style.left = "0";
-    // Prevent potential overflow caused by viewport units
-    modal.style.width = "100%";
-    modal.style.height = "100%";
-    modal.style.background = "rgba(0,0,0,0.6)";
-    modal.style.display = "flex";
-    modal.style.justifyContent = "center";
-    modal.style.alignItems = "center";
-    modal.style.zIndex = "1000";
+    modal.className = "modal";
 
     const box = document.createElement("div");
-    box.style.background = "#fff";
-    box.style.padding = "1.5em";
-    box.style.borderRadius = "10px";
-    box.style.textAlign = "center";
+    box.className = "modal-box";
 
     const titleNode = document.createElement("h3");
     titleNode.id = "custom-confirm-title";
     titleNode.textContent = title;
-    titleNode.style.margin = "0 0 0.5em";
+    titleNode.className = "modal-title";
     box.appendChild(titleNode);
 
     const messageEl = document.createElement("p");
     messageEl.id = "custom-confirm-message";
     messageEl.textContent = message;
+    messageEl.className = "modal-message";
     box.appendChild(messageEl);
 
     const buttons = document.createElement("div");
-    buttons.style.marginTop = "1em";
+    buttons.className = "modal-buttons";
 
     const okBtn = document.createElement("button");
     okBtn.className = "ok-btn";
-    okBtn.style.margin = "0 0.5em";
     okBtn.onclick = () => {
       modal.style.display = "none";
       if (typeof modal.callback === "function") {
@@ -199,7 +181,6 @@ export function showCustomConfirm(message, onConfirm, options = {}) {
 
     const cancelBtn = document.createElement("button");
     cancelBtn.className = "cancel-btn";
-    cancelBtn.style.margin = "0 0.5em";
     cancelBtn.onclick = () => {
       modal.style.display = "none";
     };
