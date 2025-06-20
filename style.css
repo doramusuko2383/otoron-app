@@ -1785,13 +1785,17 @@ a/* Landing page styles */
   .pricing-page {
     flex-direction: row;
     justify-content: center;
-    flex-wrap: nowrap;
-    gap: 1em;
+    flex-wrap: wrap;
+    gap: 24px;
     max-width: none;
+    align-items: flex-start;
   }
   .pricing-page .plan-card {
-    flex: none;
-    width: 240px;
+    flex: 1 1 280px;
+    max-width: 320px;
+    min-height: 380px;
+    box-sizing: border-box;
+    align-self: flex-start;
   }
 }
 
