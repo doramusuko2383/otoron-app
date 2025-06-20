@@ -20,6 +20,11 @@ body,
   padding: 0;
 }
 
+html,
+body {
+  overflow-x: hidden;
+}
+
 .app-root.morning {
   background: #fff8f0;
 }
@@ -416,13 +421,14 @@ button:hover {
 
 /* 和音進捗表示のグリッド */
 .chord-status-grid {
-  display: grid;
-  grid-template-columns: repeat(12, 72px);
+  display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   margin: 1.5em auto;
   justify-content: center;
-  width: max-content;
-  overflow-x: auto;
+  padding: 0 16px;
+  box-sizing: border-box;
+  max-width: 100%;
 }
 .app-header {
   position: fixed;
