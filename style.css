@@ -391,6 +391,15 @@ button:hover {
   color: #d1007d;
   font-weight: bold;
 }
+
+/* 現在挑戦中の和音表示を強調 */
+.current-target .chord {
+  font-weight: bold;
+  background: #333;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 6px;
+}
 .app-header {
   position: fixed;
   top: 0;
@@ -3068,4 +3077,28 @@ button.disabled {
     height: auto;
     overflow-y: visible;
   }
+}
+
+/* === confetti effect for unlock === */
+.confetti-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 2000;
+}
+.confetti-piece {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  opacity: 0.9;
+  animation: confetti-fall 1.2s linear forwards;
+}
+@keyframes confetti-fall {
+  from { transform: translateY(-10vh) rotate(0deg); }
+  to   { transform: translateY(100vh) rotate(720deg); }
 }
