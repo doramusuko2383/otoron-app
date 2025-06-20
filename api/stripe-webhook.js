@@ -41,13 +41,13 @@ export default async function handler(req, res) {
 
   const { type, data } = event;
   const customerId = data?.object?.customer;
-  console.log('Stripe event received:', type, 'customerId:', customerId);
+  console.log('Event', type, customerId);
 
   if (type === 'checkout.session.completed') {
     const session = data.object;
     const email =
       session.customer_email || session.customer_details?.email || null;
-    console.log('Processing checkout.session.completed', { email, customerId });
+    console.log('Checkout complete', email, customerId);
 
     let query = supabase
       .from('users')
@@ -65,25 +65,25 @@ export default async function handler(req, res) {
 
       if (userById) {
         query = query.eq('stripe_customer_id', customerId);
-        console.log('Updating user by stripe_customer_id');
+        console.log('Update by stripe ID');
       } else if (email) {
         query = query.eq('email', email);
-        console.log('Updating user by email (no existing stripe_customer_id)');
+        console.log('Update email, new stripe ID');
       }
     } else if (email) {
       query = query.eq('email', email);
-      console.log('Updating user by email (no customerId)');
+      console.log('Update by email');
     }
 
     const { data: updated, error } = await query.select();
-    console.log('Supabase update result:', { updated, error });
+    console.log('Update:', { updated, error });
 
     if (error) {
       console.error('Supabase update error:', error);
       return res.status(500).send('Supabase update failed');
     }
 
-    console.log(`✅ ${email} is now a premium user with customer ID ${customerId}`);
+    console.log(`${email} premium with ID ${customerId}`);
   }
 
   let isPremium;
@@ -102,16 +102,14 @@ export default async function handler(req, res) {
       .update({ is_premium: isPremium })
       .eq('stripe_customer_id', customerId)
       .select();
-    console.log('Supabase subscription update result:', { updatedRows, error });
+    console.log('Subscription update:', { updatedRows, error });
 
     if (error) {
       console.error('Supabase update error:', error);
       return res.status(500).send('Supabase update failed');
     }
 
-    console.log(
-      `Updated user with customer ID ${customerId}: is_premium -> ${isPremium}`
-    );
+    console.log(`Customer ${customerId} premium=${isPremium}`);
   }
 
   res.status(200).json({ received: true });
