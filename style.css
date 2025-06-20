@@ -144,6 +144,43 @@ button:hover {
   cursor: pointer;
 }
 
+/* Modal styles */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal.hidden {
+  display: none;
+}
+
+.modal-box {
+  background: #fff;
+  padding: 1.5em;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.modal-title {
+  margin: 0 0 0.5em;
+}
+
+.modal-buttons {
+  margin-top: 1em;
+}
+
+.modal-buttons button {
+  margin: 0 0.5em;
+}
+
 
 
 /* ✅ 和音サークル共通 */
@@ -824,6 +861,13 @@ button:hover {
   font-size: 2.4rem;
   color: var(--color-accent);
   margin: 0.5em 0 0.2em 0;
+  text-align: center;
+}
+
+.home-screen .greeting {
+  font-size: 1.8rem;
+  margin: 0;
+  color: #543014;
   text-align: center;
 }
 
@@ -1950,6 +1994,10 @@ a/* Landing page styles */
 .plan-info-buttons button {
   flex: 1;
   padding: 0.8em;
+}
+
+.plan-info-msg {
+  margin-top: 1em;
 }
 /* 結果画面全体のレイアウト */
 .result-container {

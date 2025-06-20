@@ -76,6 +76,13 @@
   text-align: center;
 }
 
+.home-screen .greeting {
+  font-size: 1.8rem;
+  margin: 0;
+  color: #543014;
+  text-align: center;
+}
+
 .home-screen .sub-title {
   font-size: 1.2rem;
   text-align: center;

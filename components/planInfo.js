@@ -78,7 +78,7 @@ async function createPlanInfoContent(user) {
     if (sub.status === 'cancelled') {
       const msg = document.createElement('div');
       msg.textContent = `ご契約は${formatDate(expireDate)}まで有効です。それ以降、自動的に無料プランに戻ります。`;
-      msg.style.marginTop = '1em';
+      msg.className = 'plan-info-msg';
       btnWrap.appendChild(msg);
     } else {
       const cancelBtn = document.createElement('button');
