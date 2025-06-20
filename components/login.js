@@ -13,8 +13,6 @@ import { ensureSupabaseAuth } from "../utils/supabaseAuthHelper.js";
 import { chords } from "../data/chords.js";
 import { showCustomAlert } from "./home.js";
 
-const DUMMY_PASSWORD = "secure_dummy_password";
-
 export function renderLoginScreen(container, onLoginSuccess) {
   container.innerHTML = `
     <div class="login-wrapper">
