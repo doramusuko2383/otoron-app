@@ -79,7 +79,7 @@ export function renderHelpScreen(user) {
 
       <details>
         <summary>このガイドについて</summary>
-        <p>本ガイドは江口式絶対音感教育の考え方を参考に、オトロン独自の設計と実践に基づき再構成されたものです。</p>
+        <p>本ガイドは、幼児期における和音認知訓練の実践的知見を参考に、オトロン独自の方法で再構成されたものです。</p>
       </details>
     </section>
   `;
