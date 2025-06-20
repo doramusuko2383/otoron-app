@@ -3068,6 +3068,7 @@ button.disabled {
 /* PC表示では分析画面・マイページ・プランページを横幅いっぱいに */
 @media (min-width: 768px) {
   .summary-screen,
+  .growth-screen,
   .mypage-screen,
   .pricing-page,
   .plan-info-screen {
@@ -3075,8 +3076,11 @@ button.disabled {
     margin: 0;
   }
 
-  /* Allow the analysis page to use the full page height */
-  .summary-screen {
+  /* Allow analysis/growth pages to use the full page height */
+  .summary-screen,
+  .growth-screen {
+    padding: 0;
+    min-height: calc(100vh - 56px);
     height: auto;
     overflow-y: visible;
   }
