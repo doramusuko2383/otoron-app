@@ -212,10 +212,7 @@ export async function renderGrowthScreen(user) {
 
   // 和音進捗表示
   const chordStatus = document.createElement("div");
-  chordStatus.style.display = "grid";
-  chordStatus.style.gridTemplateColumns = "repeat(auto-fit, minmax(90px, 1fr))";
-  chordStatus.style.gap = "10px";
-  chordStatus.style.marginTop = "1.5em";
+  chordStatus.className = "chord-status-grid";
 
   for (const chord of chords) {
     const item = document.createElement("div");
