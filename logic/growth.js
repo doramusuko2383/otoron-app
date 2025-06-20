@@ -31,7 +31,7 @@ export async function renderGrowthScreen(user) {
   renderHeader(app, user);
 
   const container = document.createElement("div");
-  container.className = "screen active";
+  container.className = "screen active growth-screen";
 
   const today = getToday();
   const passed = await getPassedDays(user.id);
