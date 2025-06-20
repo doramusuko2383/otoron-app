@@ -18,20 +18,20 @@ export const chords = [
   { name: "E♭-G-B♭", key: "mizuiro", label: "水色", labelHiragana: "みずいろ", labelHtml: "みずいろ", file: "chord_14_mizuiro_root.mp3", type: "black-root", colorClass: "mizuiro", soundKey: "mizuiro", notes: ["E♭4", "G4", "B♭4"], italian: ["エス", "ソ", "ベー"] },
 
   // 黒鍵（転回系 白色表示）
-  { name: "C#-E-A", key: "kimidori_1st", label: "チス ミ ラ", labelHiragana: "ちす み ら", labelHtml: "ちす<br>み<br>ら", file: "chord_10_kimidori_1st.mp3", type: "black-inv", colorClass: "white", soundKey: "cismila", notes: ["C#4", "E4", "A4"] },
-  { name: "E-A-C#", key: "kimidori_2nd", label: "ミ ラ チス", labelHiragana: "み ら ちす", labelHtml: "み<br>ら<br>ちす", file: "chord_10_kimidori_2nd.mp3", type: "black-inv", colorClass: "white", soundKey: "milacis", notes: ["E4", "A4", "C#5"] },
+  { name: "C#-E-A", key: "kimidori_1st", label: "チスミラ", labelHiragana: "ちすみら", labelHtml: "ちす<br>み<br>ら", file: "chord_10_kimidori_1st.mp3", type: "black-inv", colorClass: "white", soundKey: "cismila", notes: ["C#4", "E4", "A4"] },
+  { name: "E-A-C#", key: "kimidori_2nd", label: "ミラチス", labelHiragana: "みらちす", labelHtml: "み<br>ら<br>ちす", file: "chord_10_kimidori_2nd.mp3", type: "black-inv", colorClass: "white", soundKey: "milacis", notes: ["E4", "A4", "C#5"] },
 
-  { name: "F#-A-D", key: "usudai_1st", label: "フィス ラ レ", labelHiragana: "ふぃす ら れ", labelHtml: "ふぃす<br>ら<br>れ", file: "chord_11_usudai_1st.mp3", type: "black-inv", colorClass: "white", soundKey: "fisrare", notes: ["F#4", "A4", "D5"] },
-  { name: "A-D-F#", key: "usudai_2nd", label: "ラ レ フィス", labelHiragana: "ら れ ふぃす", labelHtml: "ら<br>れ<br>ふぃす", file: "chord_11_usudai_2nd.mp3", type: "black-inv", colorClass: "white", soundKey: "larefis", notes: ["A3", "D4", "F#4"] },
+  { name: "F#-A-D", key: "usudai_1st", label: "フィスラレ", labelHiragana: "ふぃすられ", labelHtml: "ふぃす<br>ら<br>れ", file: "chord_11_usudai_1st.mp3", type: "black-inv", colorClass: "white", soundKey: "fisrare", notes: ["F#4", "A4", "D5"] },
+  { name: "A-D-F#", key: "usudai_2nd", label: "ラレフィス", labelHiragana: "られふぃす", labelHtml: "ら<br>れ<br>ふぃす", file: "chord_11_usudai_2nd.mp3", type: "black-inv", colorClass: "white", soundKey: "larefis", notes: ["A3", "D4", "F#4"] },
 
-  { name: "G#-B-E", key: "fuji_1st", label: "ギス シ ミ", labelHiragana: "ぎす し み", labelHtml: "ぎす<br>し<br>み", file: "chord_12_fuji_1st.mp3", type: "black-inv", colorClass: "white", soundKey: "gissemi", notes: ["G#3", "B3", "E4"] },
-  { name: "B-E-G#", key: "fuji_2nd", label: "シ ミ ギス", labelHiragana: "し み ぎす", labelHtml: "し<br>み<br>ぎす", file: "chord_12_fuji_2nd.mp3", type: "black-inv", colorClass: "white", soundKey: "semigis", notes: ["B3", "E4", "G#4"] },
+  { name: "G#-B-E", key: "fuji_1st", label: "ギスシミ", labelHiragana: "ぎすしみ", labelHtml: "ぎす<br>し<br>み", file: "chord_12_fuji_1st.mp3", type: "black-inv", colorClass: "white", soundKey: "gissemi", notes: ["G#3", "B3", "E4"] },
+  { name: "B-E-G#", key: "fuji_2nd", label: "シミギス", labelHiragana: "しみぎす", labelHtml: "し<br>み<br>ぎす", file: "chord_12_fuji_2nd.mp3", type: "black-inv", colorClass: "white", soundKey: "semigis", notes: ["B3", "E4", "G#4"] },
 
-  { name: "D-F-B♭", key: "hai_1st", label: "レ ファ ベー", labelHiragana: "れ ふぁ べー", labelHtml: "れ<br>ふぁ<br>べー", file: "chord_13_hai_1st.mp3", type: "black-inv", colorClass: "white", soundKey: "refabe", notes: ["D4", "F4", "B♭4"] },
-  { name: "F-B♭-D", key: "hai_2nd", label: "ファ ベー レ", labelHiragana: "ふぁ べー れ", labelHtml: "ふぁ<br>べー<br>れ", file: "chord_13_hai_2nd.mp3", type: "black-inv", colorClass: "white", soundKey: "fabere", notes: ["F3", "B♭3", "D4"] },
+  { name: "D-F-B♭", key: "hai_1st", label: "レファベー", labelHiragana: "れふぁべー", labelHtml: "れ<br>ふぁ<br>べー", file: "chord_13_hai_1st.mp3", type: "black-inv", colorClass: "white", soundKey: "refabe", notes: ["D4", "F4", "B♭4"] },
+  { name: "F-B♭-D", key: "hai_2nd", label: "ファベーレ", labelHiragana: "ふぁべーれ", labelHtml: "ふぁ<br>べー<br>れ", file: "chord_13_hai_2nd.mp3", type: "black-inv", colorClass: "white", soundKey: "fabere", notes: ["F3", "B♭3", "D4"] },
 
-  { name: "G-B♭-E♭", key: "mizuiro_1st", label: "ソ ベー エス", labelHiragana: "そ べー えす", labelHtml: "そ<br>べー<br>えす", file: "chord_14_mizuiro_1st.mp3", type: "black-inv", colorClass: "white", soundKey: "sobees", notes: ["G4", "B♭4", "E♭5"] },
-  { name: "B♭-E♭-G", key: "mizuiro_2nd", label: "ベー エス ソ", labelHiragana: "べー えす そ", labelHtml: "べー<br>えす<br>そ", file: "chord_14_mizuiro_2nd.mp3", type: "black-inv", colorClass: "white", soundKey: "beesso", notes: ["B♭3", "E♭4", "G4"] }
+  { name: "G-B♭-E♭", key: "mizuiro_1st", label: "ソベーエス", labelHiragana: "そべーえす", labelHtml: "そ<br>べー<br>えす", file: "chord_14_mizuiro_1st.mp3", type: "black-inv", colorClass: "white", soundKey: "sobees", notes: ["G4", "B♭4", "E♭5"] },
+  { name: "B♭-E♭-G", key: "mizuiro_2nd", label: "ベーエスソ", labelHiragana: "べーえすそ", labelHtml: "べー<br>えす<br>そ", file: "chord_14_mizuiro_2nd.mp3", type: "black-inv", colorClass: "white", soundKey: "beesso", notes: ["B♭3", "E♭4", "G4"] }
 ];
 
 // 和音解放の進行順序（色付きの14種）
