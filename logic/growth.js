@@ -44,14 +44,11 @@ export async function renderGrowthScreen(user) {
   title.textContent = "🎯 育成モード";
   container.appendChild(title);
 
-  const info = document.createElement("p");
+  const info = document.createElement("div");
   info.className = "today-info";
-  const targetLabel = target ? `いま ${target.label}の和音に挑戦中` : "";
   info.innerHTML = `
-    今日の日付: <strong>${today}</strong><br/>
-    連続合格日数: ${qualifiedDays}/7日<br/>
-    <br/>
-    ${targetLabel}
+    <div>今日の日付: <strong>${today}</strong></div>
+    <div>連続合格日数: ${qualifiedDays}/7日</div>
   `;
   container.appendChild(info);
 

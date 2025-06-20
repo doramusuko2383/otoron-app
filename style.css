@@ -342,9 +342,18 @@ button:hover {
 
 /* 今日の情報 */
 .today-info {
+  margin: 0 auto 1em;
+  padding: 0.75em;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
   text-align: center;
-  font-size: 1.1em;
-  margin-bottom: 1em;
+  font-size: 1.05em;
+  max-width: 320px;
+}
+
+.today-info div {
+  margin: 0.25em 0;
 }
 
 /* ステータスバーとメッセージ */
