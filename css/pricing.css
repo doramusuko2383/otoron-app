@@ -5,6 +5,8 @@
   display: flex;
   flex-direction: column;
   gap: 1em;
+  background: linear-gradient(135deg, #fff1e6, #ffe6f2);
+  min-height: 100vh;
 }
 
 @media (min-width: 768px) {

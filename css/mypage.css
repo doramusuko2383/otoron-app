@@ -1,6 +1,8 @@
 .mypage-screen {
   max-width: 480px;
   margin: 0 auto; /* 上部余白は #app.with-header に委任 */
+  background: linear-gradient(135deg, #fff1e6, #ffe6f2);
+  min-height: 100vh;
 }
 
 .mypage-tabs {
