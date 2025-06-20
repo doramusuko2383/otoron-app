@@ -1,0 +1,15 @@
+{
+  "redirects": [
+    {
+      "source": "/",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.playotoron.com"
+        }
+      ],
+      "destination": "https://playotoron.com",
+      "permanent": true
+    }
+  ]
+}
