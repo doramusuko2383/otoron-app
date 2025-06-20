@@ -2,6 +2,10 @@
 
 :root {
   --font-main: 'Kosugi Maru', sans-serif;
+  /* Theming variables */
+  --color-primary: #ff9900;
+  --color-accent: #FFD44C;
+  --color-background: #fff8f0;
 }
 
 /* デフォルト：モバイルファースト（スクロール許可） */
@@ -9,7 +13,7 @@
   font-family: var(--font-main);
   margin: 0;
   padding: 0;
-  background: #fff8f0;
+  background: var(--color-background);
   overflow-x: hidden;
   overflow-y: auto; /* ← モバイルでスクロールできるように */
 }
@@ -26,7 +30,7 @@ body {
 }
 
 .app-root.morning {
-  background: #fff8f0;
+  background: var(--color-background);
 }
 
 
@@ -818,7 +822,7 @@ button:hover {
 
 .home-screen .home-title {
   font-size: 2.4rem;
-  color: #FFD44C;
+  color: var(--color-accent);
   margin: 0.5em 0 0.2em 0;
   text-align: center;
 }
@@ -831,7 +835,7 @@ button:hover {
 }
 
 .home-screen .main-start-button {
-  background-color: #FFD44C;
+  background-color: var(--color-accent);
   color: #543014;
   font-size: 1.2rem;
   padding: 0.8em 1.5em;
@@ -1139,7 +1143,7 @@ a/* Landing page styles */
 }
 
 .intro-header #signup-btn {
-  background-color: #ff9900;
+  background-color: var(--color-primary);
 }
 
 .intro-header #signup-btn:hover {
@@ -1183,7 +1187,7 @@ a/* Landing page styles */
 
 .hero-highlight {
   font-size: 1.1em;
-  color: #ff9900;
+  color: var(--color-primary);
   font-weight: bold;
   margin-bottom: 1em;
   max-width: 90%;
@@ -1218,7 +1222,7 @@ a/* Landing page styles */
 
 .cta-button {
   margin-top: 1.5em;
-  background-color: #ff9900;
+  background-color: var(--color-primary);
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -1283,7 +1287,7 @@ a/* Landing page styles */
 
 /* ステップ番号 */
 .step-number {
-  background-color: #ff9900;
+  background-color: var(--color-primary);
   color: white;
   font-weight: bold;
   border-radius: 50%;
@@ -1323,7 +1327,7 @@ a/* Landing page styles */
 }
 
 .step-cta .cta-button {
-  background-color: #ff9900;
+  background-color: var(--color-primary);
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -1468,7 +1472,7 @@ a/* Landing page styles */
   width: 1.4em;
   height: 1.4em;
   margin-right: 0.6em;
-  background: #ff9900;
+  background: var(--color-primary);
   color: #fff;
   border-radius: 50%;
   font-weight: bold;
@@ -1691,7 +1695,7 @@ a/* Landing page styles */
 
 .mypage-tab-button.active {
   background: #fff;
-  border-bottom: 2px solid #ff9900;
+  border-bottom: 2px solid var(--color-primary);
   font-weight: bold;
 }
 
@@ -1849,7 +1853,7 @@ a/* Landing page styles */
 }
 
 .plan-card.recommended {
-  border: 2px solid #ff9900;
+  border: 2px solid var(--color-primary);
 }
 
 .plan-title {
@@ -1879,7 +1883,7 @@ a/* Landing page styles */
 
 .recommend-badge {
   align-self: center;
-  background: #ff9900;
+  background: var(--color-primary);
   color: #fff;
   border-radius: 999px;
   padding: 0.2em 0.8em;
@@ -2145,7 +2149,7 @@ a/* Landing page styles */
 
 .tab-menu .tab.active {
   background-color: #fff;
-  border-top-color: #ff9900;
+  border-top-color: var(--color-primary);
   font-weight: bold;
 }
 

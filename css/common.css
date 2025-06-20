@@ -2,6 +2,10 @@
 
 :root {
   --font-main: 'Kosugi Maru', sans-serif;
+  /* Theming variables */
+  --color-primary: #ff9900;
+  --color-accent: #FFD44C;
+  --color-background: #fff8f0;
 }
 
 /* デフォルト：モバイルファースト（スクロール許可） */
@@ -9,13 +13,13 @@
   font-family: var(--font-main);
   margin: 0;
   padding: 0;
-  background: #fff8f0;
+  background: var(--color-background);
   overflow-x: hidden;
   overflow-y: auto; /* ← モバイルでスクロールできるように */
 }
 
 .app-root.morning {
-  background: #fff8f0;
+  background: var(--color-background);
 }
 
 

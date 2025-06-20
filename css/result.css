@@ -204,7 +204,7 @@
 
 .tab-menu .tab.active {
   background-color: #fff;
-  border-top-color: #ff9900;
+  border-top-color: var(--color-primary);
   font-weight: bold;
 }
 

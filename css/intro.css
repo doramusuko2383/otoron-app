@@ -24,7 +24,7 @@ a/* Landing page styles */
 }
 
 .intro-header #signup-btn {
-  background-color: #ff9900;
+  background-color: var(--color-primary);
 }
 
 .intro-header #signup-btn:hover {
@@ -68,7 +68,7 @@ a/* Landing page styles */
 
 .hero-highlight {
   font-size: 1.1em;
-  color: #ff9900;
+  color: var(--color-primary);
   font-weight: bold;
   margin-bottom: 1em;
   max-width: 90%;
@@ -103,7 +103,7 @@ a/* Landing page styles */
 
 .cta-button {
   margin-top: 1.5em;
-  background-color: #ff9900;
+  background-color: var(--color-primary);
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -168,7 +168,7 @@ a/* Landing page styles */
 
 /* ステップ番号 */
 .step-number {
-  background-color: #ff9900;
+  background-color: var(--color-primary);
   color: white;
   font-weight: bold;
   border-radius: 50%;
@@ -208,7 +208,7 @@ a/* Landing page styles */
 }
 
 .step-cta .cta-button {
-  background-color: #ff9900;
+  background-color: var(--color-primary);
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -353,7 +353,7 @@ a/* Landing page styles */
   width: 1.4em;
   height: 1.4em;
   margin-right: 0.6em;
-  background: #ff9900;
+  background: var(--color-primary);
   color: #fff;
   border-radius: 50%;
   font-weight: bold;

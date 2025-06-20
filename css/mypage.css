@@ -20,7 +20,7 @@
 
 .mypage-tab-button.active {
   background: #fff;
-  border-bottom: 2px solid #ff9900;
+  border-bottom: 2px solid var(--color-primary);
   font-weight: bold;
 }
 
