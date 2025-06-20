@@ -214,7 +214,7 @@ export async function renderGrowthScreen(user) {
   const chordStatus = document.createElement("div");
   chordStatus.className = "chord-status-grid";
 
-  for (const chord of chords) {
+  chords.forEach((chord, index) => {
     const item = document.createElement("div");
     item.style.textAlign = "center";
 
@@ -246,9 +246,14 @@ export async function renderGrowthScreen(user) {
 
     item.appendChild(circle);
 
-
     chordStatus.appendChild(item);
-  }
+
+    if (index === 8 || index === 13) {
+      const br = document.createElement("div");
+      br.className = "chord-row-break";
+      chordStatus.appendChild(br);
+    }
+  });
 
   container.appendChild(chordStatus);
 
