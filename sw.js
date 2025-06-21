@@ -5,6 +5,7 @@ const STATIC_ASSETS = [
   '/main.js',
   '/style.css',
   '/generated-icon.png',
+  '/ogp.jpg',
   //'/favicon.ico',
   // CSS files
   '/css/common.css',
