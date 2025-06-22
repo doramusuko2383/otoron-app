@@ -227,7 +227,7 @@ export async function renderGrowthScreen(user) {
     if (chord.type === "black-inv") {
       circle.classList.add("growth-locked");
       if (isUnlocked) {
-        circle.textContent = "✅";
+        circle.classList.add("growth-unlocked-inv");
       }
     } else {
       if (isUnlocked) {
