@@ -2,7 +2,7 @@ const CACHE_NAME = 'otoron-cache-v1';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
-  '/main.js',
+  '/dist/assets/index.js',
   '/style.css',
   '/generated-icon.png',
   '/ogp.jpg',

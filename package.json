@@ -8,8 +8,13 @@
     "@supabase/supabase-js": "^2.39.7",
     "micro": "^9.3.4"
   },
+  "devDependencies": {
+    "vite": "^5.2.0"
+  },
   "scripts": {
-    "reset-expired-premiums": "node scripts/resetExpiredPremiums.js"
+    "reset-expired-premiums": "node scripts/resetExpiredPremiums.js",
+    "dev": "vite",
+    "build": "vite build"
   }
 }
 
