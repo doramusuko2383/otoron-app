@@ -21,7 +21,8 @@ export function renderFaqScreen(user) {
     {
       id: "q2",
       question: "和音の選択を間違えてしまいました。最初からやり直せますか？",
-      answer: "はい、できます。以下のボタンから和音を選び直すことができます。",
+      answer:
+        "はい、できます。以下のボタンから開始和音を選び直せます。白鍵はもちろん、黒鍵の転回形もすべて選択できます。",
       button: {
         id: "reselect-btn",
         label: "和音の選び直しボタン",

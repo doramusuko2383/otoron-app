@@ -20,13 +20,12 @@ export function renderChordResetScreen(user) {
   app.appendChild(main);
 
   const select = main.querySelector("#start-chord");
+  // include every chord option, including black key inversions
   chords.forEach((ch, idx) => {
-    if (idx <= 13) { // up to mizuiro (basic 14 colors)
-      const opt = document.createElement("option");
-      opt.value = idx;
-      opt.textContent = ch.label;
-      select.appendChild(opt);
-    }
+    const opt = document.createElement("option");
+    opt.value = idx;
+    opt.textContent = ch.label;
+    select.appendChild(opt);
   });
 
   main.querySelector("#apply-btn").onclick = () => {
