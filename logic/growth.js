@@ -257,15 +257,6 @@ export async function renderGrowthScreen(user) {
 
   container.appendChild(chordStatus);
 
-  // ✅ 全和音が解放済みだった場合の表示（解放ボタンなし）
-  if (!target) {
-    const done = document.createElement("p");
-    done.textContent = "🎉 すべての和音が解放されています！";
-    done.style.margin = "1.5em auto";
-    done.style.textAlign = "center";
-    done.style.color = "#666";
-    container.appendChild(done);
-  }
 
 
 
