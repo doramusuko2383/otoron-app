@@ -211,6 +211,11 @@ button:hover {
   background-color: white;
 }
 
+/* 解放された黒鍵転回形の枠線色 */
+.growth-unlocked-inv {
+  border-color: green;
+}
+
 /* ✅ 転回形で解放済みのチェックマーク（白背景＋✅） */
 
 /* ✅ 色つき和音（名前＝クラス名と一致） */
