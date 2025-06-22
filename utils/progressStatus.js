@@ -130,11 +130,15 @@ export async function updateGrowthStatusBar(user, target, onUnlocked) {
     btn.onpointerup = cancelProgress;
     btn.onpointerleave = cancelProgress;
   } else {
-    const label = target ? target.label : "";
-    const colorClass = target ? target.colorClass : "";
-    msg.innerHTML = `いま <span class="chord ${colorClass}">${label}</span> の和音に挑戦中`;
     msg.classList.remove("can-unlock");
     msg.classList.add("current-target");
+    if (target) {
+      const label = target.label;
+      const colorClass = target.colorClass;
+      msg.innerHTML = `いま <span class="chord ${colorClass}">${label}</span> の和音に挑戦中`;
+    } else {
+      msg.textContent = "🎉 すべての和音が解放されています！";
+    }
     card.classList.remove("highlight");
     btn.style.display = "none";
     btn.onpointerdown = null;
