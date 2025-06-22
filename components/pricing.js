@@ -33,6 +33,15 @@ export function renderPricingScreen(user) {
       benefit: '',
       recommended: false,
     },
+    {
+      key: 'plan1yen',
+      title: 'テスト用1円プラン',
+      months: 0,
+      monthly: 1,
+      total: 1,
+      benefit: '',
+      recommended: false,
+    },
   ];
 
   plans.forEach((p) => {
@@ -48,7 +57,7 @@ export function renderPricingScreen(user) {
 
     const title = document.createElement('div');
     title.className = 'plan-title';
-    title.textContent = `${p.months}ヶ月プラン`;
+    title.textContent = p.title || `${p.months}ヶ月プラン`;
     card.appendChild(title);
 
     const price = document.createElement('div');
