@@ -56,8 +56,9 @@ Vercel などの環境でデプロイする際は次の環境変数を設定し�
 - `PRICE_ID_1M`
 - `PRICE_ID_6M`
 - `PRICE_ID_12M`
+- `PRICE_ID_1yen`
 
-`PRICE_ID_*` は Stripe で発行した各プラン(1ヶ月/6ヶ月/12ヶ月)の価格IDです。
+`PRICE_ID_*` は Stripe で発行した各プラン(1円テスト/1ヶ月/6ヶ月/12ヶ月)の価格IDです。
 これらは `.env.example` にも記載しているので参考にしてください。
 
 ## Supabase Database Schema
