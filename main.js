@@ -18,7 +18,7 @@ import { renderSignUpScreen } from "./components/signup.js";
 import { renderInitialSetupScreen } from "./components/initialSetup.js";
 import { supabase } from "./utils/supabaseClient.js";
 import { ensureSupabaseAuth } from "./utils/supabaseAuthHelper.js";
-import { isAccessAllowed, getLockType } from "./utils/accessControl.js";
+import { getLockType } from "./utils/accessControl.js";
 import { createInitialChordProgress } from "./utils/progressUtils.js";
 import { renderMyPageScreen } from "./components/mypage.js";
 import { clearTimeOfDayStyling } from "./utils/timeOfDay.js";
@@ -52,6 +52,20 @@ let currentUser = null;
 
 export const switchScreen = (screen, user = currentUser, options = {}) => {
   const { replace = false } = options;
+
+  // If the user is locked (trial or premium expired),
+  // always redirect to the lock screen except for a few allowed pages.
+  const lockType = getLockType(user);
+  if (
+    lockType &&
+    screen !== "lock" &&
+    screen !== "pricing" &&
+    screen !== "login" &&
+    screen !== "signup" &&
+    screen !== "intro"
+  ) {
+    return switchScreen("lock", user, { replace, lockType });
+  }
 
   const app = document.getElementById("app");
   app.innerHTML = "";
