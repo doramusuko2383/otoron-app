@@ -535,11 +535,16 @@ function showSingleNoteQuiz(chord, onFinish, isLast = false) {
   if (!container) return;
 
   const layout = container.querySelector('.grid-container');
-  const unknownBtn = container.querySelector('#unknownBtn');
-  const quitBtn = container.querySelector('#quitBtn');
+  const unknownBtn = document.getElementById('unknownBtn');
+  const quitBtn = document.getElementById('quitBtn');
   if (layout) layout.style.display = 'none';
-  if (unknownBtn) unknownBtn.style.display = 'none';
   if (quitBtn) quitBtn.style.display = 'none';
+
+  let prevUnknownHandler = null;
+  if (unknownBtn) {
+    prevUnknownHandler = unknownBtn.onclick;
+    unknownBtn.onclick = () => playNoteFile(note);
+  }
 
   const overlay = document.createElement('div');
   overlay.id = 'single-note-overlay';
@@ -601,8 +606,10 @@ function showSingleNoteQuiz(chord, onFinish, isLast = false) {
         overlay.remove();
         if (!isLast) {
           if (layout) layout.style.display = '';
-          if (unknownBtn) unknownBtn.style.display = '';
           if (quitBtn) quitBtn.style.display = '';
+        }
+        if (unknownBtn && prevUnknownHandler) {
+          unknownBtn.onclick = prevUnknownHandler;
         }
         onFinish();
       });
