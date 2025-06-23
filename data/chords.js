@@ -24,11 +24,11 @@ export const chords = [
   { name: "F#-A-D", key: "usudai_1st", label: "フィスラレ", labelHiragana: "ふぃすられ", labelHtml: "ふぃす<br>ら<br>れ", file: "chord_11_usudai_1st.mp3", type: "black-inv", colorClass: "white", soundKey: "fisrare", notes: ["F#4", "A4", "D5"] },
   { name: "A-D-F#", key: "usudai_2nd", label: "ラレフィス", labelHiragana: "られふぃす", labelHtml: "ら<br>れ<br>ふぃす", file: "chord_11_usudai_2nd.mp3", type: "black-inv", colorClass: "white", soundKey: "larefis", notes: ["A3", "D4", "F#4"] },
 
-  { name: "G#-B-E", key: "fuji_1st", label: "ギスシミ", labelHiragana: "ぎすしみ", labelHtml: "ぎす<br>し<br>み", file: "chord_12_fuji_1st.mp3", type: "black-inv", colorClass: "white", soundKey: "gissemi", notes: ["G#3", "B3", "E4"] },
+  { name: "G#-B-E", key: "fuji_1st", label: "ギスシミ", labelHiragana: "ぎすしみ", labelHtml: "ぎす<br>し<br>み", file: "chord_12_fuji_1st.mp3", type: "black-inv", colorClass: "white", soundKey: "gissemi", notes: ["G#4", "B4", "E5"] },
   { name: "B-E-G#", key: "fuji_2nd", label: "シミギス", labelHiragana: "しみぎす", labelHtml: "し<br>み<br>ぎす", file: "chord_12_fuji_2nd.mp3", type: "black-inv", colorClass: "white", soundKey: "semigis", notes: ["B3", "E4", "G#4"] },
 
   { name: "D-F-B♭", key: "hai_1st", label: "レファベー", labelHiragana: "れふぁべー", labelHtml: "れ<br>ふぁ<br>べー", file: "chord_13_hai_1st.mp3", type: "black-inv", colorClass: "white", soundKey: "refabe", notes: ["D4", "F4", "B♭4"] },
-  { name: "F-B♭-D", key: "hai_2nd", label: "ファベーレ", labelHiragana: "ふぁべーれ", labelHtml: "ふぁ<br>べー<br>れ", file: "chord_13_hai_2nd.mp3", type: "black-inv", colorClass: "white", soundKey: "fabere", notes: ["F3", "B♭3", "D4"] },
+  { name: "F-B♭-D", key: "hai_2nd", label: "ファベーレ", labelHiragana: "ふぁべーれ", labelHtml: "ふぁ<br>べー<br>れ", file: "chord_13_hai_2nd.mp3", type: "black-inv", colorClass: "white", soundKey: "fabere", notes: ["F4", "B♭4", "D5"] },
 
   { name: "G-B♭-E♭", key: "mizuiro_1st", label: "ソベーエス", labelHiragana: "そべーえす", labelHtml: "そ<br>べー<br>えす", file: "chord_14_mizuiro_1st.mp3", type: "black-inv", colorClass: "white", soundKey: "sobees", notes: ["G4", "B♭4", "E♭5"] },
   { name: "B♭-E♭-G", key: "mizuiro_2nd", label: "ベーエスソ", labelHiragana: "べーえすそ", labelHtml: "べー<br>えす<br>そ", file: "chord_14_mizuiro_2nd.mp3", type: "black-inv", colorClass: "white", soundKey: "beesso", notes: ["B♭3", "E♭4", "G4"] }
