@@ -31,6 +31,11 @@ export function renderContactScreen(user) {
     <p style="text-align:center;margin-top:1em;">
       お急ぎの方は、<a href="#" id="help-link">ヘルプ・操作マニュアル</a> もあわせてご覧ください。
     </p>
+    <p class="support-email" style="text-align:center;margin-top:0.5em;">
+      直接のご連絡は
+      <a href="mailto:support@playotoron.com">support@playotoron.com</a>
+      までお願いいたします。
+    </p>
   `;
 
   app.appendChild(main);
