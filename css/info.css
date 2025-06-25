@@ -4,7 +4,7 @@
   padding: 0 1em 2em;
   box-sizing: border-box;
   background: #fff;
-  color: #543014;
+  color: #543014 !important;
   line-height: 1.7;
   border-radius: 8px;
 }
@@ -51,7 +51,7 @@
 /* Ensure readability even when the body has a dark background */
 .app-root.night .info-page {
   background: #fff;
-  color: #543014;
+  color: #543014 !important;
 }
 
 .info-page h1 {

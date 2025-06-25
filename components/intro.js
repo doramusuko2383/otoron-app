@@ -1,5 +1,8 @@
 // components/intro.js
 import { switchScreen } from "../main.js";
+import { signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { firebaseAuth } from "../firebase/firebase-init.js";
+import { supabase } from "../utils/supabaseClient.js";
 
 export function renderIntroScreen() {
   const app = document.getElementById('app');
@@ -232,14 +235,26 @@ export function renderIntroScreen() {
 
   const loginBtn = document.getElementById('login-btn');
   if (loginBtn) {
-    loginBtn.addEventListener('click', () => {
+    loginBtn.addEventListener('click', async () => {
+      try {
+        await signOut(firebaseAuth);
+        await supabase.auth.signOut();
+      } catch (e) {
+        console.warn('intro logout error', e);
+      }
       switchScreen('login');
     });
   }
 
   const signupBtn = document.getElementById('signup-btn');
   if (signupBtn) {
-    signupBtn.addEventListener('click', () => {
+    signupBtn.addEventListener('click', async () => {
+      try {
+        await signOut(firebaseAuth);
+        await supabase.auth.signOut();
+      } catch (e) {
+        console.warn('intro logout error', e);
+      }
       switchScreen('signup');
     });
   }
