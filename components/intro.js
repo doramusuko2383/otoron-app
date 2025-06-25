@@ -17,6 +17,18 @@ export function renderIntroScreen() {
         <img src="images/otolon_face.webp" alt="トップへ" />
       </button>
       <div class="header-right">
+        <div class="info-menu">
+          <button id="info-menu-btn" aria-label="インフォメーション">ℹ️</button>
+          <div id="info-dropdown" class="info-dropdown">
+            <button id="terms-btn">利用規約</button>
+            <button id="privacy-btn">プライバシーポリシー</button>
+            <button id="contact-btn">お問い合わせ</button>
+            <button id="help-btn">必ずお読みください</button>
+            <button id="faq-btn">よくある質問</button>
+            <button id="law-btn">特定商取引法に基づく表示</button>
+            <button id="external-btn">外部送信ポリシー</button>
+          </div>
+        </div>
         <button id="login-btn" class="intro-login">ログイン</button>
         <button id="signup-btn" class="intro-signup">無料会員登録</button>
       </div>
@@ -231,6 +243,44 @@ export function renderIntroScreen() {
       switchScreen('signup');
     });
   }
+
+  // ▼ インフォメーションメニュー
+  const infoMenuBtn = document.getElementById('info-menu-btn');
+  const infoDropdown = document.getElementById('info-dropdown');
+  const termsBtn = document.getElementById('terms-btn');
+  const privacyBtn = document.getElementById('privacy-btn');
+  const contactBtn = document.getElementById('contact-btn');
+  const helpBtn = document.getElementById('help-btn');
+  const faqBtn = document.getElementById('faq-btn');
+  const lawBtn = document.getElementById('law-btn');
+  const externalBtn = document.getElementById('external-btn');
+
+  if (infoMenuBtn && infoDropdown) {
+    infoMenuBtn.onclick = (e) => {
+      e.stopPropagation();
+      const willShow = !infoDropdown.classList.contains('show');
+      infoDropdown.classList.toggle('show');
+      if (willShow) {
+        document.addEventListener(
+          'click',
+          function handler(ev) {
+            if (!infoDropdown.contains(ev.target) && ev.target !== infoMenuBtn) {
+              infoDropdown.classList.remove('show');
+              document.removeEventListener('click', handler);
+            }
+          }
+        );
+      }
+    };
+  }
+
+  if (termsBtn) termsBtn.onclick = () => switchScreen('terms');
+  if (privacyBtn) privacyBtn.onclick = () => switchScreen('privacy');
+  if (contactBtn) contactBtn.onclick = () => switchScreen('contact');
+  if (helpBtn) helpBtn.onclick = () => switchScreen('help');
+  if (faqBtn) faqBtn.onclick = () => switchScreen('faq', undefined, { hideReselect: true });
+  if (lawBtn) lawBtn.onclick = () => switchScreen('law');
+  if (externalBtn) externalBtn.onclick = () => switchScreen('external');
 
   const heroCta = document.getElementById('hero-cta');
   const stepCta = document.getElementById('step-cta');
