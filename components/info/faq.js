@@ -1,7 +1,8 @@
 import { renderHeader } from "../header.js";
 import { switchScreen } from "../../main.js";
 
-export function renderFaqScreen(user) {
+export function renderFaqScreen(user, options = {}) {
+  const { hideReselect = false } = options;
   const app = document.getElementById("app");
   app.innerHTML = "";
   renderHeader(app, user);
@@ -49,13 +50,15 @@ export function renderFaqScreen(user) {
     },
   ];
 
+  const list = hideReselect ? faqs.filter(f => f.id !== 'q2') : faqs;
+
   const main = document.createElement("main");
   main.className = "info-page";
   const heading = document.createElement("h1");
   heading.textContent = "よくある質問";
   main.appendChild(heading);
 
-  faqs.forEach((faq) => {
+  list.forEach((faq) => {
     const detail = document.createElement("details");
     detail.id = faq.id;
     detail.classList.add("collapsible");

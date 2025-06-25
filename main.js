@@ -112,7 +112,7 @@ export const switchScreen = (screen, user = currentUser, options = {}) => {
   else if (screen === "privacy") renderPrivacyScreen(user);
   else if (screen === "contact") renderContactScreen(user);
   else if (screen === "help") renderHelpScreen(user);
-  else if (screen === "faq") renderFaqScreen(user);
+  else if (screen === "faq") renderFaqScreen(user, options);
   else if (screen === "chord_reset") renderChordResetScreen(user);
   else if (screen === "law") renderLawScreen(user);
   else if (screen === "external") renderExternalScreen(user);
