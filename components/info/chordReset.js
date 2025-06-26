@@ -1,4 +1,4 @@
-import { renderHeader } from "../header.js";
+import { renderIntroHeader } from "../introHeader.js";
 import { chords } from "../../data/chords.js";
 import { resetProgressAndUnlock } from "../../utils/progressUtils.js";
 import { showCustomConfirm, showCustomAlert } from "../home.js";
@@ -7,7 +7,7 @@ import { switchScreen } from "../../main.js";
 export function renderChordResetScreen(user) {
   const app = document.getElementById("app");
   app.innerHTML = "";
-  renderHeader(app, user);
+  renderIntroHeader(app);
 
   const main = document.createElement("main");
   main.className = "info-page";

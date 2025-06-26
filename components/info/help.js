@@ -1,9 +1,9 @@
-import { renderHeader } from "../header.js";
+import { renderIntroHeader } from "../introHeader.js";
 
 export function renderHelpScreen(user) {
   const app = document.getElementById("app");
   app.innerHTML = "";
-  renderHeader(app, user);
+  renderIntroHeader(app);
 
   const main = document.createElement("main");
   main.className = "info-page";
