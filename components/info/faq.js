@@ -1,11 +1,16 @@
 import { renderIntroHeader } from "../introHeader.js";
+import { renderHeader } from "../header.js";
 import { switchScreen } from "../../main.js";
 
 export function renderFaqScreen(user, options = {}) {
   const { hideReselect = false } = options;
   const app = document.getElementById("app");
   app.innerHTML = "";
-  renderIntroHeader(app);
+  if (user) {
+    renderHeader(app, user);
+  } else {
+    renderIntroHeader(app);
+  }
 
   const faqs = [
     {
