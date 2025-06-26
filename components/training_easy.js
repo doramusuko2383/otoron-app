@@ -24,7 +24,7 @@ export const firstMistakeInSession = { flag: false, wrong: null };
 export let lastResults = [];
 export let correctCount = 0;
 
-function playSoundThen(name, callback) {
+async function playSoundThen(name, callback) {
   if (currentAudio) {
     currentAudio.pause();
     currentAudio.currentTime = 0;
@@ -35,7 +35,11 @@ function playSoundThen(name, callback) {
     console.error("⚠️ 音声ファイルが読み込めませんでした:", name);
     callback();
   };
-  currentAudio.play();
+  try {
+    await currentAudio.play();
+  } catch (e) {
+    console.warn("🎧 audio.play() エラー:", e);
+  }
 }
 
 function createQuestionQueue() {
@@ -305,14 +309,18 @@ if (correctBtn) {
 }
 
 
-function playChordFile(filename) {
+async function playChordFile(filename) {
   if (currentAudio) {
     currentAudio.pause();
     currentAudio.currentTime = 0;
   }
   currentAudio = getAudio(`audio/${filename}`);
   currentAudio.onerror = () => console.error("音声ファイルが見つかりません:", filename);
-  currentAudio.play();
+  try {
+    await currentAudio.play();
+  } catch (e) {
+    console.warn("🎧 audio.play() エラー:", e);
+  }
 }
 
 let feedbackTimeoutId;

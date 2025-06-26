@@ -112,8 +112,16 @@ export async function updateGrowthStatusBar(user, target, onUnlocked) {
         if (success) {
           const audio = getAudio("audio/unlock_chord.mp3");
           const applause = getAudio("audio/applause.mp3");
-          audio.play();
-          applause.play();
+          try {
+            await audio.play();
+          } catch (e) {
+            console.warn("🎧 audio.play() エラー:", e);
+          }
+          try {
+            await applause.play();
+          } catch (e) {
+            console.warn("🎧 audio.play() エラー:", e);
+          }
           launchConfetti();
           await applyRecommendedSelection(user.id);
           forceUnlock();
