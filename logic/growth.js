@@ -238,10 +238,14 @@ export async function renderGrowthScreen(user) {
       }
     }
 
-    circle.onclick = () => {
+    circle.onclick = async () => {
       if (chord.file) {
         const audio = getAudio(`audio/${chord.file}`);
-        audio.play();
+        try {
+          await audio.play();
+        } catch (e) {
+          console.warn("🎧 audio.play() エラー:", e);
+        }
       }
     };
 

@@ -32,7 +32,7 @@ export const firstMistakeInSession = { flag: false, wrong: null };
 export let lastResults = [];
 export let correctCount = 0;
 
-function playSoundThen(name, callback) {
+async function playSoundThen(name, callback) {
   if (currentAudio) {
     currentAudio.pause();
     currentAudio.currentTime = 0;
@@ -44,7 +44,11 @@ function playSoundThen(name, callback) {
     console.error("⚠️ 音声ファイルが読み込めませんでした:", name);
     callback();
   };
-  currentAudio.play();
+  try {
+    await currentAudio.play();
+  } catch (e) {
+    console.warn("🎧 audio.play() エラー:", e);
+  }
 }
 
 function createQuestionQueue() {
@@ -433,7 +437,7 @@ if (correctBtn) {
 }
 
 
-function playChordFile(filename) {
+async function playChordFile(filename) {
   if (!chordSoundOn) return;
   if (currentAudio) {
     currentAudio.pause();
@@ -441,7 +445,11 @@ function playChordFile(filename) {
   }
   currentAudio = getAudio(`audio/${filename}`);
   currentAudio.onerror = () => console.error("音声ファイルが見つかりません:", filename);
-  currentAudio.play();
+  try {
+    await currentAudio.play();
+  } catch (e) {
+    console.warn("🎧 audio.play() エラー:", e);
+  }
 }
 
 function normalizeNoteName(name) {
@@ -458,7 +466,7 @@ function normalizeNoteName(name) {
     .replace("♯", "#");
 }
 
-function playNoteFile(note, callback) {
+async function playNoteFile(note, callback) {
   if (currentAudio) {
     currentAudio.pause();
     currentAudio.currentTime = 0;
@@ -469,7 +477,11 @@ function playNoteFile(note, callback) {
   if (callback) {
     currentAudio.onended = () => setTimeout(callback, 100);
   }
-  currentAudio.play();
+  try {
+    await currentAudio.play();
+  } catch (e) {
+    console.warn("🎧 audio.play() エラー:", e);
+  }
 }
 
 function noteToMidi(n) {

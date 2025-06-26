@@ -24,10 +24,14 @@ export function playNote(noteName) {
       console.warn(`音声再生エラー: ${noteName}`);
       resolve();
     });
-    audio.play().catch((e) => {
-      console.warn(`音声再生エラー: ${noteName}`, e);
+    (async () => {
+      try {
+        await audio.play();
+      } catch (e) {
+        console.warn(`音声再生エラー: ${noteName}`, e);
+      }
       resolve();
-    });
+    })();
   });
 }
 

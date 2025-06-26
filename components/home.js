@@ -81,7 +81,13 @@ export async function renderHomeScreen(user, options = {}) {
   faceImg.className = "otolon-face";
   faceImg.addEventListener("pointerdown", () => {
     const audio = getAudio("audio/touch.mp3");
-    audio.play().catch((e) => console.warn("touch sound error", e));
+    (async () => {
+      try {
+        await audio.play();
+      } catch (e) {
+        console.warn("🎧 audio.play() エラー:", e);
+      }
+    })();
     faceImg.classList.add("bounce");
     faceImg.addEventListener(
       "animationend",
