@@ -49,14 +49,15 @@
   <script src="https://cdn.jsdelivr.net/npm/flatpickr" defer></script>
 
   <!-- ✅ VexFlowライブラリ読み込み -->
-  <script src="https://unpkg.com/vexflow@3.0.9/releases/vexflow-min.js" defer></script>
+  <script src="https://unpkg.com/vexflow@3.0.9/releases/vexflow-min.js" onload="window.VexLoaded = true;" defer></script>
   <script>
-    if (typeof Vex !== 'undefined') {
-      window.Vex = Vex;
-      // console.log("✅ VexFlow 読み込み成功");
-    } else {
-      console.error("❌ VexFlow 読み込み失敗");
-    }
+    // VexFlowの読み込み確認（失敗しないよう setInterval でチェック）
+    const waitForVex = setInterval(() => {
+      if (window.Vex) {
+        console.log("✅ VexFlow 読み込み成功");
+        clearInterval(waitForVex);
+      }
+    }, 100);
   </script>
   <script src="https://js.stripe.com/v3/" defer></script>
 
