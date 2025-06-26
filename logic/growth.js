@@ -140,6 +140,7 @@ export async function renderGrowthScreen(user) {
   // 🛠 デバッグ機能
   const debugPanel = document.createElement("div");
   debugPanel.style.marginBottom = "1em";
+  debugPanel.style.display = "none";
 
   const actionSelect = document.createElement("select");
   [
