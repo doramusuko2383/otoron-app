@@ -1,4 +1,4 @@
-import { renderHeader } from "../header.js";
+import { renderIntroHeader } from "../introHeader.js";
 import { switchScreen } from "../../main.js";
 
 const GAS_URL = "https://script.google.com/macros/s/AKfycbxuLk3wnuOENw8lqC0oZq-rLTvH8MJbzSPeMMwDLPYNpfDg10qQ2koVcvsIiPEepLSu/exec";
@@ -6,7 +6,7 @@ const GAS_URL = "https://script.google.com/macros/s/AKfycbxuLk3wnuOENw8lqC0oZq-r
 export function renderContactScreen(user) {
   const app = document.getElementById("app");
   app.innerHTML = "";
-  renderHeader(app, user);
+  renderIntroHeader(app);
 
   const main = document.createElement("main");
   main.className = "info-page contact-page";

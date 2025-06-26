@@ -6,7 +6,7 @@ a/* Landing page styles */
   margin-left: auto;
 }
 
-.intro-header .header-right button {
+.intro-header .header-right > button {
   border: none;
   border-radius: 6px;
   padding: 0.4em 1em;

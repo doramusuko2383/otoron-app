@@ -1,10 +1,10 @@
-import { renderHeader } from "../header.js";
+import { renderIntroHeader } from "../introHeader.js";
 import { switchScreen } from "../../main.js";
 
 export function renderLawScreen(user) {
   const app = document.getElementById("app");
   app.innerHTML = "";
-  renderHeader(app, user);
+  renderIntroHeader(app);
 
   const main = document.createElement("main");
   main.className = "info-page full-page";
