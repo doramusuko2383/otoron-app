@@ -27,8 +27,17 @@
   text-align: center;
 }
 
+/* Center lists while keeping bullet indentation */
+.info-page ul {
+  display: inline-block;
+  text-align: left;
+  margin: 0 auto 1em;
+  padding-left: 1.4em;
+}
+
 /* Ensure bullet lists aren't flush against the edge on wide screens */
 .info-page.full-page ul {
+  display: inline-block;
   text-align: left;
   padding-left: 1.4em;
 }
