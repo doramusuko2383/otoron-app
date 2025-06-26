@@ -539,7 +539,6 @@ function showSingleNoteQuiz(chord, onFinish, isLast = false) {
   const unknownBtn = document.getElementById('unknownBtn');
   const quitBtn = document.getElementById('quitBtn');
   if (layout) layout.style.display = 'none';
-  if (quitBtn) quitBtn.style.display = 'none';
 
   let prevUnknownHandler = null;
   if (unknownBtn) {
