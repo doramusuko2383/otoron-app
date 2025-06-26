@@ -248,6 +248,7 @@ function drawQuizScreen() {
   debugAnswer.style.right = "10px";
   debugAnswer.style.fontSize = "0.9em";
   debugAnswer.style.color = "gray";
+  debugAnswer.style.display = "none";
 
   const unknownBtn = document.createElement("button");
   unknownBtn.id = "unknownBtn";

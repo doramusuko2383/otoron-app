@@ -46,6 +46,7 @@ export async function renderTrainingScreen(user) {
   debugAnswer.style.right = "10px";
   debugAnswer.style.fontSize = "0.9em";
   debugAnswer.style.color = "gray";
+  debugAnswer.style.display = "none";
   app.appendChild(debugAnswer);
   app.appendChild(bottomWrap);
 
