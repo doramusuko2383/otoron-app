@@ -289,13 +289,18 @@ export function renderIntroScreen() {
     };
   }
 
-  if (termsBtn) termsBtn.onclick = () => switchScreen('terms');
-  if (privacyBtn) privacyBtn.onclick = () => switchScreen('privacy');
-  if (contactBtn) contactBtn.onclick = () => switchScreen('contact');
-  if (helpBtn) helpBtn.onclick = () => switchScreen('help');
-  if (faqBtn) faqBtn.onclick = () => switchScreen('faq', undefined, { hideReselect: true });
-  if (lawBtn) lawBtn.onclick = () => switchScreen('law');
-  if (externalBtn) externalBtn.onclick = () => switchScreen('external');
+  // Always show the intro-style header when navigating to these pages
+  // from the landing page, regardless of login status.
+  const introOptions = null; // force header rendering for intro pages
+
+  if (termsBtn) termsBtn.onclick = () => switchScreen('terms', introOptions);
+  if (privacyBtn) privacyBtn.onclick = () => switchScreen('privacy', introOptions);
+  if (contactBtn) contactBtn.onclick = () => switchScreen('contact', introOptions);
+  if (helpBtn) helpBtn.onclick = () => switchScreen('help', introOptions);
+  if (faqBtn)
+    faqBtn.onclick = () => switchScreen('faq', introOptions, { hideReselect: true });
+  if (lawBtn) lawBtn.onclick = () => switchScreen('law', introOptions);
+  if (externalBtn) externalBtn.onclick = () => switchScreen('external', introOptions);
 
   const heroCta = document.getElementById('hero-cta');
   const stepCta = document.getElementById('step-cta');
