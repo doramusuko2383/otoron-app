@@ -164,7 +164,8 @@ a/* Landing page styles */
 
 .intro-step-video {
   width: 180px;
-  height: 280px;
+  min-height: 280px;
+  height: 100%;
   object-fit: cover;
   border-radius: 8px;
   background: #000;
