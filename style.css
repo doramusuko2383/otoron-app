@@ -1509,6 +1509,7 @@ a/* Landing page styles */
   overflow: hidden;
   border-radius: 8px;
   background: #000;
+  align-self: center;
 }
 
 .features .intro-step-video-wrapper .intro-step-video {
