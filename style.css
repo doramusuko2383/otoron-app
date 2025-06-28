@@ -1338,7 +1338,7 @@ a/* Landing page styles */
   background: #fff;
   padding: 1.2em;
   border-radius: 12px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1351,7 +1351,7 @@ a/* Landing page styles */
 .intro-step-video-wrapper {
   width: 100%;
   max-width: 260px;
-  aspect-ratio: 9 / 16;
+  aspect-ratio: 412 / 915;
   border-radius: 8px;
   overflow: hidden;
   margin-bottom: 1em;
@@ -1372,7 +1372,13 @@ a/* Landing page styles */
 
 @media (min-width: 768px) {
   .intro-step {
-    flex-direction: column;
+    flex-direction: row;
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .intro-step-text {
+    text-align: left;
   }
 }
 
@@ -1456,6 +1462,9 @@ a/* Landing page styles */
 
 @media (min-width: 768px) {
   .features .intro-step {
+    flex-direction: row;
+    align-items: flex-start;
+    text-align: left;
     gap: 2em;
   }
 }
@@ -1463,7 +1472,7 @@ a/* Landing page styles */
 .features .intro-step-video-wrapper {
   width: 100%;
   max-width: 260px;
-  aspect-ratio: 9 / 16;
+  aspect-ratio: 412 / 915;
   overflow: hidden;
   border-radius: 8px;
   background: #000;

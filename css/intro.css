@@ -150,22 +150,24 @@ a/* Landing page styles */
 /* 各ステップ */
 .intro-step {
   display: flex;
-  flex-direction: row;
-  align-items: flex-start;
+  flex-direction: column;
+  align-items: center;
   gap: 1.5em;
   background: #fff;
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   padding: 1.5em;
   flex-wrap: wrap;
   writing-mode: horizontal-tb;
   text-orientation: mixed;
+  text-align: center;
 }
 
 
 .intro-step-video-wrapper {
-  width: 180px;
-  aspect-ratio: 9 / 16;
+  width: 100%;
+  max-width: 260px;
+  aspect-ratio: 412 / 915;
   border-radius: 8px;
   overflow: hidden;
   background: #000;
@@ -197,6 +199,18 @@ a/* Landing page styles */
   .intro-step-video-wrapper {
     width: 100%;
     max-width: 320px;
+  }
+}
+
+@media (min-width: 768px) {
+  .intro-step {
+    flex-direction: row;
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .intro-step-text {
+    text-align: left;
   }
 }
 
