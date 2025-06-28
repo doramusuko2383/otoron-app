@@ -84,7 +84,7 @@ export function renderIntroScreen() {
             </div>
             <div class="intro-step-text">
               <div class="intro-step-header">
-                <h3 class="intro-step-title">進捗に応じて和音が増える「育成モード」</h3>
+                <h3 class="intro-step-title">進捗に応じて和音が解放</h3>
               </div>
               <p class="intro-step-description">毎日のがんばりで和音がアンロックされる、ゲーム感覚の育成モード搭載</p>
             </div>
