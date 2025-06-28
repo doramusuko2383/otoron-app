@@ -164,7 +164,8 @@ a/* Landing page styles */
 
 .intro-step-video {
   width: 180px;
-  min-height: 280px;
+  height: auto;
+  max-height: 280px;
   object-fit: contain;
   border-radius: 8px;
   background: #000;
@@ -190,7 +191,7 @@ a/* Landing page styles */
   .intro-step-video {
     width: 100%;
     max-width: 300px;
-    min-height: 200px;
+    min-height: 180px;
   }
 }
 
