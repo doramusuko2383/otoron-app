@@ -1319,7 +1319,7 @@ a/* Landing page styles */
 }
 
 /* 4ステップの横並びスタイル修正 */
-.steps-container {
+.intro-steps-container {
   display: flex;
   flex-direction: column;
   gap: 1.5em;
@@ -1328,7 +1328,7 @@ a/* Landing page styles */
 }
 
 /* 各ステップ */
-.step {
+.intro-step {
   background: #fff;
   padding: 1.2em;
   border-radius: 12px;
@@ -1341,7 +1341,7 @@ a/* Landing page styles */
   text-orientation: mixed;
 }
 
-.step-video {
+.intro-step-video {
   width: 100%;
   border-radius: 8px;
   margin-bottom: 1em;
@@ -1349,16 +1349,16 @@ a/* Landing page styles */
   object-fit: contain;
 }
 
-.step-text {
+.intro-step-text {
   flex: 1;
 }
 
 @media (min-width: 768px) {
-  .step {
+  .intro-step {
     flex-direction: row;
     align-items: flex-start;
   }
-  .step-video {
+  .intro-step-video {
     width: 45%;
     max-width: 260px;
     margin: 0 1em 0 0;
@@ -1366,7 +1366,7 @@ a/* Landing page styles */
 }
 
 /* ステップ番号とタイトルの行 */
-.step-header {
+.intro-step-header {
   display: flex;
   justify-content: flex-start; /* ←中央から左揃えに変更 */
   align-items: center;
@@ -1377,7 +1377,7 @@ a/* Landing page styles */
 
 
 /* ステップ番号 */
-.step-number {
+.intro-step-number {
   background-color: var(--color-primary);
   color: white;
   font-weight: bold;
@@ -1393,7 +1393,7 @@ a/* Landing page styles */
 }
 
 /* ステップタイトル */
-.step-title {
+.intro-step-title {
   font-size: 1.1rem;
   font-weight: bold;
   color: #222;
@@ -1402,7 +1402,7 @@ a/* Landing page styles */
 }
 
 /* 説明文（step-description） */
-.step-description {
+.intro-step-description {
   max-width: 600px;
   margin: 0.2em auto 1em auto;
   font-size: 1rem;
@@ -1412,12 +1412,12 @@ a/* Landing page styles */
 }
 
 /* CTAボタン */
-.step-cta {
+.intro-step-cta {
   text-align: center;
   margin-top: 2em;
 }
 
-.step-cta .cta-button {
+.intro-step-cta .cta-button {
   background-color: var(--color-primary);
   color: #fff;
   border: none;
@@ -1428,11 +1428,11 @@ a/* Landing page styles */
   transition: background-color 0.3s ease;
 }
 
-.step-cta .cta-button:hover {
+.intro-step-cta .cta-button:hover {
   background-color: #e57c00;
 }
 
-.features .step {
+.features .intro-step {
   display: flex;
   flex-direction: row;
   gap: 1.2em;
@@ -1443,36 +1443,36 @@ a/* Landing page styles */
 }
 
 @media (min-width: 768px) {
-  .features .step {
+  .features .intro-step {
     gap: 2em;
   }
 }
 
-.features .step-video {
+.features .intro-step-video {
   min-height: 200px;
   width: 280px;
   height: 180px;
   object-fit: contain;
 }
 
-.features .step-number {
+.features .intro-step-number {
   font-size: 2.2em;
 }
 
-.features .step-title {
+.features .intro-step-title {
   font-size: 1.2rem;
   font-weight: bold;
 }
 
-.features .step-description {
+.features .intro-step-description {
   margin-top: 0.5em;
   line-height: 1.5;
 }
 
-.step,
-.step-text,
-.step-title,
-.step-description {
+.intro-step,
+.intro-step-text,
+.intro-step-title,
+.intro-step-description {
   writing-mode: horizontal-tb !important;
   text-orientation: mixed;
 }
