@@ -55,7 +55,7 @@ export function renderIntroScreen() {
           <div class="speech-bubble">ちょっと調べたけどレッスンがかなり高額になる...</div>
           <div class="speech-bubble">教えてくれる先生や教室が近所にない...</div>
           <div class="speech-bubble">独学でやってみたいけど、どう教えればいいかわからない</div>
-          <div class="speech-bubble">ちゃんと続けられるかが不安...</div>
+          <div class="speech-bubble">続けられるのが大変そうで、ちゃんと出来るかが不安...</div>
           <div class="speech-bubble">既に取り組んでいるけど、毎日のトレーニングの負担が大きい</div>
         </div>
       </section>
@@ -99,7 +99,7 @@ export function renderIntroScreen() {
                 <span class="intro-step-number">3</span>
                 <h3 class="intro-step-title">結果は保護者と共有して見守れる</h3>
               </div>
-              <p class="intro-step-description">分析グラフは未搭載。代わりに、保護者と成績を「共有」できる機能を提供</p>
+              <p class="intro-step-description">トレーニング結果をさかのぼれる！分析結果を保護者と成績を「共有」できる機能を提供</p>
             </div>
           </div>
 
@@ -110,9 +110,9 @@ export function renderIntroScreen() {
             <div class="intro-step-text">
               <div class="intro-step-header">
                 <span class="intro-step-number">4</span>
-                <h3 class="intro-step-title">単音分化モードあり</h3>
+                <h3 class="intro-step-title">単音分化や単音テストも実装</h3>
               </div>
-              <p class="intro-step-description">和音から単音への移行トレーニングも搭載。柔軟な設定も多数（出題比率、構成音限定など）</p>
+              <p class="intro-step-description">和音から単音への移行トレーニングも搭載。柔軟な設定も多数（出題数、出題和音など）</p>
             </div>
           </div>
         </div>
