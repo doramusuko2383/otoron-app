@@ -139,7 +139,7 @@ a/* Landing page styles */
   background: #fffaf5;
 }
 
-.steps-container {
+.intro-steps-container {
   display: flex;
   flex-direction: column;
   gap: 2em;
@@ -148,7 +148,7 @@ a/* Landing page styles */
 }
 
 /* 各ステップ */
-.step {
+.intro-step {
   display: flex;
   flex-direction: row;
   align-items: flex-start;
@@ -162,7 +162,7 @@ a/* Landing page styles */
   text-orientation: mixed;
 }
 
-.step-video {
+.intro-step-video {
   width: 180px;
   min-height: 280px;
   object-fit: contain;
@@ -171,23 +171,23 @@ a/* Landing page styles */
   flex-shrink: 0;
 }
 
-.step-text {
+.intro-step-text {
   flex: 1;
   min-width: 200px;
 }
 
 @media (max-width: 600px) {
-  .step {
+  .intro-step {
     flex-direction: column;
     align-items: center;
     text-align: center;
   }
 
-  .step-text {
+  .intro-step-text {
     text-align: left;
   }
 
-  .step-video {
+  .intro-step-video {
     width: 100%;
     max-width: 300px;
     min-height: 200px;
@@ -195,7 +195,7 @@ a/* Landing page styles */
 }
 
 /* ステップ番号とタイトルの行 */
-.step-header {
+.intro-step-header {
   display: flex;
   align-items: center;
   gap: 0.8em;
@@ -204,7 +204,7 @@ a/* Landing page styles */
 
 
 /* ステップ番号 */
-.step-number {
+.intro-step-number {
   background: orange;
   color: white;
   font-size: 1.2rem;
@@ -215,7 +215,7 @@ a/* Landing page styles */
 }
 
 /* ステップタイトル */
-.step-title {
+.intro-step-title {
   font-size: 1.2rem;
   font-weight: bold;
   margin: 0;
@@ -223,19 +223,19 @@ a/* Landing page styles */
 }
 
 /* 説明文（step-description） */
-.step-description {
+.intro-step-description {
   font-size: 1rem;
   margin: 0.5em 0 0;
   color: #444;
 }
 
 /* CTAボタン */
-.step-cta {
+.intro-step-cta {
   text-align: center;
   margin-top: 2em;
 }
 
-.step-cta .cta-button {
+.intro-step-cta .cta-button {
   background-color: var(--color-primary);
   color: #fff;
   border: none;
@@ -246,15 +246,15 @@ a/* Landing page styles */
   transition: background-color 0.3s ease;
 }
 
-.step-cta .cta-button:hover {
+.intro-step-cta .cta-button:hover {
   background-color: #e57c00;
 }
 
 
-.step,
-.step-text,
-.step-title,
-.step-description {
+.intro-step,
+.intro-step-text,
+.intro-step-title,
+.intro-step-description {
   writing-mode: horizontal-tb !important;
   text-orientation: mixed;
 }
