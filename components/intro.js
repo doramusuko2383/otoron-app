@@ -261,8 +261,12 @@ export function renderIntroScreen() {
       <footer class="lp-footer">
         <button id="footer-cta" class="cta-button">気になる方はこちらから無料体験へ！</button>
         <div class="social-links">
-          <a href="https://x.com/otoron_onkanDev" target="_blank" rel="noopener">X</a>
-          <a href="https://note.com/otoron" target="_blank" rel="noopener">note</a>
+          <a href="https://x.com/otoron_onkanDev" target="_blank" rel="noopener">
+            <img src="images/x-logo.png" alt="Xのロゴ" />
+          </a>
+          <a href="https://note.com/otoron" target="_blank" rel="noopener">
+            <img src="images/note-logo.png" alt="noteのロゴ" />
+          </a>
         </div>
         <p>&copy; 2024 Otoron</p>
       </footer>
