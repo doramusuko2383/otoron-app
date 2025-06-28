@@ -39,6 +39,8 @@ async function playSoundThen(name, callback) {
     await currentAudio.play();
   } catch (e) {
     console.warn("🎧 audio.play() エラー:", e);
+    // Playback failed so invoke callback to avoid freezing the UI
+    callback();
   }
 }
 
