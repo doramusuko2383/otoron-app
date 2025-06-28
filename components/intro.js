@@ -65,7 +65,9 @@ export function renderIntroScreen() {
 
         <div class="intro-steps-container">
           <div class="intro-step">
-            <video class="intro-step-video" src="videos/training-demo.mp4" autoplay loop muted playsinline></video>
+            <div class="intro-step-video-wrapper">
+              <video class="intro-step-video" src="videos/training-demo.mp4" autoplay loop muted playsinline></video>
+            </div>
             <div class="intro-step-text">
               <div class="intro-step-header">
                 <span class="intro-step-number">1</span>
@@ -76,7 +78,9 @@ export function renderIntroScreen() {
           </div>
 
           <div class="intro-step">
-            <video class="intro-step-video" src="videos/training-demo.mp4" autoplay loop muted playsinline></video>
+            <div class="intro-step-video-wrapper">
+              <video class="intro-step-video" src="videos/training-demo.mp4" autoplay loop muted playsinline></video>
+            </div>
             <div class="intro-step-text">
               <div class="intro-step-header">
                 <span class="intro-step-number">2</span>
@@ -87,7 +91,9 @@ export function renderIntroScreen() {
           </div>
 
           <div class="intro-step">
-            <video class="intro-step-video" src="videos/training-demo.mp4" autoplay loop muted playsinline></video>
+            <div class="intro-step-video-wrapper">
+              <video class="intro-step-video" src="videos/training-demo.mp4" autoplay loop muted playsinline></video>
+            </div>
             <div class="intro-step-text">
               <div class="intro-step-header">
                 <span class="intro-step-number">3</span>
@@ -98,7 +104,9 @@ export function renderIntroScreen() {
           </div>
 
           <div class="intro-step">
-            <video class="intro-step-video" src="videos/training-demo.mp4" autoplay loop muted playsinline></video>
+            <div class="intro-step-video-wrapper">
+              <video class="intro-step-video" src="videos/training-demo.mp4" autoplay loop muted playsinline></video>
+            </div>
             <div class="intro-step-text">
               <div class="intro-step-header">
                 <span class="intro-step-number">4</span>
