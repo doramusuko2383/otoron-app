@@ -1318,6 +1318,12 @@ a/* Landing page styles */
   text-align: center;
 }
 
+.features-heading {
+  font-size: 2rem;
+  text-align: center;
+  margin-bottom: 1.5em;
+}
+
 /* 4ステップの横並びスタイル修正 */
 .intro-steps-container {
   display: grid;
@@ -1347,6 +1353,7 @@ a/* Landing page styles */
   padding: 1.2em;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  border: 3px solid #ddd;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1354,6 +1361,17 @@ a/* Landing page styles */
   text-align: center;
   writing-mode: horizontal-tb;
   text-orientation: mixed;
+}
+
+.step-badge {
+  align-self: center;
+  background: #fff;
+  border: 2px solid var(--color-primary);
+  border-radius: 999px;
+  padding: 0.2em 0.8em;
+  font-size: 0.9rem;
+  font-weight: bold;
+  margin-bottom: 0.5em;
 }
 
 .intro-step-video-wrapper {
@@ -1433,7 +1451,7 @@ a/* Landing page styles */
 .intro-step-description {
   max-width: 600px;
   margin: 0.2em auto 1em auto;
-  font-size: 1rem;
+  font-size: 0.95rem;
   color: #555;
   line-height: 1.6;
   text-align: center;
