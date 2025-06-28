@@ -78,19 +78,14 @@ export async function renderSettingsScreen(user) {
   titleLine.className = "header-title-line";
   titleLine.innerHTML = `🎼 <strong>出題設定</strong> <span id="total-count">累計出題回数: 0 回</span>`;
 
-  const buttonGroup = document.createElement("div");
-const resetBtn = document.createElement("button");
-resetBtn.className = "shadow-button";
-resetBtn.innerHTML = "✅ 推奨出題";
-resetBtn.onclick = () => {
-  showCustomConfirm("本当に推奨出題にしますか？", () => {
-    resetToRecommendedChords(unlockedKeys, user); // ← user を渡す！
-  });
-};
-buttonGroup.appendChild(resetBtn);
-
-  buttonGroup.className = "header-button-group";
-
+  const resetBtn = document.createElement("button");
+  resetBtn.className = "shadow-button";
+  resetBtn.innerHTML = "✅ 推奨出題";
+  resetBtn.onclick = () => {
+    showCustomConfirm("本当に推奨出題にしますか？", () => {
+      resetToRecommendedChords(unlockedKeys, user); // ← user を渡す！
+    });
+  };
 
   const bulkDropdown = document.createElement("select");
   bulkDropdown.innerHTML = `
@@ -114,11 +109,6 @@ buttonGroup.appendChild(resetBtn);
     });
     updateSelection();
   };
-
-  buttonGroup.appendChild(bulkDropdown);
-  headerBar.appendChild(titleLine);
-  headerBar.appendChild(buttonGroup);
-  container.appendChild(headerBar);
 
   const singleWrap = document.createElement('label');
   singleWrap.className = 'toggle-wrap';
@@ -150,7 +140,6 @@ buttonGroup.appendChild(resetBtn);
   singleLabel.className = 'toggle-label';
   singleLabel.innerHTML = '🎵 単音分化モード';
   singleWrap.appendChild(singleLabel);
-  container.appendChild(singleWrap);
 
   const singleSelectWrap = document.createElement('div');
   singleSelectWrap.className = 'single-note-select-wrap';
@@ -167,7 +156,17 @@ buttonGroup.appendChild(resetBtn);
   };
   singleSelectWrap.appendChild(singleSelectLabel);
   singleSelectWrap.appendChild(singleSelect);
-  container.appendChild(singleSelectWrap);
+
+  const controlBar = document.createElement('div');
+  controlBar.className = 'settings-controls';
+  controlBar.appendChild(titleLine);
+  controlBar.appendChild(singleWrap);
+  controlBar.appendChild(singleSelectWrap);
+  controlBar.appendChild(resetBtn);
+  controlBar.appendChild(bulkDropdown);
+
+  headerBar.appendChild(controlBar);
+  container.appendChild(headerBar);
 
   const mainSection = document.createElement("div");
   mainSection.className = "main-section";
