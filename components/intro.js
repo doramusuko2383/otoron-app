@@ -188,6 +188,12 @@ export function renderIntroScreen() {
         <p class="age-note">そのため、「楽しく遊びながら耳を育てられる」時期にスタートすることがとても大切なのです。<br>※この臨界期の考え方は、日本国内の音楽教育法や海外の音楽心理学研究などにおいても広く言及されています。</p>
       </section>
 
+      <section class="intro-pricing">
+        <h2>料金プラン</h2>
+        <div class="intro-plans"></div>
+        <p class="plan-note">※ プランの料金は、登録時に一括でお支払いいただきます</p>
+      </section>
+
       <section class="faq">
         <h2>よくある質問</h2>
         <div class="faq-item">
@@ -354,6 +360,58 @@ export function renderIntroScreen() {
     topBtn.addEventListener('click', () => {
       const top = document.getElementById('lp-top');
       top?.scrollIntoView({ behavior: 'smooth' });
+    });
+  }
+
+  const planWrap = document.querySelector('.intro-plans');
+  if (planWrap) {
+    const plans = [
+      { months: 12, monthly: 990, total: 11880, benefit: '約4ヶ月分お得', recommended: true },
+      { months: 6, monthly: 1290, total: 7740, benefit: '約1ヶ月分お得', recommended: false },
+      { months: 1, monthly: 1490, total: 1490, benefit: '', recommended: false },
+    ];
+    plans.forEach((p) => {
+      const card = document.createElement('div');
+      card.className = 'plan-card' + (p.recommended ? ' recommended' : '');
+      if (p.recommended) {
+        const rec = document.createElement('div');
+        rec.className = 'recommend-badge';
+        rec.textContent = 'おすすめ';
+        card.appendChild(rec);
+      }
+
+      const title = document.createElement('div');
+      title.className = 'plan-title';
+      title.textContent = `${p.months}ヶ月プラン`;
+      card.appendChild(title);
+
+      const price = document.createElement('div');
+      price.className = 'monthly-price';
+      price.textContent = `税込 ${p.monthly.toLocaleString()}円／月`;
+      card.appendChild(price);
+
+      const total = document.createElement('div');
+      total.className = 'total-price';
+      total.textContent = `一括：${p.total.toLocaleString()}円`;
+      card.appendChild(total);
+
+      if (p.benefit) {
+        const badge = document.createElement('div');
+        badge.className = 'plan-badge';
+        badge.textContent = p.benefit;
+        card.appendChild(badge);
+      }
+
+      const btn = document.createElement('button');
+      btn.className = 'choose-plan';
+      btn.textContent = 'このプランを選ぶ';
+      btn.addEventListener('click', () => {
+        alert('このプランは無料会員登録後にお申し込みいただけます。');
+        window.location.href = '/register';
+      });
+      card.appendChild(btn);
+
+      planWrap.appendChild(card);
     });
   }
 
