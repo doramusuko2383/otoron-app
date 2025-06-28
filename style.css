@@ -1320,8 +1320,8 @@ a/* Landing page styles */
 
 /* 4ステップの横並びスタイル修正 */
 .intro-steps-container {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 1.5em;
   max-width: 600px;
   margin: 0 auto;
@@ -1343,8 +1343,9 @@ a/* Landing page styles */
 }
 
 .intro-step-video-wrapper {
-  width: 180px;
-  aspect-ratio: 9 / 16;
+  width: 100%;
+  max-width: 180px;
+  aspect-ratio: 412 / 915;
   border-radius: 8px;
   overflow: hidden;
   margin-bottom: 1em;
@@ -1459,8 +1460,9 @@ a/* Landing page styles */
 
 .features .intro-step-video-wrapper {
   min-height: 200px;
-  width: 280px;
-  aspect-ratio: 9 / 16;
+  width: 100%;
+  max-width: 280px;
+  aspect-ratio: 412 / 915;
   overflow: hidden;
   border-radius: 8px;
   background: #000;
