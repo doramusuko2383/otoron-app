@@ -1371,15 +1371,23 @@ a/* Landing page styles */
 }
 
 @media (min-width: 768px) {
+  .intro-steps-container {
+    display: flex;
+    flex-direction: column;
+    gap: 3em;
+  }
+
   .intro-step {
     flex-direction: row;
     align-items: flex-start;
+    justify-content: center;
     text-align: left;
     gap: 2em;
     flex-wrap: nowrap;
   }
 
   .intro-step-video-wrapper {
+    flex-shrink: 0;
     max-width: 220px;
     aspect-ratio: 412 / 915;
   }
@@ -1392,7 +1400,11 @@ a/* Landing page styles */
   }
 
   .intro-step-header {
+    display: flex;
     align-items: center;
+    justify-content: flex-start;
+    gap: 0.8em;
+    margin-bottom: 0.5em;
   }
 }
 

@@ -203,9 +203,15 @@ a/* Landing page styles */
 }
 
 @media (min-width: 768px) {
+  .intro-steps-container {
+    flex-direction: column;
+    gap: 3em;
+  }
+
   .intro-step {
     flex-direction: row;
     align-items: flex-start;
+    justify-content: center;
     text-align: left;
     gap: 2em;
     flex-wrap: nowrap;
@@ -224,7 +230,11 @@ a/* Landing page styles */
   }
 
   .intro-step-header {
+    display: flex;
     align-items: center;
+    justify-content: flex-start;
+    gap: 0.8em;
+    margin-bottom: 0.5em;
   }
 }
 
