@@ -204,28 +204,30 @@ a/* Landing page styles */
 
 @media (min-width: 768px) {
   .intro-steps-container {
-    flex-direction: column;
-    gap: 3em;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2em;
+    max-width: 1200px;
+    margin: 0 auto;
   }
 
   .intro-step {
-    flex-direction: row;
+    flex-direction: column;
     align-items: flex-start;
-    justify-content: center;
     text-align: left;
-    gap: 2em;
-    flex-wrap: nowrap;
   }
 
   .intro-step-video-wrapper {
+    width: 100%;
     max-width: 220px;
     aspect-ratio: 412 / 915;
+    margin-bottom: 1em;
+    flex-shrink: 0;
   }
 
   .intro-step-text {
-    flex: 1;
+    width: 100%;
     text-align: left;
-    min-width: 0;
     word-break: break-word;
   }
 
