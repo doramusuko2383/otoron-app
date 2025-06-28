@@ -1346,7 +1346,7 @@ a/* Landing page styles */
   border-radius: 8px;
   margin-bottom: 1em;
   max-height: 400px;
-  object-fit: contain;
+  object-fit: cover;
 }
 
 .intro-step-text {
@@ -1452,7 +1452,7 @@ a/* Landing page styles */
   min-height: 200px;
   width: 280px;
   height: 180px;
-  object-fit: contain;
+  object-fit: cover;
 }
 
 .features .intro-step-number {
