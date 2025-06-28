@@ -1348,6 +1348,39 @@ a/* Landing page styles */
   text-align: center;
 }
 
+.intro-pricing {
+  padding: 3em 1em;
+}
+
+.intro-pricing h2 {
+  text-align: center;
+  margin-bottom: 1em;
+  font-size: 1.4em;
+}
+
+.intro-pricing .intro-plans {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+@media (min-width: 768px) {
+  .intro-pricing .intro-plans {
+    flex-direction: row;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 24px;
+  }
+  .intro-pricing .plan-card {
+    flex: 1 1 280px;
+    max-width: 320px;
+    min-height: 380px;
+    box-sizing: border-box;
+  }
+}
+
 .features-heading {
   font-size: 2rem;
   text-align: center;
