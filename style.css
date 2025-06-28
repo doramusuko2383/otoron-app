@@ -1432,6 +1432,51 @@ a/* Landing page styles */
   background-color: #e57c00;
 }
 
+.features .step {
+  display: flex;
+  flex-direction: row;
+  gap: 1.2em;
+  padding: 1.5em 0;
+  align-items: flex-start;
+  writing-mode: horizontal-tb;
+  text-orientation: mixed;
+}
+
+@media (min-width: 768px) {
+  .features .step {
+    gap: 2em;
+  }
+}
+
+.features .step-video {
+  min-height: 200px;
+  width: 280px;
+  height: 180px;
+  object-fit: contain;
+}
+
+.features .step-number {
+  font-size: 2.2em;
+}
+
+.features .step-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.features .step-description {
+  margin-top: 0.5em;
+  line-height: 1.5;
+}
+
+.step,
+.step-text,
+.step-title,
+.step-description {
+  writing-mode: horizontal-tb !important;
+  text-orientation: mixed;
+}
+
 /* お悩み吹き出し */
 .trouble-lead {
   text-align: center;
