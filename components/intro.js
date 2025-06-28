@@ -41,7 +41,7 @@ export function renderIntroScreen() {
         <h1 class="hero-title">絶対音感はもう、<br>特別な才能じゃない。</h1>
         <p class="hero-sub">遊びながら耳を育てる、新しいトレーニングのかたち。</p>
         <p class="note">※推奨対象年齢：2歳半〜6歳</p>
-        <p class="hero-highlight">＼遊びながら“聴く力”が伸びる！／</p>
+        <p class="hero-highlight">＼遊びながら“聴く力”が<span class="accent">伸びる！</span>／</p>
         <div class="hero-visual">
           <img src="images/otolon.webp" alt="アプリ画面イメージ" />
         </div>
@@ -180,10 +180,12 @@ export function renderIntroScreen() {
 
       <section class="age-info">
         <h2>なぜ2歳半〜6歳が絶対音感の適齢期なの？</h2>
-        <p>絶対音感の習得は、生まれつきの才能ではなく、「何歳のうちに訓練を始めたか」が大きく関係しています。一般に、2歳半〜6歳頃までは「耳の臨界期」と呼ばれ、音の高さや響きの違いを区別する力が自然に育ちやすい時期とされています。</p>
-        <p>この時期に、楽しく・繰り返し・感覚的に音を聴く体験を積むことで、音の記憶や聴き分け能力が脳内に定着しやすくなるのです。</p>
-        <p>一方で、7歳以降になると相対音感に頼る傾向が強まり、絶対音感の習得が難しくなることが多いとされています。</p>
-        <p>そのため、「楽しく遊びながら耳を育てられる」時期にスタートすることがとても大切なのです。<br>※この臨界期の考え方は、日本国内の音楽教育法や海外の音楽心理学研究などにおいても広く言及されています。</p>
+        <ul class="age-points">
+          <li><strong>✔ なぜ大切？</strong><br>絶対音感の習得は、生まれつきの才能ではなく、「何歳のうちに訓練を始めたか」が大きく関係しています。一般に2歳半〜6歳頃までは耳の臨界期と呼ばれ、音を区別する力が育ちやすい時期です。</li>
+          <li><strong>✔ 何を鍛えるのか？</strong><br>この時期に楽しく繰り返し音を聴くことで、音の記憶や聴き分け能力が脳内に定着しやすくなります。</li>
+          <li><strong>✔ 7歳以降は？</strong><br>7歳以降になると相対音感に頼る傾向が強まり、絶対音感の習得が難しくなることが多いとされています。</li>
+        </ul>
+        <p class="age-note">そのため、「楽しく遊びながら耳を育てられる」時期にスタートすることがとても大切なのです。<br>※この臨界期の考え方は、日本国内の音楽教育法や海外の音楽心理学研究などにおいても広く言及されています。</p>
       </section>
 
       <section class="faq">
@@ -258,6 +260,10 @@ export function renderIntroScreen() {
 
       <footer class="lp-footer">
         <button id="footer-cta" class="cta-button">気になる方はこちらから無料体験へ！</button>
+        <div class="social-links">
+          <a href="https://x.com/otoron_onkanDev" target="_blank" rel="noopener">X</a>
+          <a href="https://note.com/otoron" target="_blank" rel="noopener">note</a>
+        </div>
         <p>&copy; 2024 Otoron</p>
       </footer>
     </div>
