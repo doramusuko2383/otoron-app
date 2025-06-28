@@ -76,6 +76,7 @@ export function renderIntroScreen() {
           </div>
 
           <div class="step">
+            <video class="step-video" src="videos/training-demo.mp4" autoplay loop muted playsinline></video>
             <div class="step-text">
               <div class="step-header">
                 <span class="step-number">2</span>
@@ -86,6 +87,7 @@ export function renderIntroScreen() {
           </div>
 
           <div class="step">
+            <video class="step-video" src="videos/training-demo.mp4" autoplay loop muted playsinline></video>
             <div class="step-text">
               <div class="step-header">
                 <span class="step-number">3</span>
@@ -96,6 +98,7 @@ export function renderIntroScreen() {
           </div>
 
           <div class="step">
+            <video class="step-video" src="videos/training-demo.mp4" autoplay loop muted playsinline></video>
             <div class="step-text">
               <div class="step-header">
                 <span class="step-number">4</span>
