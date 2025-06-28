@@ -1694,6 +1694,11 @@ a/* Landing page styles */
   font-size: 0.9em;
 }
 
+.social-links img {
+  width: 24px;
+  height: auto;
+}
+
 /* FAQ accordion */
 .faq-item {
   max-width: 600px;
