@@ -66,7 +66,7 @@ export function renderIntroScreen() {
         <div class="intro-steps-container">
           <div class="intro-step">
             <div class="intro-step-video-wrapper">
-              <video class="intro-step-video" src="videos/training-demo.mp4" autoplay loop muted playsinline></video>
+              <video class="intro-step-video" src="/videos/training-demo.webm" autoplay muted loop playsinline></video>
             </div>
             <div class="intro-step-text">
               <div class="intro-step-header">
@@ -79,7 +79,7 @@ export function renderIntroScreen() {
 
           <div class="intro-step">
             <div class="intro-step-video-wrapper">
-              <video class="intro-step-video" src="videos/training-demo.mp4" autoplay loop muted playsinline></video>
+              <video class="intro-step-video" src="/videos/growth-mode-demo.webm" autoplay muted loop playsinline></video>
             </div>
             <div class="intro-step-text">
               <div class="intro-step-header">
@@ -92,7 +92,7 @@ export function renderIntroScreen() {
 
           <div class="intro-step">
             <div class="intro-step-video-wrapper">
-              <video class="intro-step-video" src="videos/training-demo.mp4" autoplay loop muted playsinline></video>
+              <video class="intro-step-video" src="/videos/analysis-screen-demo.webm" autoplay muted loop playsinline></video>
             </div>
             <div class="intro-step-text">
               <div class="intro-step-header">
@@ -105,12 +105,12 @@ export function renderIntroScreen() {
 
           <div class="intro-step">
             <div class="intro-step-video-wrapper">
-              <video class="intro-step-video" src="videos/training-demo.mp4" autoplay loop muted playsinline></video>
+              <video class="intro-step-video" src="/videos/settings-screen-demo.webm" autoplay muted loop playsinline></video>
             </div>
             <div class="intro-step-text">
               <div class="intro-step-header">
                 <span class="intro-step-number">4</span>
-                <h3 class="intro-step-title">単音分化や単音テストも実装</h3>
+                <h3 class="intro-step-title">単音分化モード・設定も柔軟に</h3>
               </div>
               <p class="intro-step-description">和音から単音への移行トレーニングも搭載。柔軟な設定も多数（出題数、出題和音など）</p>
             </div>
