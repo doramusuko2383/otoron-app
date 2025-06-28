@@ -1321,15 +1321,23 @@ a/* Landing page styles */
 /* 4ステップの横並びスタイル修正 */
 .intro-steps-container {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: 1fr;
   gap: 1.5em;
   max-width: 600px;
   margin: 0 auto;
 }
 
-@media (max-width: 767px) {
+@media (min-width: 768px) {
   .intro-steps-container {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 800px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .intro-steps-container {
+    grid-template-columns: repeat(4, 1fr);
+    max-width: none;
   }
 }
 
@@ -1371,39 +1379,16 @@ a/* Landing page styles */
 }
 
 @media (min-width: 768px) {
-  .intro-steps-container {
-    display: flex;
-    flex-direction: column;
-    gap: 3em;
-  }
-
   .intro-step {
-    flex-direction: row;
     align-items: flex-start;
-    justify-content: center;
     text-align: left;
-    gap: 2em;
-    flex-wrap: nowrap;
-  }
-
-  .intro-step-video-wrapper {
-    flex-shrink: 0;
-    max-width: 220px;
-    aspect-ratio: 412 / 915;
   }
 
   .intro-step-text {
-    flex: 1;
     text-align: left;
-    min-width: 0;
-    word-break: break-word;
   }
 
   .intro-step-header {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 0.8em;
     margin-bottom: 0.5em;
   }
 }
@@ -1488,10 +1473,14 @@ a/* Landing page styles */
 
 @media (min-width: 768px) {
   .features .intro-step {
-    flex-direction: row;
+    flex-direction: column;
     align-items: flex-start;
     text-align: left;
-    gap: 2em;
+  }
+
+  .features .intro-step-text,
+  .features .intro-step-description {
+    text-align: left;
   }
 }
 
