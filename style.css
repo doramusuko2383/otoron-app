@@ -1340,6 +1340,28 @@ a/* Landing page styles */
   text-orientation: mixed;
 }
 
+.step-video {
+  width: 100%;
+  border-radius: 8px;
+  margin-bottom: 1em;
+}
+
+.step-text {
+  flex: 1;
+}
+
+@media (min-width: 768px) {
+  .step {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+  .step-video {
+    width: 45%;
+    max-width: 260px;
+    margin: 0 1em 0 0;
+  }
+}
+
 /* ステップ番号とタイトルの行 */
 .step-header {
   display: flex;
