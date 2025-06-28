@@ -5,6 +5,7 @@ import { playNote } from "./soundPlayer.js";
 import { switchScreen } from "../main.js";
 import { saveTrainingSession } from "../utils/trainingStore_supabase.js";
 import { kanaToHiragana, noteLabels } from "../utils/noteUtils.js";
+import { SHOW_DEBUG } from "../utils/debug.js";
 
 let currentNote = null;
 let noteSequence = [];
@@ -40,13 +41,16 @@ export async function renderTrainingScreen(user) {
   bottomWrap.id = "training-footer";
   bottomWrap.appendChild(finishBtn);
 
-  const debugAnswer = document.createElement("div");
-  debugAnswer.style.position = "absolute";
-  debugAnswer.style.top = "10px";
-  debugAnswer.style.right = "10px";
-  debugAnswer.style.fontSize = "0.9em";
-  debugAnswer.style.color = "gray";
-  app.appendChild(debugAnswer);
+  let debugAnswer;
+  if (SHOW_DEBUG) {
+    debugAnswer = document.createElement("div");
+    debugAnswer.style.position = "absolute";
+    debugAnswer.style.top = "10px";
+    debugAnswer.style.right = "10px";
+    debugAnswer.style.fontSize = "0.9em";
+    debugAnswer.style.color = "gray";
+    app.appendChild(debugAnswer);
+  }
   app.appendChild(bottomWrap);
 
   const whiteOrder = ["C", "D", "E", "F", "G", "A", "B"];
@@ -127,7 +131,9 @@ export async function renderTrainingScreen(user) {
       noteSequence = getRandomWhiteNoteSequence(maxQuestions);
     }
     currentNote = noteSequence.pop();
-    debugAnswer.textContent = `【デバッグ】正解: ${kanaToHiragana(noteLabels[currentNote.replace(/[0-9]/g, "")])}（${currentNote}）`;
+    if (debugAnswer) {
+      debugAnswer.textContent = `【デバッグ】正解: ${kanaToHiragana(noteLabels[currentNote.replace(/[0-9]/g, "")])}（${currentNote}）`;
+    }
     isSoundPlaying = true;
     setInteraction(false);
     playNote(currentNote).then(() => {

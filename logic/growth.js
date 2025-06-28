@@ -21,6 +21,7 @@ import { unlockChord, resetChordProgressToRed } from "../utils/progressUtils.js"
 import { getAudio } from "../utils/audioCache.js";
 import { updateGrowthStatusBar, countQualifiedDays } from "../utils/progressStatus.js";
 import { showCustomConfirm } from "../components/home.js";
+import { SHOW_DEBUG } from "../utils/debug.js";
 
 export async function renderGrowthScreen(user) {
   const app = document.getElementById("app");
@@ -141,77 +142,77 @@ export async function renderGrowthScreen(user) {
     container.appendChild(board);
   }
 
-  // 🛠 デバッグ機能
-  const debugPanel = document.createElement("div");
-  debugPanel.style.marginBottom = "1em";
+  if (SHOW_DEBUG) {
+    const debugPanel = document.createElement("div");
+    debugPanel.style.marginBottom = "1em";
 
-  const actionSelect = document.createElement("select");
-  [
-    { value: "", label: "デバッグ機能（本番モードでは削除）" },
-    { value: "reset", label: "進捗をリセット（赤のみ）" },
-    { value: "unlock", label: "次の和音を解放" },
-    { value: "clearWeek", label: "今週のトレーニングデータを削除" },
-    { value: "mock1", label: "モック記録生成（1日分）" },
-    { value: "mock2", label: "モック記録生成（2日分）" },
-    { value: "mock3", label: "モック記録生成（3日分）" },
-    { value: "mock4", label: "モック記録生成（4日分）" },
-    { value: "mock5", label: "モック記録生成（5日分）" },
-    { value: "mock6", label: "モック記録生成（6日分）" },
-    { value: "mock7", label: "モック記録生成（7日分）" },
-    { value: "mockNote", label: "単音テストダミーデータ" }
-  ].forEach(opt => {
-    const o = document.createElement("option");
-    o.value = opt.value;
-    o.textContent = opt.label;
-    actionSelect.appendChild(o);
-  });
+    const actionSelect = document.createElement("select");
+    [
+      { value: "", label: "デバッグ機能（本番モードでは削除）" },
+      { value: "reset", label: "進捗をリセット（赤のみ）" },
+      { value: "unlock", label: "次の和音を解放" },
+      { value: "clearWeek", label: "今週のトレーニングデータを削除" },
+      { value: "mock1", label: "モック記録生成（1日分）" },
+      { value: "mock2", label: "モック記録生成（2日分）" },
+      { value: "mock3", label: "モック記録生成（3日分）" },
+      { value: "mock4", label: "モック記録生成（4日分）" },
+      { value: "mock5", label: "モック記録生成（5日分）" },
+      { value: "mock6", label: "モック記録生成（6日分）" },
+      { value: "mock7", label: "モック記録生成（7日分）" },
+      { value: "mockNote", label: "単音テストダミーデータ" }
+    ].forEach(opt => {
+      const o = document.createElement("option");
+      o.value = opt.value;
+      o.textContent = opt.label;
+      actionSelect.appendChild(o);
+    });
 
-
-  actionSelect.onchange = async () => {
-    const val = actionSelect.value;
-    actionSelect.value = "";
-    if (!val) return;
-    if (val === "reset") {
-      showCustomConfirm(
-        "本当に進捗を赤だけに戻しますか？",
-        async () => {
-          const success = await resetChordProgressToRed(user.id);
-          alert(success ? "進捗をリセットしました" : "リセットに失敗しました");
+    actionSelect.onchange = async () => {
+      const val = actionSelect.value;
+      actionSelect.value = "";
+      if (!val) return;
+      if (val === "reset") {
+        showCustomConfirm(
+          "本当に進捗を赤だけに戻しますか？",
+          async () => {
+            const success = await resetChordProgressToRed(user.id);
+            alert(success ? "進捗をリセットしました" : "リセットに失敗しました");
+          }
+        );
+      } else if (val === "unlock") {
+        const freshFlags = await loadGrowthFlags(user.id);
+        const next = getCurrentTargetChord(freshFlags);
+        if (next) {
+          await unlockChord(user.id, next.key);
+          await applyRecommendedSelection(user.id);
+          forceUnlock();
+          alert(`${next.label} を解放しました`);
+        } else {
+          alert("すべての和音が解放されています");
         }
-      );
-    } else if (val === "unlock") {
-      const freshFlags = await loadGrowthFlags(user.id);
-      const next = getCurrentTargetChord(freshFlags);
-      if (next) {
-        await unlockChord(user.id, next.key);
-        await applyRecommendedSelection(user.id);
-        forceUnlock();
-        alert(`${next.label} を解放しました`);
-      } else {
-        alert("すべての和音が解放されています");
+      } else if (val === "clearWeek") {
+        showCustomConfirm(
+          "今週のトレーニングデータを本当に削除しますか？",
+          async () => {
+            const success = await deleteTrainingDataThisWeek(user.id);
+            alert(success ? "今週のデータを削除しました" : "削除に失敗しました");
+          }
+        );
+      } else if (val === "mockNote") {
+        await generateMockSingleNoteData(user.id);
+        alert("単音テストのダミーデータを生成しました");
+      } else if (val.startsWith("mock")) {
+        const days = parseInt(val.replace("mock", ""), 10);
+        await generateMockGrowthData(user.id, days);
+        const count = await countQualifiedDays(user.id);
+        alert(`モックデータ(${days}日分)を生成しました`);
       }
-    } else if (val === "clearWeek") {
-      showCustomConfirm(
-        "今週のトレーニングデータを本当に削除しますか？",
-        async () => {
-          const success = await deleteTrainingDataThisWeek(user.id);
-          alert(success ? "今週のデータを削除しました" : "削除に失敗しました");
-        }
-      );
-    } else if (val === "mockNote") {
-      await generateMockSingleNoteData(user.id);
-      alert("単音テストのダミーデータを生成しました");
-    } else if (val.startsWith("mock")) {
-      const days = parseInt(val.replace("mock", ""), 10);
-      await generateMockGrowthData(user.id, days);
-      const count = await countQualifiedDays(user.id);
-      alert(`モックデータ(${days}日分)を生成しました`);
-    }
-    await renderGrowthScreen(user);
-  };
+      await renderGrowthScreen(user);
+    };
 
-  debugPanel.appendChild(actionSelect);
-  container.appendChild(debugPanel);
+    debugPanel.appendChild(actionSelect);
+    container.appendChild(debugPanel);
+  }
 
 
   // 和音進捗表示

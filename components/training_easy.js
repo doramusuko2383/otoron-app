@@ -8,6 +8,7 @@ import { saveSessionToHistory } from "./summary.js";
 import { incrementSetCount, updateTrainingRecord } from "../utils/recordStore_supabase.js";
 import { autoUnlockNextChord } from "../utils/progressUtils.js";
 import { getAudio } from "../utils/audioCache.js";
+import { SHOW_DEBUG } from "../utils/debug.js";
 
 let questionCount = 0;
 let currentAnswer = null;
@@ -247,13 +248,16 @@ function drawQuizScreen() {
     });
   };
 
-  const debugAnswer = document.createElement("div");
-  debugAnswer.textContent = `【デバッグ】正解: ${currentAnswer.label}（${currentAnswer.name}）`;
-  debugAnswer.style.position = "absolute";
-  debugAnswer.style.top = "10px";
-  debugAnswer.style.right = "10px";
-  debugAnswer.style.fontSize = "0.9em";
-  debugAnswer.style.color = "gray";
+  let debugAnswer;
+  if (SHOW_DEBUG) {
+    debugAnswer = document.createElement("div");
+    debugAnswer.textContent = `【デバッグ】正解: ${currentAnswer.label}（${currentAnswer.name}）`;
+    debugAnswer.style.position = "absolute";
+    debugAnswer.style.top = "10px";
+    debugAnswer.style.right = "10px";
+    debugAnswer.style.fontSize = "0.9em";
+    debugAnswer.style.color = "gray";
+  }
 
   const unknownBtn = document.createElement("button");
   unknownBtn.id = "unknownBtn";
@@ -302,7 +306,9 @@ if (correctBtn) {
   bottomWrap.appendChild(unknownBtn);
   bottomWrap.appendChild(quitBtn);
 
-  container.appendChild(debugAnswer);
+  if (debugAnswer) {
+    container.appendChild(debugAnswer);
+  }
   container.appendChild(header);
   container.appendChild(layout);
   app.appendChild(container);
