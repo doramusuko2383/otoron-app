@@ -1375,10 +1375,24 @@ a/* Landing page styles */
     flex-direction: row;
     align-items: flex-start;
     text-align: left;
+    gap: 2em;
+    flex-wrap: nowrap;
+  }
+
+  .intro-step-video-wrapper {
+    max-width: 220px;
+    aspect-ratio: 412 / 915;
   }
 
   .intro-step-text {
+    flex: 1;
     text-align: left;
+    min-width: 0;
+    word-break: break-word;
+  }
+
+  .intro-step-header {
+    align-items: center;
   }
 }
 
