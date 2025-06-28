@@ -61,16 +61,16 @@ export function renderIntroScreen() {
       </section>
 
       <section class="features">
-        <h2>4ステップで身につく絶対音感</h2>
+        <h2 class="features-heading">4ステップで身につく絶対音感</h2>
 
         <div class="intro-steps-container">
           <div class="intro-step">
+            <div class="step-badge step1">🟡 Step 1</div>
             <div class="intro-step-video-wrapper">
               <video class="intro-step-video" src="/videos/training-demo.webm" autoplay muted loop playsinline></video>
             </div>
             <div class="intro-step-text">
               <div class="intro-step-header">
-                <span class="intro-step-number">1</span>
                 <h3 class="intro-step-title">色と和音で楽しくトレーニング</h3>
               </div>
               <p class="intro-step-description">色旗×コードの組み合わせで、小さな子どもでも直感的に音を覚えていける</p>
@@ -78,12 +78,12 @@ export function renderIntroScreen() {
           </div>
 
           <div class="intro-step">
+            <div class="step-badge step2">🟣 Step 2</div>
             <div class="intro-step-video-wrapper">
               <video class="intro-step-video" src="/videos/growth-mode-demo.webm" autoplay muted loop playsinline></video>
             </div>
             <div class="intro-step-text">
               <div class="intro-step-header">
-                <span class="intro-step-number">2</span>
                 <h3 class="intro-step-title">進捗に応じて和音が増える「育成モード」</h3>
               </div>
               <p class="intro-step-description">毎日のがんばりで和音がアンロックされる、ゲーム感覚の育成モード搭載</p>
@@ -91,12 +91,12 @@ export function renderIntroScreen() {
           </div>
 
           <div class="intro-step">
+            <div class="step-badge step3">🔵 Step 3</div>
             <div class="intro-step-video-wrapper">
               <video class="intro-step-video" src="/videos/analysis-screen-demo.webm" autoplay muted loop playsinline></video>
             </div>
             <div class="intro-step-text">
               <div class="intro-step-header">
-                <span class="intro-step-number">3</span>
                 <h3 class="intro-step-title">結果は保護者と共有して見守れる</h3>
               </div>
               <p class="intro-step-description">トレーニング結果をさかのぼれる！分析結果を保護者と成績を「共有」できる機能を提供</p>
@@ -104,12 +104,12 @@ export function renderIntroScreen() {
           </div>
 
           <div class="intro-step">
+            <div class="step-badge step4">🟢 Step 4</div>
             <div class="intro-step-video-wrapper">
               <video class="intro-step-video" src="/videos/settings-screen-demo.webm" autoplay muted loop playsinline></video>
             </div>
             <div class="intro-step-text">
               <div class="intro-step-header">
-                <span class="intro-step-number">4</span>
                 <h3 class="intro-step-title">単音分化モード・設定も柔軟に</h3>
               </div>
               <p class="intro-step-description">和音から単音への移行トレーニングも搭載。柔軟な設定も多数（出題数、出題和音など）</p>
