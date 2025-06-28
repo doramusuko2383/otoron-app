@@ -77,65 +77,69 @@ export async function renderGrowthScreen(user) {
   statusBar.appendChild(unlockCard);
   container.appendChild(statusBar);
 
-  // 🎲 すごろく形式の進捗ボード
-  const board = document.createElement("div");
-  board.className = "sugoroku-board";
+  const showBoard = !!target;
 
-  const stepCount = 8; // 0-7
-  const filled = Math.max(0, Math.min(passed, stepCount - 1));
+  if (showBoard) {
+    // 🎲 すごろく形式の進捗ボード
+    const board = document.createElement("div");
+    board.className = "sugoroku-board";
 
-  // 波線SVG
-  const spacing = 80;
-  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-  svg.classList.add("sugoroku-line");
-  svg.setAttribute("viewBox", `0 0 ${(stepCount - 1) * spacing} 60`);
-  svg.setAttribute("width", "100%");
-  svg.setAttribute("height", "60");
-  const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-  let d = "M0 30";
-  for (let i = 1; i < stepCount; i++) {
-    const x = i * spacing;
-    const cpX = x - spacing / 2;
-    const cpY = i % 2 === 0 ? 10 : 50;
-    d += ` Q ${cpX} ${cpY} ${x} 30`;
-  }
-  path.setAttribute("d", d);
-  path.setAttribute("fill", "none");
-  path.setAttribute("stroke", "#5b4636");
-  path.setAttribute("stroke-width", "4");
-  path.setAttribute("stroke-linecap", "round");
-  svg.appendChild(path);
-  board.appendChild(svg);
+    const stepCount = 8; // 0-7
+    const filled = Math.max(0, Math.min(passed, stepCount - 1));
 
-  // マス目
-  const cells = document.createElement("div");
-  cells.className = "sugoroku-cells";
-  for (let i = 0; i < stepCount; i++) {
-    const cell = document.createElement("div");
-    cell.className = "sugoroku-cell";
-    if (i === 0) {
-      cell.classList.add("start");
-      cell.textContent = "スタート";
-    } else if (i === stepCount - 1) {
-      cell.classList.add("goal");
-      cell.textContent = "ゴール";
-    } else {
-      cell.textContent = i.toString();
+    // 波線SVG
+    const spacing = 80;
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.classList.add("sugoroku-line");
+    svg.setAttribute("viewBox", `0 0 ${(stepCount - 1) * spacing} 60`);
+    svg.setAttribute("width", "100%");
+    svg.setAttribute("height", "60");
+    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    let d = "M0 30";
+    for (let i = 1; i < stepCount; i++) {
+      const x = i * spacing;
+      const cpX = x - spacing / 2;
+      const cpY = i % 2 === 0 ? 10 : 50;
+      d += ` Q ${cpX} ${cpY} ${x} 30`;
     }
-    cells.appendChild(cell);
+    path.setAttribute("d", d);
+    path.setAttribute("fill", "none");
+    path.setAttribute("stroke", "#5b4636");
+    path.setAttribute("stroke-width", "4");
+    path.setAttribute("stroke-linecap", "round");
+    svg.appendChild(path);
+    board.appendChild(svg);
+
+    // マス目
+    const cells = document.createElement("div");
+    cells.className = "sugoroku-cells";
+    for (let i = 0; i < stepCount; i++) {
+      const cell = document.createElement("div");
+      cell.className = "sugoroku-cell";
+      if (i === 0) {
+        cell.classList.add("start");
+        cell.textContent = "スタート";
+      } else if (i === stepCount - 1) {
+        cell.classList.add("goal");
+        cell.textContent = "ゴール";
+      } else {
+        cell.textContent = i.toString();
+      }
+      cells.appendChild(cell);
+    }
+    board.appendChild(cells);
+
+    const walker = document.createElement("img");
+    walker.src = "images/walk.webp";
+    walker.alt = "オトロン";
+    walker.className = "sugoroku-walker";
+
+    const currentCell = cells.children[filled];
+    currentCell.style.position = "relative";
+    currentCell.appendChild(walker);
+
+    container.appendChild(board);
   }
-  board.appendChild(cells);
-
-  const walker = document.createElement("img");
-  walker.src = "images/walk.webp";
-  walker.alt = "オトロン";
-  walker.className = "sugoroku-walker";
-
-  const currentCell = cells.children[filled];
-  currentCell.style.position = "relative";
-  currentCell.appendChild(walker);
-
-  container.appendChild(board);
 
   // 🛠 デバッグ機能
   const debugPanel = document.createElement("div");
