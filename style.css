@@ -1357,10 +1357,10 @@ button:hover {
 
   .hero-photo {
     display: block;
-    width: 150vw;
-    height: auto;
+    width: 120vw;
+    height: 100vh;
     object-fit: cover;
-    object-position: center top;
+    object-position: center;
     margin-left: auto;
     margin-right: auto;
     margin-bottom: 1em;
