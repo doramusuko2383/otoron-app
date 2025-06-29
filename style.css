@@ -1332,10 +1332,13 @@ button:hover {
 }
 
 @media (max-width: 767px) {
+  .hero,
   .hero-title,
   .hero-sub,
   .note,
-  .hero-highlight {
+  .hero-highlight,
+  .mato-image,
+  #hero-cta {
     text-align: center;
     margin-left: auto;
     margin-right: auto;
