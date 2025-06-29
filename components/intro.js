@@ -23,7 +23,7 @@ export function renderIntroScreen() {
 
         <p class="note">※ 推奨年齢：2歳半〜6歳</p>
 
-        <p class="hero-highlight">＼ 楽しみながら “聴く力” が<span class="accent">伸びる！</span> ／</p>
+        <p class="hero-highlight">＼ 楽しみながら “聴く力” が<span class="accent">伸びる！</span>&nbsp;／</p>
         <img class="mato-image" src="images/otolon.webp" alt="まとオトロン" />
         <button id="hero-cta" class="cta-button">今すぐ無料体験をはじめる！</button>
       </div>
