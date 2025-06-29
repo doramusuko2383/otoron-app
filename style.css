@@ -1334,7 +1334,7 @@ button:hover {
 @media (min-width: 768px) {
   .hero-title {
     font-size: 2.4em;
-    max-width: 700px;
+    max-width: 840px;
     line-height: 1.4;
     text-align: center;
   }
@@ -1360,8 +1360,8 @@ button:hover {
   }
 
   .hero {
-    flex: 1 1 30vw;
-    max-width: 500px;
+    flex: 1 1 36vw;
+    max-width: 600px;
     margin-left: auto;
     margin-right: auto;
     z-index: 2;
