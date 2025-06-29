@@ -1362,7 +1362,7 @@ a/* Landing page styles */
   display: flex;
   flex-direction: column;
   gap: 1em;
-  max-width: 800px;
+  max-width: 1000px;
   margin: 0 auto;
 }
 
@@ -1376,7 +1376,7 @@ a/* Landing page styles */
   .intro-pricing .plan-card {
     flex: 1 1 280px;
     max-width: 320px;
-    min-height: 380px;
+    min-height: 320px;
     box-sizing: border-box;
   }
 }
@@ -2122,7 +2122,7 @@ a/* Landing page styles */
   .pricing-page .plan-card {
     flex: 1 1 280px;
     max-width: 320px;
-    min-height: 380px;
+    min-height: 320px;
     box-sizing: border-box;
     align-self: flex-start;
   }
