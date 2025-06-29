@@ -21,6 +21,7 @@ export function renderIntroScreen() {
         <p class="hero-sub">遊びながら耳を育てる、新しいトレーニングのかたち。</p>
         <p class="note">※推奨対象年齢：2歳半〜6歳</p>
         <p class="hero-highlight">＼遊びながら“聴く力”が<span class="accent">伸びる！</span>／</p>
+        <img class="mato-image" src="images/otolon.webp" alt="まとオトロン" />
         <button id="hero-cta" class="cta-button">今すぐ無料体験をはじめる！</button>
       </div>
       <img class="hero-photo" src="images/otoron_landing_hero.webp" alt="" />
@@ -45,6 +46,7 @@ export function renderIntroScreen() {
         <button id="signup-btn" class="intro-signup">無料会員登録</button>
       </div>
     </header>
+    <p class="app-tagline">絶対音感トレーニングアプリ「オトロン」</p>
     <div class="intro-wrapper">
 
       <section class="problems">
