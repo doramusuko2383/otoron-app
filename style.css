@@ -1329,16 +1329,31 @@ button:hover {
   }
 
   .hero-header {
-    padding: 0 5%;
-    align-items: flex-start;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    padding-left: 5vw;
+    gap: 2vw;
+    flex-wrap: wrap;
+    background-image: none;
   }
 
   .hero {
-    max-width: 600px;
-    padding-right: 2em;
+    flex: 1 1 30vw;
+    max-width: 400px;
     z-index: 2;
     position: relative;
     text-align: left;
+  }
+
+  .hero-photo {
+    display: block;
+    width: 70vw;
+    max-width: 960px;
+    height: auto;
+    object-fit: contain;
+    object-position: right center;
+    margin-left: auto;
   }
 }
 
@@ -1355,6 +1370,12 @@ button:hover {
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
   cursor: pointer;
   transition: transform 0.1s ease, background-color 0.3s ease;
+}
+
+.hero .cta-button {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .cta-button:hover {
