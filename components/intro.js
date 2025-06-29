@@ -409,8 +409,14 @@ export function renderIntroScreen() {
       btn.addEventListener('click', () => {
         showCustomAlert(
           'このプランは無料会員登録後にお申し込みいただけます。',
-          () => {
-            window.location.href = 'https://playotoron.com/#signup';
+          async () => {
+            try {
+              await signOut(firebaseAuth);
+              await supabase.auth.signOut();
+            } catch (e) {
+              console.warn('intro logout error', e);
+            }
+            switchScreen('signup');
           }
         );
       });
