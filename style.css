@@ -1228,6 +1228,10 @@ button:hover {
   color: #333;
   overflow: hidden;
   background-color: #fff;
+  background-image: url('images/otoron_landing_hero.webp');
+  background-size: cover;
+  background-position: right center;
+  background-repeat: no-repeat;
 }
 
 .hero-header::after {
@@ -1250,11 +1254,7 @@ button:hover {
 }
 
 .hero-photo {
-  width: 100%;
-  height: auto;
-  object-fit: cover;
-  object-position: right center;
-  display: block;
+  display: none;
 }
 
 .hero h1,
@@ -1329,25 +1329,16 @@ button:hover {
   }
 
   .hero-header {
-    flex-direction: row;
-    align-items: center;
     padding: 0 5%;
+    align-items: flex-start;
   }
 
   .hero {
-    width: 50%;
     max-width: 600px;
     padding-right: 2em;
     z-index: 2;
     position: relative;
     text-align: left;
-  }
-
-  .hero-photo {
-    width: 50%;
-    height: 100vh;
-    object-fit: cover;
-    object-position: right center;
   }
 }
 
