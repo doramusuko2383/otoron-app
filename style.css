@@ -1368,8 +1368,8 @@ button:hover {
     width: 70vw;
     max-width: 960px;
     height: 100vh;
-    object-fit: cover;
-    object-position: right top;
+    object-fit: contain;
+    object-position: center top;
     margin-left: auto;
     order: 0;
     margin-bottom: 0;
@@ -1421,7 +1421,8 @@ button:hover {
 
 .age-info {
   padding: 2em 1em;
-  background: #fff;
+  background: #fff4e5;
+  border: 1px solid #ffd5aa;
   border-radius: 8px;
   max-width: 600px;
   margin: 0 auto 2em;
@@ -1494,6 +1495,9 @@ button:hover {
   gap: 1.5em;
   max-width: 600px;
   margin: 0 auto;
+  margin-top: 2em;
+  padding-top: 1.5em;
+  border-top: 2px solid #ffe0b3;
 }
 
 @media (min-width: 768px) {
@@ -1634,18 +1638,7 @@ button:hover {
 }
 
 .intro-step-cta .cta-button {
-  background-color: var(--color-primary);
-  color: #fff;
-  border: 2px solid var(--color-primary-dark);
-  border-radius: 8px;
-  padding: 0.9em 2.2em;
-  font-size: 1.25em;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.intro-step-cta .cta-button:hover {
-  background-color: #e57c00;
+  /* reuse base cta-button style for consistency */
 }
 
 .features .intro-step {

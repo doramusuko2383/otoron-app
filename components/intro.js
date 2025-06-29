@@ -18,6 +18,7 @@ export function renderIntroScreen() {
     <header id="lp-top" class="hero-header">
       <div class="hero">
         <h1 class="hero-title">絶対音感はもう、<br>特別な才能じゃない。</h1>
+        <p class="app-tagline">絶対音感トレーニングアプリ「オトロン」</p>
         <p class="hero-sub">遊びながら耳を育てる、新しいトレーニングのかたち。</p>
         <p class="note">※推奨対象年齢：2歳半〜6歳</p>
         <p class="hero-highlight">＼遊びながら“聴く力”が<span class="accent">伸びる！</span>／</p>
@@ -46,7 +47,6 @@ export function renderIntroScreen() {
         <button id="signup-btn" class="intro-signup">無料会員登録</button>
       </div>
     </header>
-    <p class="app-tagline">絶対音感トレーニングアプリ「オトロン」</p>
     <div class="intro-wrapper">
 
       <section class="problems">
@@ -266,7 +266,7 @@ export function renderIntroScreen() {
       </section>
 
       <footer class="lp-footer">
-        <button id="footer-cta" class="cta-button">気になる方はこちらから無料体験へ！</button>
+        <button id="footer-cta" class="cta-button">気になる方は「オトロン」の無料体験へ！</button>
         <div class="social-links">
           <a href="https://x.com/otoron_onkanDev" target="_blank" rel="noopener">
             <img src="images/x-logo.png" alt="Xのロゴ" />
