@@ -162,6 +162,17 @@
   color: var(--color-primary);
 }
 
+@media (max-width: 767px) {
+  .hero-title,
+  .hero-sub,
+  .note,
+  .hero-highlight {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
 @media (min-width: 768px) {
   .hero-title {
     font-size: 2.4em;
