@@ -1184,7 +1184,7 @@ button:hover {
     overflow-y: auto;
   }
 }
-a/* Landing page styles */
+/* Landing page styles */
 
 .intro-header .header-right {
   display: flex;
@@ -1215,6 +1215,26 @@ a/* Landing page styles */
 
 .intro-header #signup-btn:hover {
   background-color: #e57c00;
+}
+
+.hero-header {
+  background-image: linear-gradient(to bottom, rgba(0,0,0,0), rgba(0,0,0,0.35)), url("images/otoron_landing_hero.webp");
+  background-size: cover;
+  background-position: center 20%;
+  color: #fff;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.5);
+  margin-top: -56px;
+}
+
+.hero-header .hero {
+  padding: 120px 20px 80px;
+  text-align: center;
+}
+
+@media (min-width: 768px) {
+  .hero-header .hero {
+    padding: 160px 20px;
+  }
 }
 
 .intro-wrapper {
@@ -1284,12 +1304,6 @@ a/* Landing page styles */
   }
 }
 
-.hero-visual img {
-  width: 25%;
-  max-width: 200px;
-  margin: 0 auto;
-  display: block;
-}
 
 .cta-button {
   margin-top: 1.5em;

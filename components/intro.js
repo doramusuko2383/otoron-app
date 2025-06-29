@@ -16,12 +16,13 @@ export function renderIntroScreen() {
 
   app.classList.add("with-header");
   app.innerHTML = `
-    <header class="app-header intro-header">
-      <button class="home-icon" id="intro-home-btn">
-        <img src="images/otolon_face.webp" alt="トップへ" />
-      </button>
-      <div class="header-right">
-        <div class="info-menu">
+    <header id="lp-top" class="hero-header">
+      <div class="app-header intro-header">
+        <button class="home-icon" id="intro-home-btn">
+          <img src="images/otolon_face.webp" alt="トップへ" />
+        </button>
+        <div class="header-right">
+          <div class="info-menu">
           <button id="info-menu-btn" aria-label="インフォメーション">ℹ️</button>
           <div id="info-dropdown" class="info-dropdown">
             <button id="terms-btn">利用規約</button>
@@ -36,18 +37,15 @@ export function renderIntroScreen() {
         <button id="login-btn" class="intro-login">ログイン</button>
         <button id="signup-btn" class="intro-signup">無料会員登録</button>
       </div>
-    </header>
-    <div id="lp-top" class="intro-wrapper">
-      <section class="hero">
+      <div class="hero">
         <h1 class="hero-title">絶対音感はもう、<br>特別な才能じゃない。</h1>
         <p class="hero-sub">遊びながら耳を育てる、新しいトレーニングのかたち。</p>
         <p class="note">※推奨対象年齢：2歳半〜6歳</p>
         <p class="hero-highlight">＼遊びながら“聴く力”が<span class="accent">伸びる！</span>／</p>
-        <div class="hero-visual">
-          <img src="images/otolon.webp" alt="アプリ画面イメージ" />
-        </div>
         <button id="hero-cta" class="cta-button">今すぐ無料体験をはじめる！</button>
-      </section>
+      </div>
+    </header>
+    <div class="intro-wrapper">
 
       <section class="problems">
         <p class="trouble-lead">絶対音感に興味はあるけど...</p>
