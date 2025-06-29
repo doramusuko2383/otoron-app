@@ -20,7 +20,10 @@ export async function startCheckout(plan) {
         console.warn('Stripe SDK is not loaded; skipping redirect');
         return;
       }
-      const stripe = Stripe('pk_test_51RUmpu4aOXt1PnHZ4QI4ED8IqIZstCQTAMzMm6isjY34QP5ESFYKClhQSwRI8d52n80G4c2FgPQTvFXLjOQG9Yl400wFCPpXca');
+      // Use publishable key from environment if available
+      const key =
+        window.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || 'pk_live_xxx';
+      const stripe = Stripe(key);
       await stripe.redirectToCheckout({ sessionId: data.id });
     } else {
       console.error('No session ID returned:', data);
