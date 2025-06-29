@@ -1348,6 +1348,23 @@ button:hover {
     margin-left: auto;
     margin-right: auto;
   }
+
+  /* Display hero image at the top center for mobile */
+  .hero-header {
+    background-position: top center;
+    background-image: none;
+  }
+
+  .hero-photo {
+    display: block;
+    width: 30vw;
+    height: auto;
+    object-fit: cover;
+    object-position: center top;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 1em;
+  }
 }
 
 @media (min-width: 768px) {
