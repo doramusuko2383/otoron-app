@@ -1244,7 +1244,7 @@ button:hover {
 
 .hero {
   max-width: 800px;
-  margin: 0 auto;
+  margin: 1.8em auto 0;
   padding: 2em 1em;
   text-align: center;
   display: flex;
@@ -1361,11 +1361,13 @@ button:hover {
 
   .hero {
     flex: 1 1 30vw;
-    max-width: 400px;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
     z-index: 2;
     position: relative;
-    text-align: left;
-    align-items: flex-start;
+    text-align: center;
+    align-items: center;
   }
 
   .hero-photo {
