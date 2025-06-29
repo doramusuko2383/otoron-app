@@ -23,7 +23,6 @@ export function renderIntroScreen() {
         <p class="hero-highlight">＼遊びながら“聴く力”が<span class="accent">伸びる！</span>／</p>
         <button id="hero-cta" class="cta-button">今すぐ無料体験をはじめる！</button>
       </div>
-      <img class="hero-photo" src="images/otoron_landing_hero.webp" alt="オトロンで遊ぶ子どもの写真" />
       <div class="app-header intro-header">
         <button class="home-icon" id="intro-home-btn">
           <img src="images/otolon_face.webp" alt="トップへ" />
