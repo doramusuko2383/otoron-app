@@ -1355,7 +1355,7 @@ button:hover {
     padding-right: 0;
     padding-left: 5vw;
     gap: 2vw;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     background-image: none;
   }
 
