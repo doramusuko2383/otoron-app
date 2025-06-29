@@ -7,7 +7,7 @@ const planMap = {
   plan1: { name: '1ヶ月プラン', monthly: 1490, total: 1490 },
   plan6: { name: '6ヶ月プラン', monthly: 1290, total: 7740 },
   plan12: { name: '12ヶ月プラン', monthly: 990, total: 11880 },
-  plan1yen: { name: 'テスト用1円プラン', monthly: 1, total: 1 },
+  plan50yen: { name: 'テスト用50円プラン', monthly: 50, total: 50 },
 };
 
 async function fetchLatestSubscription(userId) {
