@@ -67,11 +67,12 @@
   width: 100%;
   height: auto;
   object-fit: cover;
+  display: block;
 }
 
 .hero h1,
 .hero p {
-  text-shadow: 0 2px 4px rgba(255, 255, 255, 0.8);
+  text-shadow: 0 2px 6px rgba(255, 255, 255, 0.8);
 }
 
 @media (min-width: 768px) {
@@ -90,8 +91,9 @@
 
   .hero-photo {
     width: 50%;
-    height: 100%;
+    height: 100vh;
     object-fit: cover;
+    object-position: right center;
     -webkit-mask-image: linear-gradient(to left, transparent 0%, black 20%);
     mask-image: linear-gradient(to left, transparent 0%, black 20%);
   }
