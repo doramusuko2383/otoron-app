@@ -1229,6 +1229,10 @@ button:hover {
   color: #333;
   overflow: hidden;
   background-color: #fff;
+  background-image: url('images/otoron_landing_hero.webp');
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
 }
 
 .hero-header::after {
@@ -1255,7 +1259,7 @@ button:hover {
 }
 
 .hero-photo {
-  display: block;
+  display: none;
   width: 100%;
   height: auto;
   object-fit: cover;
