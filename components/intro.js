@@ -3,6 +3,7 @@ import { switchScreen } from "../main.js";
 import { signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { firebaseAuth } from "../firebase/firebase-init.js";
 import { supabase } from "../utils/supabaseClient.js";
+import { showCustomAlert } from "./home.js";
 
 export function renderIntroScreen() {
   const app = document.getElementById('app');
@@ -406,8 +407,12 @@ export function renderIntroScreen() {
       btn.className = 'choose-plan';
       btn.textContent = 'このプランを選ぶ';
       btn.addEventListener('click', () => {
-        alert('このプランは無料会員登録後にお申し込みいただけます。');
-        window.location.href = '/register';
+        showCustomAlert(
+          'このプランは無料会員登録後にお申し込みいただけます。',
+          () => {
+            window.location.href = 'https://playotoron.com/#signup';
+          }
+        );
       });
       card.appendChild(btn);
 
