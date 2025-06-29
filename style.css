@@ -1357,7 +1357,7 @@ button:hover {
 
   .hero-photo {
     display: block;
-    width: 30vw;
+    width: 150vw;
     height: auto;
     object-fit: cover;
     object-position: center top;
