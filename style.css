@@ -1247,6 +1247,10 @@ button:hover {
   margin: 0 auto;
   padding: 2em 1em;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .hero-photo {
@@ -1262,7 +1266,7 @@ button:hover {
 .mato-image {
   width: 120px;
   display: block;
-  margin: 0.5em auto;
+  margin: 1.5em auto 0;
 }
 
 .app-tagline {
@@ -1296,7 +1300,7 @@ button:hover {
 }
 
 .hero-sub {
-  font-size: 1em;
+  font-size: 1.1rem;
   text-align: center;
   line-height: 1.6;
   max-width: 90%;
@@ -1336,7 +1340,7 @@ button:hover {
   }
 
   .hero-sub {
-    font-size: 1.1em;
+    font-size: 1.2rem;
   }
 
   .hero-highlight {
@@ -1361,6 +1365,7 @@ button:hover {
     z-index: 2;
     position: relative;
     text-align: left;
+    align-items: flex-start;
   }
 
   .hero-photo {
