@@ -1320,11 +1320,11 @@ button:hover {
   font-size: 1.1em;
   color: #333;
   font-weight: bold;
-  margin-bottom: 1em;
-  max-width: 90%;
+  margin: 1.5em auto;
   text-align: center;
-  margin-left: auto;
-  margin-right: auto;
+  display: block;
+  white-space: nowrap;
+  width: fit-content;
 }
 
 .hero-highlight .accent {
