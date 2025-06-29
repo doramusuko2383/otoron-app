@@ -1253,6 +1253,7 @@ button:hover {
   width: 100%;
   height: auto;
   object-fit: cover;
+  object-position: right center;
   display: block;
 }
 
@@ -1347,8 +1348,6 @@ button:hover {
     height: 100vh;
     object-fit: cover;
     object-position: right center;
-    -webkit-mask-image: linear-gradient(to left, transparent 0%, black 20%);
-    mask-image: linear-gradient(to left, transparent 0%, black 20%);
   }
 }
 
