@@ -32,17 +32,31 @@
 }
 
 .hero-header {
+  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: center;
   background-image: linear-gradient(to bottom, rgba(0,0,0,0), rgba(0,0,0,0.35)), url("images/otoron_landing_hero.webp");
   background-size: cover;
   background-position: center;
+  background-repeat: no-repeat;
   height: 100vh;
   padding: 2em 1em;
   padding-top: 56px; /* app-header height */
-  position: relative;
   color: #333;
+  overflow: hidden;
+}
+
+.hero-header::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100px;
+  background: linear-gradient(to bottom, rgba(255,255,255,0), #fff8f2);
+  z-index: 1;
+  pointer-events: none;
 }
 
 .hero {
@@ -62,13 +76,16 @@
     flex-direction: row;
     align-items: center;
     background-position: right center;
-    padding: 4em;
+    background-size: contain;
+    background-repeat: no-repeat;
+    padding: 0 5%;
   }
 
   .hero {
     width: 50%;
     max-width: 600px;
     padding-right: 2em;
+    text-align: left;
   }
 }
 
