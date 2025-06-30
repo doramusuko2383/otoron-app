@@ -1363,8 +1363,8 @@ button:hover {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 130vw;
-    height: 100vh;
+    width: 91vw;
+    height: 70vh;
     object-fit: cover;
     object-position: center;
     margin: 0;
@@ -1375,6 +1375,8 @@ button:hover {
     position: relative;
     z-index: 2;
     width: 100%;
+    margin-left: auto;
+    margin-right: auto;
   }
 }
 
