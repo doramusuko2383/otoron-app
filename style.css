@@ -1225,6 +1225,7 @@ button:hover {
 .hero-container {
   display: flex;
   height: 100vh;
+  min-height: 600px;
 }
 
 .hero {
@@ -1233,11 +1234,13 @@ button:hover {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: center;
+  text-align: center;
 }
 
 .hero-image {
   width: 50%;
-  background-image: linear-gradient(to left, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1)), url('images/otoron_landing_hero.webp');
+  background-image: linear-gradient(to left, transparent, #fef6ee), url('images/otoron_landing_hero.webp');
   background-size: cover;
   background-position: center right;
 }
@@ -1267,6 +1270,17 @@ button:hover {
     background-size: cover;
     background-position: center;
   }
+}
+
+.mato-image {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 200px;
+  max-width: 60%;
+  height: auto;
+  z-index: 2;
 }
 /* Landing hero header END */
 .hero-title {
