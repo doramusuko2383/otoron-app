@@ -1217,84 +1217,58 @@ button:hover {
   background-color: #e57c00;
 }
 
-/* Landing hero header old styles START
+/* Landing hero header */
 .hero-header {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  padding: 2em 1em;
-  padding-top: 56px; /* app-header height */
   position: relative;
-  color: #333;
-  overflow: hidden;
-  width: 100%;
-  background-color: #fff;
-  background-image: url('images/otoron_landing_hero.webp');
-  background-size: cover;
-  background-position: center center;
-  background-repeat: no-repeat;
 }
 
-.hero-header::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 100px;
-  background: linear-gradient(to bottom, rgba(255,255,255,0), #fff8f2);
-  z-index: 1;
-  pointer-events: none;
+.hero-container {
+  display: flex;
+  height: 100vh;
 }
 
 .hero {
-  max-width: 800px;
-  margin: 1.8em auto 0;
-  padding: 2em 1em;
-  text-align: center;
+  width: 50%;
+  padding: 5vw;
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: center;
 }
 
-.hero-photo {
-  display: none;
-  width: 100%;
-  height: auto;
-  object-fit: cover;
-  object-position: center top;
-  order: -1;
-  margin-bottom: 1em;
+.hero-image {
+  width: 50%;
+  background-image: linear-gradient(to left, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1)), url('images/otoron_landing_hero.webp');
+  background-size: cover;
+  background-position: center right;
 }
 
-.mato-image {
-  width: 120px;
-  display: block;
-  margin: 1.5em auto 0;
+@media (max-width: 768px) {
+  .hero-container {
+    flex-direction: column;
+    position: relative;
+  }
+  .hero {
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    padding: 4rem 1em;
+    box-sizing: border-box;
+    text-align: center;
+    color: #fff;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+    align-items: center;
+  }
+  .hero-image {
+    width: 100%;
+    height: 100vh;
+    background-image: url('images/otoron_landing_hero.webp');
+    background-size: cover;
+    background-position: center;
+  }
 }
-
-.app-tagline {
-  text-align: center;
-  font-weight: bold;
-  margin: 1em auto;
-  font-size: 1.2em;
-}
-
-.hero h1,
-.hero p {
-  text-shadow: 0 2px 6px rgba(255, 255, 255, 0.8);
-}
-
-.intro-wrapper {
-  padding: 4em 1em;
-  text-align: center;
-  box-sizing: border-box;
-  background-color: #fff8f2;
-}
-
+/* Landing hero header END */
 .hero-title {
   font-size: 1.6em;
   font-weight: bold;
@@ -1338,56 +1312,6 @@ button:hover {
   color: var(--color-primary);
 }
 
-@media (max-width: 767px) {
-  .hero-header {
-    display: grid;
-    grid-template-columns: 1fr;
-    grid-template-rows: 1fr;
-    place-items: center;
-    height: 100vh;
-    overflow: hidden;
-    position: relative;
-    background-color: #fff;
-  }
-
-  .hero-photo,
-  .hero {
-    grid-column: 1 / 2;
-    grid-row: 1 / 2;
-  }
-
-  .hero-photo {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center;
-    transform: scale(1.3);
-    z-index: 1;
-  }
-
-  .hero {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    padding: 0 1em;
-    box-sizing: border-box;
-    text-align: center;
-    z-index: 2;
-  }
-
-  .hero h1,
-  .hero p,
-  .hero .hero-sub,
-  .hero .note,
-  .hero .hero-highlight {
-    color: #fff;
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
-  }
-}
-
 @media (min-width: 768px) {
   .hero-title {
     font-size: 2.4em;
@@ -1403,52 +1327,7 @@ button:hover {
   .hero-highlight {
     font-size: 1.2em;
   }
-
-  .hero-header {
-    flex-direction: row;
-    align-items: center;
-    justify-content: flex-start;
-    padding-top: 0;
-    padding-right: 0;
-    padding-left: 5vw;
-    gap: 2vw;
-    flex-wrap: nowrap;
-    background-image: none;
-  }
-
-  .hero {
-    flex: 1 1 36vw;
-    max-width: 600px;
-    margin-left: auto;
-    margin-right: auto;
-    z-index: 2;
-    position: relative;
-    text-align: center;
-    align-items: center;
-  }
-
-  .hero-photo {
-    display: block;
-    width: 70vw;
-    max-width: 960px;
-    height: 100vh;
-    object-fit: contain;
-    object-position: center top;
-    margin-left: auto;
-    order: 0;
-    margin-bottom: 0;
-  }
-
-  .mato-image {
-    width: 160px;
-  }
-
-  .app-tagline {
-    font-size: 1.4em;
-  }
 }
-
-*/ /* Landing hero header old styles END */
 .cta-button {
   margin-top: 1.5em;
   background-color: var(--color-primary);

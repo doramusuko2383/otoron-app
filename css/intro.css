@@ -31,56 +31,55 @@
   background-color: #e57c00;
 }
 
-/* ===== ヒーローヘッダーの基本スタイル（モバイル用） ===== */
-/* 古い .hero-header の定義と差し替えてください */
+/* ===== ヒーローヘッダー ===== */
 .hero-header {
-  display: flex;
-  flex-direction: column; /* モバイルでは縦並びに */
-  align-items: center;
-  padding: 80px 1em 2em 1em; /* 上下の余白を調整 */
-  background: #fff; /* 背景画像は使わない */
+  position: relative;
 }
 
-/* PC用の画像をモバイルでは先頭に表示するための設定 */
-.hero-photo {
-  display: block; /* 画像をブロック要素として表示 */
-  order: -1;      /* HTMLの順番を無視して、視覚的に先頭に配置 */
-  width: 100%;
-  max-width: 400px; /* 画像が大きくなりすぎないように制御 */
-  height: auto;
-  margin-bottom: 2em; /* 画像とテキストの間に余白 */
+.hero-container {
+  display: flex;
+  height: 100vh;
 }
 
 .hero {
-  text-align: center; /* テキストを中央揃え */
+  width: 50%;
+  padding: 5vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
-/* ===== PC表示用のスタイル（画面幅768px以上） ===== */
-@media (min-width: 768px) {
-  /* PCではヒーローヘッダーを横並びに */
-  .hero-header {
-    flex-direction: row; /* 横並びに変更 */
-    justify-content: center;
-    align-items: center;
-    gap: 2em; /* 要素間の余白 */
-    padding: 2em 5vw; /* PC用の余白 */
-    min-height: 80vh;
-  }
+.hero-image {
+  width: 50%;
+  background-image: linear-gradient(to left, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1)), url('images/otoron_landing_hero.webp');
+  background-size: cover;
+  background-position: center right;
+}
 
-  /* テキストブロック（左側） */
+@media (max-width: 768px) {
+  .hero-container {
+    flex-direction: column;
+    position: relative;
+  }
   .hero {
-    order: 1; /* テキストを1番目に（HTML順） */
-    flex: 1 1 500px; /* 幅の計算を柔軟に */
-    max-width: 550px;
-    text-align: left; /* テキストを左揃えに */
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    padding: 4rem 1em;
+    box-sizing: border-box;
+    text-align: center;
+    color: #fff;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+    align-items: center;
   }
-
-  /* 画像ブロック（右側） */
-  .hero-photo {
-    order: 2; /* 画像を2番目に */
-    flex: 1 1 500px;
-    max-width: 600px;
-    margin-bottom: 0; /* モバイル用の余白をリセット */
+  .hero-image {
+    width: 100%;
+    height: 100vh;
+    background-image: url('images/otoron_landing_hero.webp');
+    background-size: cover;
+    background-position: center;
   }
 }
 

@@ -16,18 +16,20 @@ export function renderIntroScreen() {
 
   app.innerHTML = `
     <header id="lp-top" class="hero-header">
-      <div class="hero">
-        <h1 class="hero-title">絶対音感はもう、<br>特別な才能じゃない。</h1>
+      <div class="hero-container">
+        <div class="hero">
+          <h1 class="hero-title">絶対音感はもう、<br>特別な才能じゃない。</h1>
 
-        <p class="hero-sub">「オトロン」は、遊びながら耳を育てる<br>絶対音感トレーニングアプリです。</p>
+          <p class="hero-sub">「オトロン」は、遊びながら耳を育てる<br>絶対音感トレーニングアプリです。</p>
 
-        <p class="note">※ 推奨年齢：2歳半〜6歳</p>
+          <p class="note">※ 推奨年齢：2歳半〜6歳</p>
 
-        <p class="hero-highlight">＼ 楽しみながら “聴く力” が<span class="accent">伸びる！</span>&nbsp;／</p>
-        <img class="mato-image" src="images/otolon.webp" alt="まとオトロン" />
-        <button id="hero-cta" class="cta-button">今すぐ無料体験をはじめる！</button>
+          <p class="hero-highlight">＼ 楽しみながら “聴く力” が<span class="accent">伸びる！</span>&nbsp;／</p>
+          <img class="mato-image" src="images/otolon.webp" alt="まとオトロン" />
+          <button id="hero-cta" class="cta-button">今すぐ無料体験をはじめる！</button>
+        </div>
+        <div class="hero-image"></div>
       </div>
-      <img class="hero-photo" src="images/otoron_landing_hero.webp" alt="" />
       <div class="app-header intro-header">
         <button class="home-icon" id="intro-home-btn">
           <img src="images/otolon_face.webp" alt="トップへ" />
