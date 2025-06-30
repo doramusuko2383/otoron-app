@@ -31,88 +31,59 @@
   background-color: #e57c00;
 }
 
+/* ===== ヒーローヘッダーの基本スタイル（モバイル用） ===== */
+/* 古い .hero-header の定義と差し替えてください */
 .hero-header {
-  position: relative;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
+  flex-direction: column; /* モバイルでは縦並びに */
   align-items: center;
-  height: 100vh;
-  padding: 2em 1em;
-  padding-top: 56px; /* app-header height */
-  color: #333;
-  overflow: hidden;
-  width: 100%;
-  background-color: #fff;
-  background-image: url('images/otoron_landing_hero.webp');
-  background-size: cover;
-  background-position: center center;
-  background-repeat: no-repeat;
+  padding: 80px 1em 2em 1em; /* 上下の余白を調整 */
+  background: #fff; /* 背景画像は使わない */
 }
 
-.hero-header::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 0;
+/* PC用の画像をモバイルでは先頭に表示するための設定 */
+.hero-photo {
+  display: block; /* 画像をブロック要素として表示 */
+  order: -1;      /* HTMLの順番を無視して、視覚的に先頭に配置 */
   width: 100%;
-  height: 100px;
-  background: linear-gradient(to bottom, rgba(255,255,255,0), #fff8f2);
-  z-index: 1;
-  pointer-events: none;
+  max-width: 400px; /* 画像が大きくなりすぎないように制御 */
+  height: auto;
+  margin-bottom: 2em; /* 画像とテキストの間に余白 */
 }
 
 .hero {
-  max-width: 800px;
-  margin: 1.8em auto 0;
-  padding: 2em 1em;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  text-align: center; /* テキストを中央揃え */
 }
 
-.hero-photo {
-  display: none;
-}
-
-.hero h1,
-.hero p {
-  text-shadow: 0 2px 6px rgba(255, 255, 255, 0.8);
-}
-
+/* ===== PC表示用のスタイル（画面幅768px以上） ===== */
 @media (min-width: 768px) {
+  /* PCではヒーローヘッダーを横並びに */
   .hero-header {
-    flex-direction: row;
+    flex-direction: row; /* 横並びに変更 */
+    justify-content: center;
     align-items: center;
-    justify-content: flex-start;
-    padding-left: 5vw;
-    gap: 2vw;
-    flex-wrap: nowrap;
-    background-image: none;
+    gap: 2em; /* 要素間の余白 */
+    padding: 2em 5vw; /* PC用の余白 */
+    min-height: 80vh;
   }
 
+  /* テキストブロック（左側） */
   .hero {
-    flex: 1 1 30vw;
-    max-width: 500px;
-    margin-left: auto;
-    margin-right: auto;
-    z-index: 2;
-    text-align: center;
-    align-items: center;
+    order: 1; /* テキストを1番目に（HTML順） */
+    flex: 1 1 500px; /* 幅の計算を柔軟に */
+    max-width: 550px;
+    text-align: left; /* テキストを左揃えに */
   }
 
+  /* 画像ブロック（右側） */
   .hero-photo {
-    display: block;
-    width: 70vw;
-    max-width: 960px;
-    height: auto;
-    object-fit: contain;
-    object-position: right center;
-    margin-left: auto;
+    order: 2; /* 画像を2番目に */
+    flex: 1 1 500px;
+    max-width: 600px;
+    margin-bottom: 0; /* モバイル用の余白をリセット */
   }
 }
+
 
 .intro-wrapper {
   padding: 4em 1em;
@@ -164,54 +135,6 @@
   color: var(--color-primary);
 }
 
-@media (max-width: 767px) {
-  .hero-header {
-    display: grid;
-    grid-template-columns: 1fr;
-    grid-template-rows: 1fr;
-    place-items: center;
-    height: 100vh;
-    overflow: hidden;
-    position: relative;
-    background-color: #fff;
-  }
-
-  .hero-photo,
-  .hero {
-    grid-column: 1 / 2;
-    grid-row: 1 / 2;
-  }
-
-  .hero-photo {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center;
-    transform: scale(1.3);
-    z-index: 1;
-  }
-
-  .hero {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    padding: 0 1em;
-    box-sizing: border-box;
-    text-align: center;
-    z-index: 2;
-  }
-
-  .hero h1,
-  .hero p,
-  .hero .hero-sub,
-  .hero .note,
-  .hero .hero-highlight {
-    color: #fff;
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
-  }
-}
 
 @media (min-width: 768px) {
   .hero-title {
