@@ -1228,6 +1228,7 @@ button:hover {
   position: relative;
   color: #333;
   overflow: hidden;
+  width: 100%;
   background-color: #fff;
   background-image: url('images/otoron_landing_hero.webp');
   background-size: cover;
