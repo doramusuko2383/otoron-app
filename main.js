@@ -20,6 +20,9 @@ import { supabase } from "./utils/supabaseClient.js";
 import { ensureSupabaseAuth } from "./utils/supabaseAuthHelper.js";
 import { getLockType } from "./utils/accessControl.js";
 import { createInitialChordProgress } from "./utils/progressUtils.js";
+import { loadTrainingRecords } from "./utils/recordStore_supabase.js";
+import { getToday } from "./utils/growthUtils.js";
+import { showCustomAlert } from "./components/home.js";
 import { renderMyPageScreen } from "./components/mypage.js";
 import { clearTimeOfDayStyling } from "./utils/timeOfDay.js";
 import { renderTermsScreen } from "./components/info/terms.js";
@@ -50,7 +53,19 @@ window.addEventListener("error", (e) => {
 
 let currentUser = null;
 
-export const switchScreen = (screen, user = currentUser, options = {}) => {
+async function checkTrainingLimit(user) {
+  if (!user || user.is_premium || !user.trial_active) return true;
+  const today = getToday();
+  const records = await loadTrainingRecords(user.id, today);
+  const todayRecord = records[today] || { sets: 0 };
+  if (todayRecord.sets >= 2) {
+    showCustomAlert("無料ユーザーは一日のトレーニングは2回までです");
+    return false;
+  }
+  return true;
+}
+
+export const switchScreen = async (screen, user = currentUser, options = {}) => {
   const { replace = false } = options;
 
   // If the user is locked (trial or premium expired),
@@ -65,6 +80,13 @@ export const switchScreen = (screen, user = currentUser, options = {}) => {
     screen !== "intro"
   ) {
     return switchScreen("lock", user, { replace, lockType });
+  }
+
+  if (
+    ["training", "training_easy", "training_full", "training_white"].includes(screen)
+  ) {
+    const allowed = await checkTrainingLimit(user);
+    if (!allowed) return;
   }
 
   const app = document.getElementById("app");
