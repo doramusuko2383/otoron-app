@@ -173,6 +173,22 @@
     margin-left: auto;
     margin-right: auto;
   }
+
+  .hero-photo {
+    width: 91vw;
+    height: 70vh;
+    object-fit: cover;
+    object-position: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .hero {
+    margin-left: auto;
+    margin-right: auto;
+  }
 }
 
 @media (min-width: 768px) {
