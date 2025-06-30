@@ -13,6 +13,7 @@
     import { supabase } from '../utils/supabaseClient.js';
     import { firebaseAuth } from '../firebase/firebase-init.js';
     import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+    import { ensureSupabaseAuth } from '../utils/supabaseAuthHelper.js';
 
     const params = new URLSearchParams(location.search);
     const plan = params.get('plan');
@@ -32,11 +33,8 @@
 
     onAuthStateChanged(firebaseAuth, async (firebaseUser) => {
       if (!firebaseUser || !plan) return;
-      const { data: user } = await supabase
-        .from('users')
-        .select('id')
-        .eq('firebase_uid', firebaseUser.uid)
-        .maybeSingle();
+      const authResult = await ensureSupabaseAuth(firebaseUser);
+      const user = authResult.user;
       if (!user) return;
       const paymentDate = new Date();
       const { data: latestSub } = await supabase
@@ -57,6 +55,11 @@
 
       const expireDate = addDays(baseDate, planDays[plan] || 30);
 
+      await supabase
+        .from('users')
+        .update({ is_premium: true })
+        .eq('id', user.id);
+
       await supabase.from('user_subscriptions').insert([
         {
           user_id: user.id,
@@ -69,7 +72,7 @@
     });
 
     setTimeout(() => {
-      window.location.href = '/';
+      window.location.href = '/#home';
     }, 3000);
   </script>
 </body>
