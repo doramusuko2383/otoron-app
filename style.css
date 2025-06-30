@@ -1217,6 +1217,7 @@ button:hover {
   background-color: #e57c00;
 }
 
+/* Landing hero header old styles START
 .hero-header {
   display: flex;
   flex-direction: column;
@@ -1447,7 +1448,7 @@ button:hover {
   }
 }
 
-
+*/ /* Landing hero header old styles END */
 .cta-button {
   margin-top: 1.5em;
   background-color: var(--color-primary);
