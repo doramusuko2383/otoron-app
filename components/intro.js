@@ -20,11 +20,11 @@ export function renderIntroScreen() {
         <div class="hero">
           <h1 class="hero-title">絶対音感はもう、<br>特別な才能じゃない。</h1>
 
-          <p class="hero-sub">「オトロン」は、遊びながら耳を育てる<br>絶対音感トレーニングアプリです。</p>
+          <p class="hero-sub">遊びながら耳を育てる、新しいトレーニングのかたち。</p>
 
-          <p class="note">※ 推奨年齢：2歳半〜6歳</p>
+          <p class="note">※推奨対象年齢：2歳半〜6歳</p>
 
-          <p class="hero-highlight">＼ 楽しみながら “聴く力” が<span class="accent">伸びる！</span>&nbsp;／</p>
+          <p class="hero-highlight">＼遊びながら“聴く力”が<span class="accent">伸びる！</span>／</p>
           <img class="mato-image" src="images/otolon.webp" alt="まとオトロン" />
           <button id="hero-cta" class="cta-button">今すぐ無料体験をはじめる！</button>
         </div>
