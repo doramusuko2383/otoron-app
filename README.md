@@ -54,6 +54,7 @@ Vercel などの環境でデプロイする際は次の環境変数を設定し�
 - `STRIPE_WEBHOOK_SECRET`
 - `SUPABASE_URL`
 - `SUPABASE_SERVICE_ROLE_KEY`
+- `BASE_URL`
 - `PRICE_ID_1M`
 - `PRICE_ID_6M`
 - `PRICE_ID_12M`
