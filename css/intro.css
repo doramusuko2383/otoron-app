@@ -31,6 +31,10 @@
   background-color: #e57c00;
 }
 
+body.intro-scroll {
+  background: linear-gradient(to bottom, #ffffff, #fff8f2);
+}
+
 /* ===== ヒーローヘッダー ===== */
 .hero-header {
   position: relative;
@@ -59,7 +63,7 @@
 .hero-image {
   position: absolute;
   inset: 0;
-  background-image: linear-gradient(to left, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1)), url('images/otoron_landing_hero.webp');
+  background-image: url('images/otoron_landing_hero.webp');
   background-size: cover;
   background-position: 110% center;
 }
@@ -103,7 +107,7 @@
   padding: 4em 1em;
   text-align: center;
   box-sizing: border-box;
-  background-color: #fff8f2;
+  background-color: transparent;
 }
 
 .hero-title {

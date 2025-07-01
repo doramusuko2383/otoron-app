@@ -55,6 +55,10 @@ body {
      unchanged so individual screens can style themselves. */
 }
 
+body.intro-scroll {
+  background: linear-gradient(to bottom, #ffffff, #fff8f2);
+}
+
 /* ヘッダー表示時に余白を確保 */
 #app.with-header,
 body.with-header {
@@ -1249,8 +1253,7 @@ button:hover {
   right: 0;
   bottom: 0;
   left: 45%;
-  background-image: linear-gradient(to left, transparent, #fef6ee),
-    url('images/otoron_landing_hero.webp');
+  background-image: url('images/otoron_landing_hero.webp');
   background-size: cover;
   background-position: center right;
 }
