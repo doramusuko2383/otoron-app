@@ -1245,10 +1245,14 @@ button:hover {
 
 .hero-image {
   position: absolute;
-  inset: 0;
-  background-image: linear-gradient(to left, transparent, #fef6ee), url('images/otoron_landing_hero.webp');
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 45%;
+  background-image: linear-gradient(to left, transparent, #fef6ee),
+    url('images/otoron_landing_hero.webp');
   background-size: cover;
-  background-position: 110% center;
+  background-position: center right;
 }
 
 @media (max-width: 768px) {
