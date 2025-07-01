@@ -1220,6 +1220,7 @@ button:hover {
 /* Landing hero header */
 .hero-header {
   position: relative;
+  padding-top: 60px;
 }
 
 .hero-container {
@@ -1247,7 +1248,7 @@ button:hover {
   inset: 0;
   background-image: linear-gradient(to left, transparent, #fef6ee), url('images/otoron_landing_hero.webp');
   background-size: cover;
-  background-position: center right;
+  background-position: 110% center;
 }
 
 @media (max-width: 768px) {
