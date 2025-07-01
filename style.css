@@ -1249,13 +1249,11 @@ button:hover {
 
 .hero-image {
   position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 45%;
+  inset: 0;
   background-image: url('images/otoron_landing_hero.webp');
-  background-size: cover;
-  background-position: center right;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
 }
 
 @media (max-width: 768px) {
