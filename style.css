@@ -1224,7 +1224,7 @@ button:hover {
 /* Landing hero header */
 .hero-header {
   position: relative;
-  padding-top: 60px;
+  padding-top: 56px; /* match fixed header height */
 }
 
 .hero-container {
@@ -1268,8 +1268,6 @@ button:hover {
     padding: 4rem 1em;
     box-sizing: border-box;
     text-align: center;
-    color: #fff;
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
     align-items: center;
     z-index: 2;
   }
@@ -1277,7 +1275,7 @@ button:hover {
   .hero-sub,
   .note,
   .hero-highlight {
-    color: #fff;
+    color: inherit;
   }
   .hero-image {
     position: absolute;
@@ -1295,6 +1293,7 @@ button:hover {
   max-width: 60%;
   height: auto;
   margin: 1em auto 0;
+  display: none; /* hide Otoron character */
 }
 /* Landing hero header END */
 .hero-title {
@@ -1371,9 +1370,10 @@ button:hover {
 }
 
 .hero .cta-button {
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
+  position: absolute;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .cta-button:hover {
