@@ -65,10 +65,10 @@ body.intro-scroll {
   inset: 0;
   background-image: url('images/otoron_landing_hero.webp');
   background-size: cover;
-  background-position: 110% center;
+  background-position: right center;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767px) {
   .hero-container {
     flex-direction: column;
     position: relative;
@@ -96,9 +96,9 @@ body.intro-scroll {
     inset: 0;
     width: 100%;
     height: 100vh;
-    background-image: url('images/otoron_landing_hero.webp');
+    background-image: url('images/otoron_landing_hero_sp.webp');
     background-size: cover;
-    background-position: center;
+    background-position: center top;
   }
 }
 
