@@ -1293,7 +1293,12 @@ button:hover {
   max-width: 60%;
   height: auto;
   margin: 1em auto 0;
-  display: none; /* hide Otoron character */
+}
+
+@media (max-width: 767px) {
+  .mato-image {
+    display: none;
+  }
 }
 /* Landing hero header END */
 .hero-title {
@@ -1370,10 +1375,18 @@ button:hover {
 }
 
 .hero .cta-button {
-  position: absolute;
-  bottom: 1.5rem;
-  left: 50%;
-  transform: translateX(-50%);
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media (max-width: 767px) {
+  .hero .cta-button {
+    position: absolute;
+    bottom: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+  }
 }
 
 .cta-button:hover {
