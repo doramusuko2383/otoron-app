@@ -56,7 +56,13 @@ body {
 }
 
 body.intro-scroll {
-  background: linear-gradient(to bottom, #ffffff, #fff8f2);
+  background: linear-gradient(to bottom,
+    #ffffff 0%,
+    #fff6f6 20%,
+    #fff0f5 40%,
+    #fef0ff 60%,
+    #f0f8ff 100%
+  );
 }
 
 /* ヘッダー表示時に余白を確保 */
