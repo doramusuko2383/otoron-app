@@ -65,6 +65,10 @@ body.intro-scroll {
   );
 }
 
+body.info-bg {
+  background: #fff;
+}
+
 /* ヘッダー表示時に余白を確保 */
 #app.with-header,
 body.with-header {
