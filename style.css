@@ -168,6 +168,7 @@ button:hover {
   left: 0;
   width: 100%;
   height: 100%;
+  overflow-y: auto;
   background: rgba(0, 0, 0, 0.6);
   display: flex;
   justify-content: center;
@@ -200,25 +201,13 @@ button:hover {
 
 /* Help modal specific */
 #help-modal .modal-content {
-  position: relative;
-  background: #ffe6f0;
-  padding: 1.5em;
-  border-radius: 20px;
   max-width: 480px;
-  width: 90%;
-  max-height: 80vh;
-  overflow: hidden;
-  font-family: var(--font-body);
-  font-size: 1.1em;
-  display: flex;
-  align-items: flex-start;
-  gap: 1em;
+  border-radius: 20px;
 }
 
 #help-modal .modal-scroll {
   flex: 1 1 auto;
-  overflow-y: auto;
-  max-height: 100%;
+  
 }
 
 /* remove speech bubble arrow */
@@ -286,12 +275,10 @@ button:hover {
   min-width: 0;
   display: flex;
   flex-direction: column;
-  max-height: 100%;
 }
 
 #help-modal .help-body {
   flex: 1 1 auto;
-  overflow-y: auto;
 }
 
 .growth-title-row {
@@ -2581,6 +2568,7 @@ button:hover {
   /* Avoid horizontal scrollbars caused by viewport units */
   width: 100%;
   height: 100%;
+  overflow-y: auto;
   background: rgba(0, 0, 0, 0.7);
   display: flex;
   justify-content: center;
