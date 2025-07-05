@@ -9,11 +9,13 @@
     "micro": "^9.3.4"
   },
   "scripts": {
-  "build": "next build",
   "dev": "next dev",
+  "build": "next build && next export",
+  "postbuild": "cp public/sitemap.xml out/sitemap.xml",
   "start": "next start",
   "reset-expired-premiums": "node scripts/resetExpiredPremiums.js"
 }
+
 
 }
 
