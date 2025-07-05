@@ -1,4 +1,3 @@
 User-agent: *
 Allow: /
-
-# Enable crawling so that the site can appear in search results.
+Sitemap: https://playotoron.com/sitemap.xml
