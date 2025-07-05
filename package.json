@@ -12,7 +12,7 @@
   },
   "scripts": {
     "dev": "next dev",
-    "build": "next build && next export",
+    "build": "next build",
     "postbuild": "cp public/sitemap.xml out/sitemap.xml",
     "start": "next start",
     "reset-expired-premiums": "node scripts/resetExpiredPremiums.js"
