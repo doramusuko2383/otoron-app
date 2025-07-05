@@ -42,6 +42,17 @@ import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/f
 
 const DUMMY_PASSWORD = "secure_dummy_password";
 
+const INFO_SCREENS = [
+  "terms",
+  "privacy",
+  "contact",
+  "help",
+  "faq",
+  "chord_reset",
+  "law",
+  "external",
+];
+
 // console.log("🧭 main.js にて全コンポーネント統合済み");
 
 const DEBUG_AUTO_LOGIN = false;
@@ -146,6 +157,7 @@ export const switchScreen = async (screen, user = currentUser, options = {}) => 
   app.innerHTML = "";
   document.body.classList.remove("intro-scroll");
   document.body.classList.remove("summary-scroll");
+  document.body.classList.remove("info-bg");
 
   if (screen !== "home") {
     clearTimeOfDayStyling();
@@ -158,6 +170,10 @@ export const switchScreen = async (screen, user = currentUser, options = {}) => 
     history.replaceState(state, "", `#${screen}`);
   } else {
     history.pushState(state, "", `#${screen}`);
+  }
+
+  if (INFO_SCREENS.includes(screen)) {
+    document.body.classList.add("info-bg");
   }
 
   if (screen === "intro") {

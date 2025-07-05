@@ -63,6 +63,10 @@
   color: #543014 !important;
 }
 
+body.info-bg {
+  background: #fff;
+}
+
 .info-page h1 {
   font-family: var(--font-heading);
   text-align: center;
