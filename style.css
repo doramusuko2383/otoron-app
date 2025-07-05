@@ -207,7 +207,7 @@ button:hover {
   max-width: 480px;
   width: 90%;
   max-height: 80vh;
-  overflow-y: auto;
+  overflow: hidden;
   font-family: var(--font-body);
   font-size: 1.1em;
   display: flex;
@@ -270,6 +270,14 @@ button:hover {
 #help-modal .help-main {
   flex: 1 1 auto;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  max-height: 100%;
+}
+
+#help-modal .help-body {
+  flex: 1 1 auto;
+  overflow-y: auto;
 }
 
 .growth-title-row {
