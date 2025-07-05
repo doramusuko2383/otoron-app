@@ -1,6 +1,7 @@
 import { supabase } from "./supabaseClient.js";
 import { unlockChord } from "./progressUtils.js";
 import { applyRecommendedSelection, forceUnlock } from "./growthUtils.js";
+import { showCustomAlert } from "../components/home.js";
 import { getAudio } from "./audioCache.js";
 import { getConsecutiveQualifiedDays } from "./qualifiedStore_supabase.js";
 import { launchConfetti } from "./confetti.js";
@@ -124,6 +125,11 @@ export async function updateGrowthStatusBar(user, target, onUnlocked) {
           }
           launchConfetti();
           await applyRecommendedSelection(user.id);
+          setTimeout(() => {
+            showCustomAlert(
+              "推奨出題に変更しました。このままトレーニングできます。"
+            );
+          }, 1000);
           forceUnlock();
           btn.style.display = "none";
           if (onUnlocked) {
