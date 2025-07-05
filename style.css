@@ -210,9 +210,6 @@ button:hover {
   overflow-y: auto;
   font-family: var(--font-body);
   font-size: 1.1em;
-  display: flex;
-  align-items: flex-start;
-  gap: 1em;
 }
 
 /* remove speech bubble arrow */
@@ -232,6 +229,12 @@ button:hover {
   line-height: 1.8em;
   border-radius: 50%;
   text-align: center;
+}
+
+#help-modal .help-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
 }
 
 #help-modal table {
@@ -263,13 +266,11 @@ button:hover {
 }
 
 #help-modal .help-otolon {
-  flex: 0 0 auto;
   width: 60px;
   height: auto;
 }
 
 #help-modal .help-main {
-  flex: 1 1 auto;
   min-width: 0;
 }
 
