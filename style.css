@@ -207,7 +207,7 @@ button:hover {
   max-width: 480px;
   width: 90%;
   max-height: 80vh;
-  overflow: hidden;
+  overflow-y: auto;
   font-family: var(--font-body);
   font-size: 1.1em;
   display: flex;
