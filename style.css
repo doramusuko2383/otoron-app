@@ -1283,10 +1283,10 @@ button:hover {
 }
 
 @media (min-width: 768px) {
-  /* お問い合わせページ以外はPCでもスクロール可能に */
+  /* PCではbody全体でスクロールするため高さ指定を外す */
   .info-page:not(.contact-page) {
-    height: calc(100dvh - 56px);
-    overflow-y: auto;
+    height: auto;
+    overflow-y: visible;
   }
 }
 /* Landing page styles */
