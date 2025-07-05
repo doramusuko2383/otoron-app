@@ -2204,7 +2204,6 @@ button:hover {
   .pricing-page .plan-card {
     flex: 1 1 280px;
     max-width: 320px;
-    min-height: 320px;
     box-sizing: border-box;
     align-self: flex-start;
   }
