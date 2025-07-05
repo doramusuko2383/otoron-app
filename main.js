@@ -46,6 +46,9 @@ const DUMMY_PASSWORD = "secure_dummy_password";
 
 const DEBUG_AUTO_LOGIN = false;
 
+let helpOutsideHandler = null;
+let helpKeyHandler = null;
+
 export async function openHelp(topic) {
   const res = await fetch('helpData.json');
   const data = await res.json();
@@ -67,11 +70,30 @@ export async function openHelp(topic) {
     document.getElementById('help-table').innerHTML = '';
   }
 
-  document.getElementById('help-modal').style.display = 'block';
+  const modal = document.getElementById('help-modal');
+  modal.style.display = 'flex';
+
+  helpOutsideHandler = (e) => {
+    if (e.target === modal) closeHelp();
+  };
+  helpKeyHandler = (e) => {
+    if (e.key === 'Escape') closeHelp();
+  };
+  modal.addEventListener('click', helpOutsideHandler);
+  document.addEventListener('keydown', helpKeyHandler);
 }
 
 export function closeHelp() {
-  document.getElementById('help-modal').style.display = 'none';
+  const modal = document.getElementById('help-modal');
+  modal.style.display = 'none';
+  if (helpOutsideHandler) {
+    modal.removeEventListener('click', helpOutsideHandler);
+    helpOutsideHandler = null;
+  }
+  if (helpKeyHandler) {
+    document.removeEventListener('keydown', helpKeyHandler);
+    helpKeyHandler = null;
+  }
 }
 
 // make closeHelp available for inline onclick handlers
