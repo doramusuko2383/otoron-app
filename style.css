@@ -252,6 +252,7 @@ button:hover {
   background: var(--color-accent);
   color: #fff;
   border: none;
+  padding: 0;
   width: 1.6em;
   height: 1.6em;
   line-height: 1.6em;
