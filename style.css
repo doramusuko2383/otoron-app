@@ -210,20 +210,21 @@ button:hover {
   overflow-y: auto;
   font-family: var(--font-body);
   font-size: 1.1em;
+  display: flex;
+  align-items: flex-start;
+  gap: 1em;
 }
 
+/* remove speech bubble arrow */
 #help-modal .modal-content::before {
-  content: "";
-  position: absolute;
-  bottom: -20px;
-  left: 40px;
-  border: 20px solid transparent;
-  border-top-color: #ffe6f0;
+  display: none;
 }
 
 #help-modal .close {
   cursor: pointer;
-  float: right;
+  position: absolute;
+  top: 10px;
+  right: 10px;
   font-size: 1.2rem;
   background: #fff;
   width: 1.8em;
@@ -251,8 +252,9 @@ button:hover {
   background: var(--color-accent);
   color: #fff;
   border: none;
-  width: 1.3em;
-  height: 1.3em;
+  width: 1.6em;
+  height: 1.6em;
+  line-height: 1.6em;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -260,11 +262,14 @@ button:hover {
 }
 
 #help-modal .help-otolon {
-  position: absolute;
-  left: -40px;
-  top: 10px;
+  flex: 0 0 auto;
   width: 60px;
   height: auto;
+}
+
+#help-modal .help-main {
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 .growth-title-row {
