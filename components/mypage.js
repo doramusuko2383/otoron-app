@@ -356,15 +356,6 @@ export function renderMyPageScreen(user) {
         benefit: "",
         recommended: false,
       },
-      {
-        key: "plan50yen",
-        title: "テスト用50円プラン",
-        months: 0,
-        monthly: 50,
-        total: 50,
-        benefit: "",
-        recommended: false,
-      },
     ];
 
     const wrap = document.createElement("div");

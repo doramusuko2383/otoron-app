@@ -33,15 +33,6 @@ export function renderPricingScreen(user) {
       benefit: '',
       recommended: false,
     },
-    {
-      key: 'plan50yen',
-      title: 'テスト用50円プラン',
-      months: 0,
-      monthly: 50,
-      total: 50,
-      benefit: '',
-      recommended: false,
-    },
   ];
 
   plans.forEach((p) => {
