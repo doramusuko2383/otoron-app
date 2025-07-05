@@ -46,10 +46,12 @@
 
   <div id="help-modal" class="modal" style="display: none;">
     <div class="modal-content">
-      <img src="images/otolon_face.webp" alt="オトロン" class="help-otolon" />
+      <span class="close" onclick="closeHelp()">×</span>
       <div class="help-main">
-        <span class="close" onclick="closeHelp()">×</span>
-        <h2 id="help-title"></h2>
+        <div class="help-header">
+          <img src="images/otolon_face.webp" alt="オトロン" class="help-otolon" />
+          <h2 id="help-title"></h2>
+        </div>
         <div id="help-text"></div>
         <div id="help-table"></div>
       </div>
