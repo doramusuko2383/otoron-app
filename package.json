@@ -9,7 +9,11 @@
     "micro": "^9.3.4"
   },
   "scripts": {
-    "reset-expired-premiums": "node scripts/resetExpiredPremiums.js"
-  }
+  "build": "next build",
+  "dev": "next dev",
+  "start": "next start",
+  "reset-expired-premiums": "node scripts/resetExpiredPremiums.js"
+}
+
 }
 
