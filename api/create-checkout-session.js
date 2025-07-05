@@ -6,7 +6,6 @@ const priceMap = {
   plan12: process.env.PRICE_ID_12M,
   plan6: process.env.PRICE_ID_6M,
   plan1: process.env.PRICE_ID_1M,
-  plan50yen: process.env.PRICE_ID_50yen,
 };
 
 export default async function handler(req, res) {
