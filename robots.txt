@@ -1,2 +1,4 @@
 User-agent: *
-Disallow: /
+Allow: /
+
+# Enable crawling so that the site can appear in search results.
