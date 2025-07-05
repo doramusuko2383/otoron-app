@@ -1,7 +1,7 @@
 // components/settings.js
 
 import { renderHeader } from "./header.js";
-import { switchScreen } from "../main.js";
+import { switchScreen, openHelp } from "../main.js";
 import { supabase } from "../utils/supabaseClient.js";
 import { chords, chordOrder } from "../data/chords.js";
 import { generateRecommendedQueue } from "../utils/growthUtils.js"; // use queue util
@@ -76,7 +76,18 @@ export async function renderSettingsScreen(user) {
 
   const titleLine = document.createElement("div");
   titleLine.className = "header-title-line";
-  titleLine.innerHTML = `🎼 <strong>出題設定</strong> <span id="total-count">累計出題回数: 0 回</span>`;
+  titleLine.innerHTML = `🎼 <strong>出題設定</strong>`;
+
+  const helpBtn = document.createElement("div");
+  helpBtn.className = "help-button";
+  helpBtn.textContent = "？";
+  helpBtn.onclick = () => openHelp('設定画面');
+  titleLine.appendChild(helpBtn);
+
+  const totalSpan = document.createElement("span");
+  totalSpan.id = "total-count";
+  totalSpan.textContent = "累計出題回数: 0 回";
+  titleLine.appendChild(totalSpan);
 
   const resetBtn = document.createElement("button");
   resetBtn.className = "shadow-button";

@@ -233,6 +233,21 @@ button:hover {
   border: none;
 }
 
+.help-button {
+  margin-left: 0.4em;
+  font-size: 0.9em;
+  cursor: pointer;
+  background: var(--color-accent);
+  color: #fff;
+  border: none;
+  width: 1.6em;
+  height: 1.6em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
 .growth-title-row {
   display: flex;
   align-items: center;

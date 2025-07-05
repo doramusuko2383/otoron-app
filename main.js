@@ -56,12 +56,16 @@ export async function openHelp(topic) {
   const textHtml = help.description.map(line => `<p>${line}</p>`).join('');
   document.getElementById('help-text').innerHTML = textHtml;
 
-  let tableHtml = `<h3>${help.tableTitle}</h3><table>`;
-  help.table.forEach(row => {
-    tableHtml += `<tr><td>${row.range}</td><td>${row.required}</td></tr>`;
-  });
-  tableHtml += `</table>`;
-  document.getElementById('help-table').innerHTML = tableHtml;
+  if (help.tableTitle && help.table.length > 0) {
+    let tableHtml = `<h3>${help.tableTitle}</h3><table>`;
+    help.table.forEach(row => {
+      tableHtml += `<tr><td>${row.range}</td><td>${row.required}</td></tr>`;
+    });
+    tableHtml += `</table>`;
+    document.getElementById('help-table').innerHTML = tableHtml;
+  } else {
+    document.getElementById('help-table').innerHTML = '';
+  }
 
   document.getElementById('help-modal').style.display = 'block';
 }
