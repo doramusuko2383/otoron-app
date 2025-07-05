@@ -200,19 +200,37 @@ button:hover {
 
 /* Help modal specific */
 #help-modal .modal-content {
-  background: #fff;
+  position: relative;
+  background: #ffe6f0;
   padding: 1.5em;
-  border-radius: 10px;
+  border-radius: 20px;
   max-width: 480px;
   width: 90%;
   max-height: 80vh;
   overflow-y: auto;
+  font-family: var(--font-body);
+  font-size: 1.1em;
+}
+
+#help-modal .modal-content::before {
+  content: "";
+  position: absolute;
+  bottom: -20px;
+  left: 40px;
+  border: 20px solid transparent;
+  border-top-color: #ffe6f0;
 }
 
 #help-modal .close {
   cursor: pointer;
   float: right;
-  font-size: 1.5rem;
+  font-size: 1.2rem;
+  background: #fff;
+  width: 1.8em;
+  height: 1.8em;
+  line-height: 1.8em;
+  border-radius: 50%;
+  text-align: center;
 }
 
 #help-modal table {
@@ -225,27 +243,28 @@ button:hover {
   border-bottom: 1px solid #ccc;
 }
 
-#growth-help-btn {
-  margin-left: 0.4em;
-  font-size: 0.9em;
-  cursor: pointer;
-  background: transparent;
-  border: none;
-}
 
 .help-button {
-  margin-left: 0.4em;
-  font-size: 0.9em;
+  margin-left: 0.2em;
+  font-size: 0.8em;
   cursor: pointer;
   background: var(--color-accent);
   color: #fff;
   border: none;
-  width: 1.6em;
-  height: 1.6em;
+  width: 1.3em;
+  height: 1.3em;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
+}
+
+#help-modal .help-otolon {
+  position: absolute;
+  left: -40px;
+  top: 10px;
+  width: 60px;
+  height: auto;
 }
 
 .growth-title-row {

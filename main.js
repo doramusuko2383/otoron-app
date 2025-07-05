@@ -74,6 +74,9 @@ export function closeHelp() {
   document.getElementById('help-modal').style.display = 'none';
 }
 
+// make closeHelp available for inline onclick handlers
+window.closeHelp = closeHelp;
+
 window.addEventListener("error", (e) => {
   console.error("Uncaught error", e.error);
 });
