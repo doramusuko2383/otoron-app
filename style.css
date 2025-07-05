@@ -198,6 +198,47 @@ button:hover {
   margin: 0 0.5em;
 }
 
+/* Help modal specific */
+#help-modal .modal-content {
+  background: #fff;
+  padding: 1.5em;
+  border-radius: 10px;
+  max-width: 480px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+#help-modal .close {
+  cursor: pointer;
+  float: right;
+  font-size: 1.5rem;
+}
+
+#help-modal table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+#help-modal td {
+  padding: 4px 8px;
+  border-bottom: 1px solid #ccc;
+}
+
+#growth-help-btn {
+  margin-left: 0.4em;
+  font-size: 0.9em;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+}
+
+.growth-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 
 
 /* ✅ 和音サークル共通 */
