@@ -207,12 +207,18 @@ button:hover {
   max-width: 480px;
   width: 90%;
   max-height: 80vh;
-  overflow-y: auto;
+  overflow: hidden;
   font-family: var(--font-body);
   font-size: 1.1em;
   display: flex;
   align-items: flex-start;
   gap: 1em;
+}
+
+#help-modal .modal-scroll {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  max-height: 100%;
 }
 
 /* remove speech bubble arrow */
