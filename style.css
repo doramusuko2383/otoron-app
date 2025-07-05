@@ -202,10 +202,13 @@ button:hover {
 
 /* Help modal specific */
 #help-modal .modal-content {
+  background: #fff;
+  padding: 1.5em;
   max-width: 480px;
   border-radius: 20px;
   max-height: 90vh;
   overflow-y: auto;
+  box-sizing: border-box;
 }
 
 #help-modal .modal-scroll {
