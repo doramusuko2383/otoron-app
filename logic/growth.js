@@ -1,6 +1,6 @@
 // logic/growth.js
 
-import { switchScreen } from "../main.js";
+import { switchScreen, openHelp } from "../main.js";
 import {
   getToday,
   isQualifiedToday,
@@ -41,9 +41,20 @@ export async function renderGrowthScreen(user) {
   const flags = await loadGrowthFlags(user.id);
   const target = getCurrentTargetChord(flags); // ← chordOrder に沿った未解放の最初の1つ
 
+  const titleRow = document.createElement("div");
+  titleRow.className = "growth-title-row";
+
   const title = document.createElement("h2");
   title.textContent = "🎯 育成モード";
-  container.appendChild(title);
+
+  const helpBtn = document.createElement("button");
+  helpBtn.id = "growth-help-btn";
+  helpBtn.textContent = "？";
+  helpBtn.onclick = () => openHelp("育成モード");
+
+  titleRow.appendChild(title);
+  titleRow.appendChild(helpBtn);
+  container.appendChild(titleRow);
 
   const info = document.createElement("div");
   info.className = "today-info";

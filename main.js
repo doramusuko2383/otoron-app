@@ -46,6 +46,30 @@ const DUMMY_PASSWORD = "secure_dummy_password";
 
 const DEBUG_AUTO_LOGIN = false;
 
+export async function openHelp(topic) {
+  const res = await fetch('helpData.json');
+  const data = await res.json();
+  const help = data[topic];
+  if (!help) return;
+
+  document.getElementById('help-title').innerText = help.title;
+  const textHtml = help.description.map(line => `<p>${line}</p>`).join('');
+  document.getElementById('help-text').innerHTML = textHtml;
+
+  let tableHtml = `<h3>${help.tableTitle}</h3><table>`;
+  help.table.forEach(row => {
+    tableHtml += `<tr><td>${row.range}</td><td>${row.required}</td></tr>`;
+  });
+  tableHtml += `</table>`;
+  document.getElementById('help-table').innerHTML = tableHtml;
+
+  document.getElementById('help-modal').style.display = 'block';
+}
+
+export function closeHelp() {
+  document.getElementById('help-modal').style.display = 'none';
+}
+
 window.addEventListener("error", (e) => {
   console.error("Uncaught error", e.error);
 });

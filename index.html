@@ -44,6 +44,15 @@
 <body class="app-root">
   <div id="app"></div>
 
+  <div id="help-modal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <span class="close" onclick="closeHelp()">×</span>
+      <h2 id="help-title"></h2>
+      <div id="help-text"></div>
+      <div id="help-table"></div>
+    </div>
+  </div>
+
   <!-- JSライブラリ -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/flatpickr" defer></script>
