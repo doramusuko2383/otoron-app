@@ -3,7 +3,7 @@ import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-aut
 
 const firebaseConfig = {
   apiKey: "AIzaSyAunlq7BhL9A4JvcXszpYkDoXAPPSvhlxo",
-  authDomain: "playotoron.com",
+  authDomain: "otoron-app.firebaseapp.com",
   projectId: "otoron-app",
   storageBucket: "otoron-app.appspot.com",
   messagingSenderId: "572910581480",
