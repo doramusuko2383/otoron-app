@@ -7,6 +7,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { ensureSupabaseAuth } from "../utils/supabaseAuthHelper.js";
 import { createInitialChordProgress } from "../utils/progressUtils.js";
+import { addDebugLog } from "../utils/loginDebug.js";
 
 import { showCustomAlert } from "./home.js";
 
@@ -79,6 +80,7 @@ export function renderSignUpScreen() {
   const googleBtn = container.querySelector("#google-signup");
   const googleProvider = new GoogleAuthProvider();
   googleBtn.addEventListener("click", () => {
+    addDebugLog("click google-signup");
     signInWithRedirect(firebaseAuth, googleProvider);
   });
 

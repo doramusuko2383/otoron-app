@@ -7,6 +7,7 @@ import {
 
 import { firebaseAuth } from "../firebase/firebase-init.js";
 import { switchScreen } from "../main.js";
+import { addDebugLog } from "../utils/loginDebug.js";
 import { supabase } from "../utils/supabaseClient.js";
 import { ensureSupabaseAuth } from "../utils/supabaseAuthHelper.js";
 import { chords } from "../data/chords.js";
@@ -156,6 +157,7 @@ export function renderLoginScreen(container, onLoginSuccess) {
   // Googleログイン処理（リダイレクト方式）
   const googleProvider = new GoogleAuthProvider();
   container.querySelector("#google-login").addEventListener("click", () => {
+    addDebugLog("click google-login");
     signInWithRedirect(firebaseAuth, googleProvider);
   });
 
