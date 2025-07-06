@@ -2,7 +2,7 @@ import {
   signInWithEmailAndPassword,
   fetchSignInMethodsForEmail,
   GoogleAuthProvider,
-  signInWithRedirect
+  signInWithPopup
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 import { firebaseAuth } from "../firebase/firebase-init.js";
@@ -154,11 +154,11 @@ export function renderLoginScreen(container, onLoginSuccess) {
     }
   });
 
-  // Googleログイン処理（リダイレクト方式）
+  // Googleログイン処理（ポップアップ方式）
   const googleProvider = new GoogleAuthProvider();
   container.querySelector("#google-login").addEventListener("click", () => {
     addDebugLog("click google-login");
-    signInWithRedirect(firebaseAuth, googleProvider);
+    signInWithPopup(firebaseAuth, googleProvider);
   });
 
   // 戻るボタン
