@@ -3,7 +3,7 @@ import { firebaseAuth } from "../firebase/firebase-init.js";
 import {
   createUserWithEmailAndPassword,
   GoogleAuthProvider,
-  signInWithRedirect
+  signInWithPopup
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { ensureSupabaseAuth } from "../utils/supabaseAuthHelper.js";
 import { createInitialChordProgress } from "../utils/progressUtils.js";
@@ -76,12 +76,12 @@ export function renderSignUpScreen() {
     }
   });
 
-  // Googleサインアップ処理（リダイレクト方式）
+  // Googleサインアップ処理（ポップアップ方式）
   const googleBtn = container.querySelector("#google-signup");
   const googleProvider = new GoogleAuthProvider();
   googleBtn.addEventListener("click", () => {
     addDebugLog("click google-signup");
-    signInWithRedirect(firebaseAuth, googleProvider);
+    signInWithPopup(firebaseAuth, googleProvider);
   });
 
   // 戻るボタン
