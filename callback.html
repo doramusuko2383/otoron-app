@@ -10,7 +10,7 @@
   <pre id="debug-log" style="white-space: pre-wrap; color: red; font-size: 0.9em;"></pre>
   <script type="module">
     import { firebaseAuth } from './firebase/firebase-init.js';
-    import { getRedirectResult, onAuthStateChanged, fetchSignInMethodsForEmail, signOut } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+    import { getRedirectResult, fetchSignInMethodsForEmail, signOut } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
     import { ensureSupabaseAuth } from './utils/supabaseAuthHelper.js';
     import { createInitialChordProgress } from './utils/progressUtils.js';
     import { addDebugLog, showDebugLog } from './utils/loginDebug.js';
@@ -21,55 +21,48 @@
     addDebugLog('callback.html loaded');
     showDebugLog();
 
-    onAuthStateChanged(firebaseAuth, async (firebaseUser) => {
-      addDebugLog('onAuthStateChanged', firebaseUser ? { email: firebaseUser.email } : 'no user');
-      showDebugLog();
-      if (!firebaseUser) return;
-      try {
-        await firebaseUser.getIdToken();
-        const methods = await fetchSignInMethodsForEmail(firebaseAuth, firebaseUser.email);
-        if (methods.includes('password') && !methods.includes('google.com')) {
-          await signOut(firebaseAuth);
-          alert('このメールアドレスは既に通常のログインで使用されています。Googleログインはできません。');
-          addDebugLog('redirect: login exists');
-          showDebugLog();
-          if (!debugMode) window.location.href = '/';
-          return;
-        }
-        const { user, isNew } = await ensureSupabaseAuth(firebaseUser);
-        if (isNew) {
-          await createInitialChordProgress(user.id);
-          addDebugLog('redirect: register-thankyou');
-          showDebugLog();
-          if (!debugMode) window.location.href = '/register-thankyou.html';
-        } else {
-          addDebugLog('redirect: home');
-          showDebugLog();
-          if (!debugMode) window.location.href = '/';
-        }
-      } catch (e) {
-        console.error('auth flow error', e);
-        addDebugLog('auth flow error', e.message);
-        showDebugLog();
-        if (!debugMode) window.location.href = '/';
-      }
-    });
-
     try {
       const result = await getRedirectResult(firebaseAuth);
       addDebugLog('getRedirectResult', result ? 'has result' : 'null');
       showDebugLog();
+
       if (!result || !result.user) {
-        console.error('no redirect result');
-        addDebugLog('no redirect result');
+        addDebugLog('no redirect result or user');
         showDebugLog();
+        if (!debugMode) window.location.href = '/';
         return;
       }
-    } catch (e) {
-      console.error('redirect error', e);
-      addDebugLog('redirect error', e.message);
+
+      const firebaseUser = result.user;
+      addDebugLog('User from redirect result:', { email: firebaseUser.email, uid: firebaseUser.uid });
       showDebugLog();
-      return;
+
+      const methods = await fetchSignInMethodsForEmail(firebaseAuth, firebaseUser.email);
+      if (methods.includes('password') && !methods.includes('google.com')) {
+        await signOut(firebaseAuth);
+        alert('このメールアドレスは既に通常のログインで使用されています。Googleログインはできません。');
+        addDebugLog('redirect: login exists');
+        showDebugLog();
+        if (!debugMode) window.location.href = '/';
+        return;
+      }
+
+      const { user, isNew } = await ensureSupabaseAuth(firebaseUser);
+      if (isNew) {
+        await createInitialChordProgress(user.id);
+        addDebugLog('redirect: register-thankyou');
+        showDebugLog();
+        if (!debugMode) window.location.href = '/register-thankyou.html';
+      } else {
+        addDebugLog('redirect: home');
+        showDebugLog();
+        if (!debugMode) window.location.href = '/';
+      }
+    } catch (e) {
+      console.error('auth flow error', e);
+      addDebugLog('auth flow error', e.message);
+      showDebugLog();
+      if (!debugMode) window.location.href = '/';
     }
     })();
   </script>
