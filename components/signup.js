@@ -1,6 +1,10 @@
 import { switchScreen } from "../main.js";
 import { firebaseAuth } from "../firebase/firebase-init.js";
-import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {
+  createUserWithEmailAndPassword,
+  GoogleAuthProvider,
+  signInWithRedirect
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { ensureSupabaseAuth } from "../utils/supabaseAuthHelper.js";
 import { createInitialChordProgress } from "../utils/progressUtils.js";
 
@@ -73,8 +77,9 @@ export function renderSignUpScreen() {
 
   // Googleサインアップ処理（リダイレクト方式）
   const googleBtn = container.querySelector("#google-signup");
+  const googleProvider = new GoogleAuthProvider();
   googleBtn.addEventListener("click", () => {
-    window.location.href = "/callback.html";
+    signInWithRedirect(firebaseAuth, googleProvider);
   });
 
   // 戻るボタン

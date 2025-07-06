@@ -60,16 +60,16 @@
       addDebugLog('getRedirectResult', result ? 'has result' : 'null');
       showDebugLog();
       if (!result || !result.user) {
+        console.error('no redirect result');
         addDebugLog('no redirect result');
         showDebugLog();
-        if (!debugMode) window.location.href = '/';
         return;
       }
     } catch (e) {
       console.error('redirect error', e);
       addDebugLog('redirect error', e.message);
       showDebugLog();
-      if (!debugMode) window.location.href = '/';
+      return;
     }
     })();
   </script>
