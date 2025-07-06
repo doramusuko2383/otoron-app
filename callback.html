@@ -10,7 +10,7 @@
   <pre id="debug-log" style="white-space: pre-wrap; color: red; font-size: 0.9em;"></pre>
   <script type="module">
     import { firebaseAuth } from './firebase/firebase-init.js';
-    import { signInWithRedirect, getRedirectResult, GoogleAuthProvider, onAuthStateChanged, fetchSignInMethodsForEmail, signOut } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+    import { getRedirectResult, onAuthStateChanged, fetchSignInMethodsForEmail, signOut } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
     import { ensureSupabaseAuth } from './utils/supabaseAuthHelper.js';
     import { createInitialChordProgress } from './utils/progressUtils.js';
     import { addDebugLog, showDebugLog } from './utils/loginDebug.js';
@@ -18,8 +18,6 @@
     const debugMode = new URLSearchParams(window.location.search).get('debug') === '1';
     addDebugLog('callback.html loaded');
     showDebugLog();
-
-    const provider = new GoogleAuthProvider();
 
     onAuthStateChanged(firebaseAuth, async (firebaseUser) => {
       addDebugLog('onAuthStateChanged', firebaseUser ? { email: firebaseUser.email } : 'no user');
@@ -59,10 +57,11 @@
       const result = await getRedirectResult(firebaseAuth);
       addDebugLog('getRedirectResult', result ? 'has result' : 'null');
       showDebugLog();
-      if (!result) {
-        addDebugLog('signInWithRedirect');
+      if (!result || !result.user) {
+        addDebugLog('no redirect result');
         showDebugLog();
-        await signInWithRedirect(firebaseAuth, provider);
+        if (!debugMode) window.location.href = '/';
+        return;
       }
     } catch (e) {
       console.error('redirect error', e);
