@@ -1,6 +1,8 @@
 import { switchScreen } from "../main.js";
 import { firebaseAuth } from "../firebase/firebase-init.js";
 import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { ensureSupabaseAuth } from "../utils/supabaseAuthHelper.js";
+import { createInitialChordProgress } from "../utils/progressUtils.js";
 
 import { showCustomAlert } from "./home.js";
 
@@ -59,7 +61,11 @@ export function renderSignUpScreen() {
 
     try {
       await createUserWithEmailAndPassword(firebaseAuth, email, password);
-      showCustomAlert("登録が完了しました！");
+      const { user } = await ensureSupabaseAuth(firebaseAuth.currentUser);
+      if (user) {
+        await createInitialChordProgress(user.id);
+      }
+      window.location.href = "/register-thankyou.html";
     } catch (e) {
       showCustomAlert("登録エラー：" + e.message);
     }
