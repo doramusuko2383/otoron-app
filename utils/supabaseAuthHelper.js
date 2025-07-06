@@ -52,7 +52,7 @@ export async function ensureSupabaseAuth(firebaseUser) {
         [
           {
             firebase_uid: firebaseUser.uid,
-            name: firebaseUser.displayName || '名前未設定',
+            name: '名前未設定',
             email,
             trial_active: true,
             trial_end_date: trialEnd,

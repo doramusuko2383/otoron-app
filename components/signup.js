@@ -87,7 +87,7 @@ export function renderSignUpScreen() {
             .insert([
               {
                 firebase_uid: user.uid,
-                name: user.displayName || "名前未設定",
+                name: "名前未設定",
                 email: user.email,
               },
             ])
