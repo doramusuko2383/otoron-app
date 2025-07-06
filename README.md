@@ -92,8 +92,22 @@ Supabase へのサインインに失敗し `Custom OIDC provider "firebase" not 
 const firebaseUser = firebase.auth().currentUser;
 const dummyPassword = 'secure_dummy_password';
 
-await supabase.auth.signUp({ email: firebaseUser.email, password: dummyPassword });
-await supabase.auth.signInWithPassword({ email: firebaseUser.email, password: dummyPassword });
+let { error } = await supabase.auth.signInWithPassword({
+  email: firebaseUser.email,
+  password: dummyPassword,
+});
+if (error && error.message.includes('Invalid login credentials')) {
+  const { error: signUpError } = await supabase.auth.signUp({
+    email: firebaseUser.email,
+    password: dummyPassword,
+  });
+  if (!signUpError || signUpError.message.includes('User already registered')) {
+    ({ error } = await supabase.auth.signInWithPassword({
+      email: firebaseUser.email,
+      password: dummyPassword,
+    }));
+  }
+}
 ```
 
 古いコードを利用している場合は、`main.js` などを最新の内容に更新してください。
