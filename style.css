@@ -1142,6 +1142,13 @@ button:hover {
   color: #543014 !important;
 }
 
+/* Ensure modal text stays readable on the night theme */
+.app-root.night .modal,
+.app-root.night .modal-box,
+.app-root.night #help-modal .modal-content {
+  color: #543014;
+}
+
 .info-page h1 {
   font-family: var(--font-heading);
   text-align: center;
