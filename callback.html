@@ -15,6 +15,8 @@
     import { createInitialChordProgress } from './utils/progressUtils.js';
     import { addDebugLog, showDebugLog } from './utils/loginDebug.js';
 
+    (async () => {
+
     const debugMode = new URLSearchParams(window.location.search).get('debug') === '1';
     addDebugLog('callback.html loaded');
     showDebugLog();
@@ -69,6 +71,7 @@
       showDebugLog();
       if (!debugMode) window.location.href = '/';
     }
+    })();
   </script>
 </body>
 </html>
