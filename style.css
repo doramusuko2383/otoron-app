@@ -2318,7 +2318,7 @@ button:hover {
   flex-direction: column;
   gap: 0.6em;
   /* Keep all plan cards the same height */
-  min-height: 320px;
+  min-height: 224px;
 }
 
 .plan-card.recommended {

@@ -276,7 +276,7 @@ body.intro-scroll {
   .intro-pricing .plan-card {
     flex: 1 1 280px;
     max-width: 320px;
-    min-height: 320px;
+    min-height: 224px;
     box-sizing: border-box;
   }
 }
