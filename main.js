@@ -246,7 +246,7 @@ onAuthStateChanged(firebaseAuth, async (firebaseUser) => {
   }
 
   currentUser = user;
-  if (!user.name || user.name === "名前未設定") {
+  if (isNew || !user.name || user.name === "名前未設定") {
     switchScreen("setup", user, { showWelcome: isNew });
   } else {
     switchScreen("home", user, { showWelcome: isNew });
