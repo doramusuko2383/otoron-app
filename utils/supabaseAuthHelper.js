@@ -26,33 +26,40 @@ export async function ensureSupabaseAuth(firebaseUser) {
   };
 
   if (!existingUser) {
-    const { error: signUpError } = await supabase.auth.signUp({
-      email,
-      password: DUMMY_PASSWORD,
-    });
-    if (signUpError && !signUpError.message.includes('User already registered')) {
-      console.error('❌ Supabaseユーザー作成失敗:', signUpError.message);
-      throw signUpError;
-    }
-
-    const signInError = await signIn();
+    let signInError = await signIn();
     if (signInError) {
-      console.error('❌ Supabaseログイン失敗:', signInError.message);
-      throw signInError;
+      if (signInError.message.includes('Invalid login credentials')) {
+        const { error: signUpError } = await supabase.auth.signUp({
+          email,
+          password: DUMMY_PASSWORD,
+        });
+        if (signUpError && !signUpError.message.includes('User already registered')) {
+          console.error('❌ Supabaseユーザー作成失敗:', signUpError.message);
+          throw signUpError;
+        }
+        signInError = await signIn();
+      }
+      if (signInError) {
+        console.error('❌ Supabaseログイン失敗:', signInError.message);
+        throw signInError;
+      }
     }
 
     const trialEnd = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
     const { data: inserted, error: insertError } = await supabase
       .from('users')
-      .insert([
-        {
-          firebase_uid: firebaseUser.uid,
-          name: firebaseUser.displayName || '名前未設定',
-          email,
-          trial_active: true,
-          trial_end_date: trialEnd,
-        },
-      ])
+      .upsert(
+        [
+          {
+            firebase_uid: firebaseUser.uid,
+            name: firebaseUser.displayName || '名前未設定',
+            email,
+            trial_active: true,
+            trial_end_date: trialEnd,
+          },
+        ],
+        { onConflict: 'firebase_uid' }
+      )
       .select()
       .maybeSingle();
 
