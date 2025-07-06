@@ -243,13 +243,15 @@ onAuthStateChanged(firebaseAuth, async (firebaseUser) => {
 
   if (isNew) {
     await createInitialChordProgress(user.id);
+    window.location.href = "/register-thankyou.html";
+    return;
   }
 
   currentUser = user;
-  if (isNew || !user.name || user.name === "名前未設定") {
-    switchScreen("setup", user, { showWelcome: isNew });
+  if (!user.name || user.name === "名前未設定") {
+    switchScreen("setup", user, { showWelcome: false });
   } else {
-    switchScreen("home", user, { showWelcome: isNew });
+    switchScreen("home", user, { showWelcome: false });
   }
 });
 
