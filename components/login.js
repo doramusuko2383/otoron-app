@@ -1,9 +1,6 @@
 import {
   signInWithEmailAndPassword,
-  GoogleAuthProvider,
-  signInWithPopup,
-  fetchSignInMethodsForEmail,
-  signOut
+  fetchSignInMethodsForEmail
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 import { firebaseAuth } from "../firebase/firebase-init.js";
@@ -154,33 +151,9 @@ export function renderLoginScreen(container, onLoginSuccess) {
     }
   });
 
-  // Googleログイン処理
-  container.querySelector("#google-login").addEventListener("click", async () => {
-    const provider = new GoogleAuthProvider();
-    try {
-      const result = await signInWithPopup(firebaseAuth, provider);
-      const user = result.user;
-      const methods = await fetchSignInMethodsForEmail(firebaseAuth, user.email);
-      if (methods.includes('password') && !methods.includes('google.com')) {
-        await signOut(firebaseAuth);
-        showCustomAlert('このメールアドレスは既に通常のログインで使用されています。Googleログインはできません。');
-        return;
-      }
-      try {
-        await ensureSupabaseAuth(user);
-      } catch (e) {
-        console.error("❌ Supabaseサインイン処理でエラー:", e);
-        return;
-      }
-      await ensureUserAndProgress(user);
-      onLoginSuccess();
-    } catch (err) {
-      if (err.code === 'auth/account-exists-with-different-credential') {
-        showCustomAlert('このメールアドレスは既に通常のログインで使用されています。Googleログインはできません。');
-      } else {
-        showCustomAlert("Googleログイン失敗：" + err.message);
-      }
-    }
+  // Googleログイン処理（リダイレクト方式）
+  container.querySelector("#google-login").addEventListener("click", () => {
+    window.location.href = "/callback.html";
   });
 
   // 戻るボタン
