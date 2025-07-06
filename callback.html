@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>Googleログイン処理中</title>
+  <meta name="robots" content="noindex">
+</head>
+<body>
+  <p>ログイン処理中です...</p>
+  <script type="module">
+    import { firebaseAuth } from './firebase/firebase-init.js';
+    import { signInWithRedirect, getRedirectResult, GoogleAuthProvider, onAuthStateChanged, fetchSignInMethodsForEmail, signOut } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+    import { ensureSupabaseAuth } from './utils/supabaseAuthHelper.js';
+    import { createInitialChordProgress } from './utils/progressUtils.js';
+
+    const provider = new GoogleAuthProvider();
+
+    onAuthStateChanged(firebaseAuth, async (firebaseUser) => {
+      if (!firebaseUser) return;
+      try {
+        await firebaseUser.getIdToken();
+        const methods = await fetchSignInMethodsForEmail(firebaseAuth, firebaseUser.email);
+        if (methods.includes('password') && !methods.includes('google.com')) {
+          await signOut(firebaseAuth);
+          alert('このメールアドレスは既に通常のログインで使用されています。Googleログインはできません。');
+          window.location.href = '/';
+          return;
+        }
+        const { user, isNew } = await ensureSupabaseAuth(firebaseUser);
+        if (isNew) {
+          await createInitialChordProgress(user.id);
+          window.location.href = '/register-thankyou.html';
+        } else {
+          window.location.href = '/';
+        }
+      } catch (e) {
+        console.error('auth flow error', e);
+        window.location.href = '/';
+      }
+    });
+
+    try {
+      const result = await getRedirectResult(firebaseAuth);
+      if (!result) {
+        await signInWithRedirect(firebaseAuth, provider);
+      }
+    } catch (e) {
+      console.error('redirect error', e);
+      window.location.href = '/';
+    }
+  </script>
+</body>
+</html>

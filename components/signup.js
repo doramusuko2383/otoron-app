@@ -1,8 +1,7 @@
 import { switchScreen } from "../main.js";
 import { firebaseAuth } from "../firebase/firebase-init.js";
-import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { supabase } from "../utils/supabaseClient.js";
-import { createInitialChordProgress } from "../utils/progressUtils.js";
+import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
 import { showCustomAlert } from "./home.js";
 
 export function renderSignUpScreen() {
@@ -66,55 +65,10 @@ export function renderSignUpScreen() {
     }
   });
 
-  // Googleサインアップ処理
+  // Googleサインアップ処理（リダイレクト方式）
   const googleBtn = container.querySelector("#google-signup");
-  googleBtn.addEventListener("click", async () => {
-    const provider = new GoogleAuthProvider();
-    try {
-      const result = await signInWithPopup(firebaseAuth, provider);
-      const user = result.user;
-      const { data: existingUser, error } = await supabase
-        .from("users")
-        .select("*")
-        .eq("firebase_uid", user.uid)
-        .maybeSingle();
-
-      let userId = existingUser?.id;
-
-        if (!existingUser) {
-          const { data: inserted, error: insertError } = await supabase
-            .from("users")
-            .insert([
-              {
-                firebase_uid: user.uid,
-                name: "名前未設定",
-                email: user.email,
-              },
-            ])
-            .select()
-            .maybeSingle();
-
-        if (insertError || !inserted) {
-          console.error("❌ Supabaseユーザー登録失敗:", insertError);
-        } else {
-          userId = inserted.id;
-        }
-      }
-
-      if (userId) {
-        const { data: progress, error: progressError } = await supabase
-          .from("user_chord_progress")
-          .select("id")
-          .eq("user_id", userId)
-          .limit(1);
-
-        if (!progressError && (!progress || progress.length === 0)) {
-          await createInitialChordProgress(userId);
-        }
-      }
-    } catch (err) {
-      showCustomAlert("Google登録失敗：" + err.message);
-    }
+  googleBtn.addEventListener("click", () => {
+    window.location.href = "/callback.html";
   });
 
   // 戻るボタン
