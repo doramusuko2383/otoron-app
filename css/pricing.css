@@ -33,6 +33,8 @@
   display: flex;
   flex-direction: column;
   gap: 0.6em;
+  /* Keep all plan cards the same height */
+  min-height: 320px;
 }
 
 .plan-card.recommended {
