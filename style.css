@@ -1490,6 +1490,8 @@ button:hover {
   display: block;
   margin-left: auto;
   margin-right: auto;
+  white-space: nowrap; /* prevent unwanted wrapping on small screens */
+  word-break: keep-all; /* respect explicit <br> only */
 }
 
 @media (max-width: 767px) {

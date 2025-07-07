@@ -203,6 +203,8 @@ body.intro-scroll {
   display: block;
   margin-left: auto;
   margin-right: auto;
+  white-space: nowrap; /* prevent wrapping so text stays on two lines */
+  word-break: keep-all;
 }
 
 .cta-button:hover {
