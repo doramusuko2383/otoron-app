@@ -26,7 +26,7 @@ export function renderIntroScreen() {
 
           <p class="hero-highlight">＼遊びながら“聴く力”が<span class="accent">伸びる！</span>／</p>
           <img class="mato-image" src="images/otolon.webp" alt="まとオトロン" />
-          <button id="hero-cta" class="cta-button">今すぐ無料体験をはじめる！</button>
+          <button id="hero-cta" class="cta-button">今すぐ無料体験を<br>はじめる！</button>
         </div>
         <div class="hero-image"></div>
       </div>
