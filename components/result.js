@@ -11,7 +11,11 @@ import { kanaToHiragana, noteLabels } from "../utils/noteUtils.js";
 let resultShownInThisSession = false;
 
 function labelNote(n) {
-  const pitch = n ? n.replace(/\d/g, '') : '';
+  if (!n) return '';
+  const pitch = n
+    .replace(/[0-9-]/g, '')
+    .replace('♭', 'b')
+    .replace('♯', '#');
   return noteLabels[pitch] || n;
 }
 
