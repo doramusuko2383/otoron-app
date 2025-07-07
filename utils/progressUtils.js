@@ -34,33 +34,53 @@ export async function applyStartChordIndex(userId, startIndex) {
     return;
   }
   const chordKeys = chords.map((c) => c.key);
+
+  if (startIndex < 0 || startIndex >= chordKeys.length) {
+    console.warn(
+      `applyStartChordIndex: startIndex out of range (${startIndex})`
+    );
+    startIndex = Math.max(0, Math.min(startIndex, chordKeys.length - 1));
+  }
+
   const completed = chordKeys.slice(0, startIndex);
   const current = chordKeys[startIndex];
   const locked = chordKeys.slice(startIndex + 1);
   const today = new Date().toISOString().split("T")[0];
 
+  const updates = [];
+
   if (completed.length > 0) {
-    await supabase
-      .from("user_chord_progress")
-      .update({ status: "completed", unlocked_date: null })
-      .eq("user_id", userId)
-      .in("chord_key", completed);
+    updates.push(
+      supabase
+        .from("user_chord_progress")
+        .update({ status: "completed", unlocked_date: null })
+        .eq("user_id", userId)
+        .in("chord_key", completed)
+    );
   }
 
-  if (current) {
-    await supabase
+  updates.push(
+    supabase
       .from("user_chord_progress")
       .update({ status: "in_progress", unlocked_date: today })
       .eq("user_id", userId)
-      .eq("chord_key", current);
-  }
+      .eq("chord_key", current)
+  );
 
   if (locked.length > 0) {
-    await supabase
-      .from("user_chord_progress")
-      .update({ status: "locked", unlocked_date: null })
-      .eq("user_id", userId)
-      .in("chord_key", locked);
+    updates.push(
+      supabase
+        .from("user_chord_progress")
+        .update({ status: "locked", unlocked_date: null })
+        .eq("user_id", userId)
+        .in("chord_key", locked)
+    );
+  }
+
+  const results = await Promise.all(updates);
+  const error = results.find((r) => r.error)?.error;
+  if (error) {
+    console.error("❌ applyStartChordIndex update failed:", error);
   }
 }
 
