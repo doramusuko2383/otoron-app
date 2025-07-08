@@ -1,9 +1,16 @@
 import { renderHeader } from './header.js';
 import { startCheckout } from '../utils/stripeCheckout.js';
+import { showToast } from '../utils/toast.js';
 export function renderPricingScreen(user) {
   const app = document.getElementById('app');
   app.innerHTML = '';
   renderHeader(app, user);
+
+  const cancelFlag = localStorage.getItem('showCancelToast');
+  if (cancelFlag) {
+    showToast('決済がキャンセルされました');
+    localStorage.removeItem('showCancelToast');
+  }
 
   const main = document.createElement('main');
   main.className = 'pricing-page';
