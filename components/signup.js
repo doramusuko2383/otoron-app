@@ -27,7 +27,7 @@ export function renderSignUpScreen() {
       <label for="signup-password">パスワード（6文字以上）</label>
       <div class="password-wrapper">
         <input type="password" id="signup-password" required />
-        <img src="images/Visibility_off.svg" class="toggle-password" alt="表示切替" />
+        <img src="images/Visibility_off.svg" class="toggle-password" alt="絶対音感トレーニングアプリ『オトロン』パスワード表示切り替えアイコン" />
       </div>
 
       <button type="submit" class="signup-button">アカウントを作成</button>

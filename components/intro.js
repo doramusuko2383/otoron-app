@@ -25,14 +25,14 @@ export function renderIntroScreen() {
           <p class="note">※ 推奨年齢：2歳半〜6歳</p>
 
           <p class="hero-highlight">＼遊びながら“聴く力”が<span class="accent">伸びる！</span>／</p>
-          <img class="mato-image" src="images/otolon.webp" alt="まとオトロン" />
+          <img class="mato-image" src="images/otolon.webp" alt="絶対音感トレーニングアプリ『オトロン』のキャラクター「まとオトロン」" />
           <button id="hero-cta" class="cta-button">今すぐ無料体験を<br>はじめる！</button>
         </div>
         <div class="hero-image"></div>
       </div>
       <div class="app-header intro-header">
         <button class="home-icon" id="intro-home-btn">
-          <img src="images/otolon_face.webp" alt="トップへ" />
+          <img src="images/otolon_face.webp" alt="絶対音感トレーニングアプリ『オトロン』トップへ戻るボタン" />
         </button>
         <div class="header-right">
           <div class="info-menu">
@@ -273,10 +273,10 @@ export function renderIntroScreen() {
         <button id="footer-cta" class="cta-button">気になる方は「オトロン」の無料体験へ！</button>
         <div class="social-links">
           <a href="https://x.com/otoron_onkanDev" target="_blank" rel="noopener">
-            <img src="images/x-logo.png" alt="Xのロゴ" />
+            <img src="images/x-logo.png" alt="絶対音感トレーニングアプリ『オトロン』公式Xへのリンク" />
           </a>
           <a href="https://note.com/otoron" target="_blank" rel="noopener">
-            <img src="images/note-logo.png" alt="noteのロゴ" />
+            <img src="images/note-logo.png" alt="絶対音感トレーニングアプリ『オトロン』公式noteへのリンク" />
           </a>
         </div>
         <p>&copy; 2024 Otoron</p>

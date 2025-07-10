@@ -8,7 +8,7 @@ export function renderIntroHeader(container) {
   header.className = "app-header intro-header";
   header.innerHTML = `
     <button class="home-icon" id="intro-home-btn">
-      <img src="images/otolon_face.webp" alt="トップへ" />
+      <img src="images/otolon_face.webp" alt="絶対音感トレーニングアプリ『オトロン』トップへ戻るボタン" />
     </button>
     <div class="header-right">
       <div class="info-menu">
