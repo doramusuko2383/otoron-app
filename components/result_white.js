@@ -8,10 +8,10 @@ export function renderTrainingWhiteResultScreen(user) {
   app.innerHTML = `
     <h2>単音テスト（白鍵のみ）結果</h2>
     <div class="score-wrapper">
-      <img id="score-image" class="score-image" />
+      <img id="score-image" class="score-image" alt="絶対音感トレーニングアプリ『オトロン』単音テスト結果の画像" />
     </div>
     <div id="score-modal" class="modal hidden">
-      <img id="full-score-image" />
+      <img id="full-score-image" alt="絶対音感トレーニングアプリ『オトロン』単音テスト全スコアの画像" />
     </div>
     <div id="summary"></div>
     <button id="back-btn">設定に戻る</button>`;

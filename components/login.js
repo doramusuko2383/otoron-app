@@ -21,7 +21,7 @@ export function renderLoginScreen(container, onLoginSuccess) {
         <input type="email" id="email" placeholder="メールアドレス" required />
         <div class="password-wrapper">
           <input type="password" id="password" placeholder="パスワード" required />
-          <img src="images/Visibility_off.svg" class="toggle-password" alt="表示切替" />
+          <img src="images/Visibility_off.svg" class="toggle-password" alt="絶対音感トレーニングアプリ『オトロン』パスワード表示切り替えアイコン" />
         </div>
         <button type="submit">ログイン</button>
       </form>
