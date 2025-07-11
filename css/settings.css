@@ -298,6 +298,9 @@
   gap: 6px;
   margin: 0.5em 1em;
 }
+.single-note-select-wrap span {
+  white-space: nowrap;
+}
 .single-note-select-wrap select {
   padding: 6px 12px;
 }
@@ -369,6 +372,7 @@
 
 .toggle-label {
   font-weight: bold;
+  white-space: nowrap;
 }
 
 /* 温かみのある背景 */

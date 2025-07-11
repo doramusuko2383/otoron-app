@@ -3004,12 +3004,19 @@ button:hover {
 .toggle-input:checked + .toggle-slider::before {
   transform: translateX(20px);
 }
+.toggle-label {
+  white-space: nowrap;
+  font-weight: bold;
+}
 
 .single-note-select-wrap {
   display: flex;
   align-items: center;
   gap: 6px;
   margin: 0.5em 1em;
+}
+.single-note-select-wrap span {
+  white-space: nowrap;
 }
 .single-note-select-wrap select {
   padding: 6px 12px;
