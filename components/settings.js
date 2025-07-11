@@ -172,17 +172,22 @@ export async function renderSettingsScreen(user) {
   controlBar.className = 'settings-controls';
   controlBar.appendChild(titleLine);
 
+  const cardRow = document.createElement('div');
+  cardRow.className = 'settings-card-row';
+
   const singleCard = document.createElement('div');
   singleCard.className = 'settings-card';
   singleCard.appendChild(singleWrap);
   singleCard.appendChild(singleSelectWrap);
-  controlBar.appendChild(singleCard);
+  cardRow.appendChild(singleCard);
 
   const bulkCard = document.createElement('div');
   bulkCard.className = 'settings-card';
   bulkCard.appendChild(resetBtn);
   bulkCard.appendChild(bulkDropdown);
-  controlBar.appendChild(bulkCard);
+  cardRow.appendChild(bulkCard);
+
+  controlBar.appendChild(cardRow);
 
   headerBar.appendChild(controlBar);
   container.appendChild(headerBar);

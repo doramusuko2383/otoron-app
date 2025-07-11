@@ -306,6 +306,12 @@
 }
 
 /* 縦型の設定カード */
+.settings-card-row {
+  display: flex;
+  justify-content: center;
+  gap: 0.75em;
+}
+
 .settings-card {
   background: #fff;
   border-radius: 12px;
@@ -315,11 +321,18 @@
   flex-direction: column;
   align-items: center;
   gap: 0.5em;
-  width: 180px;
+  width: 150px;
+  min-height: 100px;
+  font-size: 0.9em;
   box-sizing: border-box;
 }
 .settings-card > * {
   width: 100%;
+}
+.settings-card button,
+.settings-card select {
+  font-size: 0.9em;
+  font-weight: normal;
 }
 
 /* その他のトレーニング */
@@ -371,8 +384,9 @@
 }
 
 .toggle-label {
-  font-weight: bold;
+  font-weight: normal;
   white-space: nowrap;
+  font-size: 0.9em;
 }
 
 /* 温かみのある背景 */
