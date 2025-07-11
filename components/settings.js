@@ -148,14 +148,14 @@ export async function renderSettingsScreen(user) {
   singleWrap.appendChild(singleToggle);
   const singleLabel = document.createElement('span');
   singleLabel.className = 'toggle-label';
-  singleLabel.innerHTML = '🎵 単音分化機能';
+  singleLabel.innerHTML = '単音分化機能';
   singleWrap.appendChild(singleLabel);
   singleWrap.appendChild(slider);
 
   const singleSelectWrap = document.createElement('div');
   singleSelectWrap.className = 'single-note-select-wrap';
   const singleSelectLabel = document.createElement('span');
-  singleSelectLabel.textContent = '出題音:';
+  singleSelectLabel.textContent = '出題音';
   const singleSelect = document.createElement('select');
   singleSelect.innerHTML = `
     <option value="random">ランダム</option>
