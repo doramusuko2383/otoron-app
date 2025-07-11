@@ -3015,6 +3015,23 @@ button:hover {
   padding: 6px 12px;
 }
 
+/* 縦型の設定カード */
+.settings-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5em;
+  width: 180px;
+  box-sizing: border-box;
+}
+.settings-card > * {
+  width: 100%;
+}
+
 /* その他のトレーニング */
 .other-training {
   background: white;
