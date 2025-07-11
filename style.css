@@ -3040,7 +3040,8 @@ button:hover {
   align-items: center;
   justify-content: center;
   gap: 0.5em;
-  width: 150px;
+  flex: 1 1 280px;
+  max-width: 280px;
   min-height: 100px;
   font-size: 0.9em;
   box-sizing: border-box;
@@ -3151,6 +3152,13 @@ button:hover {
     background: transparent;
     box-shadow: none;
     border-radius: 0;
+  }
+  .settings-card-row {
+    width: 100%;
+  }
+  .settings-card {
+    flex-basis: 100%;
+    max-width: 100%;
   }
 }
 
