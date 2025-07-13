@@ -141,7 +141,11 @@ export async function renderTrainingScreen(user) {
   if (!questionQueue.length) {
     questionQueue = createQuestionQueue();
   }
-  nextQuestion(); // ✅ 出題開始！
+  // 初回は1秒待ってから出題を開始
+  showFeedback("はじめるよ", "good");
+  setTimeout(() => {
+    nextQuestion(); // ✅ 出題開始！
+  }, 1000);
 }
 
 async function nextQuestion() {

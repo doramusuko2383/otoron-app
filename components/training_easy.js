@@ -83,7 +83,11 @@ export function renderTrainingScreen(user) {
   isForcedAnswer = false;
   firstMistakeInSession.flag = false;
   questionQueue = createQuestionQueue();
-  nextQuestion();
+  // 初回は1秒待ってから出題を開始
+  showFeedback("はじめるよ", "good");
+  setTimeout(() => {
+    nextQuestion();
+  }, 1000);
 }
 
 async function nextQuestion() {

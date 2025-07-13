@@ -152,5 +152,13 @@ export async function renderTrainingScreen(user) {
     });
   }
 
-  nextQuestion();
+  // 最初は1秒待ってからスタート
+  isSoundPlaying = true;
+  setInteraction(false);
+  const fb = document.getElementById("feedback");
+  if (fb) fb.textContent = "はじめるよ";
+  setTimeout(() => {
+    if (fb) fb.textContent = "";
+    nextQuestion();
+  }, 1000);
 }
