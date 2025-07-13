@@ -140,17 +140,20 @@ function drawQuizScreen() {
   container.style.maxWidth = "100%";
   container.style.overflow = "hidden";
 
-  const feedback = document.createElement("div");
-  feedback.id = "feedback";
-  feedback.className = "";
-  feedback.style.position = "fixed";
-  feedback.style.top = "40%";
-  feedback.style.left = "0";
-  feedback.style.right = "0";
-  feedback.style.textAlign = "center";
-  feedback.style.fontSize = "3em";
-  feedback.style.fontWeight = "bold";
-  feedback.style.zIndex = "999";
+  let feedback = document.getElementById("feedback");
+  if (!feedback) {
+    feedback = document.createElement("div");
+    feedback.id = "feedback";
+    feedback.className = "";
+    feedback.style.position = "fixed";
+    feedback.style.top = "40%";
+    feedback.style.left = "0";
+    feedback.style.right = "0";
+    feedback.style.textAlign = "center";
+    feedback.style.fontSize = "3em";
+    feedback.style.fontWeight = "bold";
+    feedback.style.zIndex = "999";
+  }
   feedback.style.display = "none";
   container.appendChild(feedback);
 
@@ -336,8 +339,22 @@ async function playChordFile(filename) {
 
 let feedbackTimeoutId;
 function showFeedback(message, type = "good", duration = 1000) {
-  const fb = document.getElementById("feedback");
-  if (!fb) return;
+  let fb = document.getElementById("feedback");
+  if (!fb) {
+    const app = document.getElementById("app");
+    if (!app) return;
+    fb = document.createElement("div");
+    fb.id = "feedback";
+    fb.style.position = "fixed";
+    fb.style.top = "40%";
+    fb.style.left = "0";
+    fb.style.right = "0";
+    fb.style.textAlign = "center";
+    fb.style.fontSize = "3em";
+    fb.style.fontWeight = "bold";
+    fb.style.zIndex = "999";
+    app.appendChild(fb);
+  }
 
   if (feedbackTimeoutId) {
     clearTimeout(feedbackTimeoutId);
