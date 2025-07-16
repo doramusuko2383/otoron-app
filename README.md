@@ -112,3 +112,29 @@ if (error && error.message.includes('Invalid login credentials')) {
 
 古いコードを利用している場合は、`main.js` などを最新の内容に更新してください。
 
+
+## Stripe Event Deduplication
+
+Webhook events from Stripe can occasionally be delivered more than once. A small
+`stripe_events` table is used to track processed event IDs and ignore
+subsequent duplicates.
+
+```sql
+-- sql/create_stripe_events.sql
+create table if not exists stripe_events (
+  event_id text primary key,
+  received_at timestamp with time zone default current_timestamp
+);
+```
+
+Applying this schema ensures each event is recorded only once. To further guard
+against manual insertion errors, add a uniqueness constraint to
+`user_subscriptions`:
+
+```sql
+-- sql/user_subscriptions_unique.sql
+alter table user_subscriptions
+  add constraint user_subscriptions_user_started_at_key unique (user_id, started_at);
+```
+
+Run these SQL snippets in Supabase before deploying the webhook.
