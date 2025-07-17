@@ -84,6 +84,12 @@ npm run reset-expired-premiums
 
 このスクリプトは日次ジョブ等で実行してください。
 
+和音進捗の欠損を補う `scripts/fixChordProgress.js` も用意しています。
+
+```bash
+npm run fix-chord-progress
+```
+
 ## Troubleshooting
 
 Supabase へのサインインに失敗し `Custom OIDC provider "firebase" not allowed` と表示される場合は、過去のコードを利用している可能性があります。現在の実装では Firebase ユーザーのメールアドレスを用いて次のようにダミーパスワードでサインアップ・サインインする方式に切り替えています。

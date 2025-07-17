@@ -9,7 +9,8 @@
     "micro": "^9.3.4"
   },
   "scripts": {
-    "reset-expired-premiums": "node scripts/resetExpiredPremiums.js"
+    "reset-expired-premiums": "node scripts/resetExpiredPremiums.js",
+    "fix-chord-progress": "node scripts/fixChordProgress.js"
   }
 }
 
