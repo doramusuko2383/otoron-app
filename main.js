@@ -19,7 +19,7 @@ import { renderInitialSetupScreen } from "./components/initialSetup.js";
 import { supabase } from "./utils/supabaseClient.js";
 import { ensureSupabaseAuth } from "./utils/supabaseAuthHelper.js";
 import { getLockType } from "./utils/accessControl.js";
-import { createInitialChordProgress } from "./utils/progressUtils.js";
+import { ensureChordProgress } from "./utils/progressUtils.js";
 import { loadTrainingRecords } from "./utils/recordStore_supabase.js";
 import { getToday } from "./utils/growthUtils.js";
 import { showCustomAlert } from "./components/home.js";
@@ -236,6 +236,8 @@ onAuthStateChanged(firebaseAuth, async (firebaseUser) => {
   }
   const { user, isNew } = authResult;
 
+  await ensureChordProgress(user.id);
+
   const lockType = getLockType(user);
   if (lockType) {
     switchScreen("lock", user, { lockType });
@@ -243,7 +245,6 @@ onAuthStateChanged(firebaseAuth, async (firebaseUser) => {
   }
 
   if (isNew) {
-    await createInitialChordProgress(user.id);
     window.location.href = "/register-thankyou.html";
     return;
   }

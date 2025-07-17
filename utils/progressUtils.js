@@ -247,3 +247,26 @@ export async function resetProgressAndUnlock(userId, startIndex) {
 
   return true;
 }
+
+// ✅ ユーザーの和音進捗が存在するか確認し、なければ初期データを作成
+export async function ensureChordProgress(userId) {
+  if (!userId) {
+    console.warn("ensureChordProgress called without valid user ID");
+    return;
+  }
+
+  const { data, error } = await supabase
+    .from("user_chord_progress")
+    .select("id")
+    .eq("user_id", userId)
+    .limit(1);
+
+  if (error) {
+    console.error("❌ ensureChordProgress query failed:", error);
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    await createInitialChordProgress(userId);
+  }
+}

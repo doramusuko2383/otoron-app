@@ -10,7 +10,7 @@ import { switchScreen } from "../main.js";
 import { addDebugLog } from "../utils/loginDebug.js";
 import { supabase } from "../utils/supabaseClient.js";
 import { ensureSupabaseAuth } from "../utils/supabaseAuthHelper.js";
-import { chords } from "../data/chords.js";
+import { ensureChordProgress } from "../utils/progressUtils.js";
 import { showCustomAlert } from "./home.js";
 
 export function renderLoginScreen(container, onLoginSuccess) {
@@ -96,31 +96,7 @@ export function renderLoginScreen(container, onLoginSuccess) {
       
     }
   
-    // user_chord_progress にすでにデータがあるか確認
-    const { data: progress } = await supabase
-      .from("user_chord_progress")
-      .select("id")
-      .eq("user_id", userId)
-      .limit(1);
-  
-    if (!progress || progress.length === 0) {
-      const chordKeys = chords.map(ch => ch.key);
-      const insertData = chordKeys.map((key, index) => ({
-        user_id: userId,
-        chord_key: key,
-        status: index === 0 ? "in_progress" : "locked"
-      }));
-  
-      const { error } = await supabase
-        .from("user_chord_progress")
-        .insert(insertData);
-  
-      if (error) {
-        console.error("❌ 和音進捗の初期登録失敗:", error);
-      } else {
-        
-      }
-    }
+    await ensureChordProgress(userId);
   }
   
 
