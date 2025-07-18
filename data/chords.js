@@ -2,8 +2,8 @@ export const chords = [
   // 白鍵（基本形9和音・色つき）
   { name: "C-E-G", key: "aka", label: "赤", labelHiragana: "あか", labelHtml: "あか", file: "chord_01_aka_root.mp3", type: "white", colorClass: "aka", soundKey: "aka", notes: ["C3", "E3", "G3"], italian: ["ド", "ミ", "ソ"] },
   { name: "C-F-A", key: "kiiro", label: "黄色", labelHiragana: "きいろ", labelHtml: "きいろ", file: "chord_02_kiiro_root.mp3", type: "white", colorClass: "kiiro", soundKey: "kiiro", notes: ["C3", "F3", "A3"], italian: ["ド", "ファ", "ラ"] },
-  { name: "B-D-G", key: "ao", label: "青", labelHiragana: "あお", labelHtml: "あお", file: "chord_03_ao_root.mp3", type: "white", colorClass: "ao", soundKey: "ao", notes: ["B3", "D3", "G3"], italian: ["シ", "レ", "ソ"] },
-  { name: "A-C-F", key: "kuro", label: "黒", labelHiragana: "くろ", labelHtml: "くろ", file: "chord_04_kuro_root.mp3", type: "white", colorClass: "kuro", soundKey: "kuro", notes: ["A3", "C3", "F3"], italian: ["ラ", "ド", "ファ"] },
+  { name: "B-D-G", key: "ao", label: "青", labelHiragana: "あお", labelHtml: "あお", file: "chord_03_ao_root.mp3", type: "white", colorClass: "ao", soundKey: "ao", notes: ["B2", "D3", "G3"], italian: ["シ", "レ", "ソ"] },
+  { name: "A-C-F", key: "kuro", label: "黒", labelHiragana: "くろ", labelHtml: "くろ", file: "chord_04_kuro_root.mp3", type: "white", colorClass: "kuro", soundKey: "kuro", notes: ["A2", "C3", "F3"], italian: ["ラ", "ド", "ファ"] },
   { name: "D-G-B", key: "midori", label: "緑", labelHiragana: "みどり", labelHtml: "みどり", file: "chord_05_midori_root.mp3", type: "white", colorClass: "midori", soundKey: "midori", notes: ["D3", "G3", "B3"], italian: ["レ", "ソ", "シ"] },
   { name: "E-G-C", key: "orange", label: "オレンジ", labelHiragana: "おれんじ", labelHtml: "おれんじ", file: "chord_06_orange_root.mp3", type: "white", colorClass: "orange", soundKey: "orange", notes: ["E3", "G3", "C4"], italian: ["ミ", "ソ", "ド"] },
   { name: "F-A-C", key: "murasaki", label: "紫", labelHiragana: "むらさき", labelHtml: "むらさき", file: "chord_07_murasaki_root.mp3", type: "white", colorClass: "murasaki", soundKey: "murasaki", notes: ["F3", "A3", "C4"], italian: ["ファ", "ラ", "ド"] },
