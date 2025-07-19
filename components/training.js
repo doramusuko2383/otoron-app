@@ -321,7 +321,7 @@ function drawQuizScreen() {
       const inner = document.createElement("div");
       inner.className = `square-btn-content ${only.colorClass}`;
       inner.innerHTML = chordProgressCount >= 10 && only.italian
-        ? only.italian.map(kanaToHiragana).join("<br>")
+        ? only.italian.map(kanaToHiragana).join("")
         : only.labelHtml;
       inner.setAttribute("data-name", only.name);
       inner.style.pointerEvents = "auto";
@@ -359,7 +359,7 @@ function drawQuizScreen() {
       const inner = document.createElement("div");
       inner.className = `square-btn-content ${chord.colorClass}`;
       if (chordProgressCount >= 10 && chord.italian) {
-        inner.innerHTML = chord.italian.map(kanaToHiragana).join("<br>");
+        inner.innerHTML = chord.italian.map(kanaToHiragana).join("");
       } else {
         inner.innerHTML = chord.labelHtml;
       }
