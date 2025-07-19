@@ -187,6 +187,44 @@ export async function renderSettingsScreen(user) {
   bulkCard.appendChild(bulkDropdown);
   cardRow.appendChild(bulkCard);
 
+  const modeCard = document.createElement('div');
+  modeCard.className = 'settings-card';
+  const modeLabel = document.createElement('div');
+  modeLabel.textContent = '表示モード';
+  const modeWrap = document.createElement('div');
+  modeWrap.className = 'display-mode-toggle';
+  const noteBtn = document.createElement('button');
+  noteBtn.textContent = '音名';
+  const colorBtn = document.createElement('button');
+  colorBtn.textContent = '色名';
+  function updateModeButtons(mode) {
+    if (mode === 'note') {
+      noteBtn.classList.add('active');
+      colorBtn.classList.remove('active');
+    } else {
+      noteBtn.classList.remove('active');
+      colorBtn.classList.add('active');
+    }
+  }
+  let savedMode = localStorage.getItem('displayMode');
+  if (!savedMode) {
+    savedMode = unlockedKeys.length >= 10 ? 'note' : 'color';
+  }
+  updateModeButtons(savedMode);
+  noteBtn.onclick = () => {
+    localStorage.setItem('displayMode', 'note');
+    updateModeButtons('note');
+  };
+  colorBtn.onclick = () => {
+    localStorage.setItem('displayMode', 'color');
+    updateModeButtons('color');
+  };
+  modeWrap.appendChild(noteBtn);
+  modeWrap.appendChild(colorBtn);
+  modeCard.appendChild(modeLabel);
+  modeCard.appendChild(modeWrap);
+  cardRow.appendChild(modeCard);
+
   controlBar.appendChild(cardRow);
 
   headerBar.appendChild(controlBar);
