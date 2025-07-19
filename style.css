@@ -3024,6 +3024,26 @@ button:hover {
   padding: 6px 4px;
 }
 
+.display-mode-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0.5em 0;
+}
+
+.mode-btn {
+  padding: 4px 8px;
+  border: 1px solid #ccc;
+  background: #f5f5f5;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.mode-btn.active {
+  background: var(--color-primary);
+  color: #fff;
+}
+
 /* 縦型の設定カード */
 .settings-card-row {
   display: flex;

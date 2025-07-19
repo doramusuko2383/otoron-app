@@ -5,6 +5,7 @@ import { switchScreen, openHelp } from "../main.js";
 import { supabase } from "../utils/supabaseClient.js";
 import { chords, chordOrder } from "../data/chords.js";
 import { generateRecommendedQueue } from "../utils/growthUtils.js"; // use queue util
+import { getDisplayMode, setDisplayMode } from "../utils/displayMode.js";
 import { showCustomConfirm } from "./home.js";
 
 export let selectedChords = [];
@@ -168,6 +169,30 @@ export async function renderSettingsScreen(user) {
   singleSelectWrap.appendChild(singleSelectLabel);
   singleSelectWrap.appendChild(singleSelect);
 
+  const modeWrap = document.createElement('div');
+  modeWrap.className = 'display-mode-wrap';
+  const modeLabel = document.createElement('span');
+  modeLabel.textContent = '表示モード:';
+  const noteBtn = document.createElement('button');
+  noteBtn.className = 'mode-btn';
+  noteBtn.textContent = '音名';
+  const colorBtn = document.createElement('button');
+  colorBtn.className = 'mode-btn';
+  colorBtn.textContent = '色名';
+  modeWrap.appendChild(modeLabel);
+  modeWrap.appendChild(noteBtn);
+  modeWrap.appendChild(colorBtn);
+
+  function updateModeUI(mode) {
+    noteBtn.classList.toggle('active', mode === 'note');
+    colorBtn.classList.toggle('active', mode === 'color');
+  }
+
+  let mode = getDisplayMode(unlockedKeys.length);
+  updateModeUI(mode);
+  noteBtn.onclick = () => { setDisplayMode('note'); updateModeUI('note'); };
+  colorBtn.onclick = () => { setDisplayMode('color'); updateModeUI('color'); };
+
   const controlBar = document.createElement('div');
   controlBar.className = 'settings-controls';
   controlBar.appendChild(titleLine);
@@ -179,6 +204,7 @@ export async function renderSettingsScreen(user) {
   singleCard.className = 'settings-card';
   singleCard.appendChild(singleWrap);
   singleCard.appendChild(singleSelectWrap);
+  singleCard.appendChild(modeWrap);
   cardRow.appendChild(singleCard);
 
   const bulkCard = document.createElement('div');

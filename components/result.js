@@ -7,6 +7,8 @@ import { drawStaffFromNotes } from "./resultStaff.js";  // 楽譜描画（必要
 import { renderHeader } from "./header.js";
 import { renderSummarySection } from "./summary.js";
 import { kanaToHiragana, noteLabels } from "../utils/noteUtils.js";
+import { getDisplayMode } from "../utils/displayMode.js";
+import { loadGrowthFlags } from "../utils/growthStore_supabase.js";
 
 let resultShownInThisSession = false;
 
@@ -19,7 +21,7 @@ function labelNote(n) {
   return noteLabels[pitch] || n;
 }
 
-export function createResultTable(results) {
+export function createResultTable(results, mode = 'color') {
   const singleNoteMode = localStorage.getItem('singleNoteMode') === 'on';
 
   // results may come as a JSON string or object. Normalize to an array.
@@ -74,13 +76,13 @@ export function createResultTable(results) {
           <td>${idx}</td>
           <td>
             <div class="chord-box ${getColorClass(r.chordName)}">
-              ${getLabelHiragana(r.chordName)}
+              ${getLabelHiragana(r.chordName, mode)}
             </div>
           </td>
           <td>
             <div class="chord-box ${getColorClass(r.answerName)}">
               <span class="ans-mark ${r.correct ? 'correct' : 'wrong'}">${r.correct ? '◯' : ''}</span>
-              ${getLabelHiragana(r.answerName)}
+              ${getLabelHiragana(r.answerName, mode)}
             </div>
           </td>
           ${singleNoteMode ? `<td>${noteRes ? labelNote(noteRes.noteQuestion || '') : ''}</td>` : ''}
@@ -115,6 +117,12 @@ export async function renderResultScreen(user) {
     }
   }
 
+  let flags = {};
+  if (user && user.id) {
+    flags = await loadGrowthFlags(user.id);
+  }
+  const mode = getDisplayMode(Object.values(flags).filter(f => f.unlocked).length);
+
 
   const app = document.getElementById("app");
   app.innerHTML = "";
@@ -122,7 +130,7 @@ export async function renderResultScreen(user) {
 
   const container = document.createElement("div");
   container.className = "screen active result-screen";
-  const tableHtml = createResultTable(results);
+  const tableHtml = createResultTable(results, mode);
 
   container.innerHTML = `
     <div class="tab-menu">
@@ -199,8 +207,11 @@ export function renderStaffResultScreen() {
 }
 
 // ✅ ヘルパー関数：和音名をひらがなに変換
-function getLabelHiragana(name) {
+function getLabelHiragana(name, mode = 'color') {
   const chord = chords.find(c => c.name === name);
+  if (mode === 'note' && chord?.italian) {
+    return chord.italian.map(kanaToHiragana).join('');
+  }
   return chord?.labelHiragana || name;
 }
 
