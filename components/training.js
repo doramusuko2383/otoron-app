@@ -320,9 +320,15 @@ function drawQuizScreen() {
 
       const inner = document.createElement("div");
       inner.className = `square-btn-content ${only.colorClass}`;
-      inner.innerHTML = chordProgressCount >= 10 && only.italian
-        ? only.italian.map(kanaToHiragana).join("")
-        : only.labelHtml;
+      let showNote = false;
+      if (chordProgressCount >= 10 && only.italian) {
+        inner.innerHTML = only.italian.map(kanaToHiragana).join("");
+        showNote = true;
+      } else {
+        inner.innerHTML = only.labelHtml;
+        if (only.type === "black-inv") showNote = true;
+      }
+      if (showNote) inner.classList.add("note-small");
       inner.setAttribute("data-name", only.name);
       inner.style.pointerEvents = "auto";
       inner.style.opacity = "1";
@@ -358,11 +364,15 @@ function drawQuizScreen() {
 
       const inner = document.createElement("div");
       inner.className = `square-btn-content ${chord.colorClass}`;
+      let noteFlag = false;
       if (chordProgressCount >= 10 && chord.italian) {
         inner.innerHTML = chord.italian.map(kanaToHiragana).join("");
+        noteFlag = true;
       } else {
         inner.innerHTML = chord.labelHtml;
+        if (chord.type === "black-inv") noteFlag = true;
       }
+      if (noteFlag) inner.classList.add("note-small");
       inner.setAttribute("data-name", chord.name);
       inner.style.pointerEvents = "auto";
       inner.style.opacity = "1";
