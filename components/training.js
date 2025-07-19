@@ -12,6 +12,7 @@ import { generateRecommendedQueue } from "../utils/growthUtils.js";
 import { loadGrowthFlags } from "../utils/growthStore_supabase.js";
 import { getAudio } from "../utils/audioCache.js";
 import { kanaToHiragana, noteLabels } from "../utils/noteUtils.js";
+import { getDisplayMode } from "../utils/displayMode.js";
 import { SHOW_DEBUG } from "../utils/debug.js";
 
 let questionCount = 0;
@@ -26,6 +27,7 @@ let singleNoteMode = false;
 let singleNoteStrategy = 'top';
 let chordProgressCount = 0;
 let chordSoundOn = true;
+let displayMode = 'color';
 
 export const stats = {};
 export const mistakes = {};
@@ -79,6 +81,7 @@ export async function renderTrainingScreen(user) {
   chordSoundOn = localStorage.getItem("chordSound") !== "off";
   const flags = await loadGrowthFlags(user.id);
   chordProgressCount = Object.values(flags).filter(f => f.unlocked).length;
+  displayMode = getDisplayMode(chordProgressCount);
   resetResultFlag();
   lastResults = [];
 
@@ -321,7 +324,7 @@ function drawQuizScreen() {
       const inner = document.createElement("div");
       inner.className = `square-btn-content ${only.colorClass}`;
       let showNote = false;
-      if (chordProgressCount >= 10 && only.italian) {
+      if (displayMode === 'note' && only.italian) {
         inner.innerHTML = only.italian.map(kanaToHiragana).join("");
         showNote = true;
       } else {
@@ -365,7 +368,7 @@ function drawQuizScreen() {
       const inner = document.createElement("div");
       inner.className = `square-btn-content ${chord.colorClass}`;
       let noteFlag = false;
-      if (chordProgressCount >= 10 && chord.italian) {
+      if (displayMode === 'note' && chord.italian) {
         inner.innerHTML = chord.italian.map(kanaToHiragana).join("");
         noteFlag = true;
       } else {
