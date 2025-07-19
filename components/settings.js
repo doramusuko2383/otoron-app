@@ -264,7 +264,7 @@ export async function renderSettingsScreen(user) {
         let val = parseInt(numSpan.textContent) || 0;
         val += delta;
         if (val < 0) val = 0;
-        if (val > 5) val = 5;
+        if (val > 20) val = 20; // allow manual counts up to 20
         numSpan.textContent = val;
         updateSelection();
       }
