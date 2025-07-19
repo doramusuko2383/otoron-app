@@ -176,19 +176,19 @@ export async function renderSettingsScreen(user) {
   cardRow.className = 'settings-card-row';
 
   const singleCard = document.createElement('div');
-  singleCard.className = 'settings-card';
+  singleCard.className = 'settings-card single-card';
   singleCard.appendChild(singleWrap);
   singleCard.appendChild(singleSelectWrap);
   cardRow.appendChild(singleCard);
 
   const bulkCard = document.createElement('div');
-  bulkCard.className = 'settings-card';
+  bulkCard.className = 'settings-card bulk-card';
   bulkCard.appendChild(resetBtn);
   bulkCard.appendChild(bulkDropdown);
   cardRow.appendChild(bulkCard);
 
   const modeCard = document.createElement('div');
-  modeCard.className = 'settings-card';
+  modeCard.className = 'settings-card mode-card';
   const modeLabel = document.createElement('div');
   modeLabel.textContent = '表示モード';
   const modeWrap = document.createElement('div');

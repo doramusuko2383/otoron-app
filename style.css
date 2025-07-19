@@ -3177,11 +3177,16 @@ button:hover {
   }
   .settings-card-row {
     width: 100%;
+    flex-wrap: wrap;
+    justify-content: flex-start;
   }
   .settings-card {
-    flex-basis: 100%;
-    max-width: 100%;
+    flex-basis: calc(50% - 0.5em);
+    max-width: calc(50% - 0.5em);
   }
+  .settings-card.single-card { order: 1; }
+  .settings-card.mode-card { order: 2; }
+  .settings-card.bulk-card { order: 3; }
 }
 
 
