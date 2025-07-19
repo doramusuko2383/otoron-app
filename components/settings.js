@@ -100,7 +100,7 @@ export async function renderSettingsScreen(user) {
 
   const bulkDropdown = document.createElement("select");
   bulkDropdown.innerHTML = `
-    <option value="">一括出題回数</option>
+    <option value="">一括出題回数変更</option>
     <option value="1">1回ずつ</option>
     <option value="2">2回ずつ</option>
     <option value="3">3回ずつ</option>
@@ -208,9 +208,9 @@ export async function renderSettingsScreen(user) {
   const hasInv = unlockedKeys.some(k => chords.find(c => c.key === k && c.type === "black-inv"));
 
   const groups = [
-    { title: "白鍵", type: "white", open: true },
-    { title: "黒鍵", type: "black-root", open: hasBlack },
-    { title: "転回形", type: "black-inv", open: hasInv }
+    { title: "白鍵の和音", type: "white", open: true },
+    { title: "黒鍵の和音", type: "black-root", open: hasBlack },
+    { title: "黒鍵の和音の転回形", type: "black-inv", open: hasInv }
   ];
 
   groups.forEach(g => {
