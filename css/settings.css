@@ -343,9 +343,14 @@
   min-height: 120px;
 }
 .settings-card.preset-card button {
-  font-size: 1.2em;
-  padding: 1em;
+  display: block;
+  width: 100%;
+  white-space: normal;
+  word-break: keep-all;
   text-align: center;
+  line-height: 1.4;
+  padding: 1em;
+  font-size: 1em;
 }
 
 .display-mode-toggle {
