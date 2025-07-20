@@ -1,3 +1,5 @@
+import { showCustomAlert } from './home.js';
+
 export function openPresetModal(currentUnlocked) {
   let modal = document.getElementById('preset-modal');
   if (!modal) {
@@ -72,16 +74,16 @@ export function openPresetModal(currentUnlocked) {
   saveBtn.onclick = () => {
     const name = nameInput.value.trim();
     if (!name) {
-      alert('プリセット名を入力してください');
+      showCustomAlert('プリセット名を入力してください');
       return;
     }
     if (name.length > 16) {
-      alert('プリセット名は16文字以内で入力してください');
+      showCustomAlert('プリセット名は16文字以内で入力してください');
       return;
     }
     const presets = loadPresets();
     if (presets.length >= 10) {
-      alert('最大10件まで保存できます');
+      showCustomAlert('最大10件まで保存できます');
       return;
     }
     const stored = sessionStorage.getItem('selectedChords') || localStorage.getItem('selectedChords');
