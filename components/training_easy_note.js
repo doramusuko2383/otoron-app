@@ -120,15 +120,17 @@ export async function renderTrainingScreen(user) {
           nextQuestion();
         } else {
           sessionStorage.setItem("noteHistory", JSON.stringify(noteHistory));
-          await saveTrainingSession({
-            userId: user.id,
-            results: { type: 'note-easy', results: noteHistory },
-            stats: {},
-            mistakes: {},
-            correctCount: noteHistory.filter(n => n.correct).length,
-            totalCount: noteHistory.length,
-            date: new Date().toISOString()
-          });
+          if (!user.isTemp) {
+            await saveTrainingSession({
+              userId: user.id,
+              results: { type: 'note-easy', results: noteHistory },
+              stats: {},
+              mistakes: {},
+              correctCount: noteHistory.filter(n => n.correct).length,
+              totalCount: noteHistory.length,
+              date: new Date().toISOString()
+            });
+          }
           switchScreen("result_easy", user);
         }
       }, FEEDBACK_DELAY);

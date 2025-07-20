@@ -1,6 +1,6 @@
 import { signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { firebaseAuth } from "../firebase/firebase-init.js"; // ✅ これだけでOK
-import { switchScreen } from "../main.js";
+import { switchScreen, clearTempUser, getBaseUser } from "../main.js";
 import { checkRecentUnlockCriteria } from "../utils/progressStatus.js";
 import { loadGrowthFlags } from "../utils/growthStore_supabase.js";
 import { getCurrentTargetChord } from "../utils/growthUtils.js";
@@ -126,9 +126,30 @@ export function renderHeader(container, user) {
       firebaseAuth.currentUser?.email;
     if (name) {
       const icon = user?.is_premium ? "⭐ " : "";
-      userDiv.textContent = icon + name;
+      if (user?.isTemp) {
+        userDiv.textContent = `${name} (プリセット)`;
+      } else {
+        userDiv.textContent = icon + name;
+      }
       userDiv.style.display = "block";
     }
+  }
+
+  if (user && user.isTemp) {
+    const mode = document.createElement("div");
+    mode.className = "mode-indicator";
+    mode.textContent = `現在のモード：${user.name}（プリセット）`;
+    const right = header.querySelector(".header-right");
+    right.prepend(mode);
+
+    const exitBtn = document.createElement("button");
+    exitBtn.id = "exit-temp-btn";
+    exitBtn.textContent = "通常モードに戻る";
+    exitBtn.onclick = () => {
+      clearTempUser();
+      switchScreen("settings", getBaseUser());
+    };
+    dropdown.appendChild(exitBtn);
   }
 
   // ▼ 解放条件を満たした場合の通知バッジ

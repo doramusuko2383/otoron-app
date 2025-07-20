@@ -2,19 +2,24 @@
 
 import { renderHeader } from "./header.js";
 import { switchScreen, openHelp } from "../main.js";
+import { openPresetModal } from "./presetModal.js";
 import { supabase } from "../utils/supabaseClient.js";
 import { chords, chordOrder } from "../data/chords.js";
 import { generateRecommendedQueue } from "../utils/growthUtils.js"; // use queue util
 import { showCustomConfirm } from "./home.js";
 
 export let selectedChords = [];
+export let lastUnlockedKeys = [];
 
 // ✅ Supabaseから解放済み和音のkeyを取得
-async function fetchUnlockedChords(userId) {
+async function fetchUnlockedChords(user) {
+  if (user.isTemp) {
+    return user.unlockedKeys || [];
+  }
   const { data, error } = await supabase
     .from("user_chord_progress")
     .select("chord_key, status")
-    .eq("user_id", userId)
+    .eq("user_id", user.id)
     .not("status", "eq", "locked");  // ← locked 以外（in_progressやunlocked）
 
   if (error) {
@@ -61,7 +66,8 @@ function resetToRecommendedChords(unlockedKeys, user) {
 
 
 export async function renderSettingsScreen(user) {
-  const unlockedKeys = await fetchUnlockedChords(user.id); // ← 解放されたkey一覧
+  const unlockedKeys = await fetchUnlockedChords(user); // ← 解放されたkey一覧
+  lastUnlockedKeys = unlockedKeys;
   const app = document.getElementById("app");
   app.innerHTML = "";
 
@@ -224,6 +230,14 @@ export async function renderSettingsScreen(user) {
   modeCard.appendChild(modeLabel);
   modeCard.appendChild(modeWrap);
   cardRow.appendChild(modeCard);
+
+  const presetCard = document.createElement('div');
+  presetCard.className = 'settings-card preset-card';
+  const presetBtn = document.createElement('button');
+  presetBtn.textContent = 'プリセット';
+  presetBtn.onclick = () => openPresetModal(lastUnlockedKeys);
+  presetCard.appendChild(presetBtn);
+  cardRow.appendChild(presetCard);
 
   controlBar.appendChild(cardRow);
 
