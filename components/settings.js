@@ -6,7 +6,7 @@ import { openPresetModal } from "./presetModal.js";
 import { supabase } from "../utils/supabaseClient.js";
 import { chords, chordOrder } from "../data/chords.js";
 import { generateRecommendedQueue } from "../utils/growthUtils.js"; // use queue util
-import { showCustomConfirm } from "./home.js";
+import { showCustomConfirm, showCustomAlert } from "./home.js";
 
 export let selectedChords = [];
 export let lastUnlockedKeys = [];
@@ -233,10 +233,19 @@ export async function renderSettingsScreen(user) {
 
   const presetCard = document.createElement('div');
   presetCard.className = 'settings-card preset-card';
+  const presetWrap = document.createElement('div');
+  presetWrap.className = 'preset-wrap';
   const presetBtn = document.createElement('button');
-  presetBtn.textContent = '出題設定の保存・読み込み';
+  presetBtn.textContent = 'かんたん設定切り替え';
   presetBtn.onclick = () => openPresetModal(lastUnlockedKeys);
-  presetCard.appendChild(presetBtn);
+  const presetHelp = document.createElement('div');
+  presetHelp.className = 'help-button';
+  presetHelp.textContent = '？';
+  presetHelp.onclick = () =>
+    showCustomAlert('出題設定を名前付きで保存・読み込みできます。兄弟など他の人が使うときに一時的に切り替える用途です。成績は保存されません。');
+  presetWrap.appendChild(presetBtn);
+  presetWrap.appendChild(presetHelp);
+  presetCard.appendChild(presetWrap);
   cardRow.appendChild(presetCard);
 
   controlBar.appendChild(cardRow);
