@@ -92,9 +92,19 @@ export function openPresetModal(currentUnlocked) {
     renderList();
   };
 
-  closeBtn.onclick = () => {
-    modal.classList.add('hidden');
+  const outsideHandler = (e) => {
+    if (e.target === modal) {
+      closeModal();
+    }
   };
+
+  const closeModal = () => {
+    modal.classList.add('hidden');
+    modal.removeEventListener('click', outsideHandler);
+  };
+
+  closeBtn.onclick = closeModal;
+  modal.addEventListener('click', outsideHandler);
 
   renderList();
   modal.classList.remove('hidden');
