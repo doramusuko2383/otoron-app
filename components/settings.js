@@ -238,13 +238,7 @@ export async function renderSettingsScreen(user) {
   const presetBtn = document.createElement('button');
   presetBtn.textContent = 'かんたん設定切り替え';
   presetBtn.onclick = () => openPresetModal(lastUnlockedKeys);
-  const presetHelp = document.createElement('div');
-  presetHelp.className = 'help-button';
-  presetHelp.textContent = '？';
-  presetHelp.onclick = () =>
-    showCustomAlert('出題設定を名前付きで保存・読み込みできます。兄弟など他の人が使うときに一時的に切り替える用途です。成績は保存されません。');
   presetWrap.appendChild(presetBtn);
-  presetWrap.appendChild(presetHelp);
   presetCard.appendChild(presetWrap);
   cardRow.appendChild(presetCard);
 

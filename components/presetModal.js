@@ -1,4 +1,5 @@
 import { showCustomAlert } from './home.js';
+import { openHelp } from '../main.js';
 
 export function openPresetModal(currentUnlocked) {
   let modal = document.getElementById('preset-modal');
@@ -8,7 +9,10 @@ export function openPresetModal(currentUnlocked) {
     modal.className = 'modal hidden';
     modal.innerHTML = `
       <div class="modal-box">
-        <h3 class="modal-title">出題設定の保存・読み込み</h3>
+        <h3 class="modal-title">
+          出題設定の保存・読み込み
+          <button id="preset-help-btn" class="help-button">？</button>
+        </h3>
         <div class="preset-save">
           <input type="text" id="preset-name-input" placeholder="プリセット名" maxlength="16" />
           <button id="preset-save-btn">保存</button>
@@ -25,6 +29,8 @@ export function openPresetModal(currentUnlocked) {
   const saveBtn = modal.querySelector('#preset-save-btn');
   const listDiv = modal.querySelector('#preset-list');
   const closeBtn = modal.querySelector('#preset-close-btn');
+  const helpBtn = modal.querySelector('#preset-help-btn');
+  if (helpBtn) helpBtn.onclick = () => openHelp('かんたん設定切り替え');
 
   const loadPresets = () => JSON.parse(localStorage.getItem('settingPresets') || '[]');
   const savePresets = (data) => localStorage.setItem('settingPresets', JSON.stringify(data));
