@@ -350,13 +350,17 @@
 }
 .settings-card.preset-card button {
   display: block;
-  width: 100%;
+  flex: 1;
   white-space: normal;
   word-break: keep-all;
   text-align: center;
   line-height: 1.4;
   padding: 1em;
   font-size: 1em;
+}
+.settings-card.preset-card .help-button {
+  margin-left: 0.5em;
+  flex-shrink: 0;
 }
 
 .display-mode-toggle {
