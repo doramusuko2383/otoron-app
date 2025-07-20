@@ -40,7 +40,16 @@ export function openPresetModal(currentUnlocked) {
       loadBtn.onclick = () => {
         sessionStorage.setItem('trainingMode', 'custom');
         sessionStorage.setItem('selectedChords', JSON.stringify(p.selectedChords));
-        const tempUser = { id: 'temp', name: p.name, isTemp: true, unlockedKeys: p.unlockedKeys };
+        const base = window.getBaseUser?.() || {};
+        const tempUser = {
+          id: 'temp',
+          name: p.name,
+          isTemp: true,
+          unlockedKeys: p.unlockedKeys,
+          is_premium: base.is_premium,
+          trial_active: base.trial_active,
+          trial_end_date: base.trial_end_date,
+        };
         window.setTempUser(tempUser);
         modal.classList.add('hidden');
         window.switchScreen('settings', tempUser);
