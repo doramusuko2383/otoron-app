@@ -234,7 +234,7 @@ export async function renderSettingsScreen(user) {
   const presetCard = document.createElement('div');
   presetCard.className = 'settings-card preset-card';
   const presetBtn = document.createElement('button');
-  presetBtn.textContent = '出題設定を保存・選択';
+  presetBtn.innerHTML = '出題設定の<br>保存・読み込み';
   presetBtn.onclick = () => openPresetModal(lastUnlockedKeys);
   presetCard.appendChild(presetBtn);
   cardRow.appendChild(presetCard);

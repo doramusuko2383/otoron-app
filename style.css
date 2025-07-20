@@ -735,6 +735,12 @@ button:hover {
   justify-content: space-between;
   margin-bottom: 0.3em;
 }
+.preset-item span {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 .preset-item button {
   margin-left: 0.3em;
 }
