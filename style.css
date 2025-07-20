@@ -204,6 +204,11 @@ button:hover {
   margin: 0 0.5em;
 }
 
+/* Ensure help modal overlays other modals */
+#help-modal {
+  z-index: 1100;
+}
+
 /* Help modal specific */
 #help-modal .modal-content {
   background: #fff;
