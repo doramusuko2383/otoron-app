@@ -8,7 +8,7 @@ export function openPresetModal(currentUnlocked) {
       <div class="modal-box">
         <h3 class="modal-title">出題設定の保存・読み込み</h3>
         <div class="preset-save">
-          <input type="text" id="preset-name-input" placeholder="プリセット名" />
+          <input type="text" id="preset-name-input" placeholder="プリセット名" maxlength="16" />
           <button id="preset-save-btn">保存</button>
         </div>
         <div id="preset-list" class="preset-list"></div>
@@ -71,7 +71,14 @@ export function openPresetModal(currentUnlocked) {
 
   saveBtn.onclick = () => {
     const name = nameInput.value.trim();
-    if (!name) return;
+    if (!name) {
+      alert('プリセット名を入力してください');
+      return;
+    }
+    if (name.length > 16) {
+      alert('プリセット名は16文字以内で入力してください');
+      return;
+    }
     const presets = loadPresets();
     if (presets.length >= 10) {
       alert('最大10件まで保存できます');
