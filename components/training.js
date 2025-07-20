@@ -78,7 +78,9 @@ export async function renderTrainingScreen(user) {
   singleNoteMode = localStorage.getItem("singleNoteMode") === "on";
   singleNoteStrategy = localStorage.getItem("singleNoteStrategy") || 'top';
   chordSoundOn = localStorage.getItem("chordSound") !== "off";
-  const flags = await loadGrowthFlags(user.id);
+  const flags = user.isTemp
+    ? Object.fromEntries((user.unlockedKeys || []).map(k => [k, { unlocked: true }]))
+    : await loadGrowthFlags(user.id);
   chordProgressCount = Object.values(flags).filter(f => f.unlocked).length;
   displayMode = localStorage.getItem("displayMode");
   if (!displayMode) {
@@ -164,26 +166,28 @@ async function nextQuestion() {
   if (questionQueue.length === 0 || quitFlag) {
     const sound = (correctCount === questionCount) ? "perfect" : "end";
     playSoundThen(sound, async () => {
-      await saveTrainingSession({
-        userId: currentUser.id,
-        results: { type: 'chord', results: lastResults },
-        stats,
-        mistakes,
-        correctCount,
-        totalCount: questionCount,
-        date: new Date().toISOString(),
-      });
+      if (!currentUser.isTemp) {
+        await saveTrainingSession({
+          userId: currentUser.id,
+          results: { type: 'chord', results: lastResults },
+          stats,
+          mistakes,
+          correctCount,
+          totalCount: questionCount,
+          date: new Date().toISOString(),
+        });
+
+        await updateTrainingRecord({
+          userId: currentUser.id,
+          correct: correctCount,
+          total: questionCount
+        });
+
+        await incrementSetCount(currentUser.id);
+        await autoUnlockNextChord(currentUser);
+      }
 
       saveSessionToHistory();
-
-      await updateTrainingRecord({
-        userId: currentUser.id,
-        correct: correctCount,
-        total: questionCount
-      });
-
-      await incrementSetCount(currentUser.id);
-      await autoUnlockNextChord(currentUser);
 
       sessionStorage.setItem('openResultChild', 'true');
       switchScreen("result");

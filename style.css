@@ -717,6 +717,32 @@ button:hover {
   background-color: #f5f5f5;
 }
 
+.mode-indicator {
+  font-size: 0.8rem;
+  margin-right: 0.5em;
+}
+
+.preset-save {
+  margin-bottom: 0.5em;
+}
+.preset-save input {
+  padding: 0.3em;
+  margin-right: 0.5em;
+}
+.preset-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.3em;
+}
+.preset-item button {
+  margin-left: 0.3em;
+}
+.preset-list {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
 /* Anchor style for static pages */
 .parent-dropdown a {
   display: block;
@@ -3187,6 +3213,7 @@ button:hover {
   .settings-card.single-card { order: 1; }
   .settings-card.mode-card { order: 2; }
   .settings-card.bulk-card { order: 3; }
+  .settings-card.preset-card { order: 4; }
 }
 
 
