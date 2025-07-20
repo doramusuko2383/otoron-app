@@ -3090,9 +3090,13 @@ button:hover {
 }
 
 /* Adjust preset button size */
+.settings-card.preset-card {
+  min-height: 120px;
+}
 .settings-card.preset-card button {
-  padding-top: 12px;
-  padding-bottom: 12px;
+  font-size: 1.2em;
+  padding: 1em;
+  text-align: center;
 }
 
 /* 表示モードトグル */

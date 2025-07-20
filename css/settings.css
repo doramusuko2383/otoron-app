@@ -339,6 +339,15 @@
   font-weight: normal;
 }
 
+.settings-card.preset-card {
+  min-height: 120px;
+}
+.settings-card.preset-card button {
+  font-size: 1.2em;
+  padding: 1em;
+  text-align: center;
+}
+
 .display-mode-toggle {
   display: flex;
   gap: 4px;
