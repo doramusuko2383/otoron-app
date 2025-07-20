@@ -30,7 +30,7 @@ export function renderChordResetScreen(user) {
     const opt = document.createElement("option");
     opt.value = idx;
     let label = ch.label;
-    if (idx === 1 || idx === 2) label += "まで"; // 黄色まで・青まで
+    if (idx !== 0) label += "まで"; // 赤以外は「まで」を追加
     opt.textContent = label;
     select.appendChild(opt);
   });
