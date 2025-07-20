@@ -342,6 +342,12 @@
 .settings-card.preset-card {
   min-height: 120px;
 }
+.settings-card.preset-card .preset-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  width: 100%;
+}
 .settings-card.preset-card button {
   display: block;
   width: 100%;
