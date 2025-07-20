@@ -206,7 +206,7 @@
 .settings-controls select {
   padding: 6px 12px;
   font-size: 1em;
-  height: 2.2em;
+  min-height: 2.2em;
 }
 .settings-controls .toggle-wrap {
   height: 2.2em;
