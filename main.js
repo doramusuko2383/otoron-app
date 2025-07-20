@@ -148,6 +148,11 @@ async function checkTrainingLimit(user) {
 export const switchScreen = async (screen, user = currentUser, options = {}) => {
   const { replace = false } = options;
 
+  if (currentUser && currentUser.isTemp && screen !== "settings") {
+    clearTempUser();
+    user = currentUser;
+  }
+
   // If the user is locked (trial or premium expired),
   // always redirect to the lock screen except for a few allowed pages.
   const lockType = getLockType(user);
