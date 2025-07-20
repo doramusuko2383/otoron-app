@@ -3089,6 +3089,12 @@ button:hover {
   font-weight: normal;
 }
 
+/* Adjust preset button size */
+.settings-card.preset-card button {
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+
 /* 表示モードトグル */
 .display-mode-toggle {
   display: flex;
