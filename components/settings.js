@@ -2,19 +2,24 @@
 
 import { renderHeader } from "./header.js";
 import { switchScreen, openHelp } from "../main.js";
+import { openPresetModal } from "./presetModal.js";
 import { supabase } from "../utils/supabaseClient.js";
 import { chords, chordOrder } from "../data/chords.js";
 import { generateRecommendedQueue } from "../utils/growthUtils.js"; // use queue util
-import { showCustomConfirm } from "./home.js";
+import { showCustomConfirm, showCustomAlert } from "./home.js";
 
 export let selectedChords = [];
+export let lastUnlockedKeys = [];
 
 // ✅ Supabaseから解放済み和音のkeyを取得
-async function fetchUnlockedChords(userId) {
+async function fetchUnlockedChords(user) {
+  if (user.isTemp) {
+    return user.unlockedKeys || [];
+  }
   const { data, error } = await supabase
     .from("user_chord_progress")
     .select("chord_key, status")
-    .eq("user_id", userId)
+    .eq("user_id", user.id)
     .not("status", "eq", "locked");  // ← locked 以外（in_progressやunlocked）
 
   if (error) {
@@ -61,7 +66,8 @@ function resetToRecommendedChords(unlockedKeys, user) {
 
 
 export async function renderSettingsScreen(user) {
-  const unlockedKeys = await fetchUnlockedChords(user.id); // ← 解放されたkey一覧
+  const unlockedKeys = await fetchUnlockedChords(user); // ← 解放されたkey一覧
+  lastUnlockedKeys = unlockedKeys;
   const app = document.getElementById("app");
   app.innerHTML = "";
 
@@ -176,16 +182,65 @@ export async function renderSettingsScreen(user) {
   cardRow.className = 'settings-card-row';
 
   const singleCard = document.createElement('div');
-  singleCard.className = 'settings-card';
+  singleCard.className = 'settings-card single-card';
   singleCard.appendChild(singleWrap);
   singleCard.appendChild(singleSelectWrap);
   cardRow.appendChild(singleCard);
 
   const bulkCard = document.createElement('div');
-  bulkCard.className = 'settings-card';
+  bulkCard.className = 'settings-card bulk-card';
   bulkCard.appendChild(resetBtn);
   bulkCard.appendChild(bulkDropdown);
   cardRow.appendChild(bulkCard);
+
+  const modeCard = document.createElement('div');
+  modeCard.className = 'settings-card mode-card';
+  const modeLabel = document.createElement('div');
+  modeLabel.textContent = '表示モード';
+  const modeWrap = document.createElement('div');
+  modeWrap.className = 'display-mode-toggle';
+  const noteBtn = document.createElement('button');
+  noteBtn.textContent = '音名';
+  const colorBtn = document.createElement('button');
+  colorBtn.textContent = '色名';
+  function updateModeButtons(mode) {
+    if (mode === 'note') {
+      noteBtn.classList.add('active');
+      colorBtn.classList.remove('active');
+    } else {
+      noteBtn.classList.remove('active');
+      colorBtn.classList.add('active');
+    }
+  }
+  let savedMode = localStorage.getItem('displayMode');
+  if (!savedMode) {
+    savedMode = unlockedKeys.length >= 10 ? 'note' : 'color';
+  }
+  updateModeButtons(savedMode);
+  noteBtn.onclick = () => {
+    localStorage.setItem('displayMode', 'note');
+    updateModeButtons('note');
+  };
+  colorBtn.onclick = () => {
+    localStorage.setItem('displayMode', 'color');
+    updateModeButtons('color');
+  };
+  modeWrap.appendChild(noteBtn);
+  modeWrap.appendChild(colorBtn);
+  modeCard.appendChild(modeLabel);
+  modeCard.appendChild(modeWrap);
+  cardRow.appendChild(modeCard);
+
+  const presetCard = document.createElement('div');
+  presetCard.className = 'settings-card preset-card';
+  const presetWrap = document.createElement('div');
+  presetWrap.className = 'preset-wrap';
+  const presetBtn = document.createElement('button');
+  presetBtn.textContent = 'かんたん設定切り替え';
+  presetBtn.onclick = () => openPresetModal(lastUnlockedKeys);
+  presetWrap.appendChild(presetBtn);
+  presetCard.appendChild(presetWrap);
+  cardRow.appendChild(presetCard);
 
   controlBar.appendChild(cardRow);
 

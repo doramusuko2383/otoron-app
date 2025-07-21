@@ -206,7 +206,7 @@
 .settings-controls select {
   padding: 6px 12px;
   font-size: 1em;
-  height: 2.2em;
+  min-height: 2.2em;
 }
 .settings-controls .toggle-wrap {
   height: 2.2em;
@@ -337,6 +337,49 @@
 .settings-card select {
   font-size: 0.9em;
   font-weight: normal;
+}
+
+.settings-card.preset-card {
+  min-height: 120px;
+}
+.settings-card.preset-card .preset-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  width: 100%;
+}
+.settings-card.preset-card button {
+  display: block;
+  flex: 1;
+  white-space: normal;
+  word-break: keep-all;
+  text-align: center;
+  line-height: 1.4;
+  padding: 1em;
+  font-size: 1em;
+}
+.settings-card.preset-card .help-button {
+  margin-left: 0.5em;
+  flex-shrink: 0;
+}
+
+.display-mode-toggle {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+}
+.display-mode-toggle button {
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #fff;
+  font-size: 0.9em;
+  cursor: pointer;
+}
+.display-mode-toggle button.active {
+  background: var(--color-primary);
+  color: #fff;
+  border-color: var(--color-primary-dark);
 }
 
 /* その他のトレーニング */

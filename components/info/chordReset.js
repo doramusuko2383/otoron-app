@@ -17,7 +17,7 @@ export function renderChordResetScreen(user) {
   const main = document.createElement("main");
   main.className = "info-page";
   main.innerHTML = `
-    <h1>開始和音を選び直す</h1>
+    <h1>和音の進捗範囲を選び直す</h1>
     <select id="start-chord"></select>
     <button id="apply-btn">選び直す</button>
     <button id="back-btn" class="link-btn">戻る</button>
@@ -29,7 +29,9 @@ export function renderChordResetScreen(user) {
   chords.forEach((ch, idx) => {
     const opt = document.createElement("option");
     opt.value = idx;
-    opt.textContent = ch.label;
+    let label = ch.label;
+    if (idx !== 0) label += "まで"; // 赤以外は「まで」を追加
+    opt.textContent = label;
     select.appendChild(opt);
   });
 

@@ -204,6 +204,11 @@ button:hover {
   margin: 0 0.5em;
 }
 
+/* Ensure help modal overlays other modals */
+#help-modal {
+  z-index: 1100;
+}
+
 /* Help modal specific */
 #help-modal .modal-content {
   background: #fff;
@@ -715,6 +720,38 @@ button:hover {
 
 .parent-dropdown button:hover {
   background-color: #f5f5f5;
+}
+
+.mode-indicator {
+  font-size: 0.8rem;
+  margin-right: 0.5em;
+}
+
+.preset-save {
+  margin-bottom: 0.5em;
+}
+.preset-save input {
+  padding: 0.3em;
+  margin-right: 0.5em;
+}
+.preset-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.3em;
+}
+.preset-item span {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.preset-item button {
+  margin-left: 0.3em;
+}
+.preset-list {
+  max-height: 200px;
+  overflow-y: auto;
 }
 
 /* Anchor style for static pages */
@@ -2919,7 +2956,7 @@ button:hover {
 .settings-controls select {
   padding: 6px 12px;
   font-size: 1em;
-  height: 2.2em;
+  min-height: 2.2em;
 }
 .settings-controls .toggle-wrap {
   height: 2.2em;
@@ -3057,6 +3094,51 @@ button:hover {
   font-weight: normal;
 }
 
+/* Adjust preset button size */
+.settings-card.preset-card {
+  min-height: 120px;
+}
+.settings-card.preset-card .preset-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  width: 100%;
+}
+.settings-card.preset-card button {
+  display: block;
+  flex: 1;
+  white-space: normal;
+  word-break: keep-all;
+  text-align: center;
+  line-height: 1.4;
+  padding: 1em;
+  font-size: 1em;
+}
+.settings-card.preset-card .help-button {
+  margin-left: 0.5em;
+  flex-shrink: 0;
+}
+
+/* 表示モードトグル */
+.display-mode-toggle {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+}
+.display-mode-toggle button {
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #fff;
+  font-size: 0.9em;
+  cursor: pointer;
+}
+.display-mode-toggle button.active {
+  background: var(--color-primary);
+  color: #fff;
+  border-color: var(--color-primary-dark);
+}
+
 /* その他のトレーニング */
 .other-training {
   background: white;
@@ -3157,11 +3239,17 @@ button:hover {
   }
   .settings-card-row {
     width: 100%;
+    flex-wrap: wrap;
+    justify-content: flex-start;
   }
   .settings-card {
-    flex-basis: 100%;
-    max-width: 100%;
+    flex-basis: calc(50% - 0.5em);
+    max-width: calc(50% - 0.5em);
   }
+  .settings-card.single-card { order: 1; }
+  .settings-card.mode-card { order: 2; }
+  .settings-card.bulk-card { order: 3; }
+  .settings-card.preset-card { order: 4; }
 }
 
 
@@ -3461,6 +3549,9 @@ button#dummy-button {
   justify-content: center;
   border-radius: 10px;
   box-sizing: border-box;
+}
+.square-btn-content.note-small {
+  font-size: calc(1em - 2pt) !important;
 }
 
 /* --- dynamic grid layouts --- */

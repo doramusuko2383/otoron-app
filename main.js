@@ -116,6 +116,22 @@ window.addEventListener("error", (e) => {
 
 
 let currentUser = null;
+let baseUser = null;
+let tempUser = null;
+
+export function setTempUser(user) {
+  tempUser = user;
+  currentUser = user;
+}
+
+export function clearTempUser() {
+  tempUser = null;
+  currentUser = baseUser;
+}
+
+export function getBaseUser() {
+  return baseUser;
+}
 
 async function checkTrainingLimit(user) {
   if (!user || user.is_premium || !user.trial_active) return true;
@@ -131,6 +147,11 @@ async function checkTrainingLimit(user) {
 
 export const switchScreen = async (screen, user = currentUser, options = {}) => {
   const { replace = false } = options;
+
+  if (currentUser && currentUser.isTemp && screen !== "settings") {
+    clearTempUser();
+    user = currentUser;
+  }
 
   // If the user is locked (trial or premium expired),
   // always redirect to the lock screen except for a few allowed pages.
@@ -249,6 +270,7 @@ onAuthStateChanged(firebaseAuth, async (firebaseUser) => {
     return;
   }
 
+  baseUser = user;
   currentUser = user;
   if (!user.name || user.name === "名前未設定") {
     switchScreen("setup", user, { showWelcome: true });
@@ -273,3 +295,9 @@ if (document.readyState !== "loading") {
 }
 
 window.addEventListener("load", () => {});
+
+// expose utilities for dynamically loaded modules
+window.switchScreen = switchScreen;
+window.setTempUser = setTempUser;
+window.clearTempUser = clearTempUser;
+window.getBaseUser = getBaseUser;

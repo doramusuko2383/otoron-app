@@ -26,6 +26,7 @@ let singleNoteMode = false;
 let singleNoteStrategy = 'top';
 let chordProgressCount = 0;
 let chordSoundOn = true;
+let displayMode = null; // 'note' or 'color'
 
 export const stats = {};
 export const mistakes = {};
@@ -77,8 +78,14 @@ export async function renderTrainingScreen(user) {
   singleNoteMode = localStorage.getItem("singleNoteMode") === "on";
   singleNoteStrategy = localStorage.getItem("singleNoteStrategy") || 'top';
   chordSoundOn = localStorage.getItem("chordSound") !== "off";
-  const flags = await loadGrowthFlags(user.id);
+  const flags = user.isTemp
+    ? Object.fromEntries((user.unlockedKeys || []).map(k => [k, { unlocked: true }]))
+    : await loadGrowthFlags(user.id);
   chordProgressCount = Object.values(flags).filter(f => f.unlocked).length;
+  displayMode = localStorage.getItem("displayMode");
+  if (!displayMode) {
+    displayMode = chordProgressCount >= 10 ? "note" : "color";
+  }
   resetResultFlag();
   lastResults = [];
 
@@ -159,26 +166,28 @@ async function nextQuestion() {
   if (questionQueue.length === 0 || quitFlag) {
     const sound = (correctCount === questionCount) ? "perfect" : "end";
     playSoundThen(sound, async () => {
-      await saveTrainingSession({
-        userId: currentUser.id,
-        results: { type: 'chord', results: lastResults },
-        stats,
-        mistakes,
-        correctCount,
-        totalCount: questionCount,
-        date: new Date().toISOString(),
-      });
+      if (!currentUser.isTemp) {
+        await saveTrainingSession({
+          userId: currentUser.id,
+          results: { type: 'chord', results: lastResults },
+          stats,
+          mistakes,
+          correctCount,
+          totalCount: questionCount,
+          date: new Date().toISOString(),
+        });
+
+        await updateTrainingRecord({
+          userId: currentUser.id,
+          correct: correctCount,
+          total: questionCount
+        });
+
+        await incrementSetCount(currentUser.id);
+        await autoUnlockNextChord(currentUser);
+      }
 
       saveSessionToHistory();
-
-      await updateTrainingRecord({
-        userId: currentUser.id,
-        correct: correctCount,
-        total: questionCount
-      });
-
-      await incrementSetCount(currentUser.id);
-      await autoUnlockNextChord(currentUser);
 
       sessionStorage.setItem('openResultChild', 'true');
       switchScreen("result");
@@ -320,9 +329,15 @@ function drawQuizScreen() {
 
       const inner = document.createElement("div");
       inner.className = `square-btn-content ${only.colorClass}`;
-      inner.innerHTML = chordProgressCount >= 10 && only.italian
-        ? only.italian.map(kanaToHiragana).join("<br>")
-        : only.labelHtml;
+      let showNote = false;
+      if (displayMode === "note" && only.italian) {
+        inner.innerHTML = only.italian.map(kanaToHiragana).join("");
+        showNote = true;
+      } else {
+        inner.innerHTML = only.labelHtml;
+        if (only.type === "black-inv") showNote = true;
+      }
+      if (showNote) inner.classList.add("note-small");
       inner.setAttribute("data-name", only.name);
       inner.style.pointerEvents = "auto";
       inner.style.opacity = "1";
@@ -358,11 +373,15 @@ function drawQuizScreen() {
 
       const inner = document.createElement("div");
       inner.className = `square-btn-content ${chord.colorClass}`;
-      if (chordProgressCount >= 10 && chord.italian) {
-        inner.innerHTML = chord.italian.map(kanaToHiragana).join("<br>");
+      let noteFlag = false;
+      if (displayMode === "note" && chord.italian) {
+        inner.innerHTML = chord.italian.map(kanaToHiragana).join("");
+        noteFlag = true;
       } else {
         inner.innerHTML = chord.labelHtml;
+        if (chord.type === "black-inv") noteFlag = true;
       }
+      if (noteFlag) inner.classList.add("note-small");
       inner.setAttribute("data-name", chord.name);
       inner.style.pointerEvents = "auto";
       inner.style.opacity = "1";
