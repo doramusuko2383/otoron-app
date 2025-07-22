@@ -86,8 +86,8 @@ export async function renderSettingsScreen(user) {
 
   const helpBtn = document.createElement("div");
   helpBtn.className = "help-button";
-  helpBtn.textContent = "？";
-  helpBtn.onclick = () => openHelp('設定画面');
+  helpBtn.innerHTML = '<img src="images/icon_help.webp" alt="ヘルプ" />';
+  helpBtn.onclick = () => openHelp("設定画面");
   titleLine.appendChild(helpBtn);
 
   const totalSpan = document.createElement("span");

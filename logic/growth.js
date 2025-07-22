@@ -50,7 +50,7 @@ export async function renderGrowthScreen(user) {
   const helpBtn = document.createElement("button");
   helpBtn.id = "growth-help-btn";
   helpBtn.className = "help-button";
-  helpBtn.textContent = "？";
+  helpBtn.innerHTML = '<img src="images/icon_help.webp" alt="ヘルプ" />';
   helpBtn.onclick = () => openHelp("育成モード");
 
   titleRow.appendChild(title);

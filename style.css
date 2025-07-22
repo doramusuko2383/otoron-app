@@ -272,6 +272,11 @@ button:hover {
   border-radius: 50%;
 }
 
+.help-button img {
+  width: 100%;
+  height: auto;
+}
+
 #help-modal .help-otolon {
   flex: 0 0 auto;
   width: 60px;
