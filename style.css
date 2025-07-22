@@ -3135,6 +3135,12 @@ button:hover {
   gap: 0.2em;
 }
 
+.mode-label {
+  display: flex;
+  align-items: center;
+  gap: 0.2em;
+}
+
 /* 表示モードトグル */
 .display-mode-toggle {
   display: flex;
