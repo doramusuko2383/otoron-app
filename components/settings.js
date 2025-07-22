@@ -197,6 +197,11 @@ export async function renderSettingsScreen(user) {
   manualCard.className = 'settings-card manual-card';
   const manualLabel = document.createElement('div');
   manualLabel.textContent = '出題モード';
+  const manualHelp = document.createElement('div');
+  manualHelp.className = 'help-button';
+  manualHelp.innerHTML = '<img src="images/icon_help.webp" alt="ヘルプ" />';
+  manualHelp.onclick = () => openHelp('出題モード');
+  manualLabel.appendChild(manualHelp);
   const manualWrap = document.createElement('div');
   manualWrap.className = 'display-mode-toggle';
   const autoBtn = document.createElement('button');
