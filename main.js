@@ -61,9 +61,15 @@ let helpOutsideHandler = null;
 let helpKeyHandler = null;
 
 export async function openHelp(topic) {
-  const res = await fetch('helpData.json');
-  const data = await res.json();
-  const help = data[topic];
+  let help;
+  try {
+    const res = await fetch('helpData.json');
+    const data = await res.json();
+    help = data[topic];
+  } catch (e) {
+    console.error('Failed to load help data', e);
+    return;
+  }
   if (!help) return;
 
   document.getElementById('help-title').innerText = help.title;

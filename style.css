@@ -259,8 +259,8 @@ button:hover {
   margin-left: 0.2em;
   font-size: 0.8em;
   cursor: pointer;
-  background: var(--color-accent);
-  color: #fff;
+  background: transparent;
+  color: inherit;
   border: none;
   padding: 0;
   width: 1.6em;
@@ -270,6 +270,7 @@ button:hover {
   align-items: center;
   justify-content: center;
   border-radius: 50%;
+  outline: none;
 }
 
 .help-button img {
