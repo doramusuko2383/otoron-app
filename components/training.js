@@ -560,7 +560,7 @@ function chooseSingleNote(notes) {
 }
 
 function toPitchClass(note) {
-  return note.replace(/[0-9]/g, '').replace('♭', 'b');
+  return normalizeNoteName(note).replace(/[0-9]/g, '');
 }
 
 function generateNoteOptions(correct, chordNotes = null) {
