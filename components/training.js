@@ -599,13 +599,20 @@ function showSingleNoteQuiz(chord, onFinish, isLast = false) {
 
   const feedback = document.getElementById('feedback');
 
-  const optionWrap = document.createElement('div');
-  optionWrap.className = 'single-note-options';
-  optionWrap.style.display = 'flex';
-  optionWrap.style.justifyContent = 'center';
-  optionWrap.style.gap = '12px';
-  optionWrap.style.marginTop = '1em';
-  overlay.appendChild(optionWrap);
+  const displayWrap = document.createElement('div');
+  displayWrap.className = 'single-note-options';
+  displayWrap.style.display = 'flex';
+  displayWrap.style.justifyContent = 'center';
+  displayWrap.style.gap = '12px';
+  displayWrap.style.marginTop = '1em';
+  overlay.appendChild(displayWrap);
+
+  const piano = document.createElement('div');
+  piano.className = 'piano-container';
+  const whiteWrap = document.createElement('div');
+  whiteWrap.className = 'white-keys';
+  piano.appendChild(whiteWrap);
+  overlay.appendChild(piano);
 
   let recorded = false;
 
@@ -624,7 +631,7 @@ function showSingleNoteQuiz(chord, onFinish, isLast = false) {
   }
 
   function setActive(active) {
-    optionWrap.querySelectorAll('button').forEach(b => {
+    piano.querySelectorAll('button').forEach(b => {
       b.disabled = !active;
       b.style.opacity = active ? '1' : '0.5';
     });
@@ -674,10 +681,42 @@ function showSingleNoteQuiz(chord, onFinish, isLast = false) {
     btn.textContent = noteLabels[n] || n;
     btn.style.fontSize = '1.5em';
     btn.style.padding = '0.5em 1em';
-    btn.onclick = () => handle(n);
-    optionWrap.appendChild(btn);
+    btn.disabled = true;
+    displayWrap.appendChild(btn);
   });
 
+  const whiteOrder = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
+  const blackOrder = [
+    { note: 'C#', pos: 'pos1' },
+    { note: 'D#', pos: 'pos2' },
+    { note: 'F#', pos: 'pos3' },
+    { note: 'G#', pos: 'pos4' },
+    { note: 'A#', pos: 'pos5' }
+  ];
+
+  whiteOrder.forEach(n => {
+    const btn = document.createElement('button');
+    btn.className = 'key-white';
+    btn.dataset.note = n;
+    btn.textContent = noteLabels[n];
+    whiteWrap.appendChild(btn);
+  });
+
+  blackOrder.forEach(b => {
+    const btn = document.createElement('button');
+    btn.className = `key-black ${b.pos}`;
+    btn.dataset.note = b.note;
+    btn.textContent = noteLabels[b.note];
+    piano.appendChild(btn);
+  });
+
+  piano.addEventListener('click', e => {
+    const btn = e.target.closest('button');
+    if (!btn || btn.disabled) return;
+    handle(btn.dataset.note);
+  });
+
+  setActive(false);
   playNoteFile(note, () => {
     setActive(true);
   });
