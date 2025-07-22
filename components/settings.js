@@ -193,6 +193,32 @@ export async function renderSettingsScreen(user) {
   bulkCard.appendChild(bulkDropdown);
   cardRow.appendChild(bulkCard);
 
+  const manualCard = document.createElement('div');
+  manualCard.className = 'settings-card manual-card';
+  const manualWrap = document.createElement('label');
+  manualWrap.className = 'toggle-wrap';
+  const manualToggle = document.createElement('input');
+  manualToggle.type = 'checkbox';
+  manualToggle.className = 'toggle-input';
+  manualToggle.checked = localStorage.getItem('manualQuestion') === 'on';
+  manualToggle.onchange = () => {
+    if (manualToggle.checked) {
+      localStorage.setItem('manualQuestion', 'on');
+    } else {
+      localStorage.removeItem('manualQuestion');
+    }
+  };
+  const manualSlider = document.createElement('span');
+  manualSlider.className = 'toggle-slider';
+  manualWrap.appendChild(manualToggle);
+  manualWrap.appendChild(manualSlider);
+  const manualLabel = document.createElement('span');
+  manualLabel.className = 'toggle-label';
+  manualLabel.innerHTML = '手動出題';
+  manualWrap.appendChild(manualLabel);
+  manualCard.appendChild(manualWrap);
+  cardRow.appendChild(manualCard);
+
   const modeCard = document.createElement('div');
   modeCard.className = 'settings-card mode-card';
   const modeLabel = document.createElement('div');
