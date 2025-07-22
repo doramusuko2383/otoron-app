@@ -84,10 +84,10 @@ export async function renderSettingsScreen(user) {
   titleLine.className = "header-title-line";
   titleLine.innerHTML = `🎼 <strong>出題設定</strong>`;
 
-  const helpBtn = document.createElement("div");
+  const helpBtn = document.createElement("button");
   helpBtn.className = "help-button";
-  helpBtn.textContent = "？";
-  helpBtn.onclick = () => openHelp('設定画面');
+  helpBtn.innerHTML = '<img src="images/icon_help.webp" alt="ヘルプ" />';
+  helpBtn.onclick = () => openHelp("設定画面");
   titleLine.appendChild(helpBtn);
 
   const totalSpan = document.createElement("span");
@@ -157,6 +157,11 @@ export async function renderSettingsScreen(user) {
   singleLabel.className = 'toggle-label';
   singleLabel.innerHTML = '単音分化機能';
   singleWrap.appendChild(singleLabel);
+  const singleHelp = document.createElement('button');
+  singleHelp.className = 'help-button';
+  singleHelp.innerHTML = '<img src="images/icon_help.webp" alt="ヘルプ" />';
+  singleHelp.onclick = () => openHelp('単音分化機能');
+  singleWrap.appendChild(singleHelp);
 
   const singleSelectWrap = document.createElement('div');
   singleSelectWrap.className = 'single-note-select-wrap';
@@ -165,7 +170,7 @@ export async function renderSettingsScreen(user) {
   const singleSelect = document.createElement('select');
   singleSelect.innerHTML = `
     <option value="random">ランダム</option>
-    <option value="top">最上音のみ</option>
+    <option value="top">最高音のみ</option>
   `;
   singleSelect.value = localStorage.getItem('singleNoteStrategy') || 'top';
   singleSelect.onchange = () => {
@@ -193,10 +198,60 @@ export async function renderSettingsScreen(user) {
   bulkCard.appendChild(bulkDropdown);
   cardRow.appendChild(bulkCard);
 
+  const manualCard = document.createElement('div');
+  manualCard.className = 'settings-card manual-card';
+  const manualLabel = document.createElement('div');
+  manualLabel.className = 'manual-label';
+  manualLabel.textContent = '出題モード';
+  const manualHelp = document.createElement('button');
+  manualHelp.className = 'help-button';
+  manualHelp.innerHTML = '<img src="images/icon_help.webp" alt="ヘルプ" />';
+  manualHelp.onclick = () => openHelp('出題モード');
+  manualLabel.appendChild(manualHelp);
+  const manualWrap = document.createElement('div');
+  manualWrap.className = 'display-mode-toggle';
+  const autoBtn = document.createElement('button');
+  autoBtn.textContent = '自動';
+  const manualBtn = document.createElement('button');
+  manualBtn.textContent = '手動';
+
+  function updateManualButtons() {
+    const isManual = localStorage.getItem('manualQuestion') === 'on';
+    if (isManual) {
+      manualBtn.classList.add('active');
+      autoBtn.classList.remove('active');
+    } else {
+      autoBtn.classList.add('active');
+      manualBtn.classList.remove('active');
+    }
+  }
+
+  updateManualButtons();
+  autoBtn.onclick = () => {
+    localStorage.removeItem('manualQuestion');
+    updateManualButtons();
+  };
+  manualBtn.onclick = () => {
+    localStorage.setItem('manualQuestion', 'on');
+    updateManualButtons();
+  };
+
+  manualWrap.appendChild(autoBtn);
+  manualWrap.appendChild(manualBtn);
+  manualCard.appendChild(manualLabel);
+  manualCard.appendChild(manualWrap);
+  cardRow.appendChild(manualCard);
+
   const modeCard = document.createElement('div');
   modeCard.className = 'settings-card mode-card';
   const modeLabel = document.createElement('div');
+  modeLabel.className = 'mode-label';
   modeLabel.textContent = '表示モード';
+  const modeHelp = document.createElement('button');
+  modeHelp.className = 'help-button';
+  modeHelp.innerHTML = '<img src="images/icon_help.webp" alt="ヘルプ" />';
+  modeHelp.onclick = () => openHelp('表示モード');
+  modeLabel.appendChild(modeHelp);
   const modeWrap = document.createElement('div');
   modeWrap.className = 'display-mode-toggle';
   const noteBtn = document.createElement('button');

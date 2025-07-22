@@ -11,7 +11,7 @@ export function openPresetModal(currentUnlocked) {
       <div class="modal-box">
         <h3 class="modal-title">
           出題設定の保存・読み込み
-          <button id="preset-help-btn" class="help-button">？</button>
+          <button id="preset-help-btn" class="help-button"><img src="images/icon_help.webp" alt="ヘルプ" /></button>
         </h3>
         <div class="preset-save">
           <input type="text" id="preset-name-input" placeholder="プリセット名" maxlength="16" />

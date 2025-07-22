@@ -61,9 +61,15 @@ let helpOutsideHandler = null;
 let helpKeyHandler = null;
 
 export async function openHelp(topic) {
-  const res = await fetch('helpData.json');
-  const data = await res.json();
-  const help = data[topic];
+  let help;
+  try {
+    const res = await fetch('helpData.json');
+    const data = await res.json();
+    help = data[topic];
+  } catch (e) {
+    console.error('Failed to load help data', e);
+    return;
+  }
   if (!help) return;
 
   document.getElementById('help-title').innerText = help.title;
@@ -134,14 +140,7 @@ export function getBaseUser() {
 }
 
 async function checkTrainingLimit(user) {
-  if (!user || user.is_premium || !user.trial_active) return true;
-  const today = getToday();
-  const records = await loadTrainingRecords(user.id, today);
-  const todayRecord = records[today] || { sets: 0 };
-  if (todayRecord.sets >= 2) {
-    showCustomAlert("無料ユーザーは一日のトレーニングは2回までです");
-    return false;
-  }
+  // Test mode: temporarily disable the free user daily training limit
   return true;
 }
 

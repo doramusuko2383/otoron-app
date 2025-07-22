@@ -202,7 +202,7 @@
   flex-wrap: wrap;
   gap: 0.75em;
 }
-.settings-controls button,
+.settings-controls button:not(.help-button),
 .settings-controls select {
   padding: 6px 12px;
   font-size: 1em;
@@ -213,6 +213,26 @@
   margin: 0;
   display: flex;
   align-items: center;
+}
+
+.help-button {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  line-height: 1;
+  vertical-align: middle;
+}
+
+.header-title-line .help-button {
+  transform: translateX(-0.5em);
 }
 
 .header-title-line #total-count {
@@ -361,6 +381,13 @@
 .settings-card.preset-card .help-button {
   margin-left: 0.5em;
   flex-shrink: 0;
+}
+
+.manual-label {
+  /* display: flex; */
+  align-items: center;
+  gap: 0.2em;
+  position: relative;
 }
 
 .display-mode-toggle {
