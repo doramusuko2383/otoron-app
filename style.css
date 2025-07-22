@@ -267,9 +267,9 @@ button:hover {
   color: inherit;
   border: none;
   padding: 0;
-  width: 1.6em;
-  height: 1.6em;
-  line-height: 1.6em;
+  width: 20px;
+  height: 20px;
+  line-height: 20px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
