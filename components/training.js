@@ -36,10 +36,6 @@ export let lastResults = [];
 export let correctCount = 0;
 
 async function playSoundThen(name, callback) {
-  if (manualQuestion) {
-    if (callback) setTimeout(callback, 0);
-    return;
-  }
   if (currentAudio) {
     currentAudio.pause();
     currentAudio.currentTime = 0;
@@ -514,6 +510,10 @@ function normalizeNoteName(name) {
 }
 
 async function playNoteFile(note, callback) {
+  if (manualQuestion) {
+    if (callback) setTimeout(callback, 0);
+    return;
+  }
   if (currentAudio) {
     currentAudio.pause();
     currentAudio.currentTime = 0;
