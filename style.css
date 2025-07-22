@@ -3111,8 +3111,8 @@ button:hover {
   word-break: keep-all;
   text-align: center;
   line-height: 1.4;
-  padding: 1em;
-  font-size: 1em;
+  padding: 0.6em;
+  font-size: 0.9em;
 }
 .settings-card.preset-card .help-button {
   margin-left: 0.5em;
