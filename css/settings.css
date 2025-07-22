@@ -363,6 +363,12 @@
   flex-shrink: 0;
 }
 
+.manual-label {
+  display: flex;
+  align-items: center;
+  gap: 0.2em;
+}
+
 .display-mode-toggle {
   display: flex;
   gap: 4px;

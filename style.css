@@ -194,6 +194,10 @@ button:hover {
 
 .modal-title {
   margin: 0 0 0.5em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3em;
 }
 
 .modal-buttons {
@@ -3123,6 +3127,12 @@ button:hover {
 .settings-card.preset-card .help-button {
   margin-left: 0.5em;
   flex-shrink: 0;
+}
+
+.manual-label {
+  display: flex;
+  align-items: center;
+  gap: 0.2em;
 }
 
 /* 表示モードトグル */
