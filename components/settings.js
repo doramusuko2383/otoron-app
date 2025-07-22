@@ -195,27 +195,39 @@ export async function renderSettingsScreen(user) {
 
   const manualCard = document.createElement('div');
   manualCard.className = 'settings-card manual-card';
-  const manualWrap = document.createElement('label');
-  manualWrap.className = 'toggle-wrap';
-  const manualToggle = document.createElement('input');
-  manualToggle.type = 'checkbox';
-  manualToggle.className = 'toggle-input';
-  manualToggle.checked = localStorage.getItem('manualQuestion') === 'on';
-  manualToggle.onchange = () => {
-    if (manualToggle.checked) {
-      localStorage.setItem('manualQuestion', 'on');
+  const manualLabel = document.createElement('div');
+  manualLabel.textContent = '出題モード';
+  const manualWrap = document.createElement('div');
+  manualWrap.className = 'display-mode-toggle';
+  const autoBtn = document.createElement('button');
+  autoBtn.textContent = '自動';
+  const manualBtn = document.createElement('button');
+  manualBtn.textContent = '手動';
+
+  function updateManualButtons() {
+    const isManual = localStorage.getItem('manualQuestion') === 'on';
+    if (isManual) {
+      manualBtn.classList.add('active');
+      autoBtn.classList.remove('active');
     } else {
-      localStorage.removeItem('manualQuestion');
+      autoBtn.classList.add('active');
+      manualBtn.classList.remove('active');
     }
+  }
+
+  updateManualButtons();
+  autoBtn.onclick = () => {
+    localStorage.removeItem('manualQuestion');
+    updateManualButtons();
   };
-  const manualSlider = document.createElement('span');
-  manualSlider.className = 'toggle-slider';
-  manualWrap.appendChild(manualToggle);
-  manualWrap.appendChild(manualSlider);
-  const manualLabel = document.createElement('span');
-  manualLabel.className = 'toggle-label';
-  manualLabel.innerHTML = '手動モード';
-  manualWrap.appendChild(manualLabel);
+  manualBtn.onclick = () => {
+    localStorage.setItem('manualQuestion', 'on');
+    updateManualButtons();
+  };
+
+  manualWrap.appendChild(autoBtn);
+  manualWrap.appendChild(manualBtn);
+  manualCard.appendChild(manualLabel);
   manualCard.appendChild(manualWrap);
   cardRow.appendChild(manualCard);
 
