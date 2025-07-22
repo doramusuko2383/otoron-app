@@ -276,7 +276,7 @@ button:hover {
 }
 
 .header-title-line .help-button {
-  margin-left: 0.5em;
+  transform: translateX(-0.5em);
 }
 
 .help-button img {
@@ -2938,6 +2938,7 @@ button:hover {
 .header-title-line {
   display: flex;
   align-items: center;
+  gap: 1em;
   font-size: 1.3em;
   font-weight: bold;
   white-space: nowrap;

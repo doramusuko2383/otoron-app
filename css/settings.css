@@ -176,6 +176,7 @@
 .header-title-line {
   display: flex;
   align-items: center;
+  gap: 1em;
   font-size: 1.3em;
   font-weight: bold;
   white-space: nowrap;
@@ -231,7 +232,7 @@
 }
 
 .header-title-line .help-button {
-  margin-left: 0.5em;
+  transform: translateX(-0.5em);
 }
 
 .header-title-line #total-count {
