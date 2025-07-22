@@ -613,20 +613,25 @@ function showSingleNoteQuiz(chord, onFinish, isLast = false) {
 
   const feedback = document.getElementById('feedback');
 
-  const displayWrap = document.createElement('div');
-  displayWrap.className = 'single-note-options';
-  displayWrap.style.display = 'flex';
-  displayWrap.style.justifyContent = 'center';
-  displayWrap.style.gap = '12px';
-  displayWrap.style.marginTop = '1em';
-  overlay.appendChild(displayWrap);
+  let displayWrap = null;
+  if (!manualQuestion) {
+    displayWrap = document.createElement('div');
+    displayWrap.className = 'single-note-options';
+    displayWrap.style.display = 'flex';
+    displayWrap.style.justifyContent = 'center';
+    displayWrap.style.gap = '12px';
+    displayWrap.style.marginTop = '1em';
+    overlay.appendChild(displayWrap);
+  }
 
   const piano = document.createElement('div');
   piano.className = 'piano-container';
   const whiteWrap = document.createElement('div');
   whiteWrap.className = 'white-keys';
   piano.appendChild(whiteWrap);
-  overlay.appendChild(piano);
+  if (manualQuestion) {
+    overlay.appendChild(piano);
+  }
 
   let recorded = false;
 
@@ -645,7 +650,9 @@ function showSingleNoteQuiz(chord, onFinish, isLast = false) {
   }
 
   function setActive(active) {
-    piano.querySelectorAll('button').forEach(b => {
+    const target = manualQuestion ? piano : displayWrap;
+    if (!target) return;
+    target.querySelectorAll('button').forEach(b => {
       b.disabled = !active;
       b.style.opacity = active ? '1' : '0.5';
     });
@@ -690,14 +697,17 @@ function showSingleNoteQuiz(chord, onFinish, isLast = false) {
     }
   }
 
-  options.forEach(n => {
-    const btn = document.createElement('button');
-    btn.textContent = noteLabels[n] || n;
-    btn.style.fontSize = '1.5em';
-    btn.style.padding = '0.5em 1em';
-    btn.disabled = true;
-    displayWrap.appendChild(btn);
-  });
+  if (!manualQuestion && displayWrap) {
+    options.forEach(n => {
+      const btn = document.createElement('button');
+      btn.textContent = noteLabels[n] || n;
+      btn.style.fontSize = '1.5em';
+      btn.style.padding = '0.5em 1em';
+      btn.onclick = () => handle(n);
+      btn.disabled = true;
+      displayWrap.appendChild(btn);
+    });
+  }
 
   const whiteOrder = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
   const blackOrder = [
@@ -724,11 +734,20 @@ function showSingleNoteQuiz(chord, onFinish, isLast = false) {
     piano.appendChild(btn);
   });
 
-  piano.addEventListener('click', e => {
-    const btn = e.target.closest('button');
-    if (!btn || btn.disabled) return;
-    handle(btn.dataset.note);
-  });
+  if (manualQuestion) {
+    piano.addEventListener('click', e => {
+      const btn = e.target.closest('button');
+      if (!btn || btn.disabled) return;
+      handle(btn.dataset.note);
+    });
+  }
+
+  if (manualQuestion) {
+    chord.notes.forEach(n => {
+      const key = piano.querySelector(`button[data-note="${toPitchClass(n)}"]`);
+      if (key) key.classList.add('key-highlight');
+    });
+  }
 
   setActive(false);
   playNoteFile(note, () => {
@@ -823,7 +842,7 @@ function checkAnswer(selected) {
 
     const isLast = questionQueue.length === 0;
     if (isLast) {
-      if (singleNoteMode) {
+      if (singleNoteMode && manualQuestion) {
         showSingleNoteQuiz(currentAnswer, proceed, true);
       } else {
         proceed();
@@ -832,7 +851,7 @@ function checkAnswer(selected) {
       const voices = ["good1", "good2"];
       showFeedback("いいね", "good");
       playSoundThen(voices[Math.floor(Math.random() * voices.length)], () => {
-        if (singleNoteMode) {
+        if (singleNoteMode && manualQuestion) {
           showSingleNoteQuiz(currentAnswer, proceed, false);
         } else {
           proceed();

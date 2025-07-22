@@ -3559,11 +3559,11 @@ button#dummy-button {
   gap: 2px;
 }
 .square-btn-content.manual-mode .note-label {
-  font-size: 0.7em;
+  font-size: 0.85em;
   line-height: 1;
 }
 .square-btn-content.manual-mode.note-small .note-label {
-  font-size: calc(0.7em - 2pt);
+  font-size: calc(0.85em - 2pt);
 }
 
 /* --- dynamic grid layouts --- */
@@ -3779,6 +3779,11 @@ button#dummy-button {
 .key-black.pos3 { left: calc(100% / 7 * 3.75); }
 .key-black.pos4 { left: calc(100% / 7 * 4.75); }
 .key-black.pos5 { left: calc(100% / 7 * 5.75); }
+
+.key-highlight {
+  box-shadow: 0 0 10px 4px rgba(255, 215, 0, 0.9);
+  z-index: 3;
+}
 
 #feedback {
   text-align: center;
