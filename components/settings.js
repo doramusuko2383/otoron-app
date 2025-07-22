@@ -157,6 +157,11 @@ export async function renderSettingsScreen(user) {
   singleLabel.className = 'toggle-label';
   singleLabel.innerHTML = '単音分化機能';
   singleWrap.appendChild(singleLabel);
+  const singleHelp = document.createElement('button');
+  singleHelp.className = 'help-button';
+  singleHelp.innerHTML = '<img src="images/icon_help.webp" alt="ヘルプ" />';
+  singleHelp.onclick = () => openHelp('単音分化機能');
+  singleWrap.appendChild(singleHelp);
 
   const singleSelectWrap = document.createElement('div');
   singleSelectWrap.className = 'single-note-select-wrap';
@@ -165,7 +170,7 @@ export async function renderSettingsScreen(user) {
   const singleSelect = document.createElement('select');
   singleSelect.innerHTML = `
     <option value="random">ランダム</option>
-    <option value="top">最上音のみ</option>
+    <option value="top">最高音のみ</option>
   `;
   singleSelect.value = localStorage.getItem('singleNoteStrategy') || 'top';
   singleSelect.onchange = () => {
@@ -240,7 +245,13 @@ export async function renderSettingsScreen(user) {
   const modeCard = document.createElement('div');
   modeCard.className = 'settings-card mode-card';
   const modeLabel = document.createElement('div');
+  modeLabel.className = 'mode-label';
   modeLabel.textContent = '表示モード';
+  const modeHelp = document.createElement('button');
+  modeHelp.className = 'help-button';
+  modeHelp.innerHTML = '<img src="images/icon_help.webp" alt="ヘルプ" />';
+  modeHelp.onclick = () => openHelp('表示モード');
+  modeLabel.appendChild(modeHelp);
   const modeWrap = document.createElement('div');
   modeWrap.className = 'display-mode-toggle';
   const noteBtn = document.createElement('button');
