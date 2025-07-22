@@ -204,6 +204,12 @@ function showQuiz() {
   const nextChordName = questionQueue.pop();
   currentAnswer = chords.find(c => c.name === nextChordName);
   drawQuizScreen();
+  if (manualQuestion) {
+    const correctBtn = document.querySelector(`.square-btn-content[data-name="${currentAnswer.name}"]`);
+    if (correctBtn) {
+      correctBtn.classList.add('correct-highlight');
+    }
+  }
   questionCount++;
   updateProgressUI();
 
@@ -743,10 +749,8 @@ function showSingleNoteQuiz(chord, onFinish, isLast = false) {
   }
 
   if (manualQuestion) {
-    chord.notes.forEach(n => {
-      const key = piano.querySelector(`button[data-note="${toPitchClass(n)}"]`);
-      if (key) key.classList.add('key-highlight');
-    });
+    const key = piano.querySelector(`button[data-note="${pitch}"]`);
+    if (key) key.classList.add('key-highlight');
   }
 
   setActive(false);
