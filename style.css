@@ -3250,6 +3250,7 @@ button:hover {
   .settings-card.mode-card { order: 2; }
   .settings-card.bulk-card { order: 3; }
   .settings-card.preset-card { order: 4; }
+  .settings-card.manual-card { order: 5; }
 }
 
 
@@ -3552,6 +3553,17 @@ button#dummy-button {
 }
 .square-btn-content.note-small {
   font-size: calc(1em - 2pt) !important;
+}
+.square-btn-content.manual-mode {
+  flex-direction: column;
+  gap: 2px;
+}
+.square-btn-content.manual-mode .note-label {
+  font-size: 0.7em;
+  line-height: 1;
+}
+.square-btn-content.manual-mode.note-small .note-label {
+  font-size: calc(0.7em - 2pt);
 }
 
 /* --- dynamic grid layouts --- */

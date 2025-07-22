@@ -26,6 +26,7 @@ let singleNoteMode = false;
 let singleNoteStrategy = 'top';
 let chordProgressCount = 0;
 let chordSoundOn = true;
+let manualQuestion = false;
 let displayMode = null; // 'note' or 'color'
 
 export const stats = {};
@@ -35,6 +36,10 @@ export let lastResults = [];
 export let correctCount = 0;
 
 async function playSoundThen(name, callback) {
+  if (manualQuestion) {
+    if (callback) setTimeout(callback, 0);
+    return;
+  }
   if (currentAudio) {
     currentAudio.pause();
     currentAudio.currentTime = 0;
@@ -78,6 +83,7 @@ export async function renderTrainingScreen(user) {
   singleNoteMode = localStorage.getItem("singleNoteMode") === "on";
   singleNoteStrategy = localStorage.getItem("singleNoteStrategy") || 'top';
   chordSoundOn = localStorage.getItem("chordSound") !== "off";
+  manualQuestion = localStorage.getItem("manualQuestion") === "on";
   const flags = user.isTemp
     ? Object.fromEntries((user.unlockedKeys || []).map(k => [k, { unlocked: true }]))
     : await loadGrowthFlags(user.id);
@@ -330,7 +336,11 @@ function drawQuizScreen() {
       const inner = document.createElement("div");
       inner.className = `square-btn-content ${only.colorClass}`;
       let showNote = false;
-      if (displayMode === "note" && only.italian) {
+      if (manualQuestion && only.italian) {
+        inner.innerHTML = `<span class="color-label">${only.labelHtml}</span><span class="note-label">${only.italian.map(kanaToHiragana).join('')}</span>`;
+        inner.classList.add('manual-mode');
+        showNote = true;
+      } else if (displayMode === "note" && only.italian) {
         inner.innerHTML = only.italian.map(kanaToHiragana).join("");
         showNote = true;
       } else {
@@ -374,7 +384,11 @@ function drawQuizScreen() {
       const inner = document.createElement("div");
       inner.className = `square-btn-content ${chord.colorClass}`;
       let noteFlag = false;
-      if (displayMode === "note" && chord.italian) {
+      if (manualQuestion && chord.italian) {
+        inner.innerHTML = `<span class="color-label">${chord.labelHtml}</span><span class="note-label">${chord.italian.map(kanaToHiragana).join('')}</span>`;
+        inner.classList.add('manual-mode');
+        noteFlag = true;
+      } else if (displayMode === "note" && chord.italian) {
         inner.innerHTML = chord.italian.map(kanaToHiragana).join("");
         noteFlag = true;
       } else {
@@ -471,7 +485,7 @@ if (correctBtn) {
 
 
 async function playChordFile(filename) {
-  if (!chordSoundOn) return;
+  if (!chordSoundOn || manualQuestion) return;
   if (currentAudio) {
     currentAudio.pause();
     currentAudio.currentTime = 0;
