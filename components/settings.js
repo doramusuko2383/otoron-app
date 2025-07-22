@@ -214,7 +214,7 @@ export async function renderSettingsScreen(user) {
   manualWrap.appendChild(manualSlider);
   const manualLabel = document.createElement('span');
   manualLabel.className = 'toggle-label';
-  manualLabel.innerHTML = '手動出題';
+  manualLabel.innerHTML = '手動モード';
   manualWrap.appendChild(manualLabel);
   manualCard.appendChild(manualWrap);
   cardRow.appendChild(manualCard);
