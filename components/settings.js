@@ -84,7 +84,7 @@ export async function renderSettingsScreen(user) {
   titleLine.className = "header-title-line";
   titleLine.innerHTML = `🎼 <strong>出題設定</strong>`;
 
-  const helpBtn = document.createElement("div");
+  const helpBtn = document.createElement("button");
   helpBtn.className = "help-button";
   helpBtn.innerHTML = '<img src="images/icon_help.webp" alt="ヘルプ" />';
   helpBtn.onclick = () => openHelp("設定画面");
@@ -196,8 +196,9 @@ export async function renderSettingsScreen(user) {
   const manualCard = document.createElement('div');
   manualCard.className = 'settings-card manual-card';
   const manualLabel = document.createElement('div');
+  manualLabel.className = 'manual-label';
   manualLabel.textContent = '出題モード';
-  const manualHelp = document.createElement('div');
+  const manualHelp = document.createElement('button');
   manualHelp.className = 'help-button';
   manualHelp.innerHTML = '<img src="images/icon_help.webp" alt="ヘルプ" />';
   manualHelp.onclick = () => openHelp('出題モード');

@@ -157,6 +157,10 @@ button:hover {
 
 .modal-title {
   margin: 0 0 0.5em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3em;
 }
 
 .modal-buttons {
