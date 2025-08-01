@@ -18,7 +18,7 @@ export function renderTrainingWhiteResultScreen(user) {
 
   const history = JSON.parse(sessionStorage.getItem("noteHistory") || "[]");
 
-  const resultNotes = history.map(entry => entry.question);
+  const resultNotes = history.map(entry => entry.noteQuestion);
   console.log('resultNotes', resultNotes);
 
   const vexDiv = document.createElement("div");
@@ -30,9 +30,9 @@ export function renderTrainingWhiteResultScreen(user) {
 
   const summary = {};
   history.forEach(entry => {
-    if (!summary[entry.question]) summary[entry.question] = { correct: 0, total: 0 };
-    summary[entry.question].total++;
-    if (entry.correct) summary[entry.question].correct++;
+    if (!summary[entry.noteQuestion]) summary[entry.noteQuestion] = { correct: 0, total: 0 };
+    summary[entry.noteQuestion].total++;
+    if (entry.correct) summary[entry.noteQuestion].correct++;
   });
 
   function convertForStaff(note) {
@@ -55,8 +55,8 @@ export function renderTrainingWhiteResultScreen(user) {
     const measures = Array.from({ length: Math.ceil(history.length / 3) }, () => ({ treble: [], bass: [] }));
 
     history.forEach((entry, idx) => {
-      console.log('processing:', entry.question);
-      const conv = convertForStaff(entry.question);
+      console.log('processing:', entry.noteQuestion);
+      const conv = convertForStaff(entry.noteQuestion);
       const vNote = new VF.StaveNote({ clef: conv.clef, keys: [conv.key], duration: "q" });
       if (conv.accidental) vNote.addAccidental(0, new VF.Accidental(conv.accidental));
       if (!entry.correct) {
