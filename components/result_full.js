@@ -19,6 +19,9 @@ export function renderTrainingFullResultScreen(user) {
   const history = JSON.parse(sessionStorage.getItem("noteHistory") || "[]");
   const summary = {};
 
+  const resultNotes = history.map(entry => entry.question);
+  console.log('resultNotes', resultNotes);
+
   const validNotes = new Set([
     "A-1","A#-1",
     "A0","A#0","B-1","B0",
@@ -42,6 +45,10 @@ export function renderTrainingFullResultScreen(user) {
   const VF = (typeof Vex !== "undefined" && Vex.Flow) ? Vex.Flow : null; // use global VexFlow 3.x loaded in index.html
 
   function convertForStaff(note) {
+    if (!note || typeof note !== 'string') {
+      console.warn('convertForStaff: invalid note', note);
+      return { clef: "treble", key: "c/4", shift: 0, accidental: null };
+    }
     const m = note.match(/^([A-G]#?)(-?\d)$/);
     if (!m) return { clef: "treble", key: "c/4", shift: 0, accidental: null };
     let [_, base, octaveStr] = m;
@@ -74,6 +81,7 @@ export function renderTrainingFullResultScreen(user) {
   const measures = Array.from({ length: Math.max(1, Math.ceil(entries.length / 5)) }, () => ({ treble: [], bass: [] }));
 
   entries.forEach((entry, idx) => {
+    console.log('processing:', entry.question);
 
     if (!summary[entry.question]) summary[entry.question] = { correct: 0, total: 0 };
     summary[entry.question].total++;
