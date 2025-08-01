@@ -150,9 +150,18 @@ export async function renderTrainingScreen(user) {
   if (!questionQueue.length) {
     questionQueue = createQuestionQueue();
   }
-  // 初回はユーザー操作内で直接出題を開始
-  nextQuestion(); // ✅ 出題開始！
-  showFeedback("はじめるよ", "good");
+
+  // 🎬 「はじめるよ」画面を先に表示し、和音ボタン表示後に音を鳴らす
+  const firstChordName = questionQueue[questionQueue.length - 1];
+  const firstChord = chords.find(c => c.name === firstChordName);
+  if (firstChord) {
+    unlockAudio(firstChord.file); // 事前に再生許可を取得
+  }
+  showFeedback("はじめるよ", "good", 0);
+  setTimeout(() => {
+    hideFeedback();
+    nextQuestion(); // ✅ 出題開始！
+  }, 600);
 }
 
 async function nextQuestion() {
@@ -499,6 +508,22 @@ async function playChordFile(filename) {
   }
 }
 
+function unlockAudio(filename) {
+  if (!chordSoundOn || manualQuestion) return;
+  const audio = getAudio(`audio/${filename}`);
+  audio.muted = true;
+  audio
+    .play()
+    .then(() => {
+      audio.pause();
+      audio.muted = false;
+      audio.currentTime = 0;
+    })
+    .catch(e => {
+      console.warn("🎧 audio.play() エラー:", e);
+    });
+}
+
 function normalizeNoteName(name) {
   return name
     .replace("C♭", "B")
@@ -791,6 +816,15 @@ function showFeedback(message, type = "good", duration = 1000) {
       feedbackTimeoutId = null;
     }, duration);
   }
+}
+
+function hideFeedback() {
+  if (feedbackTimeoutId) {
+    clearTimeout(feedbackTimeoutId);
+    feedbackTimeoutId = null;
+  }
+  const fb = document.getElementById("feedback");
+  if (fb) fb.style.display = "none";
 }
 
 function updateProgressUI() {
