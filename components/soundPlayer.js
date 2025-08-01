@@ -19,18 +19,33 @@ export function playNote(noteName) {
   return new Promise((resolve) => {
     const encoded = encodeURIComponent(normalizeNoteName(noteName));
     const audio = getAudio(`sounds/${encoded}.mp3`);
-    audio.addEventListener("ended", resolve);
-    audio.addEventListener("error", () => {
-      console.warn(`音声再生エラー: ${noteName}`);
+
+    const cleanup = () => {
+      audio.removeEventListener("ended", handleEnded);
+      audio.removeEventListener("error", handleError);
+    };
+
+    const handleEnded = () => {
+      cleanup();
       resolve();
-    });
+    };
+
+    const handleError = () => {
+      console.warn(`音声再生エラー: ${noteName}`);
+      cleanup();
+      resolve();
+    };
+
+    audio.addEventListener("ended", handleEnded);
+    audio.addEventListener("error", handleError);
+
     (async () => {
       try {
         await audio.play();
       } catch (e) {
         console.warn(`音声再生エラー: ${noteName}`, e);
+        handleError();
       }
-      resolve();
     })();
   });
 }
