@@ -18,6 +18,9 @@ export function renderTrainingWhiteResultScreen(user) {
 
   const history = JSON.parse(sessionStorage.getItem("noteHistory") || "[]");
 
+  const resultNotes = history.map(entry => entry.question);
+  console.log('resultNotes', resultNotes);
+
   const vexDiv = document.createElement("div");
   vexDiv.id = "vexflow-staff";
   vexDiv.style.margin = "2em 0";
@@ -33,6 +36,10 @@ export function renderTrainingWhiteResultScreen(user) {
   });
 
   function convertForStaff(note) {
+    if (!note || typeof note !== 'string') {
+      console.warn('convertForStaff: invalid note', note);
+      return { clef: "treble", key: "c/4", accidental: null };
+    }
     const m = note.match(/^([A-G]#?)(\d)$/);
     if (!m) return { clef: "treble", key: "c/4", accidental: null };
     const [_, base, octave] = m;
@@ -48,6 +55,7 @@ export function renderTrainingWhiteResultScreen(user) {
     const measures = Array.from({ length: Math.ceil(history.length / 3) }, () => ({ treble: [], bass: [] }));
 
     history.forEach((entry, idx) => {
+      console.log('processing:', entry.question);
       const conv = convertForStaff(entry.question);
       const vNote = new VF.StaveNote({ clef: conv.clef, keys: [conv.key], duration: "q" });
       if (conv.accidental) vNote.addAccidental(0, new VF.Accidental(conv.accidental));

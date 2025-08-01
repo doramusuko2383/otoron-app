@@ -17,6 +17,10 @@ export function renderLoginScreen(container, onLoginSuccess) {
   container.innerHTML = `
     <div class="login-wrapper">
       <h2 class="login-title">ログイン</h2>
+      <div class="login-note">
+        <p>・Googleでログインしたことがある場合は、必ず「Googleでログイン」を使ってください。</p>
+        <p>・メールアドレスとパスワードは、最初にメール認証を使った場合のみ有効です。</p>
+      </div>
       <form class="login-form">
         <input type="email" id="email" placeholder="メールアドレス" required />
         <div class="password-wrapper">
@@ -126,7 +130,11 @@ export function renderLoginScreen(container, onLoginSuccess) {
       await ensureUserAndProgress(user);
       onLoginSuccess();
     } catch (err) {
-      showCustomAlert("ログイン失敗：" + err.message);
+      if (err.code === "auth/missing-password" || err.code === "auth/wrong-password") {
+        showCustomAlert("このアカウントはGoogleで登録されている可能性があります。Googleログインをお試しください。");
+      } else {
+        showCustomAlert("ログイン失敗：" + err.message);
+      }
     }
   });
 

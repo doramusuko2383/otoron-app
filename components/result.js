@@ -45,8 +45,8 @@ export function createResultTable(results) {
       .map((r, i) => `
         <tr class="${r.correct ? 'correct-row' : 'wrong-row'}">
           <td>${i + 1}</td>
-          <td>${labelNote(r.noteQuestion || '')}</td>
-          <td><span class="ans-mark ${r.correct ? 'correct' : 'wrong'}">${r.correct ? '◯' : ''}</span>${labelNote(r.noteAnswer || '')}</td>
+          <td>${labelNote(r.question || '')}</td>
+          <td><span class="ans-mark ${r.correct ? 'correct' : 'wrong'}">${r.correct ? '◯' : ''}</span>${labelNote(r.answer || '')}</td>
         </tr>`)
       .join('');
     return `<table class="result-table">
@@ -83,8 +83,8 @@ export function createResultTable(results) {
               ${getLabelHiragana(r.answerName)}
             </div>
           </td>
-          ${singleNoteMode ? `<td>${noteRes ? labelNote(noteRes.noteQuestion || '') : ''}</td>` : ''}
-          ${singleNoteMode ? `<td>${noteRes ? '<span class="note-answer">' + '<span class="ans-mark ' + (noteRes.correct ? 'correct' : 'wrong') + '">' + (noteRes.correct ? '◯' : '') + '</span>' + labelNote(noteRes.noteAnswer || '') + '</span>' : ''}</td>` : ''}
+          ${singleNoteMode ? `<td>${noteRes ? labelNote(noteRes.question || '') : ''}</td>` : ''}
+          ${singleNoteMode ? `<td>${noteRes ? '<span class="note-answer">' + '<span class="ans-mark ' + (noteRes.correct ? 'correct' : 'wrong') + '">' + (noteRes.correct ? '◯' : '') + '</span>' + labelNote(noteRes.answer || '') + '</span>' : ''}</td>` : ''}
         </tr>`;
     }
     return rhtml;

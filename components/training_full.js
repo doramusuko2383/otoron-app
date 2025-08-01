@@ -98,8 +98,8 @@ export async function renderTrainingScreen(user) {
     const note = btn.dataset.note;
     const correct = note === currentNote.replace(/[0-9-]/g, "");
     noteHistory.push({
-      noteQuestion: currentNote,
-      noteAnswer: note,
+      question: currentNote,
+      answer: note,
       correct,
       isSingleNote: true
     });
