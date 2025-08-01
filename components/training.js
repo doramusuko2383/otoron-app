@@ -693,8 +693,8 @@ function showSingleNoteQuiz(chord, onFinish, isLast = false) {
     if (!recorded) {
       lastResults.push({
         chordName: chord.name,
-        noteQuestion: note,
-        noteAnswer: selection,
+        question: note,
+        answer: selection,
         correct,
         isSingleNote: true
       });
