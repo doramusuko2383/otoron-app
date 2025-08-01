@@ -844,7 +844,7 @@ function checkAnswer(selected) {
 
     const isLast = questionQueue.length === 0;
     if (isLast) {
-      if (singleNoteMode && manualQuestion) {
+      if (singleNoteMode) {
         showSingleNoteQuiz(currentAnswer, proceed, true);
       } else {
         proceed();
@@ -853,7 +853,7 @@ function checkAnswer(selected) {
       const voices = ["good1", "good2"];
       showFeedback("いいね", "good");
       playSoundThen(voices[Math.floor(Math.random() * voices.length)], () => {
-        if (singleNoteMode && manualQuestion) {
+        if (singleNoteMode) {
           showSingleNoteQuiz(currentAnswer, proceed, false);
         } else {
           proceed();
