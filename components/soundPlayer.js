@@ -1,5 +1,4 @@
 import { getAudio } from "../utils/audioCache.js";
-const audioBasePath = "./sounds";
 
 function normalizeNoteName(name) {
   return name
@@ -20,11 +19,6 @@ export function playNote(noteName) {
     const encoded = encodeURIComponent(normalizeNoteName(noteName));
     const audio = getAudio(`sounds/${encoded}.mp3`);
 
-    const cleanup = () => {
-      audio.removeEventListener("ended", handleEnded);
-      audio.removeEventListener("error", handleError);
-    };
-
     const handleEnded = () => {
       cleanup();
       resolve();
@@ -34,6 +28,12 @@ export function playNote(noteName) {
       console.warn(`音声再生エラー: ${noteName}`);
       cleanup();
       resolve();
+    };
+
+    const cleanup = () => {
+      // Remove listeners after playback to avoid leaks
+      audio.removeEventListener("ended", handleEnded);
+      audio.removeEventListener("error", handleError);
     };
 
     audio.addEventListener("ended", handleEnded);
