@@ -1,7 +1,10 @@
 import { switchScreen } from "../main.js";
 import { showCustomAlert } from "./home.js";
 import { firebaseAuth } from "../firebase/firebase-init.js";
-import { sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {
+  sendPasswordResetEmail,
+  fetchSignInMethodsForEmail,
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 export function renderForgotPasswordScreen() {
   const app = document.getElementById("app");
@@ -15,6 +18,9 @@ export function renderForgotPasswordScreen() {
       <input type="email" id="reset-email" placeholder="メールアドレス" required />
       <button type="submit" class="login-button">送信</button>
     </form>
+    <p class="reset-note" style="margin-top:1rem;font-size:0.9rem;color:#666;">
+      ※ Googleなど外部サービスで登録されたアカウントは、パスワードの再設定はできません。ログイン画面の『Googleでログイン』ボタンをご利用ください。
+    </p>
     <div class="login-actions">
       <button id="back-btn" class="login-secondary">戻る</button>
     </div>
@@ -30,11 +36,22 @@ export function renderForgotPasswordScreen() {
       return;
     }
     try {
+      const methods = await fetchSignInMethodsForEmail(firebaseAuth, email);
+      if (methods.includes("google.com") && !methods.includes("password")) {
+        showCustomAlert(
+          "このメールアドレスはGoogleログイン専用です。Googleログインをご利用ください。",
+        );
+        return;
+      }
+
       await sendPasswordResetEmail(firebaseAuth, email, {
         url: `${location.origin}/reset-password.html`,
         handleCodeInApp: true,
       });
-      showCustomAlert("リセット用のメールを送信しました");
+      showCustomAlert(
+        "リセット用のメールを送信しました。※ Googleなど外部サービスで登録されたアカウントは、パスワードの再設定はできません。" +
+          "ログイン画面の『Googleでログイン』ボタンをご利用ください。",
+      );
       switchScreen("login");
     } catch (error) {
       showCustomAlert("メール送信に失敗しました：" + error.message);
