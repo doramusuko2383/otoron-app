@@ -42,7 +42,7 @@ if (signInError) {
 アプリが利用する標準の Supabase プロジェクトは下記の URL とキーです。誤って別の DB に切り替えた場合は `utils/supabaseClient.js` をこの設定に戻してください。
 
 ```javascript
-const supabaseUrl = 'https://xncwydeesyqvyqafbg.supabase.co';
+const supabaseUrl = 'https://xnccwydcesyvqvyqafbg.supabase.co';
 const supabaseAnonKey = '49b00ff076eae66c4dd35832cd07a1a4f6a1632e2b887d7fbf9ce10d68db4e1d';
 ```
 
