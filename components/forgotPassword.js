@@ -43,7 +43,7 @@ export function renderForgotPasswordScreen() {
       }
 
       await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: "https://otoron-app.vercel.app/reset-password",
+        redirectTo: "https://otoron-app.vercel.app/reset-password.html",
       });
       showCustomAlert(
         "リセット用のメールを送信しました。※ Googleなど外部サービスで登録されたアカウントは、パスワードの再設定はできません。" +
