@@ -29,7 +29,7 @@ export function renderForgotPasswordScreen() {
       return;
     }
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${location.origin}/reset-password`,
+      redirectTo: `${location.origin}/reset-password.html`,
     });
     if (error) {
       showCustomAlert("メール送信に失敗しました：" + error.message);
