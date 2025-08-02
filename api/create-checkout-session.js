@@ -33,7 +33,7 @@ export default async function handler(req, res) {
 
   try {
     const origin = req.headers.origin;
-    const baseUrl = (process.env.BASE_URL || origin || 'https://otoron-app.vercel.app').replace(/\/$/, '');
+    const baseUrl = (process.env.BASE_URL || origin || 'https://playotoron.com').replace(/\/$/, '');
 
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
