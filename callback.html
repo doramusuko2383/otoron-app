@@ -1,70 +1,24 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Googleログイン処理中</title>
-  <meta name="robots" content="noindex">
+  <meta name="robots" content="noindex" />
 </head>
 <body>
   <p>ログイン処理中です...</p>
-  <pre id="debug-log" style="white-space: pre-wrap; color: red; font-size: 0.9em;"></pre>
   <script type="module">
     import { supabase } from './utils/supabaseClient.js';
-    import { createInitialChordProgress } from './utils/progressUtils.js';
-    import { addDebugLog, showDebugLog } from './utils/loginDebug.js';
 
     (async () => {
-
-    const debugMode = new URLSearchParams(window.location.search).get('debug') === '1';
-    addDebugLog('callback.html loaded');
-    showDebugLog();
-
-    try {
-      const { data, error } = await supabase.auth.getSessionFromUrl({ storeSession: true });
-      if (error) throw error;
-      const authUser = data?.session?.user;
-      addDebugLog('User from OAuth callback:', authUser ? { email: authUser.email, id: authUser.id } : null);
-      showDebugLog();
-      if (!authUser) {
-        if (!debugMode) window.location.href = '/';
-        return;
+      try {
+        const { error } = await supabase.auth.getSessionFromUrl({ storeSession: true });
+        if (error) throw error;
+      } catch (err) {
+        console.error('OAuth callback error:', err);
+      } finally {
+        window.location.replace('/');
       }
-
-      let { data: user } = await supabase
-        .from('users')
-        .select('*')
-        .eq('firebase_uid', authUser.id)
-        .maybeSingle();
-      let isNew = false;
-      if (!user) {
-        const trialEnd = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
-        const { data: inserted } = await supabase
-          .from('users')
-          .insert([
-            { firebase_uid: authUser.id, name: '名前未設定', email: authUser.email, trial_active: true, trial_end_date: trialEnd },
-          ])
-          .select()
-          .maybeSingle();
-        user = inserted;
-        isNew = true;
-        await createInitialChordProgress(user.id);
-      }
-
-      if (isNew) {
-        addDebugLog('redirect: register-thankyou');
-        showDebugLog();
-        if (!debugMode) window.location.href = '/register-thankyou.html';
-      } else {
-        addDebugLog('redirect: home');
-        showDebugLog();
-        if (!debugMode) window.location.href = '/home.html';
-      }
-    } catch (e) {
-      console.error('auth flow error', e);
-      addDebugLog('auth flow error', e.message);
-      showDebugLog();
-      if (!debugMode) window.location.href = '/';
-    }
     })();
   </script>
 </body>
