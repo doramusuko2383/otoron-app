@@ -39,6 +39,13 @@
 
     gtag('config', 'G-QCRGGLGDER');
   </script>
+  <script>
+    // Supabaseのパスワードリカバリーリンクでアクセスされた場合、
+    // 専用のパスワード再設定ページへ転送する
+    if (location.hash.includes('type=recovery')) {
+      window.location.replace('/reset-password.html' + location.hash);
+    }
+  </script>
   <script type="module">
     import { showDebugLog } from './utils/loginDebug.js';
     const debugMode = new URLSearchParams(window.location.search).get('debug') === '1';
