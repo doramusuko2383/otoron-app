@@ -46,7 +46,7 @@ export function renderForgotPasswordScreen() {
       // refresh_token in the redirect URL hash. `reset-password.html` consumes
       // these tokens to finalize the update.
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: "https://otoron-app.vercel.app/reset-password.html",
+        redirectTo: "https://playotoron.com/reset-password.html",
       });
       if (error) throw error;
       showCustomAlert(
