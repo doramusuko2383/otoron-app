@@ -30,6 +30,7 @@ export function renderLoginScreen(container, onLoginSuccess) {
         </div>
         <button type="submit">ログイン</button>
       </form>
+      <p class="login-error" style="display:none"></p>
 
       <div class="login-divider">または</div>
 
@@ -58,6 +59,8 @@ export function renderLoginScreen(container, onLoginSuccess) {
     msgEl.style.display = "block";
     sessionStorage.removeItem("passwordResetSuccess");
   }
+
+  const loginErrorEl = container.querySelector(".login-error");
 
 
 
@@ -118,6 +121,7 @@ export function renderLoginScreen(container, onLoginSuccess) {
   const form = container.querySelector(".login-form");
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
+    loginErrorEl.style.display = "none";
     const email = form.querySelector("#email").value.trim();
     const password = form.querySelector("#password").value.trim();
 
@@ -140,7 +144,11 @@ export function renderLoginScreen(container, onLoginSuccess) {
       await ensureUserAndProgress(user);
       onLoginSuccess();
     } catch (err) {
-      if (err.code === "auth/missing-password" || err.code === "auth/wrong-password") {
+      if (err.code === "auth/invalid-credential") {
+        loginErrorEl.textContent =
+          "ログインできませんでした。このメールアドレスは Googleアカウントで登録されている可能性があります。下の『Googleでログイン』ボタンからお試しください。";
+        loginErrorEl.style.display = "block";
+      } else if (err.code === "auth/missing-password" || err.code === "auth/wrong-password") {
         showCustomAlert("このアカウントはGoogleで登録されている可能性があります。Googleログインをお試しください。");
       } else {
         showCustomAlert("ログイン失敗：" + err.message);
