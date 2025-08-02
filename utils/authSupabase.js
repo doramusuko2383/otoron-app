@@ -8,11 +8,14 @@ export async function signIn(email, password) {
   return supabase.auth.signInWithPassword({ email, password });
 }
 
-export function signInWithGoogle() {
-  return supabase.auth.signInWithOAuth({
+export async function signInWithGoogle() {
+  const { error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: { redirectTo: `${location.origin}/callback.html` },
   });
+  if (error) {
+    console.error('Google sign-in error:', error);
+  }
 }
 
 export async function signOut() {

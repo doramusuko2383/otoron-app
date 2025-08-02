@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>Home</title>
+</head>
+<body>
+  <h1>Home</h1>
+  <script type="module">
+    import { supabase } from './utils/supabaseClient.js';
+    try {
+      const { data, error } = await supabase.auth.getUser();
+      if (error) {
+        console.error('Failed to fetch user:', error);
+      } else {
+        console.log('Logged in user:', data.user);
+      }
+    } catch (err) {
+      console.error('getUser error:', err);
+    }
+  </script>
+</body>
+</html>
