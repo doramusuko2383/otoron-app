@@ -1,8 +1,6 @@
 import { switchScreen } from "../main.js";
 import { showCustomAlert } from "./home.js";
-import { firebaseAuth } from "../firebase/firebase-init.js";
-import { fetchSignInMethodsForEmail } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { supabase } from "../utils/supabaseClient.js";
+import { resetPassword } from "../utils/authSupabase.js";
 
 export function renderForgotPasswordScreen() {
   const app = document.getElementById("app");
@@ -34,18 +32,7 @@ export function renderForgotPasswordScreen() {
       return;
     }
     try {
-      const methods = await fetchSignInMethodsForEmail(firebaseAuth, email);
-      if (methods.includes("google.com") && !methods.includes("password")) {
-        showCustomAlert(
-          "このメールアドレスはGoogleログイン専用です。Googleログインをご利用ください。",
-        );
-        return;
-      }
-
-      // Supabase sends the password reset email and redirects to our reset page.
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: "https://playotoron.com/reset-password.html",
-      });
+      const { error } = await resetPassword(email);
       if (error) throw error;
       showCustomAlert(
         "リセット用のメールを送信しました。※ Googleなど外部サービスで登録されたアカウントは、パスワードの再設定はできません。" +

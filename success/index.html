@@ -11,9 +11,7 @@
   </div>
   <script type="module">
     import { supabase } from '../utils/supabaseClient.js';
-    import { firebaseAuth } from '../firebase/firebase-init.js';
-    import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
-    import { ensureSupabaseAuth } from '../utils/supabaseAuthHelper.js';
+    import { getCurrentUser } from '../utils/authSupabase.js';
 
     const params = new URLSearchParams(location.search);
     const plan = params.get('plan');
@@ -30,10 +28,14 @@
       return d;
     }
 
-    onAuthStateChanged(firebaseAuth, async (firebaseUser) => {
-      if (!firebaseUser || !plan) return;
-      const authResult = await ensureSupabaseAuth(firebaseUser);
-      const user = authResult.user;
+    (async () => {
+      const authUser = await getCurrentUser();
+      if (!authUser || !plan) return;
+      const { data: user } = await supabase
+        .from('users')
+        .select('*')
+        .eq('firebase_uid', authUser.id)
+        .maybeSingle();
       if (!user) return;
       const paymentDate = new Date();
       const { data: latestSub } = await supabase
@@ -68,7 +70,7 @@
           ended_at: expireDate.toISOString(),
         },
       ]);
-    });
+    })();
 
     setTimeout(() => {
       window.location.href = '/#home';
