@@ -1,6 +1,7 @@
-import { supabase } from "../utils/supabaseClient.js";
 import { switchScreen } from "../main.js";
 import { showCustomAlert } from "./home.js";
+import { firebaseAuth } from "../firebase/firebase-init.js";
+import { sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 export function renderForgotPasswordScreen() {
   const app = document.getElementById("app");
@@ -28,14 +29,15 @@ export function renderForgotPasswordScreen() {
       showCustomAlert("メールアドレスを入力してください");
       return;
     }
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${location.origin}/reset-password.html`,
-    });
-    if (error) {
-      showCustomAlert("メール送信に失敗しました：" + error.message);
-    } else {
+    try {
+      await sendPasswordResetEmail(firebaseAuth, email, {
+        url: `${location.origin}/reset-password.html`,
+        handleCodeInApp: true,
+      });
       showCustomAlert("リセット用のメールを送信しました");
       switchScreen("login");
+    } catch (error) {
+      showCustomAlert("メール送信に失敗しました：" + error.message);
     }
   });
 
