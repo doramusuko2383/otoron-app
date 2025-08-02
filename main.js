@@ -35,6 +35,7 @@ import { renderFaqScreen } from "./components/info/faq.js";
 import { renderChordResetScreen } from "./components/info/chordReset.js";
 import { renderPricingScreen } from "./components/pricing.js";
 import { renderLockScreen } from "./components/lock.js";
+import { renderForgotPasswordScreen } from "./components/forgotPassword.js";
 
 
 import { firebaseAuth } from "./firebase/firebase-init.js";
@@ -201,6 +202,7 @@ export const switchScreen = async (screen, user = currentUser, options = {}) => 
     renderIntroScreen();
   }
   else if (screen === "login") renderLoginScreen(app, () => {});
+  else if (screen === "forgot_password") renderForgotPasswordScreen();
   else if (screen === "home") renderHomeScreen(user, options);
   else if (screen === "training") renderTrainingScreen(user);
   else if (screen === "training_easy") renderTrainingEasy(user);
