@@ -46,6 +46,10 @@ export function renderLoginScreen(container, onLoginSuccess) {
 
   const pwInput = container.querySelector("#password");
   const pwToggle = container.querySelector(".toggle-password");
+  const forgotBtn = container.querySelector("#forgot-btn");
+  if (window.location.hostname === "playotoron.com") {
+    forgotBtn.style.display = "none";
+  }
   pwToggle.addEventListener("click", () => {
     const visible = pwInput.type === "text";
     pwInput.type = visible ? "password" : "text";
@@ -176,8 +180,10 @@ export function renderLoginScreen(container, onLoginSuccess) {
   });
 
   // パスワード忘れリンク
-  container.querySelector("#forgot-btn").addEventListener("click", (e) => {
-    e.preventDefault();
-    switchScreen("forgot_password");
-  });
+  if (forgotBtn) {
+    forgotBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      switchScreen("forgot_password");
+    });
+  }
 }
