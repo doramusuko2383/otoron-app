@@ -1,8 +1,10 @@
 import { switchScreen } from "../main.js";
 import { showCustomAlert } from "./home.js";
 import { firebaseAuth } from "../firebase/firebase-init.js";
-import { fetchSignInMethodsForEmail } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { supabase } from "../utils/supabaseClient.js";
+import {
+  fetchSignInMethodsForEmail,
+  sendPasswordResetEmail,
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 export function renderForgotPasswordScreen() {
   const app = document.getElementById("app");
@@ -42,8 +44,11 @@ export function renderForgotPasswordScreen() {
         return;
       }
 
-      await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: "https://otoron-app.vercel.app/reset-password.html",
+      // Use Firebase to send the password reset email. The generated link
+      // includes an `oobCode` query parameter that `reset-password.html`
+      // consumes to finalize the update.
+      await sendPasswordResetEmail(firebaseAuth, email, {
+        url: "https://otoron-app.vercel.app/reset-password.html",
       });
       showCustomAlert(
         "リセット用のメールを送信しました。※ Googleなど外部サービスで登録されたアカウントは、パスワードの再設定はできません。" +

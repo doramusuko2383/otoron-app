@@ -33,6 +33,10 @@ if (signInError) {
 
 `main.js` では上記のサインアップ・サインイン処理を行った後、ユーザー情報の登録や画面遷移を行います。
 
+## パスワードリセットの流れ
+
+パスワードの再設定メールは Firebase の `sendPasswordResetEmail` で送信します。メール内のリンクは `/reset-password.html` にリダイレクトされ、URL に含まれる `oobCode` を使って `verifyPasswordResetCode` と `confirmPasswordReset` を実行し、新しいパスワードを確定します。Supabase はこのフローには関与しません。
+
 ## Supabase Configuration
 
 アプリが利用する標準の Supabase プロジェクトは下記の URL とキーです。誤って別の DB に切り替えた場合は `utils/supabaseClient.js` をこの設定に戻してください。
