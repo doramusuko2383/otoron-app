@@ -282,10 +282,6 @@ onAuthStateChanged(firebaseAuth, async (firebaseUser) => {
 
 const initApp = () => {
   const hash = location.hash;
-  if (hash.includes("type=recovery")) {
-    window.location.replace(`/reset-password.html${hash}`);
-    return;
-  }
   const initial = DEBUG_AUTO_LOGIN ? "home" : "intro";
   const screenHash = hash.replace("#", "");
   const startScreen = screenHash || initial;

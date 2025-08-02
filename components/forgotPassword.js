@@ -1,6 +1,8 @@
-import { supabase } from "../utils/supabaseClient.js";
 import { switchScreen } from "../main.js";
 import { showCustomAlert } from "./home.js";
+import { firebaseAuth } from "../firebase/firebase-init.js";
+import { fetchSignInMethodsForEmail } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { supabase } from "../utils/supabaseClient.js";
 
 export function renderForgotPasswordScreen() {
   const app = document.getElementById("app");
@@ -14,6 +16,9 @@ export function renderForgotPasswordScreen() {
       <input type="email" id="reset-email" placeholder="メールアドレス" required />
       <button type="submit" class="login-button">送信</button>
     </form>
+    <p class="reset-note" style="margin-top:1rem;font-size:0.9rem;color:#666;">
+      ※ Googleなど外部サービスで登録されたアカウントは、パスワードの再設定はできません。ログイン画面の『Googleでログイン』ボタンをご利用ください。
+    </p>
     <div class="login-actions">
       <button id="back-btn" class="login-secondary">戻る</button>
     </div>
@@ -28,14 +33,27 @@ export function renderForgotPasswordScreen() {
       showCustomAlert("メールアドレスを入力してください");
       return;
     }
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${location.origin}/reset-password.html`,
-    });
-    if (error) {
-      showCustomAlert("メール送信に失敗しました：" + error.message);
-    } else {
-      showCustomAlert("リセット用のメールを送信しました");
+    try {
+      const methods = await fetchSignInMethodsForEmail(firebaseAuth, email);
+      if (methods.includes("google.com") && !methods.includes("password")) {
+        showCustomAlert(
+          "このメールアドレスはGoogleログイン専用です。Googleログインをご利用ください。",
+        );
+        return;
+      }
+
+      // Supabase sends the password reset email and redirects to our reset page.
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: "https://playotoron.com/reset-password.html",
+      });
+      if (error) throw error;
+      showCustomAlert(
+        "リセット用のメールを送信しました。※ Googleなど外部サービスで登録されたアカウントは、パスワードの再設定はできません。" +
+          "ログイン画面の『Googleでログイン』ボタンをご利用ください。",
+      );
       switchScreen("login");
+    } catch (error) {
+      showCustomAlert("メール送信に失敗しました：" + error.message);
     }
   });
 

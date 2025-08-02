@@ -163,6 +163,7 @@ button:hover {
   width: 24px;
   height: 24px;
   cursor: pointer;
+  z-index: 1;
 }
 
 /* Modal styles */
@@ -2202,6 +2203,14 @@ button:hover {
   text-align: center;
   color: #28a745;
   margin-bottom: 1rem;
+}
+
+.login-error {
+  margin-top: 0.5rem;
+  color: #d93025;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  text-align: center;
 }
 
 
