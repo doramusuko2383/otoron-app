@@ -2198,6 +2198,12 @@ button:hover {
   font-size: 0.9rem;
 }
 
+.login-success {
+  text-align: center;
+  color: #28a745;
+  margin-bottom: 1rem;
+}
+
 
 .mypage-screen {
   max-width: 480px;
