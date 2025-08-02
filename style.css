@@ -2204,6 +2204,14 @@ button:hover {
   margin-bottom: 1rem;
 }
 
+.login-error {
+  margin-top: 0.5rem;
+  color: #d93025;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  text-align: center;
+}
+
 
 .mypage-screen {
   max-width: 480px;
