@@ -163,6 +163,7 @@ button:hover {
   width: 24px;
   height: 24px;
   cursor: pointer;
+  z-index: 1;
 }
 
 /* Modal styles */
