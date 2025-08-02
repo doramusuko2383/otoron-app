@@ -1,11 +1,5 @@
 import { switchScreen } from "../main.js";
-import { firebaseAuth } from "../firebase/firebase-init.js";
-import {
-  createUserWithEmailAndPassword,
-  GoogleAuthProvider,
-  signInWithPopup
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { ensureSupabaseAuth } from "../utils/supabaseAuthHelper.js";
+import { signUp, signInWithGoogle } from "../utils/authSupabase.js";
 import { createInitialChordProgress } from "../utils/progressUtils.js";
 import { addDebugLog } from "../utils/loginDebug.js";
 
@@ -65,23 +59,20 @@ export function renderSignUpScreen() {
     }
 
     try {
-      const cred = await createUserWithEmailAndPassword(firebaseAuth, email, password);
-      const { user } = await ensureSupabaseAuth(cred.user);
-      if (user) {
-        await createInitialChordProgress(user.id);
-      }
+      const { data, error } = await signUp(email, password);
+      if (error || !data.user) throw error || new Error("no user");
+      await createInitialChordProgress(data.user.id);
       window.location.href = "/register-thankyou.html";
     } catch (e) {
       showCustomAlert("登録エラー：" + e.message);
     }
   });
 
-  // Googleサインアップ処理（ポップアップ方式）
+  // Googleサインアップ処理
   const googleBtn = container.querySelector("#google-signup");
-  const googleProvider = new GoogleAuthProvider();
   googleBtn.addEventListener("click", () => {
     addDebugLog("click google-signup");
-    signInWithPopup(firebaseAuth, googleProvider);
+    signInWithGoogle();
   });
 
   // 戻るボタン

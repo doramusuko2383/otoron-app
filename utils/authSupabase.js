@@ -1,0 +1,44 @@
+import { supabase } from './supabaseClient.js';
+
+export async function signUp(email, password) {
+  return supabase.auth.signUp({ email, password });
+}
+
+export async function signIn(email, password) {
+  return supabase.auth.signInWithPassword({ email, password });
+}
+
+export function signInWithGoogle() {
+  return supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: { redirectTo: `${location.origin}/callback.html` },
+  });
+}
+
+export async function signOut() {
+  await supabase.auth.signOut();
+}
+
+export function onAuthStateChanged(callback) {
+  const { data } = supabase.auth.onAuthStateChange((_event, session) => {
+    callback(session?.user ?? null);
+  });
+  return () => {
+    data.subscription.unsubscribe();
+  };
+}
+
+export async function getCurrentUser() {
+  const { data } = await supabase.auth.getUser();
+  return data.user ?? null;
+}
+
+export async function resetPassword(email) {
+  return supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${location.origin}/reset-password.html`,
+  });
+}
+
+export async function updateUser(attributes) {
+  return supabase.auth.updateUser(attributes);
+}

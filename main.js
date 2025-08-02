@@ -17,7 +17,7 @@ import { renderIntroScreen } from "./components/intro.js";
 import { renderSignUpScreen } from "./components/signup.js";
 import { renderInitialSetupScreen } from "./components/initialSetup.js";
 import { supabase } from "./utils/supabaseClient.js";
-import { ensureSupabaseAuth } from "./utils/supabaseAuthHelper.js";
+import { onAuthStateChanged } from "./utils/authSupabase.js";
 import { getLockType } from "./utils/accessControl.js";
 import { ensureChordProgress } from "./utils/progressUtils.js";
 import { loadTrainingRecords } from "./utils/recordStore_supabase.js";
@@ -38,10 +38,7 @@ import { renderLockScreen } from "./components/lock.js";
 import { renderForgotPasswordScreen } from "./components/forgotPassword.js";
 
 
-import { firebaseAuth } from "./firebase/firebase-init.js";
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-const DUMMY_PASSWORD = "secure_dummy_password";
+// Firebase 認証を排除し、Supabase での認証管理に一本化
 
 const INFO_SCREENS = [
   "terms",
@@ -241,22 +238,55 @@ window.addEventListener("popstate", (e) => {
   }
 });
 
-onAuthStateChanged(firebaseAuth, async (firebaseUser) => {
-  if (!firebaseUser) {
+onAuthStateChanged(async (authUser) => {
+  if (!authUser) {
     return;
   }
 
-  // console.log("🔓 Firebaseログイン済み:", firebaseUser.email);
+  let { data: user, error } = await supabase
+    .from("users")
+    .select("*")
+    .eq("firebase_uid", authUser.id)
+    .maybeSingle();
 
-  let authResult;
-  try {
-    await firebaseUser.getIdToken();
-    authResult = await ensureSupabaseAuth(firebaseUser);
-  } catch (e) {
-    console.error("❌ Supabase認証処理エラー:", e);
+  if (error) {
+    console.error("❌ Supabaseユーザー確認エラー:", error);
     return;
   }
-  const { user, isNew } = authResult;
+
+  let isNew = false;
+  if (!user) {
+    const trialEnd = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+    const { data: inserted, error: insertError } = await supabase
+      .from("users")
+      .insert([
+        {
+          firebase_uid: authUser.id,
+          name: "名前未設定",
+          email: authUser.email,
+          trial_active: true,
+          trial_end_date: trialEnd,
+        },
+      ])
+      .select()
+      .maybeSingle();
+    if (insertError || !inserted) {
+      console.error("❌ Supabaseユーザー登録失敗:", insertError);
+      return;
+    }
+    user = inserted;
+    isNew = true;
+  } else if (!user.email || user.email !== authUser.email) {
+    const { data: updated, error: updateError } = await supabase
+      .from("users")
+      .update({ email: authUser.email })
+      .eq("id", user.id)
+      .select()
+      .maybeSingle();
+    if (!updateError && updated) {
+      user = updated;
+    }
+  }
 
   await ensureChordProgress(user.id);
 
@@ -266,13 +296,14 @@ onAuthStateChanged(firebaseAuth, async (firebaseUser) => {
     return;
   }
 
+  baseUser = user;
+  currentUser = user;
+
   if (isNew) {
     window.location.href = "/register-thankyou.html";
     return;
   }
 
-  baseUser = user;
-  currentUser = user;
   if (!user.name || user.name === "名前未設定") {
     switchScreen("setup", user, { showWelcome: true });
   } else {

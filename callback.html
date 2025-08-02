@@ -9,9 +9,7 @@
   <p>ログイン処理中です...</p>
   <pre id="debug-log" style="white-space: pre-wrap; color: red; font-size: 0.9em;"></pre>
   <script type="module">
-    import { firebaseAuth } from './firebase/firebase-init.js';
-    import { getRedirectResult, fetchSignInMethodsForEmail, signOut } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
-    import { ensureSupabaseAuth } from './utils/supabaseAuthHelper.js';
+    import { supabase } from './utils/supabaseClient.js';
     import { createInitialChordProgress } from './utils/progressUtils.js';
     import { addDebugLog, showDebugLog } from './utils/loginDebug.js';
 
@@ -22,34 +20,37 @@
     showDebugLog();
 
     try {
-      const result = await getRedirectResult(firebaseAuth);
-      addDebugLog('getRedirectResult', result ? 'has result' : 'null');
+      const { data, error } = await supabase.auth.getSessionFromUrl({ storeSession: true });
+      if (error) throw error;
+      const authUser = data?.session?.user;
+      addDebugLog('User from OAuth callback:', authUser ? { email: authUser.email, id: authUser.id } : null);
       showDebugLog();
-
-      if (!result || !result.user) {
-        addDebugLog('no redirect result or user');
-        showDebugLog();
+      if (!authUser) {
         if (!debugMode) window.location.href = '/';
         return;
       }
 
-      const firebaseUser = result.user;
-      addDebugLog('User from redirect result:', { email: firebaseUser.email, uid: firebaseUser.uid });
-      showDebugLog();
-
-      const methods = await fetchSignInMethodsForEmail(firebaseAuth, firebaseUser.email);
-      if (methods.includes('password') && !methods.includes('google.com')) {
-        await signOut(firebaseAuth);
-        alert('このメールアドレスは既に通常のログインで使用されています。Googleログインはできません。');
-        addDebugLog('redirect: login exists');
-        showDebugLog();
-        if (!debugMode) window.location.href = '/';
-        return;
-      }
-
-      const { user, isNew } = await ensureSupabaseAuth(firebaseUser);
-      if (isNew) {
+      let { data: user } = await supabase
+        .from('users')
+        .select('*')
+        .eq('firebase_uid', authUser.id)
+        .maybeSingle();
+      let isNew = false;
+      if (!user) {
+        const trialEnd = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+        const { data: inserted } = await supabase
+          .from('users')
+          .insert([
+            { firebase_uid: authUser.id, name: '名前未設定', email: authUser.email, trial_active: true, trial_end_date: trialEnd },
+          ])
+          .select()
+          .maybeSingle();
+        user = inserted;
+        isNew = true;
         await createInitialChordProgress(user.id);
+      }
+
+      if (isNew) {
         addDebugLog('redirect: register-thankyou');
         showDebugLog();
         if (!debugMode) window.location.href = '/register-thankyou.html';

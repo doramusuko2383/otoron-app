@@ -1,10 +1,8 @@
-import { signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { firebaseAuth } from "../firebase/firebase-init.js"; // ✅ これだけでOK
+import { signOut } from "../utils/authSupabase.js";
 import { switchScreen, clearTempUser, getBaseUser } from "../main.js";
 import { checkRecentUnlockCriteria } from "../utils/progressStatus.js";
 import { loadGrowthFlags } from "../utils/growthStore_supabase.js";
 import { getCurrentTargetChord } from "../utils/growthUtils.js";
-import { supabase } from "../utils/supabaseClient.js";
 import { showCustomAlert } from "./home.js";
 
 export function renderHeader(container, user) {
@@ -122,8 +120,7 @@ export function renderHeader(container, user) {
   if (userDiv) {
     const name =
       user?.name ||
-      firebaseAuth.currentUser?.displayName ||
-      firebaseAuth.currentUser?.email;
+      user?.email;
     if (name) {
       const icon = user?.is_premium ? "⭐ " : "";
       if (user?.isTemp) {
@@ -176,15 +173,7 @@ export function renderHeader(container, user) {
   // ▼ ログアウト処理
   header.querySelector("#logout-btn").addEventListener("click", async () => {
     try {
-      await signOut(firebaseAuth);
-      try {
-        const { error: signOutError } = await supabase.auth.signOut();
-        if (signOutError) {
-          console.error("❌ Supabaseサインアウト失敗:", signOutError.message);
-        }
-      } catch (e) {
-        console.error("❌ Supabaseサインアウト処理でエラー:", e);
-      }
+      await signOut();
       sessionStorage.removeItem("currentPassword");
       showCustomAlert("ログアウトしました！", () => {
         switchScreen("intro");

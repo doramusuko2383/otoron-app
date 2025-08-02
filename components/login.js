@@ -1,15 +1,7 @@
-import {
-  signInWithEmailAndPassword,
-  fetchSignInMethodsForEmail,
-  GoogleAuthProvider,
-  signInWithPopup
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-import { firebaseAuth } from "../firebase/firebase-init.js";
+import { signIn, signInWithGoogle } from "../utils/authSupabase.js";
 import { switchScreen } from "../main.js";
 import { addDebugLog } from "../utils/loginDebug.js";
 import { supabase } from "../utils/supabaseClient.js";
-import { ensureSupabaseAuth } from "../utils/supabaseAuthHelper.js";
 import { ensureChordProgress } from "../utils/progressUtils.js";
 import { showCustomAlert } from "./home.js";
 
@@ -70,13 +62,13 @@ export function renderLoginScreen(container, onLoginSuccess) {
 
   // 🔽 和音進捗の初期登録（必要なら）
   async function ensureUserAndProgress(user) {
-    if (!user?.uid) return;
-  
-    // users テーブルに Firebase UID が登録されているか確認
+    if (!user?.id) return;
+
+    // users テーブルに Supabase UID が登録されているか確認
     const { data: existingUser } = await supabase
       .from("users")
       .select("*")
-      .eq("firebase_uid", user.uid)
+      .eq("firebase_uid", user.id)
       .maybeSingle();
 
     if (existingUser && (!existingUser.email || existingUser.email !== user.email)) {
@@ -90,33 +82,33 @@ export function renderLoginScreen(container, onLoginSuccess) {
         existingUser.email = updated.email;
       }
     }
-  
+
     let userId;
-  
+
     if (!existingUser) {
       const { data: inserted, error: insertError } = await supabase
         .from("users")
         .insert([
           {
-            firebase_uid: user.uid,
+            firebase_uid: user.id,
             name: "名前未設定",
             email: user.email,
           },
         ])
         .select()
         .single();
-  
+
       if (insertError || !inserted) {
         console.error("❌ Supabaseユーザー登録失敗:", insertError);
         return;
       }
       userId = inserted.id;
-      
+
     } else {
       userId = existingUser.id;
-      
+
     }
-  
+
     await ensureChordProgress(userId);
   }
   
@@ -130,41 +122,22 @@ export function renderLoginScreen(container, onLoginSuccess) {
     const password = form.querySelector("#password").value.trim();
 
     try {
-      const methods = await fetchSignInMethodsForEmail(firebaseAuth, email);
-      if (methods.includes('google.com') && !methods.includes('password')) {
-        showCustomAlert('このメールアドレスはGoogleログイン専用です。Googleログインをご利用ください。');
-        return;
-      }
-
-      await signInWithEmailAndPassword(firebaseAuth, email, password);
+      const { data, error } = await signIn(email, password);
+      if (error || !data.user) throw error || new Error("no user");
       sessionStorage.setItem("currentPassword", password);
-      const user = firebaseAuth.currentUser;
-      try {
-        await ensureSupabaseAuth(user);
-      } catch (e) {
-        console.error("❌ Supabaseサインイン処理でエラー:", e);
-        return;
-      }
+      const user = data.user;
       await ensureUserAndProgress(user);
       onLoginSuccess();
     } catch (err) {
-      if (err.code === "auth/invalid-credential") {
-        loginErrorEl.textContent =
-          "ログインできませんでした。このメールアドレスは Googleアカウントで登録されている可能性があります。下の『Googleでログイン』ボタンからお試しください。";
-        loginErrorEl.style.display = "block";
-      } else if (err.code === "auth/missing-password" || err.code === "auth/wrong-password") {
-        showCustomAlert("このアカウントはGoogleで登録されている可能性があります。Googleログインをお試しください。");
-      } else {
-        showCustomAlert("ログイン失敗：" + err.message);
-      }
+      loginErrorEl.textContent = "ログインに失敗しました：" + err.message;
+      loginErrorEl.style.display = "block";
     }
   });
 
   // Googleログイン処理（ポップアップ方式）
-  const googleProvider = new GoogleAuthProvider();
   container.querySelector("#google-login").addEventListener("click", () => {
     addDebugLog("click google-login");
-    signInWithPopup(firebaseAuth, googleProvider);
+    signInWithGoogle();
   });
 
   // 戻るボタン

@@ -1,8 +1,9 @@
-import { firebaseAuth } from '../firebase/firebase-init.js';
+import { getCurrentUser } from '../utils/authSupabase.js';
 
 export async function startCheckout(plan) {
-  const email = firebaseAuth.currentUser?.email || '未取得';
-  if (!firebaseAuth.currentUser?.email) {
+  const authUser = await getCurrentUser();
+  const email = authUser?.email || '未取得';
+  if (!authUser?.email) {
     alert('ログイン情報がありません');
     return;
   }
