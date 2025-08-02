@@ -17,6 +17,7 @@ export function renderLoginScreen(container, onLoginSuccess) {
   container.innerHTML = `
     <div class="login-wrapper">
       <h2 class="login-title">ログイン</h2>
+      <p class="login-success" style="display:none"></p>
       <div class="login-note">
         <p>・Googleでログインしたことがある場合は、必ず「Googleでログイン」を使ってください。</p>
         <p>・メールアドレスとパスワードは、最初にメール認証を使った場合のみ有効です。</p>
@@ -35,6 +36,7 @@ export function renderLoginScreen(container, onLoginSuccess) {
       <button id="google-login" class="google-button">Googleでログイン</button>
 
       <div class="login-actions">
+        <button id="forgot-btn" class="login-secondary">パスワードを忘れた方はこちら</button>
         <button id="back-btn" class="login-secondary">戻る</button>
         <button id="signup-btn" class="login-signup">新規登録はこちら</button>
       </div>
@@ -48,6 +50,14 @@ export function renderLoginScreen(container, onLoginSuccess) {
     pwInput.type = visible ? "password" : "text";
     pwToggle.src = visible ? "images/Visibility_off.svg" : "images/Visibility.svg";
   });
+
+  const successMsg = sessionStorage.getItem("passwordResetSuccess");
+  if (successMsg) {
+    const msgEl = container.querySelector(".login-success");
+    msgEl.textContent = "パスワードを変更しました";
+    msgEl.style.display = "block";
+    sessionStorage.removeItem("passwordResetSuccess");
+  }
 
 
 
@@ -155,5 +165,11 @@ export function renderLoginScreen(container, onLoginSuccess) {
   container.querySelector("#signup-btn").addEventListener("click", (e) => {
     e.preventDefault();
     switchScreen("signup");
+  });
+
+  // パスワード忘れリンク
+  container.querySelector("#forgot-btn").addEventListener("click", (e) => {
+    e.preventDefault();
+    switchScreen("forgot_password");
   });
 }
