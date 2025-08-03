@@ -5,6 +5,7 @@ import { playNote } from "./soundPlayer.js";
 import { switchScreen } from "../main.js";
 import { saveTrainingSession } from "../utils/trainingStore_supabase.js";
 import { kanaToHiragana, noteLabels } from "../utils/noteUtils.js";
+import { SHOW_DEBUG } from "../utils/debug.js";
 
 let currentNote = null;
 let noteSequence = [];
@@ -40,13 +41,16 @@ export async function renderTrainingScreen(user) {
   bottomWrap.id = "training-footer";
   bottomWrap.appendChild(finishBtn);
 
-  const debugAnswer = document.createElement("div");
-  debugAnswer.style.position = "absolute";
-  debugAnswer.style.top = "10px";
-  debugAnswer.style.right = "10px";
-  debugAnswer.style.fontSize = "0.9em";
-  debugAnswer.style.color = "gray";
-  app.appendChild(debugAnswer);
+  let debugAnswer;
+  if (SHOW_DEBUG) {
+    debugAnswer = document.createElement("div");
+    debugAnswer.style.position = "absolute";
+    debugAnswer.style.top = "10px";
+    debugAnswer.style.right = "10px";
+    debugAnswer.style.fontSize = "0.9em";
+    debugAnswer.style.color = "gray";
+    app.appendChild(debugAnswer);
+  }
   app.appendChild(bottomWrap);
 
   const whiteOrder = ["C", "D", "E", "F", "G", "A", "B"];
@@ -81,8 +85,8 @@ export async function renderTrainingScreen(user) {
     const note = btn.dataset.note;
     const correct = note === currentNote.replace(/[0-9]/g, "");
     noteHistory.push({
-      noteQuestion: currentNote,
-      noteAnswer: note,
+      question: currentNote,
+      answer: note,
       correct,
       isSingleNote: true
     });
@@ -101,15 +105,17 @@ export async function renderTrainingScreen(user) {
           nextQuestion();
         } else {
           sessionStorage.setItem("noteHistory", JSON.stringify(noteHistory));
-          await saveTrainingSession({
-            userId: user.id,
-            results: { type: 'note-white', results: noteHistory },
-            stats: {},
-            mistakes: {},
-            correctCount: noteHistory.filter(n => n.correct).length,
-            totalCount: noteHistory.length,
-            date: new Date().toISOString()
-          });
+          if (!user.isTemp) {
+            await saveTrainingSession({
+              userId: user.id,
+              results: { type: 'note-white', results: noteHistory },
+              stats: {},
+              mistakes: {},
+              correctCount: noteHistory.filter(n => n.correct).length,
+              totalCount: noteHistory.length,
+              date: new Date().toISOString()
+            });
+          }
           switchScreen("result_white", user);
         }
       }, FEEDBACK_DELAY);
@@ -127,7 +133,9 @@ export async function renderTrainingScreen(user) {
       noteSequence = getRandomWhiteNoteSequence(maxQuestions);
     }
     currentNote = noteSequence.pop();
-    debugAnswer.textContent = `【デバッグ】正解: ${kanaToHiragana(noteLabels[currentNote.replace(/[0-9]/g, "")])}（${currentNote}）`;
+    if (debugAnswer) {
+      debugAnswer.textContent = `【デバッグ】正解: ${kanaToHiragana(noteLabels[currentNote.replace(/[0-9]/g, "")])}（${currentNote}）`;
+    }
     isSoundPlaying = true;
     setInteraction(false);
     playNote(currentNote).then(() => {
@@ -136,5 +144,13 @@ export async function renderTrainingScreen(user) {
     });
   }
 
-  nextQuestion();
+  // 最初は1秒待ってからスタート
+  isSoundPlaying = true;
+  setInteraction(false);
+  const fb = document.getElementById("feedback");
+  if (fb) fb.textContent = "はじめるよ";
+  setTimeout(() => {
+    if (fb) fb.textContent = "";
+    nextQuestion();
+  }, 1000);
 }

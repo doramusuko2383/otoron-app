@@ -32,6 +32,9 @@ export default async function handler(req, res) {
   }
 
   try {
+    const origin = req.headers.origin;
+    const baseUrl = (process.env.BASE_URL || origin || 'https://playotoron.com').replace(/\/$/, '');
+
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
       payment_method_types: ['card'],
@@ -42,8 +45,8 @@ export default async function handler(req, res) {
         },
       ],
       success_url:
-        'https://otoron-app.vercel.app/success?session_id={CHECKOUT_SESSION_ID}&plan=' + plan,
-      cancel_url: 'https://otoron-app.vercel.app/cancel',
+        `${baseUrl}/success?session_id={CHECKOUT_SESSION_ID}&plan=${plan}`,
+      cancel_url: `${baseUrl}/cancel`,
       customer_email: email,
       customer_creation: 'always', // ✅ これが重要！
     });

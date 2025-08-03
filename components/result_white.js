@@ -8,15 +8,18 @@ export function renderTrainingWhiteResultScreen(user) {
   app.innerHTML = `
     <h2>単音テスト（白鍵のみ）結果</h2>
     <div class="score-wrapper">
-      <img id="score-image" class="score-image" />
+      <img id="score-image" class="score-image" alt="絶対音感トレーニングアプリ『オトロン』単音テスト結果の画像" />
     </div>
     <div id="score-modal" class="modal hidden">
-      <img id="full-score-image" />
+      <img id="full-score-image" alt="絶対音感トレーニングアプリ『オトロン』単音テスト全スコアの画像" />
     </div>
     <div id="summary"></div>
     <button id="back-btn">設定に戻る</button>`;
 
   const history = JSON.parse(sessionStorage.getItem("noteHistory") || "[]");
+
+  const resultNotes = history.map(entry => entry.question);
+  console.log('resultNotes', resultNotes);
 
   const vexDiv = document.createElement("div");
   vexDiv.id = "vexflow-staff";
@@ -33,6 +36,10 @@ export function renderTrainingWhiteResultScreen(user) {
   });
 
   function convertForStaff(note) {
+    if (!note || typeof note !== 'string') {
+      console.warn('convertForStaff: invalid note', note);
+      return { clef: "treble", key: "c/4", accidental: null };
+    }
     const m = note.match(/^([A-G]#?)(\d)$/);
     if (!m) return { clef: "treble", key: "c/4", accidental: null };
     const [_, base, octave] = m;
@@ -48,6 +55,7 @@ export function renderTrainingWhiteResultScreen(user) {
     const measures = Array.from({ length: Math.ceil(history.length / 3) }, () => ({ treble: [], bass: [] }));
 
     history.forEach((entry, idx) => {
+      console.log('processing:', entry.question);
       const conv = convertForStaff(entry.question);
       const vNote = new VF.StaveNote({ clef: conv.clef, keys: [conv.key], duration: "q" });
       if (conv.accidental) vNote.addAccidental(0, new VF.Accidental(conv.accidental));

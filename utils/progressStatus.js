@@ -1,6 +1,7 @@
 import { supabase } from "./supabaseClient.js";
 import { unlockChord } from "./progressUtils.js";
 import { applyRecommendedSelection, forceUnlock } from "./growthUtils.js";
+import { showCustomAlert } from "../components/home.js";
 import { getAudio } from "./audioCache.js";
 import { getConsecutiveQualifiedDays } from "./qualifiedStore_supabase.js";
 import { launchConfetti } from "./confetti.js";
@@ -112,10 +113,23 @@ export async function updateGrowthStatusBar(user, target, onUnlocked) {
         if (success) {
           const audio = getAudio("audio/unlock_chord.mp3");
           const applause = getAudio("audio/applause.mp3");
-          audio.play();
-          applause.play();
+          try {
+            await audio.play();
+          } catch (e) {
+            console.warn("🎧 audio.play() エラー:", e);
+          }
+          try {
+            await applause.play();
+          } catch (e) {
+            console.warn("🎧 audio.play() エラー:", e);
+          }
           launchConfetti();
           await applyRecommendedSelection(user.id);
+          setTimeout(() => {
+            showCustomAlert(
+              "推奨出題に変更しました。このままトレーニングできます。"
+            );
+          }, 1000);
           forceUnlock();
           btn.style.display = "none";
           if (onUnlocked) {
@@ -130,11 +144,15 @@ export async function updateGrowthStatusBar(user, target, onUnlocked) {
     btn.onpointerup = cancelProgress;
     btn.onpointerleave = cancelProgress;
   } else {
-    const label = target ? target.label : "";
-    const colorClass = target ? target.colorClass : "";
-    msg.innerHTML = `いま <span class="chord ${colorClass}">${label}</span> の和音に挑戦中`;
     msg.classList.remove("can-unlock");
     msg.classList.add("current-target");
+    if (target) {
+      const label = target.label;
+      const colorClass = target.colorClass;
+      msg.innerHTML = `いま <span class="chord ${colorClass}">${label}</span> の和音に挑戦中`;
+    } else {
+      msg.textContent = "🎉 すべての和音が解放されています！";
+    }
     card.classList.remove("highlight");
     btn.style.display = "none";
     btn.onpointerdown = null;

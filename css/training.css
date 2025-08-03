@@ -48,6 +48,9 @@
   border-radius: 10px;
   box-sizing: border-box;
 }
+.square-btn-content.note-small {
+  font-size: calc(1em - 2pt) !important;
+}
 
 /* --- dynamic grid layouts --- */
 .grid-container.cols-1 { grid-template-columns: repeat(1, 1fr); max-width: 240px; }

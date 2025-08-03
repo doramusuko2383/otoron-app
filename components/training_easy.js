@@ -8,6 +8,7 @@ import { saveSessionToHistory } from "./summary.js";
 import { incrementSetCount, updateTrainingRecord } from "../utils/recordStore_supabase.js";
 import { autoUnlockNextChord } from "../utils/progressUtils.js";
 import { getAudio } from "../utils/audioCache.js";
+import { SHOW_DEBUG } from "../utils/debug.js";
 
 let questionCount = 0;
 let currentAnswer = null;
@@ -24,7 +25,7 @@ export const firstMistakeInSession = { flag: false, wrong: null };
 export let lastResults = [];
 export let correctCount = 0;
 
-function playSoundThen(name, callback) {
+async function playSoundThen(name, callback) {
   if (currentAudio) {
     currentAudio.pause();
     currentAudio.currentTime = 0;
@@ -35,7 +36,13 @@ function playSoundThen(name, callback) {
     console.error("⚠️ 音声ファイルが読み込めませんでした:", name);
     callback();
   };
-  currentAudio.play();
+  try {
+    await currentAudio.play();
+  } catch (e) {
+    console.warn("🎧 audio.play() エラー:", e);
+    // Playback failed so invoke callback to avoid freezing the UI
+    callback();
+  }
 }
 
 function createQuestionQueue() {
@@ -76,7 +83,11 @@ export function renderTrainingScreen(user) {
   isForcedAnswer = false;
   firstMistakeInSession.flag = false;
   questionQueue = createQuestionQueue();
-  nextQuestion();
+  // 初回は1秒待ってから出題を開始
+  showFeedback("はじめるよ", "good");
+  setTimeout(() => {
+    nextQuestion();
+  }, 1000);
 }
 
 async function nextQuestion() {
@@ -129,17 +140,20 @@ function drawQuizScreen() {
   container.style.maxWidth = "100%";
   container.style.overflow = "hidden";
 
-  const feedback = document.createElement("div");
-  feedback.id = "feedback";
-  feedback.className = "";
-  feedback.style.position = "fixed";
-  feedback.style.top = "40%";
-  feedback.style.left = "0";
-  feedback.style.right = "0";
-  feedback.style.textAlign = "center";
-  feedback.style.fontSize = "3em";
-  feedback.style.fontWeight = "bold";
-  feedback.style.zIndex = "999";
+  let feedback = document.getElementById("feedback");
+  if (!feedback) {
+    feedback = document.createElement("div");
+    feedback.id = "feedback";
+    feedback.className = "";
+    feedback.style.position = "fixed";
+    feedback.style.top = "40%";
+    feedback.style.left = "0";
+    feedback.style.right = "0";
+    feedback.style.textAlign = "center";
+    feedback.style.fontSize = "3em";
+    feedback.style.fontWeight = "bold";
+    feedback.style.zIndex = "999";
+  }
   feedback.style.display = "none";
   container.appendChild(feedback);
 
@@ -241,13 +255,16 @@ function drawQuizScreen() {
     });
   };
 
-  const debugAnswer = document.createElement("div");
-  debugAnswer.textContent = `【デバッグ】正解: ${currentAnswer.label}（${currentAnswer.name}）`;
-  debugAnswer.style.position = "absolute";
-  debugAnswer.style.top = "10px";
-  debugAnswer.style.right = "10px";
-  debugAnswer.style.fontSize = "0.9em";
-  debugAnswer.style.color = "gray";
+  let debugAnswer;
+  if (SHOW_DEBUG) {
+    debugAnswer = document.createElement("div");
+    debugAnswer.textContent = `【デバッグ】正解: ${currentAnswer.label}（${currentAnswer.name}）`;
+    debugAnswer.style.position = "absolute";
+    debugAnswer.style.top = "10px";
+    debugAnswer.style.right = "10px";
+    debugAnswer.style.fontSize = "0.9em";
+    debugAnswer.style.color = "gray";
+  }
 
   const unknownBtn = document.createElement("button");
   unknownBtn.id = "unknownBtn";
@@ -296,7 +313,9 @@ if (correctBtn) {
   bottomWrap.appendChild(unknownBtn);
   bottomWrap.appendChild(quitBtn);
 
-  container.appendChild(debugAnswer);
+  if (debugAnswer) {
+    container.appendChild(debugAnswer);
+  }
   container.appendChild(header);
   container.appendChild(layout);
   app.appendChild(container);
@@ -304,20 +323,38 @@ if (correctBtn) {
 }
 
 
-function playChordFile(filename) {
+async function playChordFile(filename) {
   if (currentAudio) {
     currentAudio.pause();
     currentAudio.currentTime = 0;
   }
   currentAudio = getAudio(`audio/${filename}`);
   currentAudio.onerror = () => console.error("音声ファイルが見つかりません:", filename);
-  currentAudio.play();
+  try {
+    await currentAudio.play();
+  } catch (e) {
+    console.warn("🎧 audio.play() エラー:", e);
+  }
 }
 
 let feedbackTimeoutId;
 function showFeedback(message, type = "good", duration = 1000) {
-  const fb = document.getElementById("feedback");
-  if (!fb) return;
+  let fb = document.getElementById("feedback");
+  if (!fb) {
+    const app = document.getElementById("app");
+    if (!app) return;
+    fb = document.createElement("div");
+    fb.id = "feedback";
+    fb.style.position = "fixed";
+    fb.style.top = "40%";
+    fb.style.left = "0";
+    fb.style.right = "0";
+    fb.style.textAlign = "center";
+    fb.style.fontSize = "3em";
+    fb.style.fontWeight = "bold";
+    fb.style.zIndex = "999";
+    app.appendChild(fb);
+  }
 
   if (feedbackTimeoutId) {
     clearTimeout(feedbackTimeoutId);

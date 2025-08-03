@@ -12,6 +12,7 @@ import { generateRecommendedQueue } from "../utils/growthUtils.js";
 import { loadGrowthFlags } from "../utils/growthStore_supabase.js";
 import { getAudio } from "../utils/audioCache.js";
 import { kanaToHiragana, noteLabels } from "../utils/noteUtils.js";
+import { SHOW_DEBUG } from "../utils/debug.js";
 
 let questionCount = 0;
 let currentAnswer = null;
@@ -25,6 +26,8 @@ let singleNoteMode = false;
 let singleNoteStrategy = 'top';
 let chordProgressCount = 0;
 let chordSoundOn = true;
+let manualQuestion = false;
+let displayMode = null; // 'note' or 'color'
 
 export const stats = {};
 export const mistakes = {};
@@ -32,7 +35,7 @@ export const firstMistakeInSession = { flag: false, wrong: null };
 export let lastResults = [];
 export let correctCount = 0;
 
-function playSoundThen(name, callback) {
+async function playSoundThen(name, callback) {
   if (currentAudio) {
     currentAudio.pause();
     currentAudio.currentTime = 0;
@@ -44,7 +47,13 @@ function playSoundThen(name, callback) {
     console.error("⚠️ 音声ファイルが読み込めませんでした:", name);
     callback();
   };
-  currentAudio.play();
+  try {
+    await currentAudio.play();
+  } catch (e) {
+    console.warn("🎧 audio.play() エラー:", e);
+    // Playback failed so invoke callback to avoid freezing the UI
+    callback();
+  }
 }
 
 function createQuestionQueue() {
@@ -70,8 +79,15 @@ export async function renderTrainingScreen(user) {
   singleNoteMode = localStorage.getItem("singleNoteMode") === "on";
   singleNoteStrategy = localStorage.getItem("singleNoteStrategy") || 'top';
   chordSoundOn = localStorage.getItem("chordSound") !== "off";
-  const flags = await loadGrowthFlags(user.id);
+  manualQuestion = localStorage.getItem("manualQuestion") === "on";
+  const flags = user.isTemp
+    ? Object.fromEntries((user.unlockedKeys || []).map(k => [k, { unlocked: true }]))
+    : await loadGrowthFlags(user.id);
   chordProgressCount = Object.values(flags).filter(f => f.unlocked).length;
+  displayMode = localStorage.getItem("displayMode");
+  if (!displayMode) {
+    displayMode = chordProgressCount >= 10 ? "note" : "color";
+  }
   resetResultFlag();
   lastResults = [];
 
@@ -134,7 +150,18 @@ export async function renderTrainingScreen(user) {
   if (!questionQueue.length) {
     questionQueue = createQuestionQueue();
   }
-  nextQuestion(); // ✅ 出題開始！
+
+  // 🎬 「はじめるよ」画面を先に表示し、和音ボタン表示後に音を鳴らす
+  const firstChordName = questionQueue[questionQueue.length - 1];
+  const firstChord = chords.find(c => c.name === firstChordName);
+  if (firstChord) {
+    unlockAudio(firstChord.file); // 事前に再生許可を取得
+  }
+  showFeedback("はじめるよ", "good", 0);
+  setTimeout(() => {
+    hideFeedback();
+    nextQuestion(); // ✅ 出題開始！
+  }, 600);
 }
 
 async function nextQuestion() {
@@ -148,26 +175,28 @@ async function nextQuestion() {
   if (questionQueue.length === 0 || quitFlag) {
     const sound = (correctCount === questionCount) ? "perfect" : "end";
     playSoundThen(sound, async () => {
-      await saveTrainingSession({
-        userId: currentUser.id,
-        results: { type: 'chord', results: lastResults },
-        stats,
-        mistakes,
-        correctCount,
-        totalCount: questionCount,
-        date: new Date().toISOString(),
-      });
+      if (!currentUser.isTemp) {
+        await saveTrainingSession({
+          userId: currentUser.id,
+          results: { type: 'chord', results: lastResults },
+          stats,
+          mistakes,
+          correctCount,
+          totalCount: questionCount,
+          date: new Date().toISOString(),
+        });
+
+        await updateTrainingRecord({
+          userId: currentUser.id,
+          correct: correctCount,
+          total: questionCount
+        });
+
+        await incrementSetCount(currentUser.id);
+        await autoUnlockNextChord(currentUser);
+      }
 
       saveSessionToHistory();
-
-      await updateTrainingRecord({
-        userId: currentUser.id,
-        correct: correctCount,
-        total: questionCount
-      });
-
-      await incrementSetCount(currentUser.id);
-      await autoUnlockNextChord(currentUser);
 
       sessionStorage.setItem('openResultChild', 'true');
       switchScreen("result");
@@ -182,6 +211,12 @@ function showQuiz() {
   const nextChordName = questionQueue.pop();
   currentAnswer = chords.find(c => c.name === nextChordName);
   drawQuizScreen();
+  if (manualQuestion) {
+    const correctBtn = document.querySelector(`.square-btn-content[data-name="${currentAnswer.name}"]`);
+    if (correctBtn) {
+      correctBtn.classList.add('correct-highlight');
+    }
+  }
   questionCount++;
   updateProgressUI();
 
@@ -203,17 +238,20 @@ function drawQuizScreen() {
   container.style.maxWidth = "100%";
   container.style.overflow = "hidden";
 
-  const feedback = document.createElement("div");
-  feedback.id = "feedback";
-  feedback.className = "";
-  feedback.style.position = "fixed";
-  feedback.style.top = "40%";
-  feedback.style.left = "0";
-  feedback.style.right = "0";
-  feedback.style.textAlign = "center";
-  feedback.style.fontSize = "3em";
-  feedback.style.fontWeight = "bold";
-  feedback.style.zIndex = "999";
+  let feedback = document.getElementById("feedback");
+  if (!feedback) {
+    feedback = document.createElement("div");
+    feedback.id = "feedback";
+    feedback.className = "";
+    feedback.style.position = "fixed";
+    feedback.style.top = "40%";
+    feedback.style.left = "0";
+    feedback.style.right = "0";
+    feedback.style.textAlign = "center";
+    feedback.style.fontSize = "3em";
+    feedback.style.fontWeight = "bold";
+    feedback.style.zIndex = "999";
+  }
   feedback.style.display = "none";
   container.appendChild(feedback);
 
@@ -306,9 +344,19 @@ function drawQuizScreen() {
 
       const inner = document.createElement("div");
       inner.className = `square-btn-content ${only.colorClass}`;
-      inner.innerHTML = chordProgressCount >= 10 && only.italian
-        ? only.italian.map(kanaToHiragana).join("<br>")
-        : only.labelHtml;
+      let showNote = false;
+      if (manualQuestion && only.italian) {
+        inner.innerHTML = `<span class="color-label">${only.labelHtml}</span><span class="note-label">${only.italian.map(kanaToHiragana).join('')}</span>`;
+        inner.classList.add('manual-mode');
+        showNote = true;
+      } else if (displayMode === "note" && only.italian) {
+        inner.innerHTML = only.italian.map(kanaToHiragana).join("");
+        showNote = true;
+      } else {
+        inner.innerHTML = only.labelHtml;
+        if (only.type === "black-inv") showNote = true;
+      }
+      if (showNote) inner.classList.add("note-small");
       inner.setAttribute("data-name", only.name);
       inner.style.pointerEvents = "auto";
       inner.style.opacity = "1";
@@ -344,11 +392,19 @@ function drawQuizScreen() {
 
       const inner = document.createElement("div");
       inner.className = `square-btn-content ${chord.colorClass}`;
-      if (chordProgressCount >= 10 && chord.italian) {
-        inner.innerHTML = chord.italian.map(kanaToHiragana).join("<br>");
+      let noteFlag = false;
+      if (manualQuestion && chord.italian) {
+        inner.innerHTML = `<span class="color-label">${chord.labelHtml}</span><span class="note-label">${chord.italian.map(kanaToHiragana).join('')}</span>`;
+        inner.classList.add('manual-mode');
+        noteFlag = true;
+      } else if (displayMode === "note" && chord.italian) {
+        inner.innerHTML = chord.italian.map(kanaToHiragana).join("");
+        noteFlag = true;
       } else {
         inner.innerHTML = chord.labelHtml;
+        if (chord.type === "black-inv") noteFlag = true;
       }
+      if (noteFlag) inner.classList.add("note-small");
       inner.setAttribute("data-name", chord.name);
       inner.style.pointerEvents = "auto";
       inner.style.opacity = "1";
@@ -369,13 +425,16 @@ function drawQuizScreen() {
     });
   };
 
-  const debugAnswer = document.createElement("div");
-  debugAnswer.textContent = `【デバッグ】正解: ${currentAnswer.label}（${currentAnswer.name}）`;
-  debugAnswer.style.position = "absolute";
-  debugAnswer.style.top = "10px";
-  debugAnswer.style.right = "10px";
-  debugAnswer.style.fontSize = "0.9em";
-  debugAnswer.style.color = "gray";
+  let debugAnswer;
+  if (SHOW_DEBUG) {
+    debugAnswer = document.createElement("div");
+    debugAnswer.textContent = `【デバッグ】正解: ${currentAnswer.label}（${currentAnswer.name}）`;
+    debugAnswer.style.position = "absolute";
+    debugAnswer.style.top = "10px";
+    debugAnswer.style.right = "10px";
+    debugAnswer.style.fontSize = "0.9em";
+    debugAnswer.style.color = "gray";
+  }
 
   const unknownBtn = document.createElement("button");
   unknownBtn.id = "unknownBtn";
@@ -424,7 +483,9 @@ if (correctBtn) {
   bottomWrap.appendChild(unknownBtn);
   bottomWrap.appendChild(quitBtn);
 
-  container.appendChild(debugAnswer);
+  if (debugAnswer) {
+    container.appendChild(debugAnswer);
+  }
   container.appendChild(header);
   container.appendChild(layout);
   app.appendChild(container);
@@ -432,15 +493,35 @@ if (correctBtn) {
 }
 
 
-function playChordFile(filename) {
-  if (!chordSoundOn) return;
+async function playChordFile(filename) {
+  if (!chordSoundOn || manualQuestion) return;
   if (currentAudio) {
     currentAudio.pause();
     currentAudio.currentTime = 0;
   }
   currentAudio = getAudio(`audio/${filename}`);
   currentAudio.onerror = () => console.error("音声ファイルが見つかりません:", filename);
-  currentAudio.play();
+  try {
+    await currentAudio.play();
+  } catch (e) {
+    console.warn("🎧 audio.play() エラー:", e);
+  }
+}
+
+function unlockAudio(filename) {
+  if (!chordSoundOn || manualQuestion) return;
+  const audio = getAudio(`audio/${filename}`);
+  audio.muted = true;
+  audio
+    .play()
+    .then(() => {
+      audio.pause();
+      audio.muted = false;
+      audio.currentTime = 0;
+    })
+    .catch(e => {
+      console.warn("🎧 audio.play() エラー:", e);
+    });
 }
 
 function normalizeNoteName(name) {
@@ -457,7 +538,11 @@ function normalizeNoteName(name) {
     .replace("♯", "#");
 }
 
-function playNoteFile(note, callback) {
+async function playNoteFile(note, callback) {
+  if (manualQuestion) {
+    if (callback) setTimeout(callback, 0);
+    return;
+  }
   if (currentAudio) {
     currentAudio.pause();
     currentAudio.currentTime = 0;
@@ -468,7 +553,11 @@ function playNoteFile(note, callback) {
   if (callback) {
     currentAudio.onended = () => setTimeout(callback, 100);
   }
-  currentAudio.play();
+  try {
+    await currentAudio.play();
+  } catch (e) {
+    console.warn("🎧 audio.play() エラー:", e);
+  }
 }
 
 function noteToMidi(n) {
@@ -494,7 +583,7 @@ function chooseSingleNote(notes) {
 }
 
 function toPitchClass(note) {
-  return note.replace(/[0-9]/g, '').replace('♭', 'b');
+  return normalizeNoteName(note).replace(/[0-9]/g, '');
 }
 
 function generateNoteOptions(correct, chordNotes = null) {
@@ -535,11 +624,15 @@ function showSingleNoteQuiz(chord, onFinish, isLast = false) {
   if (!container) return;
 
   const layout = container.querySelector('.grid-container');
-  const unknownBtn = container.querySelector('#unknownBtn');
-  const quitBtn = container.querySelector('#quitBtn');
+  const unknownBtn = document.getElementById('unknownBtn');
+  const quitBtn = document.getElementById('quitBtn');
   if (layout) layout.style.display = 'none';
-  if (unknownBtn) unknownBtn.style.display = 'none';
-  if (quitBtn) quitBtn.style.display = 'none';
+
+  let prevUnknownHandler = null;
+  if (unknownBtn) {
+    prevUnknownHandler = unknownBtn.onclick;
+    unknownBtn.onclick = () => playNoteFile(note);
+  }
 
   const overlay = document.createElement('div');
   overlay.id = 'single-note-overlay';
@@ -549,13 +642,25 @@ function showSingleNoteQuiz(chord, onFinish, isLast = false) {
 
   const feedback = document.getElementById('feedback');
 
-  const optionWrap = document.createElement('div');
-  optionWrap.className = 'single-note-options';
-  optionWrap.style.display = 'flex';
-  optionWrap.style.justifyContent = 'center';
-  optionWrap.style.gap = '12px';
-  optionWrap.style.marginTop = '1em';
-  overlay.appendChild(optionWrap);
+  let displayWrap = null;
+  if (!manualQuestion) {
+    displayWrap = document.createElement('div');
+    displayWrap.className = 'single-note-options';
+    displayWrap.style.display = 'flex';
+    displayWrap.style.justifyContent = 'center';
+    displayWrap.style.gap = '12px';
+    displayWrap.style.marginTop = '1em';
+    overlay.appendChild(displayWrap);
+  }
+
+  const piano = document.createElement('div');
+  piano.className = 'piano-container';
+  const whiteWrap = document.createElement('div');
+  whiteWrap.className = 'white-keys';
+  piano.appendChild(whiteWrap);
+  if (manualQuestion) {
+    overlay.appendChild(piano);
+  }
 
   let recorded = false;
 
@@ -574,7 +679,9 @@ function showSingleNoteQuiz(chord, onFinish, isLast = false) {
   }
 
   function setActive(active) {
-    optionWrap.querySelectorAll('button').forEach(b => {
+    const target = manualQuestion ? piano : displayWrap;
+    if (!target) return;
+    target.querySelectorAll('button').forEach(b => {
       b.disabled = !active;
       b.style.opacity = active ? '1' : '0.5';
     });
@@ -586,8 +693,8 @@ function showSingleNoteQuiz(chord, onFinish, isLast = false) {
     if (!recorded) {
       lastResults.push({
         chordName: chord.name,
-        noteQuestion: note,
-        noteAnswer: selection,
+        question: note,
+        answer: selection,
         correct,
         isSingleNote: true
       });
@@ -601,8 +708,10 @@ function showSingleNoteQuiz(chord, onFinish, isLast = false) {
         overlay.remove();
         if (!isLast) {
           if (layout) layout.style.display = '';
-          if (unknownBtn) unknownBtn.style.display = '';
           if (quitBtn) quitBtn.style.display = '';
+        }
+        if (unknownBtn && prevUnknownHandler) {
+          unknownBtn.onclick = prevUnknownHandler;
         }
         onFinish();
       });
@@ -617,15 +726,57 @@ function showSingleNoteQuiz(chord, onFinish, isLast = false) {
     }
   }
 
-  options.forEach(n => {
+  if (!manualQuestion && displayWrap) {
+    options.forEach(n => {
+      const btn = document.createElement('button');
+      btn.textContent = noteLabels[n] || n;
+      btn.style.fontSize = '1.5em';
+      btn.style.padding = '0.5em 1em';
+      btn.onclick = () => handle(n);
+      btn.disabled = true;
+      displayWrap.appendChild(btn);
+    });
+  }
+
+  const whiteOrder = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
+  const blackOrder = [
+    { note: 'C#', pos: 'pos1' },
+    { note: 'D#', pos: 'pos2' },
+    { note: 'F#', pos: 'pos3' },
+    { note: 'G#', pos: 'pos4' },
+    { note: 'A#', pos: 'pos5' }
+  ];
+
+  whiteOrder.forEach(n => {
     const btn = document.createElement('button');
-    btn.textContent = noteLabels[n] || n;
-    btn.style.fontSize = '1.5em';
-    btn.style.padding = '0.5em 1em';
-    btn.onclick = () => handle(n);
-    optionWrap.appendChild(btn);
+    btn.className = 'key-white';
+    btn.dataset.note = n;
+    btn.textContent = noteLabels[n];
+    whiteWrap.appendChild(btn);
   });
 
+  blackOrder.forEach(b => {
+    const btn = document.createElement('button');
+    btn.className = `key-black ${b.pos}`;
+    btn.dataset.note = b.note;
+    btn.textContent = noteLabels[b.note];
+    piano.appendChild(btn);
+  });
+
+  if (manualQuestion) {
+    piano.addEventListener('click', e => {
+      const btn = e.target.closest('button');
+      if (!btn || btn.disabled) return;
+      handle(btn.dataset.note);
+    });
+  }
+
+  if (manualQuestion) {
+    const key = piano.querySelector(`button[data-note="${pitch}"]`);
+    if (key) key.classList.add('key-highlight');
+  }
+
+  setActive(false);
   playNoteFile(note, () => {
     setActive(true);
   });
@@ -633,8 +784,22 @@ function showSingleNoteQuiz(chord, onFinish, isLast = false) {
 
 let feedbackTimeoutId;
 function showFeedback(message, type = "good", duration = 1000) {
-  const fb = document.getElementById("feedback");
-  if (!fb) return;
+  let fb = document.getElementById("feedback");
+  if (!fb) {
+    const app = document.getElementById("app");
+    if (!app) return;
+    fb = document.createElement("div");
+    fb.id = "feedback";
+    fb.style.position = "fixed";
+    fb.style.top = "40%";
+    fb.style.left = "0";
+    fb.style.right = "0";
+    fb.style.textAlign = "center";
+    fb.style.fontSize = "3em";
+    fb.style.fontWeight = "bold";
+    fb.style.zIndex = "999";
+    app.appendChild(fb);
+  }
 
   // Cancel previous hide timer to avoid unintended clearing
   if (feedbackTimeoutId) {
@@ -651,6 +816,15 @@ function showFeedback(message, type = "good", duration = 1000) {
       feedbackTimeoutId = null;
     }, duration);
   }
+}
+
+function hideFeedback() {
+  if (feedbackTimeoutId) {
+    clearTimeout(feedbackTimeoutId);
+    feedbackTimeoutId = null;
+  }
+  const fb = document.getElementById("feedback");
+  if (fb) fb.style.display = "none";
 }
 
 function updateProgressUI() {

@@ -1,20 +1,25 @@
 // components/settings.js
 
 import { renderHeader } from "./header.js";
-import { switchScreen } from "../main.js";
+import { switchScreen, openHelp } from "../main.js";
+import { openPresetModal } from "./presetModal.js";
 import { supabase } from "../utils/supabaseClient.js";
 import { chords, chordOrder } from "../data/chords.js";
 import { generateRecommendedQueue } from "../utils/growthUtils.js"; // use queue util
-import { showCustomConfirm } from "./home.js";
+import { showCustomConfirm, showCustomAlert } from "./home.js";
 
 export let selectedChords = [];
+export let lastUnlockedKeys = [];
 
 // ✅ Supabaseから解放済み和音のkeyを取得
-async function fetchUnlockedChords(userId) {
+async function fetchUnlockedChords(user) {
+  if (user.isTemp) {
+    return user.unlockedKeys || [];
+  }
   const { data, error } = await supabase
     .from("user_chord_progress")
     .select("chord_key, status")
-    .eq("user_id", userId)
+    .eq("user_id", user.id)
     .not("status", "eq", "locked");  // ← locked 以外（in_progressやunlocked）
 
   if (error) {
@@ -61,7 +66,8 @@ function resetToRecommendedChords(unlockedKeys, user) {
 
 
 export async function renderSettingsScreen(user) {
-  const unlockedKeys = await fetchUnlockedChords(user.id); // ← 解放されたkey一覧
+  const unlockedKeys = await fetchUnlockedChords(user); // ← 解放されたkey一覧
+  lastUnlockedKeys = unlockedKeys;
   const app = document.getElementById("app");
   app.innerHTML = "";
 
@@ -76,25 +82,31 @@ export async function renderSettingsScreen(user) {
 
   const titleLine = document.createElement("div");
   titleLine.className = "header-title-line";
-  titleLine.innerHTML = `🎼 <strong>出題設定</strong> <span id="total-count">累計出題回数: 0 回</span>`;
+  titleLine.innerHTML = `🎼 <strong>出題設定</strong>`;
 
-  const buttonGroup = document.createElement("div");
-const resetBtn = document.createElement("button");
-resetBtn.className = "shadow-button";
-resetBtn.innerHTML = "✅ 推奨出題";
-resetBtn.onclick = () => {
-  showCustomConfirm("本当に推奨出題にしますか？", () => {
-    resetToRecommendedChords(unlockedKeys, user); // ← user を渡す！
-  });
-};
-buttonGroup.appendChild(resetBtn);
+  const helpBtn = document.createElement("button");
+  helpBtn.className = "help-button";
+  helpBtn.innerHTML = '<img src="images/icon_help.webp" alt="ヘルプ" />';
+  helpBtn.onclick = () => openHelp("設定画面");
+  titleLine.appendChild(helpBtn);
 
-  buttonGroup.className = "header-button-group";
+  const totalSpan = document.createElement("span");
+  totalSpan.id = "total-count";
+  totalSpan.textContent = "累計出題回数: 0 回";
+  titleLine.appendChild(totalSpan);
 
+  const resetBtn = document.createElement("button");
+  resetBtn.className = "shadow-button";
+  resetBtn.innerHTML = "✅ 推奨出題";
+  resetBtn.onclick = () => {
+    showCustomConfirm("本当に推奨出題にしますか？", () => {
+      resetToRecommendedChords(unlockedKeys, user); // ← user を渡す！
+    });
+  };
 
   const bulkDropdown = document.createElement("select");
   bulkDropdown.innerHTML = `
-    <option value="">一括出題回数</option>
+    <option value="">一括出題回数変更</option>
     <option value="1">1回ずつ</option>
     <option value="2">2回ずつ</option>
     <option value="3">3回ずつ</option>
@@ -114,11 +126,6 @@ buttonGroup.appendChild(resetBtn);
     });
     updateSelection();
   };
-
-  buttonGroup.appendChild(bulkDropdown);
-  headerBar.appendChild(titleLine);
-  headerBar.appendChild(buttonGroup);
-  container.appendChild(headerBar);
 
   const singleWrap = document.createElement('label');
   singleWrap.className = 'toggle-wrap';
@@ -148,18 +155,22 @@ buttonGroup.appendChild(resetBtn);
   singleWrap.appendChild(slider);
   const singleLabel = document.createElement('span');
   singleLabel.className = 'toggle-label';
-  singleLabel.innerHTML = '🎵 単音分化モード';
+  singleLabel.innerHTML = '単音分化機能';
   singleWrap.appendChild(singleLabel);
-  container.appendChild(singleWrap);
+  const singleHelp = document.createElement('button');
+  singleHelp.className = 'help-button';
+  singleHelp.innerHTML = '<img src="images/icon_help.webp" alt="ヘルプ" />';
+  singleHelp.onclick = () => openHelp('単音分化機能');
+  singleWrap.appendChild(singleHelp);
 
   const singleSelectWrap = document.createElement('div');
   singleSelectWrap.className = 'single-note-select-wrap';
   const singleSelectLabel = document.createElement('span');
-  singleSelectLabel.textContent = '出題音:';
+  singleSelectLabel.textContent = '出題音';
   const singleSelect = document.createElement('select');
   singleSelect.innerHTML = `
     <option value="random">ランダム</option>
-    <option value="top">最上音のみ</option>
+    <option value="top">最高音のみ</option>
   `;
   singleSelect.value = localStorage.getItem('singleNoteStrategy') || 'top';
   singleSelect.onchange = () => {
@@ -167,7 +178,129 @@ buttonGroup.appendChild(resetBtn);
   };
   singleSelectWrap.appendChild(singleSelectLabel);
   singleSelectWrap.appendChild(singleSelect);
-  container.appendChild(singleSelectWrap);
+
+  const controlBar = document.createElement('div');
+  controlBar.className = 'settings-controls';
+  controlBar.appendChild(titleLine);
+
+  const cardRow = document.createElement('div');
+  cardRow.className = 'settings-card-row';
+
+  const singleCard = document.createElement('div');
+  singleCard.className = 'settings-card single-card';
+  singleCard.appendChild(singleWrap);
+  singleCard.appendChild(singleSelectWrap);
+  cardRow.appendChild(singleCard);
+
+  const bulkCard = document.createElement('div');
+  bulkCard.className = 'settings-card bulk-card';
+  bulkCard.appendChild(resetBtn);
+  bulkCard.appendChild(bulkDropdown);
+  cardRow.appendChild(bulkCard);
+
+  const manualCard = document.createElement('div');
+  manualCard.className = 'settings-card manual-card';
+  const manualLabel = document.createElement('div');
+  manualLabel.className = 'manual-label';
+  manualLabel.textContent = '出題モード';
+  const manualHelp = document.createElement('button');
+  manualHelp.className = 'help-button';
+  manualHelp.innerHTML = '<img src="images/icon_help.webp" alt="ヘルプ" />';
+  manualHelp.onclick = () => openHelp('出題モード');
+  manualLabel.appendChild(manualHelp);
+  const manualWrap = document.createElement('div');
+  manualWrap.className = 'display-mode-toggle';
+  const autoBtn = document.createElement('button');
+  autoBtn.textContent = '自動';
+  const manualBtn = document.createElement('button');
+  manualBtn.textContent = '手動';
+
+  function updateManualButtons() {
+    const isManual = localStorage.getItem('manualQuestion') === 'on';
+    if (isManual) {
+      manualBtn.classList.add('active');
+      autoBtn.classList.remove('active');
+    } else {
+      autoBtn.classList.add('active');
+      manualBtn.classList.remove('active');
+    }
+  }
+
+  updateManualButtons();
+  autoBtn.onclick = () => {
+    localStorage.removeItem('manualQuestion');
+    updateManualButtons();
+  };
+  manualBtn.onclick = () => {
+    localStorage.setItem('manualQuestion', 'on');
+    updateManualButtons();
+  };
+
+  manualWrap.appendChild(autoBtn);
+  manualWrap.appendChild(manualBtn);
+  manualCard.appendChild(manualLabel);
+  manualCard.appendChild(manualWrap);
+  cardRow.appendChild(manualCard);
+
+  const modeCard = document.createElement('div');
+  modeCard.className = 'settings-card mode-card';
+  const modeLabel = document.createElement('div');
+  modeLabel.className = 'mode-label';
+  modeLabel.textContent = '表示モード';
+  const modeHelp = document.createElement('button');
+  modeHelp.className = 'help-button';
+  modeHelp.innerHTML = '<img src="images/icon_help.webp" alt="ヘルプ" />';
+  modeHelp.onclick = () => openHelp('表示モード');
+  modeLabel.appendChild(modeHelp);
+  const modeWrap = document.createElement('div');
+  modeWrap.className = 'display-mode-toggle';
+  const noteBtn = document.createElement('button');
+  noteBtn.textContent = '音名';
+  const colorBtn = document.createElement('button');
+  colorBtn.textContent = '色名';
+  function updateModeButtons(mode) {
+    if (mode === 'note') {
+      noteBtn.classList.add('active');
+      colorBtn.classList.remove('active');
+    } else {
+      noteBtn.classList.remove('active');
+      colorBtn.classList.add('active');
+    }
+  }
+  let savedMode = localStorage.getItem('displayMode');
+  if (!savedMode) {
+    savedMode = unlockedKeys.length >= 10 ? 'note' : 'color';
+  }
+  updateModeButtons(savedMode);
+  noteBtn.onclick = () => {
+    localStorage.setItem('displayMode', 'note');
+    updateModeButtons('note');
+  };
+  colorBtn.onclick = () => {
+    localStorage.setItem('displayMode', 'color');
+    updateModeButtons('color');
+  };
+  modeWrap.appendChild(noteBtn);
+  modeWrap.appendChild(colorBtn);
+  modeCard.appendChild(modeLabel);
+  modeCard.appendChild(modeWrap);
+  cardRow.appendChild(modeCard);
+
+  const presetCard = document.createElement('div');
+  presetCard.className = 'settings-card preset-card';
+  const presetWrap = document.createElement('div');
+  presetWrap.className = 'preset-wrap';
+  const presetBtn = document.createElement('button');
+  presetBtn.textContent = 'かんたん設定切り替え';
+  presetBtn.onclick = () => openPresetModal(lastUnlockedKeys);
+  presetWrap.appendChild(presetBtn);
+  presetCard.appendChild(presetWrap);
+  cardRow.appendChild(presetCard);
+
+  controlBar.appendChild(cardRow);
+
+  headerBar.appendChild(controlBar);
+  container.appendChild(headerBar);
 
   const mainSection = document.createElement("div");
   mainSection.className = "main-section";
@@ -185,9 +318,9 @@ buttonGroup.appendChild(resetBtn);
   const hasInv = unlockedKeys.some(k => chords.find(c => c.key === k && c.type === "black-inv"));
 
   const groups = [
-    { title: "白鍵", type: "white", open: true },
-    { title: "黒鍵", type: "black-root", open: hasBlack },
-    { title: "転回形", type: "black-inv", open: hasInv }
+    { title: "白鍵の和音", type: "white", open: true },
+    { title: "黒鍵の和音", type: "black-root", open: hasBlack },
+    { title: "黒鍵の和音の転回形", type: "black-inv", open: hasInv }
   ];
 
   groups.forEach(g => {
@@ -241,7 +374,7 @@ buttonGroup.appendChild(resetBtn);
         let val = parseInt(numSpan.textContent) || 0;
         val += delta;
         if (val < 0) val = 0;
-        if (val > 5) val = 5;
+        if (val > 20) val = 20; // allow manual counts up to 20
         numSpan.textContent = val;
         updateSelection();
       }

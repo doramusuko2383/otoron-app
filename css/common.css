@@ -126,6 +126,7 @@ button:hover {
   width: 24px;
   height: 24px;
   cursor: pointer;
+  z-index: 1;
 }
 
 /* Modal styles */
@@ -150,11 +151,17 @@ button:hover {
   background: #fff;
   padding: 1.5em;
   border-radius: 10px;
+  max-height: 90vh;
+  overflow-y: auto;
   text-align: center;
 }
 
 .modal-title {
   margin: 0 0 0.5em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3em;
 }
 
 .modal-buttons {

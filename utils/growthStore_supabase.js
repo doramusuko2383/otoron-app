@@ -185,8 +185,8 @@ export async function generateMockSingleNoteData(userId) {
     for (let q = 0; q < total; q++) {
       const correct = q >= mistakeNum;
       results.push({
-        noteQuestion: 'C4',
-        noteAnswer: correct ? 'C4' : 'D4',
+        question: 'C4',
+        answer: correct ? 'C4' : 'D4',
         correct,
         isSingleNote: true
       });

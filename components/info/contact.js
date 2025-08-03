@@ -1,3 +1,4 @@
+import { renderIntroHeader } from "../introHeader.js";
 import { renderHeader } from "../header.js";
 import { switchScreen } from "../../main.js";
 
@@ -6,7 +7,11 @@ const GAS_URL = "https://script.google.com/macros/s/AKfycbxuLk3wnuOENw8lqC0oZq-r
 export function renderContactScreen(user) {
   const app = document.getElementById("app");
   app.innerHTML = "";
-  renderHeader(app, user);
+  if (user) {
+    renderHeader(app, user);
+  } else {
+    renderIntroHeader(app);
+  }
 
   const main = document.createElement("main");
   main.className = "info-page contact-page";
@@ -30,6 +35,11 @@ export function renderContactScreen(user) {
     </form>
     <p style="text-align:center;margin-top:1em;">
       お急ぎの方は、<a href="#" id="help-link">ヘルプ・操作マニュアル</a> もあわせてご覧ください。
+    </p>
+    <p class="support-email" style="text-align:center;margin-top:0.5em;">
+      直接のご連絡は
+      <a href="mailto:support@playotoron.com">support@playotoron.com</a>
+      までお願いいたします。
     </p>
   `;
 

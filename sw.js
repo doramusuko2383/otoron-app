@@ -5,6 +5,7 @@ const STATIC_ASSETS = [
   '/main.js',
   '/style.css',
   '/generated-icon.png',
+  '/ogp.jpg',
   //'/favicon.ico',
   // CSS files
   '/css/common.css',
@@ -23,6 +24,8 @@ const STATIC_ASSETS = [
   '/css/info.css',
   '/css/pricing.css',
   '/css/setup.css',
+  '/helpData.json',
+  '/images/icon_help.webp',
   // frequently used audio files preloaded for faster playback
   '/audio/touch.mp3',
   '/audio/good1.mp3',

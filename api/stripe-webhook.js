@@ -39,6 +39,27 @@ export default async function handler(req, res) {
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
 
+  const eventId = event.id;
+  const { data: loggedEvent } = await supabase
+    .from('stripe_events')
+    .select('event_id')
+    .eq('event_id', eventId)
+    .maybeSingle();
+
+  if (loggedEvent) {
+    console.log('Duplicate event received:', eventId);
+    return res.status(200).json({ received: true });
+  }
+
+  const { error: logError } = await supabase
+    .from('stripe_events')
+    .insert({ event_id: eventId });
+
+  if (logError) {
+    console.error('Failed to record event:', logError);
+    return res.status(500).send('Supabase insert failed');
+  }
+
   const { type, data } = event;
   const customerId = data?.object?.customer;
   console.log('Event', type, customerId);

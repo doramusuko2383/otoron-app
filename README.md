@@ -33,13 +33,17 @@ if (signInError) {
 
 `main.js` では上記のサインアップ・サインイン処理を行った後、ユーザー情報の登録や画面遷移を行います。
 
+## パスワードリセットの流れ
+
+パスワードの再設定メールは Firebase の `sendPasswordResetEmail` で送信します。メール内のリンクは `/reset-password.html` にリダイレクトされ、クエリパラメータの `oobCode` を `verifyPasswordResetCode` で検証し、`confirmPasswordReset` で新しいパスワードを確定します。Supabase の認証情報は常にダミーパスワードを使用するため更新しません。
+
 ## Supabase Configuration
 
 アプリが利用する標準の Supabase プロジェクトは下記の URL とキーです。誤って別の DB に切り替えた場合は `utils/supabaseClient.js` をこの設定に戻してください。
 
 ```javascript
 const supabaseUrl = 'https://xnccwydcesyvqvyqafbg.supabase.co';
-const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhuY2N3eWRjZXN5dnF2eXFhZmJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY4MDExMTEsImV4cCI6MjA2MjM3NzExMX0.84ELOFGZFJaBNaiHM4roAVmw4o4JMEj4mHnxox1k7Gs';
+const supabaseAnonKey = '49b00ff076eae66c4dd35832cd07a1a4f6a1632e2b887d7fbf9ce10d68db4e1d';
 ```
 
 以前使用していた `https://flnqyramgddjcbbaispx.supabase.co` プロジェクトは削除済みのため、必ず上記の URL を利用してください。
@@ -49,10 +53,12 @@ const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYm
 
 Vercel などの環境でデプロイする際は次の環境変数を設定してください。
 
+- `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`
 - `STRIPE_SECRET_KEY`
 - `STRIPE_WEBHOOK_SECRET`
 - `SUPABASE_URL`
 - `SUPABASE_SERVICE_ROLE_KEY`
+- `BASE_URL`
 - `PRICE_ID_1M`
 - `PRICE_ID_6M`
 - `PRICE_ID_12M`
@@ -82,6 +88,12 @@ npm run reset-expired-premiums
 
 このスクリプトは日次ジョブ等で実行してください。
 
+和音進捗の欠損を補う `scripts/fixChordProgress.js` も用意しています。
+
+```bash
+npm run fix-chord-progress
+```
+
 ## Troubleshooting
 
 Supabase へのサインインに失敗し `Custom OIDC provider "firebase" not allowed` と表示される場合は、過去のコードを利用している可能性があります。現在の実装では Firebase ユーザーのメールアドレスを用いて次のようにダミーパスワードでサインアップ・サインインする方式に切り替えています。
@@ -90,9 +102,49 @@ Supabase へのサインインに失敗し `Custom OIDC provider "firebase" not 
 const firebaseUser = firebase.auth().currentUser;
 const dummyPassword = 'secure_dummy_password';
 
-await supabase.auth.signUp({ email: firebaseUser.email, password: dummyPassword });
-await supabase.auth.signInWithPassword({ email: firebaseUser.email, password: dummyPassword });
+let { error } = await supabase.auth.signInWithPassword({
+  email: firebaseUser.email,
+  password: dummyPassword,
+});
+if (error && error.message.includes('Invalid login credentials')) {
+  const { error: signUpError } = await supabase.auth.signUp({
+    email: firebaseUser.email,
+    password: dummyPassword,
+  });
+  if (!signUpError || signUpError.message.includes('User already registered')) {
+    ({ error } = await supabase.auth.signInWithPassword({
+      email: firebaseUser.email,
+      password: dummyPassword,
+    }));
+  }
+}
 ```
 
 古いコードを利用している場合は、`main.js` などを最新の内容に更新してください。
 
+
+## Stripe Event Deduplication
+
+Webhook events from Stripe can occasionally be delivered more than once. A small
+`stripe_events` table is used to track processed event IDs and ignore
+subsequent duplicates.
+
+```sql
+-- sql/create_stripe_events.sql
+create table if not exists stripe_events (
+  event_id text primary key,
+  received_at timestamp with time zone default current_timestamp
+);
+```
+
+Applying this schema ensures each event is recorded only once. To further guard
+against manual insertion errors, add a uniqueness constraint to
+`user_subscriptions`:
+
+```sql
+-- sql/user_subscriptions_unique.sql
+alter table user_subscriptions
+  add constraint user_subscriptions_user_started_at_key unique (user_id, started_at);
+```
+
+Run these SQL snippets in Supabase before deploying the webhook.

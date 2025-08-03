@@ -32,7 +32,7 @@ export function renderInitialSetupScreen(user, onComplete) {
   function step2() {
     wrapper.innerHTML = `
       <h2>れんしゅう けいけんは ある？</h2>
-      <p class="setup-note">スタートしたい いろを えらんでね</p>
+      <p class="setup-note">はじめてのお子さんは赤からスタートしてください。<br>※間違えても「よくある質問」から選び直せます</p>
       <select id="start-chord"></select>
       <button id="start-btn">はじめる</button>
     `;

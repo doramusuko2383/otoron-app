@@ -1,8 +1,9 @@
-import { firebaseAuth } from '../firebase/firebase-init.js';
+import { getCurrentUser } from '../utils/authSupabase.js';
 
 export async function startCheckout(plan) {
-  const email = firebaseAuth.currentUser?.email || '未取得';
-  if (!firebaseAuth.currentUser?.email) {
+  const authUser = await getCurrentUser();
+  const email = authUser?.email || '未取得';
+  if (!authUser?.email) {
     alert('ログイン情報がありません');
     return;
   }
@@ -20,7 +21,10 @@ export async function startCheckout(plan) {
         console.warn('Stripe SDK is not loaded; skipping redirect');
         return;
       }
-      const stripe = Stripe('pk_test_51RUmpu4aOXt1PnHZ4QI4ED8IqIZstCQTAMzMm6isjY34QP5ESFYKClhQSwRI8d52n80G4c2FgPQTvFXLjOQG9Yl400wFCPpXca');
+      // Use publishable key from environment if available
+      const key =
+        window.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || 'pk_live_xxx';
+      const stripe = Stripe(key);
       await stripe.redirectToCheckout({ sessionId: data.id });
     } else {
       console.error('No session ID returned:', data);

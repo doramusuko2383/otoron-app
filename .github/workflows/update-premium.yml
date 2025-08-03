@@ -1,0 +1,17 @@
+name: Update Premium Status Daily
+
+on:
+  workflow_dispatch:    # ← 手動実行用（これが大事！）
+  schedule:
+    - cron: '0 0 * * *'  # 毎日9時JSTに自動実行
+
+jobs:
+  call-supabase:
+    runs-on: ubuntu-latest
+    steps:
+      - name: POST to Supabase Function
+        run: |
+          curl -X POST https://xnccwydcesyvqvyqafbg.functions.supabase.co/update-premium-status \
+            -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhuY2N3eWRjZXN5dnF2eXFhZmJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY4MDExMTEsImV4cCI6MjA2MjM3NzExMX0.84ELOFGZFJaBNaiHM4roAVmw4o4JMEj4mHnxox1k7Gs" \
+            -H "Content-Type: application/json" \
+            -d '{}'

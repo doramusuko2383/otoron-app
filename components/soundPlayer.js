@@ -1,5 +1,4 @@
 import { getAudio } from "../utils/audioCache.js";
-const audioBasePath = "./sounds";
 
 function normalizeNoteName(name) {
   return name
@@ -19,15 +18,35 @@ export function playNote(noteName) {
   return new Promise((resolve) => {
     const encoded = encodeURIComponent(normalizeNoteName(noteName));
     const audio = getAudio(`sounds/${encoded}.mp3`);
-    audio.addEventListener("ended", resolve);
-    audio.addEventListener("error", () => {
+
+    const handleEnded = () => {
+      cleanup();
+      resolve();
+    };
+
+    const handleError = () => {
       console.warn(`音声再生エラー: ${noteName}`);
+      cleanup();
       resolve();
-    });
-    audio.play().catch((e) => {
-      console.warn(`音声再生エラー: ${noteName}`, e);
-      resolve();
-    });
+    };
+
+    const cleanup = () => {
+      // Remove listeners after playback to avoid leaks
+      audio.removeEventListener("ended", handleEnded);
+      audio.removeEventListener("error", handleError);
+    };
+
+    audio.addEventListener("ended", handleEnded);
+    audio.addEventListener("error", handleError);
+
+    (async () => {
+      try {
+        await audio.play();
+      } catch (e) {
+        console.warn(`音声再生エラー: ${noteName}`, e);
+        handleError();
+      }
+    })();
   });
 }
 

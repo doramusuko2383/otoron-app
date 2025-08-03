@@ -1,3 +1,4 @@
+import { renderIntroHeader } from "../introHeader.js";
 import { renderHeader } from "../header.js";
 import { chords } from "../../data/chords.js";
 import { resetProgressAndUnlock } from "../../utils/progressUtils.js";
@@ -7,12 +8,16 @@ import { switchScreen } from "../../main.js";
 export function renderChordResetScreen(user) {
   const app = document.getElementById("app");
   app.innerHTML = "";
-  renderHeader(app, user);
+  if (user) {
+    renderHeader(app, user);
+  } else {
+    renderIntroHeader(app);
+  }
 
   const main = document.createElement("main");
   main.className = "info-page";
   main.innerHTML = `
-    <h1>開始和音を選び直す</h1>
+    <h1>和音の進捗範囲を選び直す</h1>
     <select id="start-chord"></select>
     <button id="apply-btn">選び直す</button>
     <button id="back-btn" class="link-btn">戻る</button>
@@ -20,13 +25,14 @@ export function renderChordResetScreen(user) {
   app.appendChild(main);
 
   const select = main.querySelector("#start-chord");
+  // include every chord option, including black key inversions
   chords.forEach((ch, idx) => {
-    if (idx <= 13) { // up to mizuiro (basic 14 colors)
-      const opt = document.createElement("option");
-      opt.value = idx;
-      opt.textContent = ch.label;
-      select.appendChild(opt);
-    }
+    const opt = document.createElement("option");
+    opt.value = idx;
+    let label = ch.label;
+    if (idx !== 0) label += "まで"; // 赤以外は「まで」を追加
+    opt.textContent = label;
+    select.appendChild(opt);
   });
 
   main.querySelector("#apply-btn").onclick = () => {

@@ -17,9 +17,12 @@ import { renderIntroScreen } from "./components/intro.js";
 import { renderSignUpScreen } from "./components/signup.js";
 import { renderInitialSetupScreen } from "./components/initialSetup.js";
 import { supabase } from "./utils/supabaseClient.js";
-import { ensureSupabaseAuth } from "./utils/supabaseAuthHelper.js";
-import { isAccessAllowed, getLockType } from "./utils/accessControl.js";
-import { createInitialChordProgress } from "./utils/progressUtils.js";
+import { onAuthStateChanged } from "./utils/authSupabase.js";
+import { getLockType } from "./utils/accessControl.js";
+import { ensureChordProgress } from "./utils/progressUtils.js";
+import { loadTrainingRecords } from "./utils/recordStore_supabase.js";
+import { getToday } from "./utils/growthUtils.js";
+import { showCustomAlert } from "./components/home.js";
 import { renderMyPageScreen } from "./components/mypage.js";
 import { clearTimeOfDayStyling } from "./utils/timeOfDay.js";
 import { renderTermsScreen } from "./components/info/terms.js";
@@ -32,16 +35,84 @@ import { renderFaqScreen } from "./components/info/faq.js";
 import { renderChordResetScreen } from "./components/info/chordReset.js";
 import { renderPricingScreen } from "./components/pricing.js";
 import { renderLockScreen } from "./components/lock.js";
+import { renderForgotPasswordScreen } from "./components/forgotPassword.js";
 
 
-import { firebaseAuth } from "./firebase/firebase-init.js";
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+// Firebase 認証を排除し、Supabase での認証管理に一本化
 
-const DUMMY_PASSWORD = "secure_dummy_password";
+const INFO_SCREENS = [
+  "terms",
+  "privacy",
+  "contact",
+  "help",
+  "faq",
+  "chord_reset",
+  "law",
+  "external",
+];
 
 // console.log("🧭 main.js にて全コンポーネント統合済み");
 
 const DEBUG_AUTO_LOGIN = false;
+
+let helpOutsideHandler = null;
+let helpKeyHandler = null;
+
+export async function openHelp(topic) {
+  let help;
+  try {
+    const res = await fetch('helpData.json');
+    const data = await res.json();
+    help = data[topic];
+  } catch (e) {
+    console.error('Failed to load help data', e);
+    return;
+  }
+  if (!help) return;
+
+  document.getElementById('help-title').innerText = help.title;
+  const textHtml = help.description.map(line => `<p>${line}</p>`).join('');
+  document.getElementById('help-text').innerHTML = textHtml;
+
+  if (help.tableTitle && help.table.length > 0) {
+    let tableHtml = `<h3>${help.tableTitle}</h3><table>`;
+    help.table.forEach(row => {
+      tableHtml += `<tr><td>${row.range}</td><td>${row.required}</td></tr>`;
+    });
+    tableHtml += `</table>`;
+    document.getElementById('help-table').innerHTML = tableHtml;
+  } else {
+    document.getElementById('help-table').innerHTML = '';
+  }
+
+  const modal = document.getElementById('help-modal');
+  modal.style.display = 'flex';
+
+  helpOutsideHandler = (e) => {
+    if (e.target === modal) closeHelp();
+  };
+  helpKeyHandler = (e) => {
+    if (e.key === 'Escape') closeHelp();
+  };
+  modal.addEventListener('click', helpOutsideHandler);
+  document.addEventListener('keydown', helpKeyHandler);
+}
+
+export function closeHelp() {
+  const modal = document.getElementById('help-modal');
+  modal.style.display = 'none';
+  if (helpOutsideHandler) {
+    modal.removeEventListener('click', helpOutsideHandler);
+    helpOutsideHandler = null;
+  }
+  if (helpKeyHandler) {
+    document.removeEventListener('keydown', helpKeyHandler);
+    helpKeyHandler = null;
+  }
+}
+
+// make closeHelp available for inline onclick handlers
+window.closeHelp = closeHelp;
 
 window.addEventListener("error", (e) => {
   console.error("Uncaught error", e.error);
@@ -49,14 +120,62 @@ window.addEventListener("error", (e) => {
 
 
 let currentUser = null;
+let baseUser = null;
+let tempUser = null;
 
-export const switchScreen = (screen, user = currentUser, options = {}) => {
+export function setTempUser(user) {
+  tempUser = user;
+  currentUser = user;
+}
+
+export function clearTempUser() {
+  tempUser = null;
+  currentUser = baseUser;
+}
+
+export function getBaseUser() {
+  return baseUser;
+}
+
+async function checkTrainingLimit(user) {
+  // Test mode: temporarily disable the free user daily training limit
+  return true;
+}
+
+export const switchScreen = async (screen, user = currentUser, options = {}) => {
   const { replace = false } = options;
+
+  if (currentUser && currentUser.isTemp && screen !== "settings") {
+    clearTempUser();
+    user = currentUser;
+  }
+
+  // If the user is locked (trial or premium expired),
+  // always redirect to the lock screen except for a few allowed pages.
+  const lockType = getLockType(user);
+  if (
+    lockType &&
+    screen !== "lock" &&
+    screen !== "pricing" &&
+    screen !== "login" &&
+    screen !== "signup" &&
+    screen !== "intro"
+  ) {
+    return switchScreen("lock", user, { replace, lockType });
+  }
+
+  if (
+    ["training", "training_easy", "training_full", "training_white"].includes(screen)
+  ) {
+    const allowed = await checkTrainingLimit(user);
+    if (!allowed) return;
+  }
 
   const app = document.getElementById("app");
   app.innerHTML = "";
   document.body.classList.remove("intro-scroll");
   document.body.classList.remove("summary-scroll");
+  document.body.classList.remove("info-bg");
 
   if (screen !== "home") {
     clearTimeOfDayStyling();
@@ -71,11 +190,16 @@ export const switchScreen = (screen, user = currentUser, options = {}) => {
     history.pushState(state, "", `#${screen}`);
   }
 
+  if (INFO_SCREENS.includes(screen)) {
+    document.body.classList.add("info-bg");
+  }
+
   if (screen === "intro") {
     document.body.classList.add("intro-scroll");
     renderIntroScreen();
   }
   else if (screen === "login") renderLoginScreen(app, () => {});
+  else if (screen === "forgot_password") renderForgotPasswordScreen();
   else if (screen === "home") renderHomeScreen(user, options);
   else if (screen === "training") renderTrainingScreen(user);
   else if (screen === "training_easy") renderTrainingEasy(user);
@@ -89,7 +213,7 @@ export const switchScreen = (screen, user = currentUser, options = {}) => {
   else if (screen === "growth") renderGrowthScreen(user);
   else if (screen === "signup") renderSignUpScreen(user);
   else if (screen === "setup") renderInitialSetupScreen(user, (u) => switchScreen("home", u, options));
-  else if (screen === "mypage") renderMyPageScreen(user);
+  else if (screen === "mypage") await renderMyPageScreen(user);
   else if (screen === "result") renderResultScreen(user);
   else if (screen === "result_easy") renderTrainingEasyResultScreen(user);
   else if (screen === "result_full") renderTrainingFullResultScreen(user);
@@ -98,7 +222,7 @@ export const switchScreen = (screen, user = currentUser, options = {}) => {
   else if (screen === "privacy") renderPrivacyScreen(user);
   else if (screen === "contact") renderContactScreen(user);
   else if (screen === "help") renderHelpScreen(user);
-  else if (screen === "faq") renderFaqScreen(user);
+  else if (screen === "faq") renderFaqScreen(user, options);
   else if (screen === "chord_reset") renderChordResetScreen(user);
   else if (screen === "law") renderLawScreen(user);
   else if (screen === "external") renderExternalScreen(user);
@@ -114,21 +238,57 @@ window.addEventListener("popstate", (e) => {
   }
 });
 
-onAuthStateChanged(firebaseAuth, async (firebaseUser) => {
-  if (!firebaseUser) {
+onAuthStateChanged(async (authUser) => {
+  if (!authUser) {
     return;
   }
 
-  // console.log("🔓 Firebaseログイン済み:", firebaseUser.email);
+  let { data: user, error } = await supabase
+    .from("users")
+    .select("*")
+    .eq("firebase_uid", authUser.id)
+    .maybeSingle();
 
-  let authResult;
-  try {
-    authResult = await ensureSupabaseAuth(firebaseUser);
-  } catch (e) {
-    console.error("❌ Supabase認証処理エラー:", e);
+  if (error) {
+    console.error("❌ Supabaseユーザー確認エラー:", error);
     return;
   }
-  const { user, isNew } = authResult;
+
+  let isNew = false;
+  if (!user) {
+    const trialEnd = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+    const { data: inserted, error: insertError } = await supabase
+      .from("users")
+      .insert([
+        {
+          firebase_uid: authUser.id,
+          name: "名前未設定",
+          email: authUser.email,
+          trial_active: true,
+          trial_end_date: trialEnd,
+        },
+      ])
+      .select()
+      .maybeSingle();
+    if (insertError || !inserted) {
+      console.error("❌ Supabaseユーザー登録失敗:", insertError);
+      return;
+    }
+    user = inserted;
+    isNew = true;
+  } else if (!user.email || user.email !== authUser.email) {
+    const { data: updated, error: updateError } = await supabase
+      .from("users")
+      .update({ email: authUser.email })
+      .eq("id", user.id)
+      .select()
+      .maybeSingle();
+    if (!updateError && updated) {
+      user = updated;
+    }
+  }
+
+  await ensureChordProgress(user.id);
 
   const lockType = getLockType(user);
   if (lockType) {
@@ -136,25 +296,29 @@ onAuthStateChanged(firebaseAuth, async (firebaseUser) => {
     return;
   }
 
+  baseUser = user;
+  currentUser = user;
+
   if (isNew) {
-    await createInitialChordProgress(user.id);
+    window.location.href = "/register-thankyou.html";
+    return;
   }
 
-  currentUser = user;
   if (!user.name || user.name === "名前未設定") {
-    switchScreen("setup", user, { showWelcome: isNew });
+    switchScreen("setup", user, { showWelcome: true });
   } else {
-    switchScreen("home", user, { showWelcome: isNew });
+    switchScreen("home", user, { showWelcome: false });
   }
 });
 
 const initApp = () => {
+  const hash = location.hash;
   const initial = DEBUG_AUTO_LOGIN ? "home" : "intro";
-  const hash = location.hash.replace("#", "");
-  const startScreen = hash || initial;
-  
+  const screenHash = hash.replace("#", "");
+  const startScreen = screenHash || initial;
+
   switchScreen(startScreen, undefined, { replace: true });
-  
+
 };
 
 if (document.readyState !== "loading") {
@@ -164,3 +328,9 @@ if (document.readyState !== "loading") {
 }
 
 window.addEventListener("load", () => {});
+
+// expose utilities for dynamically loaded modules
+window.switchScreen = switchScreen;
+window.setTempUser = setTempUser;
+window.clearTempUser = clearTempUser;
+window.getBaseUser = getBaseUser;

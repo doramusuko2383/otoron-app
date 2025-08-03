@@ -4,7 +4,7 @@
   padding: 0 1em 2em;
   box-sizing: border-box;
   background: #fff;
-  color: #543014;
+  color: #543014 !important;
   line-height: 1.7;
   border-radius: 8px;
 }
@@ -27,8 +27,17 @@
   text-align: center;
 }
 
+/* Center lists while keeping bullet indentation */
+.info-page ul {
+  display: inline-block;
+  text-align: left;
+  margin: 0 auto 1em;
+  padding-left: 1.4em;
+}
+
 /* Ensure bullet lists aren't flush against the edge on wide screens */
 .info-page.full-page ul {
+  display: inline-block;
   text-align: left;
   padding-left: 1.4em;
 }
@@ -51,7 +60,11 @@
 /* Ensure readability even when the body has a dark background */
 .app-root.night .info-page {
   background: #fff;
-  color: #543014;
+  color: #543014 !important;
+}
+
+body.info-bg {
+  background: #fff;
 }
 
 .info-page h1 {
@@ -210,9 +223,9 @@
 }
 
 @media (min-width: 768px) {
-  /* お問い合わせページ以外はPCでもスクロール可能に */
+  /* PCではbody全体でスクロールするため高さ指定を外す */
   .info-page:not(.contact-page) {
-    height: calc(100dvh - 56px);
-    overflow-y: auto;
+    height: auto;
+    overflow-y: visible;
   }
 }

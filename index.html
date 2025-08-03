@@ -5,35 +5,107 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <meta name="theme-color" content="#ffdede" />
   <title>絶対音感トレーニング</title>
-
+  <!-- ✅ OGP設定（本番環境用パス修正） -->
+  <meta property="og:title" content="子どもがゲーム感覚で絶対音感を育てるアプリ「オトロン」🎵" />
+  <meta property="og:description" content="音の高さを旗の色で感じるユニークなトレーニング。音感の土台をゲーム感覚で楽しく育てよう。今すぐお試し！" />
+  <meta property="og:image" content="https://playotoron.com/ogp.jpg" />
+  <meta property="og:url" content="https://playotoron.com" />
+  <meta property="og:type" content="website" />
+  
+  <!-- ✅ Twitter用 -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://playotoron.com/ogp.jpg" />
+  
+  <!-- ✅ Favicon（本番環境用パス修正） -->
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  <link rel="shortcut icon" href="/favicon.ico" />
+  
+  <!-- ✅ Google Fonts & Material Icons -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-
+  
   <!-- CSS -->
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-QCRGGLGDER"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-QCRGGLGDER');
+  </script>
+  <script>
+    // Supabaseのパスワードリカバリーリンクでアクセスされた場合、
+    // 専用のパスワード再設定ページへ転送する
+    if (location.hash.includes('type=recovery')) {
+      window.location.replace('/reset-password.html' + location.hash);
+    }
+  </script>
+  <script type="module">
+    import { showDebugLog } from './utils/loginDebug.js';
+    const debugMode = new URLSearchParams(window.location.search).get('debug') === '1';
+    if (debugMode) {
+      const pre = document.createElement('pre');
+      pre.id = 'debug-log';
+      pre.style.whiteSpace = 'pre-wrap';
+      pre.style.color = 'red';
+      pre.style.fontSize = '0.9em';
+      document.body.prepend(pre);
+      showDebugLog();
+    }
+  </script>
+<!-- Google Ads Conversion Tracking -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-881481244"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'AW-881481244');
+</script>
 </head>
 
 <body class="app-root">
   <div id="app"></div>
+
+  <div id="help-modal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <span class="close" onclick="closeHelp()">×</span>
+      <div class="help-main">
+        <div class="help-header">
+          <img src="images/otolon_face.webp" alt="絶対音感トレーニングアプリ『オトロン』のロゴ" class="help-otolon" />
+          <h2 id="help-title"></h2>
+        </div>
+        <div id="help-text"></div>
+        <div id="help-table"></div>
+      </div>
+    </div>
+  </div>
 
   <!-- JSライブラリ -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/flatpickr" defer></script>
 
   <!-- ✅ VexFlowライブラリ読み込み -->
-  <script src="https://unpkg.com/vexflow@3.0.9/releases/vexflow-min.js" defer></script>
+  <script src="https://unpkg.com/vexflow@3.0.9/releases/vexflow-min.js" onload="window.VexLoaded = true;" defer></script>
   <script>
-    if (typeof Vex !== 'undefined') {
-      window.Vex = Vex;
-      // console.log("✅ VexFlow 読み込み成功");
-    } else {
-      console.error("❌ VexFlow 読み込み失敗");
-    }
+    // VexFlowの読み込み確認（失敗しないよう setInterval でチェック）
+    const waitForVex = setInterval(() => {
+      if (window.Vex) {
+        console.log("✅ VexFlow 読み込み成功");
+        clearInterval(waitForVex);
+      }
+    }, 100);
   </script>
   <script src="https://js.stripe.com/v3/" defer></script>
+  <script>
+    window.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY =
+      'pk_live_51RUmpeGGyh8a8OqPGUhgmjdyp2fIhSCIOILTUb2eCV8s90gefDwt48Jel6dnphs41Rp3If2Asrh1UsMwsGI25a9000EgU9Rp1R';
+  </script>
 
   <!-- ✅ 最後に main.js をモジュールとして読み込む -->
   <script type="module" src="main.js"></script>

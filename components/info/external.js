@@ -1,9 +1,14 @@
+import { renderIntroHeader } from "../introHeader.js";
 import { renderHeader } from "../header.js";
 
 export function renderExternalScreen(user) {
   const app = document.getElementById("app");
   app.innerHTML = "";
-  renderHeader(app, user);
+  if (user) {
+    renderHeader(app, user);
+  } else {
+    renderIntroHeader(app);
+  }
 
   const main = document.createElement("main");
   main.className = "info-page full-page";

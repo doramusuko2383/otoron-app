@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>Googleログイン処理中</title>
+  <meta name="robots" content="noindex" />
+</head>
+<body>
+  <p id="message">ログイン処理中です...</p>
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+    const supabaseUrl = 'https://xnccwydcesyvqvyqafbg.supabase.co';
+    const supabaseAnonKey = '49b00ff076eae66c4dd35832cd07a1a4f6a1632e2b887d7fbf9ce10d68db4e1d';
+    const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+    const message = document.getElementById('message');
+
+    try {
+      const { data: { session }, error } = await supabase.auth.getSession();
+      if (error || !session) throw error || new Error('No session');
+      window.location.replace('/');
+    } catch (err) {
+      console.error('OAuth callback error:', err);
+      message.textContent = `ログインに失敗しました: ${err.message}`;
+    }
+  </script>
+</body>
+</html>

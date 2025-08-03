@@ -163,20 +163,21 @@
 .header-bar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   flex-wrap: wrap;
   gap: 0.75em;
   padding: 0.5em 1em;
   max-width: 860px; /* ← 少し狭くて美しい */
   margin: 0 auto;
   box-sizing: border-box;
+  text-align: center;
 }
 
 .header-title-line {
   display: flex;
   align-items: center;
   gap: 1em;
-  font-size: 1.2em;
+  font-size: 1.3em;
   font-weight: bold;
   white-space: nowrap;
 }
@@ -191,6 +192,47 @@
   padding: 6px 12px;
   font-size: 1em;
   height: 2.2em; /* 高さを揃える */
+}
+
+.settings-controls {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75em;
+}
+.settings-controls button:not(.help-button),
+.settings-controls select {
+  padding: 6px 12px;
+  font-size: 1em;
+  min-height: 2.2em;
+}
+.settings-controls .toggle-wrap {
+  height: 2.2em;
+  margin: 0;
+  display: flex;
+  align-items: center;
+}
+
+.help-button {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  line-height: 1;
+  vertical-align: middle;
+}
+
+.header-title-line .help-button {
+  transform: translateX(-0.5em);
 }
 
 .header-title-line #total-count {
@@ -275,10 +317,96 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  margin: 0.5em 1em;
+  margin: 0.5em 0;
+}
+.single-note-select-wrap span {
+  white-space: nowrap;
 }
 .single-note-select-wrap select {
+  padding: 6px 4px;
+}
+
+/* 縦型の設定カード */
+.settings-card-row {
+  display: flex;
+  justify-content: center;
+  gap: 0.75em;
+  width: 100%;
+}
+
+.settings-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
+  flex: 0 1 200px;
+  max-width: 200px;
+  min-height: 100px;
+  font-size: 0.9em;
+  box-sizing: border-box;
+}
+.settings-card > * {
+  width: 100%;
+}
+.settings-card button,
+.settings-card select {
+  font-size: 0.9em;
+  font-weight: normal;
+}
+
+.settings-card.preset-card {
+  min-height: 120px;
+}
+.settings-card.preset-card .preset-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  width: 100%;
+}
+.settings-card.preset-card button {
+  display: block;
+  flex: 1;
+  white-space: normal;
+  word-break: keep-all;
+  text-align: center;
+  line-height: 1.4;
+  padding: 0.6em;
+  font-size: 0.9em;
+}
+.settings-card.preset-card .help-button {
+  margin-left: 0.5em;
+  flex-shrink: 0;
+}
+
+.manual-label {
+  /* display: flex; */
+  align-items: center;
+  gap: 0.2em;
+  position: relative;
+}
+
+.display-mode-toggle {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+}
+.display-mode-toggle button {
   padding: 6px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #fff;
+  font-size: 0.9em;
+  cursor: pointer;
+}
+.display-mode-toggle button.active {
+  background: var(--color-primary);
+  color: #fff;
+  border-color: var(--color-primary-dark);
 }
 
 /* その他のトレーニング */
@@ -330,7 +458,9 @@
 }
 
 .toggle-label {
-  font-weight: bold;
+  font-weight: normal;
+  white-space: nowrap;
+  font-size: 0.9em;
 }
 
 /* 温かみのある背景 */
@@ -357,6 +487,13 @@
     background: transparent;
     box-shadow: none;
     border-radius: 0;
+  }
+  .settings-card-row {
+    width: 100%;
+  }
+  .settings-card {
+    flex-basis: 100%;
+    max-width: 100%;
   }
 }
 
