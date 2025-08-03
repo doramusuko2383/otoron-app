@@ -36,6 +36,7 @@ import { renderChordResetScreen } from "./components/info/chordReset.js";
 import { renderPricingScreen } from "./components/pricing.js";
 import { renderLockScreen } from "./components/lock.js";
 import { renderForgotPasswordScreen } from "./components/forgotPassword.js";
+import { addDebugLog } from "./utils/loginDebug.js";
 
 
 // Firebase 認証を排除し、Supabase での認証管理に一本化
@@ -145,6 +146,8 @@ async function checkTrainingLimit(user) {
 export const switchScreen = async (screen, user = currentUser, options = {}) => {
   const { replace = false } = options;
 
+  addDebugLog('switchScreen', { screen, hasUser: !!user });
+
   if (currentUser && currentUser.isTemp && screen !== "settings") {
     clearTempUser();
     user = currentUser;
@@ -239,7 +242,9 @@ window.addEventListener("popstate", (e) => {
 });
 
 onAuthStateChanged(async (authUser) => {
+  addDebugLog('onAuthStateChanged callback', { hasUser: !!authUser });
   if (!authUser) {
+    addDebugLog('onAuthStateChanged no user');
     return;
   }
 
