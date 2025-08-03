@@ -2,11 +2,24 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <title>OAuth リダイレクト処理中</title>
+  <title>ログイン処理中</title>
   <meta name="robots" content="noindex" />
 </head>
 <body>
-  <p id="message">ログイン処理中です...</p>
-  <script type="module" src="/auth-callback.js"></script>
+  <p>ログイン処理中です...</p>
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+    const supabase = createClient('https://xnccwydcesyvqvyqafbg.supabase.co', '49b00ff076eae66c4dd35832cd07a1a4f6a1632e2b887d7fbf9ce10d68db4e1d')
+
+    const { data, error } = await supabase.auth.exchangeCodeForSession()
+    if (error) {
+      console.error('認証エラー:', error)
+      document.body.innerHTML = 'ログインに失敗しました。'
+    } else {
+      console.log('ログイン成功:', data)
+      window.location.href = '/home.html'
+    }
+  </script>
 </body>
 </html>
