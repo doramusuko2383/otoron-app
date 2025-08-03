@@ -1,4 +1,5 @@
 import { supabase } from './supabaseClient.js';
+import { addDebugLog } from './loginDebug.js';
 
 export async function signUp(email, password) {
   return supabase.auth.signUp({ email, password });
@@ -9,6 +10,7 @@ export async function signIn(email, password) {
 }
 
 export async function signInWithGoogle() {
+  addDebugLog('signInWithGoogle start');
   const { error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
@@ -16,7 +18,10 @@ export async function signInWithGoogle() {
     },
   });
   if (error) {
+    addDebugLog('signInWithGoogle error', { message: error.message });
     console.error('Google sign-in error:', error);
+  } else {
+    addDebugLog('signInWithGoogle redirect');
   }
 }
 
