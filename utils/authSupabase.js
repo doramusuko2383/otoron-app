@@ -11,7 +11,7 @@ export async function signIn(email, password) {
 export async function signInWithGoogle() {
   const { error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
-    options: { redirectTo: 'https://playotoron.com/callback.html' },
+    options: { redirectTo: `${location.origin}/auth/callback` },
   });
   if (error) {
     console.error('Google sign-in error:', error);

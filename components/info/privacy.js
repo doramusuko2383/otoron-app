@@ -19,9 +19,9 @@ export function renderPrivacyScreen(user) {
     <h2>第1条（個人情報の定義）</h2>
     <p>本ポリシーにおける「個人情報」とは、特定の個人を識別できる情報（例：氏名、メールアドレス、UIDなど）を指します。</p>
     <h2>第2条（取得する情報とその方法）</h2>
-    <p>本サービスでは、FirebaseやSupabaseを通じて以下の情報を取得する場合があります：</p>
+    <p>本サービスでは、Supabaseを通じて以下の情報を取得する場合があります：</p>
     <ul>
-      <li>Firebase UID（ユーザー識別用）</li>
+      <li>ユーザーUID（ユーザー識別用）</li>
       <li>ニックネーム・学習履歴など、本人が入力した情報</li>
       <li>アクセス状況・端末情報（Google Analyticsを通じて）</li>
     </ul>
@@ -43,7 +43,7 @@ export function renderPrivacyScreen(user) {
     <h2>第5条（外部サービスの利用）</h2>
     <p>本サービスでは、以下の外部サービスを利用しています。これらサービスが収集する情報については、それぞれのポリシーをご確認ください。</p>
     <ul>
-      <li><strong>Firebase / Supabase：</strong>ログイン・DB管理</li>
+      <li><strong>Supabase：</strong>ログイン・DB管理</li>
       <li><strong>Google Analytics：</strong>匿名の利用状況分析（Cookie利用）</li>
     </ul>
     <h2>第6条（安全管理措置）</h2>

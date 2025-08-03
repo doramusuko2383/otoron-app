@@ -17,8 +17,8 @@
     const message = document.getElementById('message');
 
     try {
-      const { error } = await supabase.auth.getSessionFromUrl({ storeSession: true });
-      if (error) throw error;
+      const { data: { session }, error } = await supabase.auth.getSession();
+      if (error || !session) throw error || new Error('No session');
       window.location.replace('/');
     } catch (err) {
       console.error('OAuth callback error:', err);
@@ -27,4 +27,3 @@
   </script>
 </body>
 </html>
-// trigger vercel
