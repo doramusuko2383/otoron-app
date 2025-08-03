@@ -1,23 +1,24 @@
-import { supabase } from './utils/supabaseClient.js';
+import { supabase } from '/scripts/supabaseClient.js'; // パスは環境に応じて調整
 
-async function handleOAuthRedirect() {
-  const hashParams = new URLSearchParams(window.location.hash.slice(1));
-  const accessToken = hashParams.get('access_token');
-
-  if (accessToken) {
-    const { data, error } = await supabase.auth.getSession();
-    console.log('✅ Supabaseセッション取得:', data, error);
-
-    if (!error && data.session) {
-      window.location.href = '/home.html';
-      return;
-    }
+// URLフラグメントからトークンをSupabaseに渡す
+supabase.auth.onAuthStateChange((event, session) => {
+  if (event === 'SIGNED_IN' && session) {
+    // 正常にログイン完了 → ホームへリダイレクト
+    window.location.href = '/';
   }
+});
 
-  const message = document.getElementById('message');
-  if (message) {
-    message.textContent = 'ログインに失敗しました。もう一度お試しください。';
+// 上記が反応しないケースに備えて、一度URLパラメータから復元処理
+supabase.auth.getSession().then(({ data }) => {
+  if (!data?.session) {
+    // フラグメントをクエリとして処理
+    supabase.auth.exchangeCodeForSession(window.location.hash)
+      .then(() => {
+        window.location.href = '/';
+      })
+      .catch((err) => {
+        console.error('ログイン処理エラー:', err);
+        document.getElementById('message').textContent = 'ログイン処理に失敗しました。';
+      });
   }
-}
-
-handleOAuthRedirect();
+});
