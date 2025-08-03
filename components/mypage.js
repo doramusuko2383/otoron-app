@@ -1,19 +1,17 @@
 // components/mypage.js
 import { renderHeader } from "./header.js";
-import {
-  EmailAuthProvider,
-  reauthenticateWithCredential,
-  updatePassword,
-  updateEmail,
-  linkWithCredential,
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { firebaseAuth } from "../firebase/firebase-init.js";
 import { startCheckout } from "../utils/stripeCheckout.js";
 import { supabase } from "../utils/supabaseClient.js";
 import { switchScreen } from "../main.js";
 import { createPlanInfoContent } from "./planInfo.js";
 
-export function renderMyPageScreen(user) {
+export async function renderMyPageScreen(user) {
+  const { data: { user: authUser } } = await supabase.auth.getUser();
+  const providers = authUser?.app_metadata?.providers || [];
+  const hasPassword = providers.includes("email");
+  const googleOnly = providers.includes("google") && !hasPassword;
+  const authEmail = authUser?.email || "";
+
   const app = document.getElementById("app");
   app.innerHTML = "";
   renderHeader(app, user);
@@ -23,14 +21,6 @@ export function renderMyPageScreen(user) {
 
   const tabHeader = document.createElement("div");
   tabHeader.className = "mypage-tabs";
-
-  const firebaseUser = firebaseAuth.currentUser;
-  const hasPassword = firebaseUser?.providerData.some(
-    (p) => p.providerId === "password"
-  );
-  const googleOnly =
-    firebaseUser?.providerData.some((p) => p.providerId === "google.com") &&
-    !hasPassword;
 
   const tabs = [
     { id: "profile", label: "プロフィール変更" },
@@ -100,7 +90,7 @@ export function renderMyPageScreen(user) {
       ? createField("ログインメールアドレス（変更不可）", null, () => {
           const span = document.createElement("div");
           span.className = "email-readonly";
-          span.textContent = firebaseUser.email || user?.email || "";
+          span.textContent = authEmail || user?.email || "";
           return span;
         })
       : createField("メールアドレス", true, () => {
@@ -123,7 +113,7 @@ export function renderMyPageScreen(user) {
       const emailInput = googleOnly
         ? null
         : emailField.querySelector("input");
-      const email = emailInput ? emailInput.value.trim() : firebaseUser.email;
+      const email = emailInput ? emailInput.value.trim() : authEmail;
 
       try {
         const updates = { name };
@@ -138,16 +128,9 @@ export function renderMyPageScreen(user) {
 
         if (error) throw error;
 
-        if (!googleOnly && firebaseUser.email !== email) {
-          const currentPw = sessionStorage.getItem("currentPassword");
-          if (currentPw) {
-            const cred = EmailAuthProvider.credential(
-              firebaseUser.email,
-              currentPw
-            );
-            await reauthenticateWithCredential(firebaseUser, cred);
-          }
-          await updateEmail(firebaseUser, email);
+        if (!googleOnly && authEmail !== email) {
+          const { error: authError } = await supabase.auth.updateUser({ email });
+          if (authError) throw authError;
         }
 
         const updated = data || { ...user, ...updates };
@@ -270,16 +253,11 @@ export function renderMyPageScreen(user) {
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
-      const currentPw = form.querySelector("#current-pass").value;
       const newPw = form.querySelector("#new-pass").value;
 
       try {
-        const cred = EmailAuthProvider.credential(
-          firebaseUser.email,
-          currentPw
-        );
-        await reauthenticateWithCredential(firebaseUser, cred);
-        await updatePassword(firebaseUser, newPw);
+        const { error: authError } = await supabase.auth.updateUser({ password: newPw });
+        if (authError) throw authError;
         sessionStorage.setItem("currentPassword", newPw);
         alert("パスワードを変更しました");
         form.reset();
@@ -307,8 +285,8 @@ export function renderMyPageScreen(user) {
       const newPw = prompt("追加するパスワードを入力してください");
       if (!newPw) return;
       try {
-        const cred = EmailAuthProvider.credential(firebaseUser.email, newPw);
-        await linkWithCredential(firebaseUser, cred);
+        const { error: authError } = await supabase.auth.updateUser({ password: newPw });
+        if (authError) throw authError;
         alert("パスワードを追加しました");
         location.reload();
       } catch (err) {
