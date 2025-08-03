@@ -6,20 +6,20 @@
   <meta name="robots" content="noindex" />
 </head>
 <body>
-  <p>ログイン処理中です...</p>
+  <p id="message">ログイン処理中です...</p>
   <script type="module">
     import { supabase } from './utils/supabaseClient.js';
 
-    (async () => {
-      try {
-        const { error } = await supabase.auth.getSessionFromUrl({ storeSession: true });
-        if (error) throw error;
-      } catch (err) {
-        console.error('OAuth callback error:', err);
-      } finally {
-        window.location.replace('/');
-      }
-    })();
+    const message = document.getElementById('message');
+
+    try {
+      const { error } = await supabase.auth.getSessionFromUrl({ storeSession: true });
+      if (error) throw error;
+      window.location.replace('/');
+    } catch (err) {
+      console.error('OAuth callback error:', err);
+      message.textContent = `ログインに失敗しました: ${err.message}`;
+    }
   </script>
 </body>
 </html>
