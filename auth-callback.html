@@ -6,19 +6,31 @@
   <meta name="robots" content="noindex" />
 </head>
 <body>
-  <p>ログイン処理中です...</p>
+  <p id="message">ログイン処理中です...</p>
   <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+    import { addDebugLog } from './utils/loginDebug.js'
+
+    addDebugLog('auth-callback start')
 
     const supabase = createClient('https://xnccwydcesyvqvyqafbg.supabase.co', '49b00ff076eae66c4dd35832cd07a1a4f6a1632e2b887d7fbf9ce10d68db4e1d')
 
-    const { data, error } = await supabase.auth.exchangeCodeForSession()
-    if (error) {
-      console.error('認証エラー:', error)
-      document.body.innerHTML = 'ログインに失敗しました。'
-    } else {
-      console.log('ログイン成功:', data)
-      window.location.href = '/home.html'
+    try {
+      const { data, error } = await supabase.auth.exchangeCodeForSession()
+      addDebugLog('auth-callback exchange result', { hasError: !!error })
+      if (error) {
+        addDebugLog('auth-callback exchange error', { message: error.message })
+        console.error('認証エラー:', error)
+        document.getElementById('message').textContent = 'ログインに失敗しました。'
+      } else {
+        addDebugLog('auth-callback exchange success', { user: data.user })
+        console.log('ログイン成功:', data)
+        window.location.href = '/home.html'
+      }
+    } catch (err) {
+      addDebugLog('auth-callback exchange exception', { message: err.message })
+      console.error('認証エラー:', err)
+      document.getElementById('message').textContent = 'ログインに失敗しました。'
     }
   </script>
 </body>
