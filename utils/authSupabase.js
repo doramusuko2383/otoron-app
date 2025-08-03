@@ -14,14 +14,14 @@ export async function signInWithGoogle() {
   const { error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
-      redirectTo: window.location.origin + '/auth-callback.html',
+      flow: 'popup', // ✅ ポップアップモードに切り替え
     },
   });
   if (error) {
     addDebugLog('signInWithGoogle error', { message: error.message });
     console.error('Google sign-in error:', error);
   } else {
-    addDebugLog('signInWithGoogle redirect');
+    addDebugLog('signInWithGoogle popup opened');
   }
 }
 
