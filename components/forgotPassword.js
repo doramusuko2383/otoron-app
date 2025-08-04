@@ -1,6 +1,6 @@
 import { switchScreen } from "../main.js";
 import { showCustomAlert } from "./home.js";
-import { resetPassword } from "../utils/authSupabase.js";
+import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 
 export function renderForgotPasswordScreen() {
   const app = document.getElementById("app");
@@ -32,8 +32,10 @@ export function renderForgotPasswordScreen() {
       return;
     }
     try {
-      const { error } = await resetPassword(email);
-      if (error) throw error;
+      const actionCodeSettings = {
+        url: `${window.location.origin}/reset-password.html`,
+      };
+      await sendPasswordResetEmail(getAuth(), email, actionCodeSettings);
       showCustomAlert(
         "リセット用のメールを送信しました。※ Googleなど外部サービスで登録されたアカウントは、パスワードの再設定はできません。" +
           "ログイン画面の『Googleでログイン』ボタンをご利用ください。",
