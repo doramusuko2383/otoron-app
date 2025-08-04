@@ -44,12 +44,6 @@ export async function getCurrentUser() {
   return data.user ?? null;
 }
 
-export async function resetPassword(email) {
-  return supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${location.origin}/reset-password.html`,
-  });
-}
-
 export async function updateUser(attributes) {
   return supabase.auth.updateUser(attributes);
 }
