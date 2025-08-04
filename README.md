@@ -35,7 +35,7 @@ if (signInError) {
 
 ## パスワードリセットの流れ
 
-パスワードの再設定メールは Firebase の `sendPasswordResetEmail` で送信します。メール内のリンクは `/reset-password.html` にリダイレクトされ、クエリパラメータの `oobCode` を `verifyPasswordResetCode` で検証し、`confirmPasswordReset` で新しいパスワードを確定します。Supabase の認証情報は常にダミーパスワードを使用するため更新しません。
+パスワードの再設定メールは Firebase の `sendPasswordResetEmail` で送信します。Firebase が提供する標準のパスワードリセットページを利用して新しいパスワードを設定でき、リセット後はそのパスワードでログインできます。
 
 ## Supabase Configuration
 
