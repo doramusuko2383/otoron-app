@@ -5,31 +5,21 @@ const DUMMY_PASSWORD = 'secure_dummy_password';
 export async function ensureSupabaseAuth(firebaseUser) {
   if (!firebaseUser) return { user: null, isNew: false };
   const email = firebaseUser.email;
+  const provider = firebaseUser.providerData?.[0]?.providerId;
   const fallbackPassword =
     typeof sessionStorage !== 'undefined'
       ? sessionStorage.getItem('currentPassword')
       : null;
 
-  // Check our users table
-  const { data: existingUser, error: checkError } = await supabase
-    .from('users')
-    .select('*')
-    .eq('firebase_uid', firebaseUser.uid)
-    .maybeSingle();
-  if (checkError) {
-    console.error('❌ Supabaseユーザー確認エラー:', checkError);
-    throw checkError;
-  }
+  const ensureSessionWithPassword = async () => {
+    const signIn = async (password = DUMMY_PASSWORD) => {
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      return error;
+    };
 
-  const signIn = async (password = DUMMY_PASSWORD) => {
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    return error;
-  };
-
-  const ensureSession = async () => {
     let err = await signIn();
     if (err) {
       if (err.message.includes('Invalid login credentials')) {
@@ -57,9 +47,35 @@ export async function ensureSupabaseAuth(firebaseUser) {
     }
   };
 
-  if (!existingUser) {
-    await ensureSession();
+  const ensureSessionWithIdToken = async () => {
+    const token = await firebaseUser.getIdToken();
+    const { error } = await supabase.auth.signInWithIdToken({
+      provider: 'google',
+      token,
+    });
+    if (error) {
+      console.error('❌ Supabase IDトークンログイン失敗:', error.message);
+      throw error;
+    }
+  };
 
+  if (provider === 'google.com') {
+    await ensureSessionWithIdToken();
+  } else {
+    await ensureSessionWithPassword();
+  }
+
+  const { data: existingUser, error: checkError } = await supabase
+    .from('users')
+    .select('*')
+    .eq('firebase_uid', firebaseUser.uid)
+    .maybeSingle();
+  if (checkError) {
+    console.error('❌ Supabaseユーザー確認エラー:', checkError);
+    throw checkError;
+  }
+
+  if (!existingUser) {
     const trialEnd = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
     const { data: inserted, error: insertError } = await supabase
       .from('users')
@@ -85,8 +101,6 @@ export async function ensureSupabaseAuth(firebaseUser) {
 
     return { user: inserted, isNew: true };
   } else {
-    await ensureSession();
-
     let user = existingUser;
     if (!user.email || user.email !== email) {
       const { data: updated, error: updateError } = await supabase
@@ -103,3 +117,4 @@ export async function ensureSupabaseAuth(firebaseUser) {
     return { user, isNew: false };
   }
 }
+
