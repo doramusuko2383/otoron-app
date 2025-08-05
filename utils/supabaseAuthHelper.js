@@ -5,6 +5,10 @@ const DUMMY_PASSWORD = 'secure_dummy_password';
 export async function ensureSupabaseAuth(firebaseUser) {
   if (!firebaseUser) return { user: null, isNew: false };
   const email = firebaseUser.email;
+  const fallbackPassword =
+    typeof sessionStorage !== 'undefined'
+      ? sessionStorage.getItem('currentPassword')
+      : null;
 
   // Check our users table
   const { data: existingUser, error: checkError } = await supabase
@@ -17,18 +21,18 @@ export async function ensureSupabaseAuth(firebaseUser) {
     throw checkError;
   }
 
-  const signIn = async () => {
+  const signIn = async (password = DUMMY_PASSWORD) => {
     const { error } = await supabase.auth.signInWithPassword({
       email,
-      password: DUMMY_PASSWORD,
+      password,
     });
     return error;
   };
 
-  if (!existingUser) {
-    let signInError = await signIn();
-    if (signInError) {
-      if (signInError.message.includes('Invalid login credentials')) {
+  const ensureSession = async () => {
+    let err = await signIn();
+    if (err) {
+      if (err.message.includes('Invalid login credentials')) {
         const { error: signUpError } = await supabase.auth.signUp({
           email,
           password: DUMMY_PASSWORD,
@@ -37,13 +41,24 @@ export async function ensureSupabaseAuth(firebaseUser) {
           console.error('❌ Supabaseユーザー作成失敗:', signUpError.message);
           throw signUpError;
         }
-        signInError = await signIn();
+        if (signUpError && signUpError.message.includes('User already registered') && fallbackPassword) {
+          err = await signIn(fallbackPassword);
+        } else {
+          err = await signIn();
+        }
       }
-      if (signInError) {
-        console.error('❌ Supabaseログイン失敗:', signInError.message);
-        throw signInError;
+      if (err && err.message.includes('Invalid login credentials') && fallbackPassword) {
+        err = await signIn(fallbackPassword);
       }
     }
+    if (err) {
+      console.error('❌ Supabaseログイン失敗:', err.message);
+      throw err;
+    }
+  };
+
+  if (!existingUser) {
+    await ensureSession();
 
     const trialEnd = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
     const { data: inserted, error: insertError } = await supabase
@@ -70,25 +85,7 @@ export async function ensureSupabaseAuth(firebaseUser) {
 
     return { user: inserted, isNew: true };
   } else {
-    let signInError = await signIn();
-    if (signInError) {
-      // If credentials mismatch, attempt sign up once
-      if (signInError.message.includes('Invalid login credentials')) {
-        const { error: signUpError } = await supabase.auth.signUp({
-          email,
-          password: DUMMY_PASSWORD,
-        });
-        if (signUpError && !signUpError.message.includes('User already registered')) {
-          console.error('❌ Supabaseユーザー作成失敗:', signUpError.message);
-          throw signUpError;
-        }
-        signInError = await signIn();
-      }
-      if (signInError) {
-        console.error('❌ Supabaseログイン失敗:', signInError.message);
-        throw signInError;
-      }
-    }
+    await ensureSession();
 
     let user = existingUser;
     if (!user.email || user.email !== email) {
