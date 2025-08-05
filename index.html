@@ -43,13 +43,15 @@
     import { showDebugLog } from './utils/loginDebug.js';
     const debugMode = new URLSearchParams(window.location.search).get('debug') === '1';
     if (debugMode) {
-      const pre = document.createElement('pre');
-      pre.id = 'debug-log';
-      pre.style.whiteSpace = 'pre-wrap';
-      pre.style.color = 'red';
-      pre.style.fontSize = '0.9em';
-      document.body.prepend(pre);
-      showDebugLog();
+      window.addEventListener('DOMContentLoaded', () => {
+        const pre = document.createElement('pre');
+        pre.id = 'debug-log';
+        pre.style.whiteSpace = 'pre-wrap';
+        pre.style.color = 'red';
+        pre.style.fontSize = '0.9em';
+        document.body.prepend(pre);
+        showDebugLog();
+      });
     }
   </script>
 <!-- Google Ads Conversion Tracking -->
