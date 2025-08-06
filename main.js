@@ -250,8 +250,8 @@ onAuthStateChanged(firebaseAuth, async (firebaseUser) => {
 
   let authResult;
   try {
-    await firebaseUser.getIdToken();
-    authResult = await ensureSupabaseAuth(firebaseUser);
+    const password = sessionStorage.getItem('currentPassword') || DUMMY_PASSWORD;
+    authResult = await ensureSupabaseAuth(firebaseUser, password);
   } catch (e) {
     console.error("❌ Supabase認証処理エラー:", e);
     return;
