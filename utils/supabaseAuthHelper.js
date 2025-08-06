@@ -1,56 +1,13 @@
 import { supabase } from './supabaseClient.js';
 
-const DUMMY_PASSWORD = 'secure_dummy_password';
-
-export async function ensureSupabaseAuth(firebaseUser, password) {
+export async function ensureSupabaseAuth(firebaseUser) {
   if (!firebaseUser) return { user: null, isNew: false };
   const email = firebaseUser.email;
-  const provider = firebaseUser.providerData?.[0]?.providerId;
-  const fallbackPassword =
-    typeof sessionStorage !== 'undefined'
-      ? sessionStorage.getItem('currentPassword')
-      : null;
-
-  const ensureSessionWithPassword = async () => {
-    const signIn = async (pwd = DUMMY_PASSWORD) => {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password: pwd,
-      });
-      return error;
-    };
-
-    let err = await signIn(password);
-    if (err) {
-      if (err.message.includes('Invalid login credentials')) {
-        const { error: signUpError } = await supabase.auth.signUp({
-          email,
-          password: DUMMY_PASSWORD,
-        });
-        if (signUpError && !signUpError.message.includes('User already registered')) {
-          console.error('❌ Supabaseユーザー作成失敗:', signUpError.message);
-          throw signUpError;
-        }
-        if (signUpError && signUpError.message.includes('User already registered') && fallbackPassword) {
-          err = await signIn(fallbackPassword);
-        } else {
-          err = await signIn();
-        }
-      }
-      if (err && err.message.includes('Invalid login credentials') && fallbackPassword) {
-        err = await signIn(fallbackPassword);
-      }
-    }
-    if (err) {
-      console.error('❌ Supabaseログイン失敗:', err.message);
-      throw err;
-    }
-  };
 
   const ensureSessionWithIdToken = async () => {
     const token = await firebaseUser.getIdToken();
     const { error } = await supabase.auth.signInWithIdToken({
-      provider: 'google',
+      provider: 'firebase',
       token,
     });
     if (error) {
@@ -59,11 +16,7 @@ export async function ensureSupabaseAuth(firebaseUser, password) {
     }
   };
 
-  if (provider === 'google.com') {
-    await ensureSessionWithIdToken();
-  } else {
-    await ensureSessionWithPassword();
-  }
+  await ensureSessionWithIdToken();
 
   const { data: existingUser, error: checkError } = await supabase
     .from('users')
