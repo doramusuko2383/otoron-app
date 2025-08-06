@@ -16,8 +16,7 @@ import { renderLoginScreen } from "./components/login.js";
 import { renderIntroScreen } from "./components/intro.js";
 import { renderSignUpScreen } from "./components/signup.js";
 import { renderInitialSetupScreen } from "./components/initialSetup.js";
-import { supabase } from "./utils/supabaseClient.js";
-import { ensureSupabaseAuth } from "./utils/supabaseAuthHelper.js";
+import { ensureSupabaseUser } from "./utils/supabaseUser.js";
 import { getLockType } from "./utils/accessControl.js";
 import { ensureChordProgress } from "./utils/progressUtils.js";
 import { loadTrainingRecords } from "./utils/recordStore_supabase.js";
@@ -249,7 +248,7 @@ onAuthStateChanged(firebaseAuth, async (firebaseUser) => {
 
   let authResult;
   try {
-    authResult = await ensureSupabaseAuth(firebaseUser);
+    authResult = await ensureSupabaseUser(firebaseUser);
   } catch (e) {
     console.error("❌ Supabase認証処理エラー:", e);
     return;

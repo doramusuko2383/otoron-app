@@ -2,7 +2,6 @@
 import { switchScreen } from "../main.js";
 import { signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { firebaseAuth } from "../firebase/firebase-init.js";
-import { supabase } from "../utils/supabaseClient.js";
 import { showCustomAlert } from "./home.js";
 
 export function renderIntroScreen() {
@@ -289,7 +288,6 @@ export function renderIntroScreen() {
     loginBtn.addEventListener('click', async () => {
       try {
         await signOut(firebaseAuth);
-        await supabase.auth.signOut();
       } catch (e) {
         console.warn('intro logout error', e);
       }
@@ -302,7 +300,6 @@ export function renderIntroScreen() {
     signupBtn.addEventListener('click', async () => {
       try {
         await signOut(firebaseAuth);
-        await supabase.auth.signOut();
       } catch (e) {
         console.warn('intro logout error', e);
       }
@@ -416,7 +413,6 @@ export function renderIntroScreen() {
           async () => {
             try {
               await signOut(firebaseAuth);
-              await supabase.auth.signOut();
             } catch (e) {
               console.warn('intro logout error', e);
             }
