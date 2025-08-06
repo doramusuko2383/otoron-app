@@ -66,7 +66,8 @@ export function renderSignUpScreen() {
 
     try {
       const cred = await createUserWithEmailAndPassword(firebaseAuth, email, password);
-      const { user } = await ensureSupabaseAuth(cred.user);
+      sessionStorage.setItem("currentPassword", password);
+      const { user } = await ensureSupabaseAuth(cred.user, password);
       if (user) {
         await createInitialChordProgress(user.id);
       }

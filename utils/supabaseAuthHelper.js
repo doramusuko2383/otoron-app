@@ -1,23 +1,47 @@
 import { supabase } from './supabaseClient.js';
 
-export async function ensureSupabaseAuth(firebaseUser) {
+export async function ensureSupabaseAuth(firebaseUser, password) {
   if (!firebaseUser) return { user: null, isNew: false };
+
   const email = firebaseUser.email;
 
-  const ensureSessionWithIdToken = async () => {
-    const token = await firebaseUser.getIdToken();
-    const { error } = await supabase.auth.signInWithIdToken({
-      provider: 'firebase',
-      token,
-    });
-    if (error) {
-      console.error('❌ Supabase IDトークンログイン失敗:', error.message);
-      throw error;
+  // Supabase Auth にメール＋パスワードでサインイン
+  let {
+    data: { user: authUser },
+    error: loginError,
+  } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
+
+  if (loginError) {
+    if (loginError.message.includes('Invalid login credentials')) {
+      const { error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+      });
+
+      if (signUpError && !signUpError.message.includes('User already registered')) {
+        console.error('❌ Supabase signUp error:', signUpError.message);
+        throw signUpError;
+      }
+
+      ({ data: { user: authUser }, error: loginError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      }));
+
+      if (loginError) {
+        console.error('❌ Supabase retry login error:', loginError.message);
+        throw loginError;
+      }
+    } else {
+      console.error('❌ Supabase login error:', loginError.message);
+      throw loginError;
     }
-  };
+  }
 
-  await ensureSessionWithIdToken();
-
+  // ユーザー情報を users テーブルで確認・作成
   const { data: existingUser, error: checkError } = await supabase
     .from('users')
     .select('*')
