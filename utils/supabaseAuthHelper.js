@@ -2,7 +2,7 @@ import { supabase } from './supabaseClient.js';
 
 const DUMMY_PASSWORD = 'secure_dummy_password';
 
-export async function ensureSupabaseAuth(firebaseUser) {
+export async function ensureSupabaseAuth(firebaseUser, password) {
   if (!firebaseUser) return { user: null, isNew: false };
   const email = firebaseUser.email;
   const provider = firebaseUser.providerData?.[0]?.providerId;
@@ -12,15 +12,15 @@ export async function ensureSupabaseAuth(firebaseUser) {
       : null;
 
   const ensureSessionWithPassword = async () => {
-    const signIn = async (password = DUMMY_PASSWORD) => {
+    const signIn = async (pwd = DUMMY_PASSWORD) => {
       const { error } = await supabase.auth.signInWithPassword({
         email,
-        password,
+        password: pwd,
       });
       return error;
     };
 
-    let err = await signIn();
+    let err = await signIn(password);
     if (err) {
       if (err.message.includes('Invalid login credentials')) {
         const { error: signUpError } = await supabase.auth.signUp({
