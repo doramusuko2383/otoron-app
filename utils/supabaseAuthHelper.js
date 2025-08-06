@@ -6,6 +6,11 @@ export async function ensureSupabaseAuth(firebaseUser, password) {
   const email = firebaseUser.email;
 
   // Supabase Auth にメール＋パスワードでサインイン
+  console.log('🟢 Supabase signInWithPassword:', {
+    email,
+    password,
+    length: password.length,
+  });
   let {
     data: { user: authUser },
     error: loginError,
@@ -15,17 +20,26 @@ export async function ensureSupabaseAuth(firebaseUser, password) {
   });
 
   if (loginError) {
+    console.error('❌ Supabase login error:', loginError.message);
     if (loginError.message.includes('Invalid login credentials')) {
+      console.log('🟡 Supabase signUp attempt with:', {
+        email,
+        password,
+        length: password.length,
+      });
       const { error: signUpError } = await supabase.auth.signUp({
         email,
         password,
       });
 
-      if (signUpError && !signUpError.message.includes('User already registered')) {
+      if (signUpError) {
         console.error('❌ Supabase signUp error:', signUpError.message);
+      }
+      if (signUpError && !signUpError.message.includes('User already registered')) {
         throw signUpError;
       }
 
+      console.log('🔁 Retry login after signUp:', { email, password });
       ({ data: { user: authUser }, error: loginError } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -36,7 +50,6 @@ export async function ensureSupabaseAuth(firebaseUser, password) {
         throw loginError;
       }
     } else {
-      console.error('❌ Supabase login error:', loginError.message);
       throw loginError;
     }
   }
