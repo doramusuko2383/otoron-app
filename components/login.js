@@ -8,8 +8,7 @@ import {
 import { firebaseAuth } from "../firebase/firebase-init.js";
 import { switchScreen } from "../main.js";
 import { addDebugLog } from "../utils/loginDebug.js";
-import { supabase } from "../utils/supabaseClient.js";
-import { ensureSupabaseAuth } from "../utils/supabaseAuthHelper.js";
+import { ensureSupabaseUser } from "../utils/supabaseUser.js";
 import { ensureChordProgress } from "../utils/progressUtils.js";
 import { showCustomAlert } from "./home.js";
 
@@ -68,57 +67,6 @@ export function renderLoginScreen(container, onLoginSuccess) {
 
 
 
-  // 🔽 和音進捗の初期登録（必要なら）
-  async function ensureUserAndProgress(user) {
-    if (!user?.uid) return;
-  
-    // users テーブルに Firebase UID が登録されているか確認
-    const { data: existingUser } = await supabase
-      .from("users")
-      .select("*")
-      .eq("firebase_uid", user.uid)
-      .maybeSingle();
-
-    if (existingUser && (!existingUser.email || existingUser.email !== user.email)) {
-      const { data: updated } = await supabase
-        .from("users")
-        .update({ email: user.email })
-        .eq("id", existingUser.id)
-        .select()
-        .maybeSingle();
-      if (updated) {
-        existingUser.email = updated.email;
-      }
-    }
-  
-    let userId;
-  
-    if (!existingUser) {
-      const { data: inserted, error: insertError } = await supabase
-        .from("users")
-        .insert([
-          {
-            firebase_uid: user.uid,
-            name: "名前未設定",
-            email: user.email,
-          },
-        ])
-        .select()
-        .single();
-  
-      if (insertError || !inserted) {
-        console.error("❌ Supabaseユーザー登録失敗:", insertError);
-        return;
-      }
-      userId = inserted.id;
-      
-    } else {
-      userId = existingUser.id;
-      
-    }
-  
-    await ensureChordProgress(userId);
-  }
   
 
   // メール・パスワードログイン処理
@@ -140,12 +88,14 @@ export function renderLoginScreen(container, onLoginSuccess) {
       sessionStorage.setItem("currentPassword", password);
       const user = firebaseAuth.currentUser;
       try {
-        await ensureSupabaseAuth(user);
+        const { user: supabaseUser } = await ensureSupabaseUser(user);
+        if (supabaseUser) {
+          await ensureChordProgress(supabaseUser.id);
+        }
       } catch (e) {
-        console.error("❌ Supabaseサインイン処理でエラー:", e);
+        console.error("❌ Supabase処理でエラー:", e);
         return;
       }
-      await ensureUserAndProgress(user);
       onLoginSuccess();
     } catch (err) {
       if (err.code === "auth/invalid-credential") {
