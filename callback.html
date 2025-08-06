@@ -47,8 +47,13 @@
         return;
       }
 
-      const DUMMY_PASSWORD = 'secure_dummy_password';
-      const { user, isNew } = await ensureSupabaseAuth(firebaseUser, DUMMY_PASSWORD);
+      const { user, isNew } = await ensureSupabaseAuth(firebaseUser);
+      if (!user) {
+        addDebugLog('Supabase link failed');
+        showDebugLog();
+        if (!debugMode) window.location.href = '/';
+        return;
+      }
       if (isNew) {
         await createInitialChordProgress(user.id);
         addDebugLog('redirect: register-thankyou');

@@ -32,9 +32,7 @@
 
     onAuthStateChanged(firebaseAuth, async (firebaseUser) => {
       if (!firebaseUser || !plan) return;
-      const DUMMY_PASSWORD = 'secure_dummy_password';
-      const pw = sessionStorage.getItem('currentPassword') || DUMMY_PASSWORD;
-      const authResult = await ensureSupabaseAuth(firebaseUser, pw);
+      const authResult = await ensureSupabaseAuth(firebaseUser);
       const user = authResult.user;
       if (!user) return;
       const paymentDate = new Date();

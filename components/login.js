@@ -140,7 +140,7 @@ export function renderLoginScreen(container, onLoginSuccess) {
       sessionStorage.setItem("currentPassword", password);
       const user = firebaseAuth.currentUser;
       try {
-        await ensureSupabaseAuth(user, password);
+        await ensureSupabaseAuth(user);
       } catch (e) {
         console.error("❌ Supabaseサインイン処理でエラー:", e);
         return;

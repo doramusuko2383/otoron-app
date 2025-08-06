@@ -41,7 +41,6 @@ import { renderForgotPasswordScreen } from "./components/forgotPassword.js";
 import { firebaseAuth } from "./firebase/firebase-init.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-const DUMMY_PASSWORD = "secure_dummy_password";
 
 const INFO_SCREENS = [
   "terms",
@@ -250,13 +249,16 @@ onAuthStateChanged(firebaseAuth, async (firebaseUser) => {
 
   let authResult;
   try {
-    const password = sessionStorage.getItem('currentPassword') || DUMMY_PASSWORD;
-    authResult = await ensureSupabaseAuth(firebaseUser, password);
+    authResult = await ensureSupabaseAuth(firebaseUser);
   } catch (e) {
     console.error("❌ Supabase認証処理エラー:", e);
     return;
   }
   const { user, isNew } = authResult;
+  if (!user) {
+    console.warn('⚠️ Firebase logged in but Supabase link failed.');
+    return;
+  }
 
   await ensureChordProgress(user.id);
 
