@@ -268,25 +268,40 @@ export function renderMyPageScreen(user) {
     form.addEventListener("input", validate);
     validate();
 
+    async function changePassword(currentPassword, newPassword) {
+      const user = firebaseAuth.currentUser;
+      const credential = EmailAuthProvider.credential(
+        user.email,
+        currentPassword
+      );
+      try {
+        await reauthenticateWithCredential(user, credential);
+        await updatePassword(user, newPassword);
+        sessionStorage.setItem("currentPassword", newPassword);
+        alert("パスワードを更新しました");
+      } catch (error) {
+        alert("エラーが発生しました: " + error.message);
+        throw error;
+      }
+    }
+
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
       const currentPw = form.querySelector("#current-pass").value;
       const newPw = form.querySelector("#new-pass").value;
 
+      if (newPw.length < 6) {
+        alert("新しいパスワードは6文字以上で入力してください");
+        return;
+      }
+
       try {
-        const cred = EmailAuthProvider.credential(
-          firebaseUser.email,
-          currentPw
-        );
-        await reauthenticateWithCredential(firebaseUser, cred);
-        await updatePassword(firebaseUser, newPw);
-        sessionStorage.setItem("currentPassword", newPw);
-        alert("パスワードを変更しました");
+        await changePassword(currentPw, newPw);
         form.reset();
         current.input.value = newPw;
         validate();
       } catch (err) {
-        alert("パスワード変更に失敗しました: " + err.message);
+        // エラーは changePassword 内で処理されます
       }
     });
 
