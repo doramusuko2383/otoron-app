@@ -4,7 +4,6 @@ import {
   EmailAuthProvider,
   reauthenticateWithCredential,
   updatePassword,
-  updateEmail,
   linkWithCredential,
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { firebaseAuth } from "../firebase/firebase-init.js";
@@ -12,6 +11,7 @@ import { startCheckout } from "../utils/stripeCheckout.js";
 import { supabase } from "../utils/supabaseClient.js";
 import { switchScreen } from "../main.js";
 import { createPlanInfoContent } from "./planInfo.js";
+import { changeEmail } from "../utils/changeEmail.js";
 
 export function renderMyPageScreen(user) {
   const app = document.getElementById("app");
@@ -25,12 +25,12 @@ export function renderMyPageScreen(user) {
   tabHeader.className = "mypage-tabs";
 
   const firebaseUser = firebaseAuth.currentUser;
+  const primaryProvider = firebaseUser?.providerData?.[0]?.providerId;
   const hasPassword = firebaseUser?.providerData.some(
     (p) => p.providerId === "password"
   );
-  const googleOnly =
-    firebaseUser?.providerData.some((p) => p.providerId === "google.com") &&
-    !hasPassword;
+  const googleOnly = primaryProvider === "google.com";
+  const showEmailChange = primaryProvider === "password";
 
   const tabs = [
     { id: "profile", label: "プロフィール変更" },
@@ -96,21 +96,19 @@ export function renderMyPageScreen(user) {
     });
     form.appendChild(yearField);
 
-    const emailField = googleOnly
-      ? createField("ログインメールアドレス（変更不可）", null, () => {
+    if (googleOnly) {
+      const emailField = createField(
+        "ログインメールアドレス（変更不可）",
+        null,
+        () => {
           const span = document.createElement("div");
           span.className = "email-readonly";
           span.textContent = firebaseUser.email || user?.email || "";
           return span;
-        })
-      : createField("メールアドレス", true, () => {
-          const input = document.createElement("input");
-          input.type = "email";
-          input.required = true;
-          input.value = user?.email || "";
-          return input;
-        });
-    form.appendChild(emailField);
+        }
+      );
+      form.appendChild(emailField);
+    }
 
     const saveBtn = document.createElement("button");
     saveBtn.textContent = "保存";
@@ -120,36 +118,15 @@ export function renderMyPageScreen(user) {
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
       const name = nameField.querySelector("input").value.trim();
-      const emailInput = googleOnly
-        ? null
-        : emailField.querySelector("input");
-      const email = emailInput ? emailInput.value.trim() : firebaseUser.email;
-
       try {
         const updates = { name };
-        if (!googleOnly) updates.email = email;
-
         const { data, error } = await supabase
           .from("users")
           .update(updates)
           .eq("id", user.id)
           .select()
           .maybeSingle();
-
         if (error) throw error;
-
-        if (!googleOnly && firebaseUser.email !== email) {
-          const currentPw = sessionStorage.getItem("currentPassword");
-          if (currentPw) {
-            const cred = EmailAuthProvider.credential(
-              firebaseUser.email,
-              currentPw
-            );
-            await reauthenticateWithCredential(firebaseUser, cred);
-          }
-          await updateEmail(firebaseUser, email);
-        }
-
         const updated = data || { ...user, ...updates };
         alert("プロフィールを更新しました");
         switchScreen("mypage", updated, { replace: true });
@@ -159,6 +136,117 @@ export function renderMyPageScreen(user) {
     });
 
     div.appendChild(form);
+
+    if (showEmailChange) {
+      const changeSection = document.createElement("div");
+      changeSection.className = "email-change-section";
+
+      const title = document.createElement("h3");
+      title.textContent = "メールアドレス変更";
+      changeSection.appendChild(title);
+
+      const emailForm = document.createElement("form");
+      emailForm.className = "email-change-form";
+
+      const currentField = createField("現在のパスワード", true, () => {
+        const input = document.createElement("input");
+        input.type = "password";
+        input.required = true;
+        return input;
+      });
+      emailForm.appendChild(currentField);
+
+      const newField = createField("新しいメールアドレス", true, () => {
+        const input = document.createElement("input");
+        input.type = "email";
+        input.required = true;
+        return input;
+      });
+      emailForm.appendChild(newField);
+
+      const confirmField = createField(
+        "新しいメールアドレス（確認）",
+        true,
+        () => {
+          const input = document.createElement("input");
+          input.type = "email";
+          input.required = true;
+          return input;
+        }
+      );
+      const mismatchMsg = document.createElement("div");
+      mismatchMsg.className = "password-error";
+      mismatchMsg.textContent = "メールアドレスが一致しません";
+      mismatchMsg.style.display = "none";
+      confirmField.appendChild(mismatchMsg);
+      emailForm.appendChild(confirmField);
+
+      const submitBtn = document.createElement("button");
+      submitBtn.textContent = "変更する";
+      submitBtn.type = "submit";
+      submitBtn.disabled = true;
+      emailForm.appendChild(submitBtn);
+
+      function validateEmailForm() {
+        const curr = currentField.querySelector("input").value;
+        const newE = newField.querySelector("input").value.trim();
+        const confE = confirmField.querySelector("input").value.trim();
+        let valid = !!curr && !!newE && !!confE;
+        if (newE && confE && newE !== confE) {
+          mismatchMsg.style.display = "block";
+          valid = false;
+        } else {
+          mismatchMsg.style.display = "none";
+        }
+        submitBtn.disabled = !valid;
+      }
+
+      emailForm.addEventListener("input", validateEmailForm);
+      validateEmailForm();
+
+      emailForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const currentPassword = currentField.querySelector("input").value;
+        const newEmail = newField.querySelector("input").value.trim();
+        try {
+          await changeEmail({
+            auth: firebaseAuth,
+            currentPassword,
+            newEmail,
+          });
+          const updated = { ...user, email: newEmail };
+          alert(
+            "メールを送信しました。新しいメールアドレスの受信箱で確認リンクをクリックしてください"
+          );
+          switchScreen("mypage", updated, { replace: true });
+        } catch (err) {
+          let msg;
+          switch (err.code) {
+            case "auth/requires-recent-login":
+              msg =
+                "機密操作のため再ログインが必要です。現在のパスワードを入力してやり直してください。";
+              break;
+            case "auth/invalid-email":
+              msg = "メールアドレスの形式が正しくありません。";
+              break;
+            case "auth/email-already-in-use":
+              msg = "そのメールアドレスは既に使用されています。";
+              break;
+            case "auth/operation-not-allowed":
+              msg =
+                "メールの更新が許可されていません（管理者設定を確認してください）。";
+              break;
+            default:
+              msg = err.message;
+          }
+          alert(msg);
+        }
+      });
+
+      changeSection.appendChild(emailForm);
+      div.appendChild(changeSection);
+    }
+
     return div;
   }
 
