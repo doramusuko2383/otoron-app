@@ -211,10 +211,14 @@ export function renderMyPageScreen(user) {
       confirmField.appendChild(mismatchMsg);
       emailForm.appendChild(confirmField);
 
+      // フォームの各入力要素への参照を保持
+      const newInput = newField.querySelector("input");
+      const confirmInput = confirmField.querySelector("input");
+
       const submitBtn = document.createElement("button");
       submitBtn.textContent = "変更する";
       submitBtn.type = "submit";
-      submitBtn.disabled = true;
+      submitBtn.disabled = true; // 初期状態では無効
       emailForm.appendChild(submitBtn);
 
       const statusEl = document.createElement("p");
@@ -222,9 +226,9 @@ export function renderMyPageScreen(user) {
       emailForm.appendChild(statusEl);
 
       function validateEmailForm() {
-        const curr = currentField.querySelector("input").value.trim();
-        const newE = newField.querySelector("input").value.trim();
-        const confE = confirmField.querySelector("input").value.trim();
+        const curr = currentInput.value.trim();
+        const newE = newInput.value.trim();
+        const confE = confirmInput.value.trim();
 
         statusEl.textContent = "";
         statusEl.className = "form-status";
@@ -245,7 +249,10 @@ export function renderMyPageScreen(user) {
         submitBtn.disabled = !valid;
       }
 
-      emailForm.addEventListener("input", validateEmailForm);
+      // 各入力欄にイベントリスナーを登録
+      [currentInput, newInput, confirmInput].forEach((el) =>
+        el.addEventListener("input", validateEmailForm)
+      );
       validateEmailForm();
 
       emailForm.addEventListener("submit", async (e) => {
