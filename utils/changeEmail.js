@@ -28,13 +28,42 @@ export async function changeEmail({ auth, currentPassword, newEmail }) {
   await reauthenticateWithCredential(user, credential);
 
   // --- 2) 既存メール確認 & メール更新 ---
+  if (newEmail === user.email) {
+    throw Object.assign(new Error("Email already in use"), {
+      code: "auth/email-already-in-use",
+    });
+  }
+
   const methods = await fetchSignInMethodsForEmail(auth, newEmail);
   if (methods.length > 0) {
     throw Object.assign(new Error("Email already in use"), {
       code: "auth/email-already-in-use",
     });
   }
-  await updateEmail(user, newEmail);
+
+  const { data: dup, error: dupErr } = await supabase
+    .from("users")
+    .select("id")
+    .eq("email", newEmail)
+    .neq("firebase_uid", user.uid)
+    .limit(1);
+
+  if (dupErr) {
+    console.error("Supabase duplicate check error:", dupErr);
+  } else if (dup && dup.length > 0) {
+    throw Object.assign(new Error("Email already in use"), {
+      code: "auth/email-already-in-use",
+    });
+  }
+
+  try {
+    await updateEmail(user, newEmail);
+  } catch (err) {
+    if (err.code === "auth/email-already-in-use") {
+      throw err;
+    }
+    throw err;
+  }
 
   // --- 3) 検証メール送信（新メール宛て） ---
   await sendEmailVerification(user);
@@ -46,6 +75,11 @@ export async function changeEmail({ auth, currentPassword, newEmail }) {
     .eq("firebase_uid", user.uid);
 
   if (upErr) {
+    if (upErr.code === "23505") {
+      throw Object.assign(new Error("Email already in use"), {
+        code: "auth/email-already-in-use",
+      });
+    }
     console.error("Supabase email sync error:", upErr);
   }
 }
