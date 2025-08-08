@@ -1,15 +1,14 @@
 import {
   EmailAuthProvider,
   reauthenticateWithCredential,
-  updateEmail,
-  sendEmailVerification,
   fetchSignInMethodsForEmail,
+  verifyBeforeUpdateEmail,
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { supabase } from "./supabaseClient.js";
 
 /**
  * Firebase Email/Passwordユーザーのメールアドレスを変更する。
- * 1) 再認証 → 2) メール更新 → 3) 検証メール送信 → 4) Supabaseのusers.emailを同期
+ * 1) 再認証 → 2) 重複チェック → 3) 検証メール送信（verifyBeforeUpdateEmail） → 4) Supabaseのusers.emailを同期
  */
 export async function changeEmail({ auth, currentPassword, newEmail }) {
   const user = auth.currentUser;
@@ -33,7 +32,7 @@ export async function changeEmail({ auth, currentPassword, newEmail }) {
   const credential = EmailAuthProvider.credential(user.email, currentPassword);
   await reauthenticateWithCredential(user, credential);
 
-  // --- 2) 既存メール確認 & メール更新 ---
+  // --- 2) 既存メール確認 ---
   const methods = await fetchSignInMethodsForEmail(auth, newEmail);
   if (methods.length > 0) {
     throw Object.assign(new Error("Email already in use"), {
@@ -56,17 +55,8 @@ export async function changeEmail({ auth, currentPassword, newEmail }) {
     });
   }
 
-  try {
-    await updateEmail(user, newEmail);
-  } catch (err) {
-    if (err.code === "auth/email-already-in-use") {
-      throw err;
-    }
-    throw err;
-  }
-
   // --- 3) 検証メール送信（新メール宛て） ---
-  await sendEmailVerification(user);
+  await verifyBeforeUpdateEmail(user, newEmail);
 
   // --- 4) Supabase 側の users.email を同期 ---
   const { error: upErr } = await supabase
