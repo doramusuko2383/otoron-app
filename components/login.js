@@ -21,10 +21,10 @@ export function renderLoginScreen(container, onLoginSuccess) {
         <p>・Googleでログインしたことがある場合は、必ず「Googleでログイン」を使ってください。</p>
         <p>・メールアドレスとパスワードは、最初にメール認証を使った場合のみ有効です。</p>
       </div>
-      <form class="login-form">
-        <input type="email" id="email" placeholder="メールアドレス" required />
+      <form class="login-form" autocomplete="off">
+        <input type="email" id="email" placeholder="メールアドレス" required autocomplete="email" />
         <div class="password-wrapper">
-          <input type="password" id="password" placeholder="パスワード" required />
+          <input type="password" id="password" placeholder="パスワード" required autocomplete="current-password" />
           <img src="images/Visibility_off.svg" class="toggle-password" alt="絶対音感トレーニングアプリ『オトロン』パスワード表示切り替えアイコン" />
         </div>
         <button type="submit">ログイン</button>
