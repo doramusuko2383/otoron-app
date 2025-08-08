@@ -229,13 +229,19 @@ export function renderMyPageScreen(user) {
         statusEl.textContent = "";
         statusEl.className = "form-status";
 
-        let valid = !!curr && !!newE && !!confE;
+        let valid = true;
+
         if (newE && confE && newE !== confE) {
           mismatchMsg.style.display = "block";
           valid = false;
         } else {
           mismatchMsg.style.display = "none";
         }
+
+        if (!curr || !newE || !confE) {
+          valid = false;
+        }
+
         submitBtn.disabled = !valid;
       }
 
