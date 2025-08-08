@@ -222,9 +222,13 @@ export function renderMyPageScreen(user) {
       emailForm.appendChild(statusEl);
 
       function validateEmailForm() {
-        const curr = currentField.querySelector("input").value;
+        const curr = currentField.querySelector("input").value.trim();
         const newE = newField.querySelector("input").value.trim();
         const confE = confirmField.querySelector("input").value.trim();
+
+        statusEl.textContent = "";
+        statusEl.className = "form-status";
+
         let valid = !!curr && !!newE && !!confE;
         if (newE && confE && newE !== confE) {
           mismatchMsg.style.display = "block";
@@ -235,11 +239,7 @@ export function renderMyPageScreen(user) {
         submitBtn.disabled = !valid;
       }
 
-      emailForm.addEventListener("input", () => {
-        statusEl.textContent = "";
-        statusEl.className = "form-status";
-        validateEmailForm();
-      });
+      emailForm.addEventListener("input", validateEmailForm);
       validateEmailForm();
 
       emailForm.addEventListener("submit", async (e) => {
