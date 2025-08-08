@@ -15,6 +15,12 @@ export async function changeEmail({ auth, currentPassword, newEmail }) {
   const user = auth.currentUser;
   if (!user) throw new Error("Not signed in.");
 
+  if (newEmail === user.email) {
+    throw Object.assign(new Error("Email already in use"), {
+      code: "auth/email-already-in-use",
+    });
+  }
+
   // provider確認（UI側でも分岐しているが、保険で）
   const providerId = user.providerData?.[0]?.providerId;
   if (providerId !== "password") {
@@ -28,12 +34,6 @@ export async function changeEmail({ auth, currentPassword, newEmail }) {
   await reauthenticateWithCredential(user, credential);
 
   // --- 2) 既存メール確認 & メール更新 ---
-  if (newEmail === user.email) {
-    throw Object.assign(new Error("Email already in use"), {
-      code: "auth/email-already-in-use",
-    });
-  }
-
   const methods = await fetchSignInMethodsForEmail(auth, newEmail);
   if (methods.length > 0) {
     throw Object.assign(new Error("Email already in use"), {
