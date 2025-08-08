@@ -267,11 +267,7 @@ export function renderMyPageScreen(user) {
             currentPassword,
             newEmail,
           });
-          const updated = { ...user, email: newEmail };
-          alert(
-            "メールを送信しました。新しいメールアドレスの受信箱で確認リンクをクリックしてください"
-          );
-          switchScreen("mypage", updated, { replace: true });
+          window.location.href = "/email-change-sent.html";
         } catch (err) {
           let msg;
           switch (err.code) {
