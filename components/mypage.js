@@ -281,7 +281,7 @@ export function renderMyPageScreen(user) {
             case "auth/invalid-email":
               msg = "メールアドレスの形式が正しくありません。";
               break;
-            case "auth/email-already-in-use":
+            case "auth/email-already-in-use": // duplicate email
               msg = "そのメールアドレスは既に使用されています。";
               break;
             case "auth/operation-not-allowed":
