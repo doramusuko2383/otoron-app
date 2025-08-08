@@ -72,7 +72,8 @@
   }
 }
 .profile-form,
-.password-form {
+.password-form,
+.email-change-form {
   max-width: 360px;
   margin: 0 auto;
   display: flex;
@@ -82,7 +83,8 @@
 
 .profile-form input,
 .profile-form select,
-.password-form input {
+.password-form input,
+.email-change-form input {
   padding: 0.6em;
   border: 1px solid #ccc;
   border-radius: 6px;
@@ -91,12 +93,14 @@
 }
 
 /* Reserve space for the visibility toggle */
-.password-form .password-wrapper input {
+.password-form .password-wrapper input,
+.email-change-form .password-wrapper input {
   padding-right: 2.5rem;
 }
 
 .profile-form button,
-.password-form button {
+.password-form button,
+.email-change-form button {
   padding: 0.8em;
   background: #ffa500;
   color: #fff;
@@ -106,7 +110,8 @@
   width: 100%;
 }
 
-.password-form button:disabled {
+.password-form button:disabled,
+.email-change-form button:disabled {
   background: #ccc;
   color: #fff;
   cursor: not-allowed;

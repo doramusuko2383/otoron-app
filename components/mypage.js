@@ -148,13 +148,39 @@ export function renderMyPageScreen(user) {
       const emailForm = document.createElement("form");
       emailForm.className = "email-change-form";
 
-      const currentField = createField("現在のパスワード", true, () => {
-        const input = document.createElement("input");
-        input.type = "password";
-        input.required = true;
-        return input;
-      });
+      // 現在のパスワード入力（表示切替機能付き）
+      const currentField = document.createElement("div");
+      currentField.className = "form-field";
+
+      const currentLabel = document.createElement("label");
+      currentLabel.textContent = "現在のパスワード";
+      const currentBadge = document.createElement("span");
+      currentBadge.className = "required";
+      currentBadge.textContent = "必須";
+      currentLabel.appendChild(currentBadge);
+      currentField.appendChild(currentLabel);
+
+      const currentWrapper = document.createElement("div");
+      currentWrapper.className = "password-wrapper";
+      const currentInput = document.createElement("input");
+      currentInput.type = "password";
+      currentInput.required = true;
+      const currentToggle = document.createElement("img");
+      currentToggle.src = "images/Visibility_off.svg";
+      currentToggle.alt = "表示切替";
+      currentToggle.className = "toggle-password";
+      currentWrapper.appendChild(currentInput);
+      currentWrapper.appendChild(currentToggle);
+      currentField.appendChild(currentWrapper);
       emailForm.appendChild(currentField);
+
+      currentToggle.addEventListener("click", () => {
+        const visible = currentInput.type === "text";
+        currentInput.type = visible ? "password" : "text";
+        currentToggle.src = visible
+          ? "images/Visibility_off.svg"
+          : "images/Visibility.svg";
+      });
 
       const newField = createField("新しいメールアドレス", true, () => {
         const input = document.createElement("input");
@@ -206,7 +232,9 @@ export function renderMyPageScreen(user) {
 
       emailForm.addEventListener("submit", async (e) => {
         e.preventDefault();
-        const currentPassword = currentField.querySelector("input").value;
+        const currentPassword = currentField
+          .querySelector("input")
+          .value.trim();
         const newEmail = newField.querySelector("input").value.trim();
         try {
           await changeEmail({
@@ -225,6 +253,10 @@ export function renderMyPageScreen(user) {
             case "auth/requires-recent-login":
               msg =
                 "機密操作のため再ログインが必要です。現在のパスワードを入力してやり直してください。";
+              break;
+            case "auth/invalid-credential":
+            case "auth/wrong-password":
+              msg = "現在のパスワードが正しくありません。";
               break;
             case "auth/invalid-email":
               msg = "メールアドレスの形式が正しくありません。";
