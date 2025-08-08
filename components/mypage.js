@@ -4,7 +4,6 @@ import {
   EmailAuthProvider,
   reauthenticateWithCredential,
   updatePassword,
-  linkWithCredential,
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { firebaseAuth } from "../firebase/firebase-init.js";
 import { startCheckout } from "../utils/stripeCheckout.js";
@@ -463,35 +462,6 @@ export function renderMyPageScreen(user) {
     return div;
   }
 
-  function createPasswordGuide() {
-    const div = document.createElement("div");
-    div.className = "tab-section password-guide";
-    const p1 = document.createElement("p");
-    p1.textContent = "このアカウントではパスワードは設定されていません。";
-    const p2 = document.createElement("p");
-    const linkBtn = document.createElement("button");
-    linkBtn.textContent = "こちら";
-    linkBtn.type = "button";
-    linkBtn.onclick = async () => {
-      const newPw = prompt("追加するパスワードを入力してください");
-      if (!newPw) return;
-      try {
-        const cred = EmailAuthProvider.credential(firebaseUser.email, newPw);
-        await linkWithCredential(firebaseUser, cred);
-        alert("パスワードを追加しました");
-        location.reload();
-      } catch (err) {
-        alert("追加に失敗しました: " + err.message);
-      }
-    };
-    p2.textContent = "メールアドレス＋パスワードでのログインを追加する場合は";
-    p2.appendChild(linkBtn);
-    p2.appendChild(document.createTextNode("。"));
-    div.appendChild(p1);
-    div.appendChild(p2);
-    return div;
-  }
-
   function createPlanTab() {
     const div = document.createElement("div");
     div.className = "tab-section";
@@ -603,11 +573,6 @@ export function renderMyPageScreen(user) {
     ...(hasPassword ? { password: createPasswordTab() } : {}),
     plan: createPlanTab(),
   };
-
-  if (!hasPassword) {
-    const guide = createPasswordGuide();
-    container.insertBefore(guide, contentWrapper);
-  }
 
   function showTab(id) {
     contentWrapper.innerHTML = "";
