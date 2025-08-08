@@ -249,10 +249,8 @@ export function renderMyPageScreen(user) {
         submitBtn.disabled = !valid;
       }
 
-      // 各入力欄にイベントリスナーを登録
-      [currentInput, newInput, confirmInput].forEach((el) =>
-        el.addEventListener("input", validateEmailForm)
-      );
+      // フォーム全体で入力イベントを監視
+      emailForm.addEventListener("input", validateEmailForm);
       validateEmailForm();
 
       emailForm.addEventListener("submit", async (e) => {
