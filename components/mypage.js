@@ -115,8 +115,14 @@ export function renderMyPageScreen(user) {
     saveBtn.type = "submit";
     form.appendChild(saveBtn);
 
+    const statusEl = document.createElement("p");
+    statusEl.className = "form-status";
+    form.appendChild(statusEl);
+
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
+      statusEl.textContent = "";
+      statusEl.className = "form-status";
       const name = nameField.querySelector("input").value.trim();
       try {
         const updates = { name };
@@ -131,22 +137,20 @@ export function renderMyPageScreen(user) {
         alert("プロフィールを更新しました");
         switchScreen("mypage", updated, { replace: true });
       } catch (err) {
-        alert("更新に失敗しました: " + err.message);
+        statusEl.textContent = "更新に失敗しました: " + err.message;
+        statusEl.className = "form-status form-error";
       }
     });
 
     div.appendChild(form);
 
     if (showEmailChange) {
-      const changeSection = document.createElement("div");
-      changeSection.className = "email-change-section";
+      const emailForm = document.createElement("form");
+      emailForm.className = "profile-form email-change-form";
 
       const title = document.createElement("h3");
       title.textContent = "メールアドレス変更";
-      changeSection.appendChild(title);
-
-      const emailForm = document.createElement("form");
-      emailForm.className = "email-change-form";
+      emailForm.appendChild(title);
 
       // 現在のパスワード入力（表示切替機能付き）
       const currentField = document.createElement("div");
@@ -213,6 +217,10 @@ export function renderMyPageScreen(user) {
       submitBtn.disabled = true;
       emailForm.appendChild(submitBtn);
 
+      const statusEl = document.createElement("p");
+      statusEl.className = "form-status";
+      emailForm.appendChild(statusEl);
+
       function validateEmailForm() {
         const curr = currentField.querySelector("input").value;
         const newE = newField.querySelector("input").value.trim();
@@ -227,7 +235,11 @@ export function renderMyPageScreen(user) {
         submitBtn.disabled = !valid;
       }
 
-      emailForm.addEventListener("input", validateEmailForm);
+      emailForm.addEventListener("input", () => {
+        statusEl.textContent = "";
+        statusEl.className = "form-status";
+        validateEmailForm();
+      });
       validateEmailForm();
 
       emailForm.addEventListener("submit", async (e) => {
@@ -236,6 +248,8 @@ export function renderMyPageScreen(user) {
           .querySelector("input")
           .value.trim();
         const newEmail = newField.querySelector("input").value.trim();
+        statusEl.textContent = "";
+        statusEl.className = "form-status";
         try {
           await changeEmail({
             auth: firebaseAuth,
@@ -271,12 +285,12 @@ export function renderMyPageScreen(user) {
             default:
               msg = err.message;
           }
-          alert(msg);
+          statusEl.textContent = msg;
+          statusEl.className = "form-status form-error";
         }
       });
 
-      changeSection.appendChild(emailForm);
-      div.appendChild(changeSection);
+      div.appendChild(emailForm);
     }
 
     return div;
@@ -357,10 +371,17 @@ export function renderMyPageScreen(user) {
     btn.type = "submit";
     form.appendChild(btn);
 
+    const statusEl = document.createElement("p");
+    statusEl.className = "form-status";
+    form.appendChild(statusEl);
+
     function validate() {
       const cur = current.input.value;
       const np = newpass.input.value;
       const cp = confirm.input.value;
+
+      statusEl.textContent = "";
+      statusEl.className = "form-status";
 
       let valid = true;
 
@@ -398,9 +419,11 @@ export function renderMyPageScreen(user) {
         await reauthenticateWithCredential(user, credential);
         await updatePassword(user, newPassword);
         sessionStorage.setItem("currentPassword", newPassword);
-        alert("パスワードを更新しました");
+        statusEl.textContent = "パスワードを更新しました";
+        statusEl.className = "form-status form-success";
       } catch (error) {
-        alert("エラーが発生しました: " + error.message);
+        statusEl.textContent = "エラーが発生しました: " + error.message;
+        statusEl.className = "form-status form-error";
         throw error;
       }
     }
@@ -410,8 +433,12 @@ export function renderMyPageScreen(user) {
       const currentPw = form.querySelector("#current-pass").value;
       const newPw = form.querySelector("#new-pass").value;
 
+      statusEl.textContent = "";
+      statusEl.className = "form-status";
+
       if (newPw.length < 6) {
-        alert("新しいパスワードは6文字以上で入力してください");
+        statusEl.textContent = "新しいパスワードは6文字以上で入力してください";
+        statusEl.className = "form-status form-error";
         return;
       }
 
