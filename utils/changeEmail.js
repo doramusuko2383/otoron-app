@@ -3,6 +3,7 @@ import {
   reauthenticateWithCredential,
   updateEmail,
   sendEmailVerification,
+  fetchSignInMethodsForEmail,
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { supabase } from "./supabaseClient.js";
 
@@ -26,7 +27,13 @@ export async function changeEmail({ auth, currentPassword, newEmail }) {
   const credential = EmailAuthProvider.credential(user.email, currentPassword);
   await reauthenticateWithCredential(user, credential);
 
-  // --- 2) メール更新 ---
+  // --- 2) 既存メール確認 & メール更新 ---
+  const methods = await fetchSignInMethodsForEmail(auth, newEmail);
+  if (methods.length > 0) {
+    throw Object.assign(new Error("Email already in use"), {
+      code: "auth/email-already-in-use",
+    });
+  }
   await updateEmail(user, newEmail);
 
   // --- 3) 検証メール送信（新メール宛て） ---
