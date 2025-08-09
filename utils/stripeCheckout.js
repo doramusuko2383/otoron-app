@@ -1,47 +1,33 @@
-import { firebaseAuth } from '../firebase/firebase-init.js';
+import { supabase } from './supabaseClient.js';
 import { showToast } from './toast.js';
 
 export async function startCheckout(priceId) {
-  // currentUser が null の瞬間を避ける
-  let user = firebaseAuth.currentUser;
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) {
-    await new Promise((resolve) => {
-      const unsub = firebaseAuth.onAuthStateChanged((u) => {
-        if (u) {
-          user = u;
-          unsub();
-          resolve();
-        }
-      });
-      setTimeout(() => {
-        unsub();
-        resolve();
-      }, 1500); // フォールバック
-    });
-  }
-  if (!user?.email) {
     showToast('ログイン情報が確認できません。もう一度ログインしてください。');
     return;
   }
-  const idToken = await user.getIdToken(true); // 最新のトークンを取得
 
   try {
     const res = await fetch('/api/create-checkout-session', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        uid: user.uid,
-        email: user.email,
-        idToken,
         priceId,
+        userId: user.id,
+        email: user.email,
       }),
     });
 
-    if (!res.ok) {
-      console.error('No session ID returned:', await res.json());
+    const json = await res.json();
+    if (!res.ok || !json.sessionId) {
+      console.error('No session ID returned:', json);
+      showToast('チェックアウトの開始に失敗しました。時間をおいて再試行してください。');
       return;
     }
-    const { sessionId } = await res.json();
+    const { sessionId } = json;
     if (typeof window.Stripe !== 'function') {
       console.warn('Stripe SDK is not loaded; skipping redirect');
       return;
