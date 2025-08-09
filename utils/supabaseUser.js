@@ -1,6 +1,6 @@
 export async function ensureSupabaseUser(auth) {
   const user = auth.currentUser;
-  if (!user) return { user: null, isNew: false };
+  if (!user) return { user: null, isNew: false, needsProfile: false };
 
   const idToken = await user.getIdToken(true);
   const payload = { uid: user.uid, email: user.email, idToken };
