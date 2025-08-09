@@ -12,7 +12,7 @@ import { switchScreen } from "../main.js";
 import { createPlanInfoContent } from "./planInfo.js";
 import { changeEmail } from "../utils/changeEmail.js";
 
-export function renderMyPageScreen(user) {
+export async function renderMyPageScreen(user) {
   const app = document.getElementById("app");
   app.innerHTML = "";
   renderHeader(app, user);
@@ -24,12 +24,14 @@ export function renderMyPageScreen(user) {
   tabHeader.className = "mypage-tabs";
 
   const firebaseUser = firebaseAuth.currentUser;
-  const primaryProvider = firebaseUser?.providerData?.[0]?.providerId;
-  const hasPassword = firebaseUser?.providerData.some(
-    (p) => p.providerId === "password"
-  );
-  const googleOnly = primaryProvider === "google.com";
-  const showEmailChange = primaryProvider === "password";
+  // 判定前に最新化（auth直後やオートフィル後の揺らぎ対策）
+  await firebaseUser?.reload?.();
+  const providers = new Set(firebaseUser?.providerData?.map(p => p.providerId) || []);
+  const hasPassword = providers.has("password");
+  // Google が紐づいていて、かつ password を持っていない場合のみ「Google専用UI」
+  const googleOnly = providers.has("google.com") && !hasPassword;
+  // パスワードを持っている＝メール変更/パスワード変更UIを出す
+  const showEmailChange = hasPassword;
 
   const tabs = [
     { id: "profile", label: "プロフィール変更" },

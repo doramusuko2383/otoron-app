@@ -214,7 +214,7 @@ export const switchScreen = async (screen, user = currentUser, options = {}) => 
   else if (screen === "growth") renderGrowthScreen(user);
   else if (screen === "signup") renderSignUpScreen(user);
   else if (screen === "setup") renderInitialSetupScreen(user, (u) => switchScreen("home", u, options));
-  else if (screen === "mypage") renderMyPageScreen(user);
+  else if (screen === "mypage") await renderMyPageScreen(user);
   else if (screen === "result") renderResultScreen(user);
   else if (screen === "result_easy") renderTrainingEasyResultScreen(user);
   else if (screen === "result_full") renderTrainingFullResultScreen(user);
