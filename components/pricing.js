@@ -18,6 +18,7 @@ export function renderPricingScreen(user) {
   const plans = [
     {
       key: 'plan12',
+      priceId: window.PRICE_ID_12M,
       months: 12,
       monthly: 990,
       total: 11880,
@@ -26,6 +27,7 @@ export function renderPricingScreen(user) {
     },
     {
       key: 'plan6',
+      priceId: window.PRICE_ID_6M,
       months: 6,
       monthly: 1290,
       total: 7740,
@@ -34,6 +36,7 @@ export function renderPricingScreen(user) {
     },
     {
       key: 'plan1',
+      priceId: window.PRICE_ID_1M,
       months: 1,
       monthly: 1490,
       total: 1490,
@@ -78,7 +81,7 @@ export function renderPricingScreen(user) {
     const btn = document.createElement('button');
     btn.className = 'choose-plan';
     btn.textContent = 'このプランを選ぶ';
-    btn.onclick = () => startCheckout(p.key);
+    btn.onclick = () => startCheckout(p.priceId);
     card.appendChild(btn);
 
     main.appendChild(card);
