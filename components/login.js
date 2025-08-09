@@ -87,7 +87,7 @@ export function renderLoginScreen(container, onLoginSuccess) {
       await signInWithEmailAndPassword(firebaseAuth, email, password);
       sessionStorage.setItem("currentPassword", password);
       const user = firebaseAuth.currentUser;
-      await user?.reload?.(); // ← 直後の provider / email を確定
+      await user?.reload?.(); // ← providerData更新のため追加
       try {
         const { user: supabaseUser } = await ensureSupabaseUser(user);
         if (supabaseUser) {
