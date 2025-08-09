@@ -4,6 +4,8 @@ import {
   EmailAuthProvider,
   reauthenticateWithCredential,
   updatePassword,
+  fetchSignInMethodsForEmail,
+  onAuthStateChanged,
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { firebaseAuth } from "../firebase/firebase-init.js";
 import { startCheckout } from "../utils/stripeCheckout.js";
@@ -24,13 +26,20 @@ export async function renderMyPageScreen(user) {
   const tabHeader = document.createElement("div");
   tabHeader.className = "mypage-tabs";
 
-  const firebaseUser = firebaseAuth.currentUser;
-  await firebaseUser?.reload?.(); // 最新化
-  const providers = new Set(
-    firebaseUser?.providerData?.map((p) => p.providerId) || []
+  const firebaseUser = await new Promise((resolve) => {
+    const unsubscribe = onAuthStateChanged(firebaseAuth, (u) => {
+      unsubscribe();
+      resolve(u);
+    });
+  });
+  if (!firebaseUser) return;
+  await firebaseUser.reload();
+  const methods = await fetchSignInMethodsForEmail(
+    firebaseAuth,
+    firebaseUser.email
   );
-  const hasPassword = providers.has("password");
-  const googleOnly = providers.has("google.com") && !hasPassword;
+  const hasPassword = methods.includes("password");
+  const googleOnly = methods.includes("google.com") && !hasPassword;
   const showEmailChange = hasPassword;
 
   const tabs = [
