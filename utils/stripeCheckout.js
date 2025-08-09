@@ -1,13 +1,14 @@
 import { firebaseAuth } from '../firebase/firebase-init.js';
 
 export async function startCheckout(plan) {
-  // auth 確定を待つ（currentUser が空の瞬間対策）
+  // currentUser が null の瞬間を避ける
   let user = firebaseAuth.currentUser;
   if (!user) {
     await new Promise(resolve => {
-      const unsub = firebaseAuth.onAuthStateChanged(u => { if (u) { user = u; unsub(); resolve(); } });
-      // フォールバック: 1.5秒で解除
-      setTimeout(() => { unsub(); resolve(); }, 1500);
+      const unsub = firebaseAuth.onAuthStateChanged(u => {
+        if (u) { user = u; unsub(); resolve(); }
+      });
+      setTimeout(() => { unsub(); resolve(); }, 1500); // フォールバック
     });
   }
   if (!user?.email) {
@@ -15,7 +16,7 @@ export async function startCheckout(plan) {
     return;
   }
   const email = user.email;
-  const idToken = await user.getIdToken(); // ← サーバで verifyIdToken する
+  const idToken = await user.getIdToken(); // サーバで verifyIdToken する
 
   try {
     const response = await fetch('/api/create-checkout-session', {
