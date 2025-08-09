@@ -253,7 +253,7 @@ onAuthStateChanged(firebaseAuth, async (firebaseUser) => {
     console.error("❌ Supabase認証処理エラー:", e);
     return;
   }
-  const { user, isNew } = authResult;
+  const { user, needsProfile } = authResult;
   if (!user) {
     console.warn('⚠️ Firebase logged in but Supabase link failed.');
     return;
@@ -267,7 +267,7 @@ onAuthStateChanged(firebaseAuth, async (firebaseUser) => {
     return;
   }
 
-  if (isNew) {
+  if (needsProfile ?? !(user?.name)) {
     window.location.href = "/register-thankyou.html";
     return;
   }

@@ -39,7 +39,7 @@ export default async function handler(req, res) {
   const { data: existing, error: selErr } = await supabase
     .from('users')
     .select(
-      'id, email, firebase_uid, is_premium, trial_active, trial_end_date'
+      'id, name, email, firebase_uid, is_premium, trial_active, trial_end_date'
     )
     .eq('firebase_uid', uid)
     .maybeSingle();
@@ -65,7 +65,7 @@ export default async function handler(req, res) {
         is_premium: false,
       })
       .select(
-        'id, email, firebase_uid, is_premium, trial_active, trial_end_date'
+        'id, name, email, firebase_uid, is_premium, trial_active, trial_end_date'
       )
       .maybeSingle();
     if (insErr) {
@@ -79,7 +79,7 @@ export default async function handler(req, res) {
       .update({ email })
       .eq('firebase_uid', uid)
       .select(
-        'id, email, firebase_uid, is_premium, trial_active, trial_end_date'
+        'id, name, email, firebase_uid, is_premium, trial_active, trial_end_date'
       )
       .maybeSingle();
     if (updErr) {
@@ -91,14 +91,22 @@ export default async function handler(req, res) {
 
   const responseUser = {
     id: user.id,
+    name: user.name ?? null,
     email: user.email,
     firebase_uid: user.firebase_uid,
-    is_premium: user.is_premium,
-    trial_active: user.trial_active,
+    is_premium: user.is_premium ?? false,
+    trial_active: user.trial_active ?? true,
     trial_end_date: user.trial_end_date,
   };
+  const needsProfile = !(
+    responseUser.name && String(responseUser.name).trim().length > 0
+  );
 
-  return res
-    .status(200)
-    .json({ user: responseUser, isNew: inserted, inserted, updated });
+  return res.status(200).json({
+    user: responseUser,
+    isNew: inserted || needsProfile,
+    needsProfile,
+    inserted,
+    updated,
+  });
 }

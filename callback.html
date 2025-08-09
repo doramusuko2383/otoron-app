@@ -49,14 +49,14 @@
         return;
       }
 
-      const { user, isNew } = await ensureSupabaseAuth(firebaseUser);
+      const { user, needsProfile } = await ensureSupabaseAuth(firebaseUser);
       if (!user) {
         addDebugLog('Supabase link failed');
         showDebugLog();
         if (!debugMode) window.location.href = '/';
         return;
       }
-      if (isNew) {
+      if (needsProfile ?? !(user?.name)) {
         await createInitialChordProgress(user.id);
         addDebugLog('redirect: register-thankyou');
         showDebugLog();
