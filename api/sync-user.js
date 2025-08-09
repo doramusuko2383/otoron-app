@@ -38,8 +38,8 @@ export default async function handler(req, res) {
 
   const { data: existing, error: selErr } = await supabase
     .from('users')
-    .select('id, uid, email')
-    .eq('uid', uid)
+    .select('id, email, firebase_uid')
+    .eq('firebase_uid', uid)
     .maybeSingle();
   if (selErr) {
     return res.status(500).json({ error: 'select failed', detail: selErr });
@@ -52,7 +52,11 @@ export default async function handler(req, res) {
   if (!existing) {
     const { data: insData, error: insErr } = await supabase
       .from('users')
-      .insert({ uid, email, created_at: new Date().toISOString() })
+      .insert({
+        firebase_uid: uid,
+        email,
+        created_at: new Date().toISOString(),
+      })
       .select()
       .maybeSingle();
     if (insErr) {
@@ -64,7 +68,7 @@ export default async function handler(req, res) {
     const { data: updData, error: updErr } = await supabase
       .from('users')
       .update({ email })
-      .eq('uid', uid)
+      .eq('firebase_uid', uid)
       .select()
       .maybeSingle();
     if (updErr) {
