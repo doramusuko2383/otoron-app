@@ -1,27 +1,19 @@
-export async function ensureSupabaseUser(firebaseUser) {
-  if (!firebaseUser) return { user: null, isNew: false };
+export async function ensureSupabaseUser(auth) {
+  const user = auth.currentUser;
+  if (!user) return { user: null, isNew: false };
 
-  const idToken = await firebaseUser.getIdToken();
-  try {
-    const res = await fetch('/api/sync-user', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        uid: firebaseUser.uid,
-        email: firebaseUser.email,
-        idToken,
-      }),
-    });
+  const idToken = await user.getIdToken(true);
+  const payload = { uid: user.uid, email: user.email, idToken };
 
-    if (!res.ok) {
-      const text = await res.text();
-      console.error('❌ Supabaseユーザー同期エラー:', text);
-      throw new Error(text);
-    }
+  const res = await fetch('/api/sync-user', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
 
-    return await res.json();
-  } catch (e) {
-    console.error('❌ Supabaseユーザー同期失敗:', e);
-    throw e;
+  if (!res.ok) {
+    throw new Error(await res.text());
   }
+
+  return await res.json();
 }

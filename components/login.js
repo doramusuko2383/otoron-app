@@ -8,8 +8,6 @@ import {
 import { firebaseAuth } from "../firebase/firebase-init.js";
 import { switchScreen } from "../main.js";
 import { addDebugLog } from "../utils/loginDebug.js";
-import { ensureSupabaseUser } from "../utils/supabaseUser.js";
-import { ensureChordProgress } from "../utils/progressUtils.js";
 import { showCustomAlert } from "./home.js";
 
 export function renderLoginScreen(container, onLoginSuccess) {
@@ -86,17 +84,7 @@ export function renderLoginScreen(container, onLoginSuccess) {
 
       await signInWithEmailAndPassword(firebaseAuth, email, password);
       sessionStorage.setItem("currentPassword", password);
-      const user = firebaseAuth.currentUser;
-      await user?.reload?.(); // ← providerData更新のため追加
-      try {
-        const { user: supabaseUser } = await ensureSupabaseUser(user);
-        if (supabaseUser) {
-          await ensureChordProgress(supabaseUser.id);
-        }
-      } catch (e) {
-        console.error("❌ Supabase処理でエラー:", e);
-        return;
-      }
+      await firebaseAuth.currentUser?.reload?.();
       onLoginSuccess();
     } catch (err) {
       if (err.code === "auth/invalid-credential") {

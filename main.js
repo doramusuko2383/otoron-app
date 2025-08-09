@@ -248,7 +248,7 @@ onAuthStateChanged(firebaseAuth, async (firebaseUser) => {
 
   let authResult;
   try {
-    authResult = await ensureSupabaseUser(firebaseUser);
+    authResult = await ensureSupabaseUser(firebaseAuth);
   } catch (e) {
     console.error("❌ Supabase認証処理エラー:", e);
     return;
