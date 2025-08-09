@@ -11,7 +11,7 @@
   <pre id="debug-log" style="white-space: pre-wrap; color: red; font-size: 0.9em;"></pre>
   <script type="module">
     import { firebaseAuth } from './firebase/firebase-init.js';
-    import { getRedirectResult, fetchSignInMethodsForEmail, signOut } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+    import { getRedirectResult, fetchSignInMethodsForEmail, signOut, GoogleAuthProvider, signInWithRedirect } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
     import { ensureSupabaseAuth } from './utils/supabaseAuthHelper.js';
     import { createInitialChordProgress } from './utils/progressUtils.js';
     import { addDebugLog, showDebugLog } from './utils/loginDebug.js';
@@ -31,7 +31,8 @@
       if (!result || !result.user) {
         addDebugLog('no redirect result or user');
         showDebugLog();
-        if (!debugMode) window.location.href = '/';
+        const provider = new GoogleAuthProvider();
+        await signInWithRedirect(firebaseAuth, provider);
         return;
       }
 
