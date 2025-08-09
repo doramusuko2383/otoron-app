@@ -27,17 +27,26 @@ export async function renderMyPageScreen(user) {
   tabHeader.className = "mypage-tabs";
 
   const firebaseUser = await new Promise((resolve) => {
-    const unsubscribe = onAuthStateChanged(firebaseAuth, (u) => {
-      unsubscribe();
+    const unsub = onAuthStateChanged(firebaseAuth, (u) => {
+      unsub();
       resolve(u);
     });
   });
+
   if (!firebaseUser) return;
-  await firebaseUser.reload();
-  const methods = await fetchSignInMethodsForEmail(
-    firebaseAuth,
-    firebaseUser.email
-  );
+
+  let methods = [];
+  try {
+    if (!firebaseUser.email) throw new Error("no-email");
+    await firebaseUser.reload();
+    methods = await fetchSignInMethodsForEmail(
+      firebaseAuth,
+      firebaseUser.email
+    );
+  } catch (e) {
+    console.error("[auth-methods]", e);
+    methods = [];
+  }
   const hasPassword = methods.includes("password");
   const googleOnly = methods.includes("google.com") && !hasPassword;
   const showEmailChange = hasPassword;
