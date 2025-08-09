@@ -1,4 +1,12 @@
 import Stripe from 'stripe';
+import admin from 'firebase-admin';
+
+if (!admin.apps.length) {
+  admin.initializeApp({
+    credential: admin.credential.applicationDefault(),
+  });
+}
+const auth = admin.auth();
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
@@ -23,8 +31,23 @@ export default async function handler(req, res) {
     }
   }
 
-  const { email, plan } = body || {};
+  const { plan, idToken } = body || {};
   const priceId = priceMap[plan];
+
+  if (!idToken) {
+    return res.status(401).json({ error: 'Missing idToken' });
+  }
+
+  let decoded;
+  try {
+    decoded = await auth.verifyIdToken(idToken);
+  } catch (e) {
+    console.error('Invalid idToken', e);
+    return res.status(401).json({ error: 'Invalid token' });
+  }
+
+  const verifiedEmail = decoded.email;
+  const uid = decoded.uid;
 
   if (!priceId) {
     console.error('Invalid plan received. Plan:', plan, 'Price map:', priceMap);
@@ -47,8 +70,9 @@ export default async function handler(req, res) {
       success_url:
         `${baseUrl}/success?session_id={CHECKOUT_SESSION_ID}&plan=${plan}`,
       cancel_url: `${baseUrl}/cancel`,
-      customer_email: email,
+      customer_email: verifiedEmail,
       customer_creation: 'always', // ✅ これが重要！
+      client_reference_id: uid,
     });
 
     res.status(200).json({ id: session.id });

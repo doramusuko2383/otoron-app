@@ -1,17 +1,27 @@
 import { firebaseAuth } from '../firebase/firebase-init.js';
 
 export async function startCheckout(plan) {
-  const email = firebaseAuth.currentUser?.email || '未取得';
-  if (!firebaseAuth.currentUser?.email) {
-    alert('ログイン情報がありません');
+  // auth 確定を待つ（currentUser が空の瞬間対策）
+  let user = firebaseAuth.currentUser;
+  if (!user) {
+    await new Promise(resolve => {
+      const unsub = firebaseAuth.onAuthStateChanged(u => { if (u) { user = u; unsub(); resolve(); } });
+      // フォールバック: 1.5秒で解除
+      setTimeout(() => { unsub(); resolve(); }, 1500);
+    });
+  }
+  if (!user?.email) {
+    alert('ログイン情報が確認できません。もう一度ログインしてください。');
     return;
   }
+  const email = user.email;
+  const idToken = await user.getIdToken(); // ← サーバで verifyIdToken する
 
   try {
     const response = await fetch('/api/create-checkout-session', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, plan })
+      body: JSON.stringify({ email, plan, idToken })
     });
 
     const data = await response.json();
