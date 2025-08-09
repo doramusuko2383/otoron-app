@@ -122,7 +122,6 @@ if (error && error.message.includes('Invalid login credentials')) {
 
 古いコードを利用している場合は、`main.js` などを最新の内容に更新してください。
 
-
 ## Stripe Event Deduplication
 
 Webhook events from Stripe can occasionally be delivered more than once. A small
