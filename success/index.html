@@ -11,9 +11,8 @@
   </div>
   <script type="module">
     import { supabase } from '../utils/supabaseClient.js';
-    import { firebaseAuth } from '../firebase/firebase-init.js';
-    import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
     import { ensureSupabaseAuth } from '../utils/supabaseAuthHelper.js';
+    import { authController } from '../src/authController.js';
 
     const params = new URLSearchParams(location.search);
     const plan = params.get('plan');
@@ -30,8 +29,8 @@
       return d;
     }
 
-    onAuthStateChanged(firebaseAuth, async (firebaseUser) => {
-      if (!firebaseUser || !plan) return;
+    const handle = async (state, firebaseUser) => {
+      if (state !== 'authed' || !firebaseUser || !plan) return;
       const authResult = await ensureSupabaseAuth(firebaseUser);
       const user = authResult.user;
       if (!user) return;
@@ -68,7 +67,10 @@
           ended_at: expireDate.toISOString(),
         },
       ]);
-    });
+    };
+    authController.on(handle);
+    await authController.init();
+    await handle(authController.state, authController.user);
 
     setTimeout(() => {
       window.location.href = '/#home';

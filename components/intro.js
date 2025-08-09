@@ -1,7 +1,6 @@
 // components/intro.js
 import { switchScreen } from "../main.js";
-import { signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { firebaseAuth } from "../firebase/firebase-init.js";
+import { authController } from "../src/authController.js";
 import { showCustomAlert } from "./home.js";
 
 export function renderIntroScreen() {
@@ -287,7 +286,7 @@ export function renderIntroScreen() {
   if (loginBtn) {
     loginBtn.addEventListener('click', async () => {
       try {
-        await signOut(firebaseAuth);
+        await authController.logout();
       } catch (e) {
         console.warn('intro logout error', e);
       }
@@ -299,7 +298,7 @@ export function renderIntroScreen() {
   if (signupBtn) {
     signupBtn.addEventListener('click', async () => {
       try {
-        await signOut(firebaseAuth);
+        await authController.logout();
       } catch (e) {
         console.warn('intro logout error', e);
       }
@@ -412,7 +411,7 @@ export function renderIntroScreen() {
           'このプランは無料会員登録後にお申し込みいただけます。',
           async () => {
             try {
-              await signOut(firebaseAuth);
+              await authController.logout();
             } catch (e) {
               console.warn('intro logout error', e);
             }

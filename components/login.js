@@ -1,9 +1,7 @@
-import {
-  signInWithEmailAndPassword,
-  fetchSignInMethodsForEmail
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { fetchSignInMethodsForEmail } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 import { firebaseAuth } from "../firebase/firebase-init.js";
+import { authController } from "../src/authController.js";
 import { switchScreen } from "../main.js";
 import { addDebugLog } from "../utils/loginDebug.js";
 import { showCustomAlert } from "./home.js";
@@ -29,7 +27,7 @@ export function renderLoginScreen(container, onLoginSuccess) {
 
       <div class="login-divider">または</div>
 
-      <button id="google-login" class="google-button">Googleでログイン</button>
+      <button id="google-login" class="google-button" data-provider="google">Googleでログイン</button>
 
       <div class="login-actions">
         <button id="forgot-btn" class="login-secondary">パスワードを忘れた方はこちら</button>
@@ -80,7 +78,7 @@ export function renderLoginScreen(container, onLoginSuccess) {
         return;
       }
 
-      await signInWithEmailAndPassword(firebaseAuth, email, password);
+      await authController.loginWithPassword(email, password);
       sessionStorage.setItem("currentPassword", password);
       await firebaseAuth.currentUser?.reload?.();
       onLoginSuccess();
@@ -97,10 +95,15 @@ export function renderLoginScreen(container, onLoginSuccess) {
     }
   });
 
-  // Googleログイン処理（リダイレクト方式）
-  container.querySelector("#google-login").addEventListener("click", () => {
+  // Googleログイン処理（ポップアップ方式）
+  container.querySelector("#google-login").addEventListener("click", async () => {
     addDebugLog("click google-login");
-    window.location.href = "/callback.html";
+    try {
+      await authController.loginWithGoogle();
+      onLoginSuccess();
+    } catch (e) {
+      showCustomAlert("ログイン失敗：" + e.message);
+    }
   });
 
   // 戻るボタン

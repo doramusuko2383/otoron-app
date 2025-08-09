@@ -38,7 +38,7 @@ import { renderForgotPasswordScreen } from "./components/forgotPassword.js";
 
 
 import { firebaseAuth } from "./firebase/firebase-init.js";
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { authController } from "./src/authController.js";
 
 
 const INFO_SCREENS = [
@@ -239,18 +239,13 @@ window.addEventListener("popstate", (e) => {
   }
 });
 
-onAuthStateChanged(firebaseAuth, async (firebaseUser) => {
-  if (!firebaseUser) {
-    return;
-  }
-
-  // console.log("🔓 Firebaseログイン済み:", firebaseUser.email);
-
+const handleAuth = async (state, firebaseUser) => {
+  if (state !== 'authed' || !firebaseUser) return;
   let authResult;
   try {
     authResult = await ensureSupabaseUser(firebaseAuth);
   } catch (e) {
-    console.error("❌ Supabase認証処理エラー:", e);
+    console.error('❌ Supabase認証処理エラー:', e);
     return;
   }
   const { user, needsProfile } = authResult;
@@ -258,43 +253,45 @@ onAuthStateChanged(firebaseAuth, async (firebaseUser) => {
     console.warn('⚠️ Firebase logged in but Supabase link failed.');
     return;
   }
-
   await ensureChordProgress(user.id);
-
   const lockType = getLockType(user);
   if (lockType) {
-    switchScreen("lock", user, { lockType });
+    switchScreen('lock', user, { lockType });
     return;
   }
-
   if (needsProfile ?? !(user?.name)) {
-    window.location.href = "/register-thankyou.html";
+    window.location.href = '/register-thankyou.html';
     return;
   }
-
   baseUser = user;
   currentUser = user;
-  if (!user.name || user.name === "名前未設定") {
-    switchScreen("setup", user, { showWelcome: true });
+  if (!user.name || user.name === '名前未設定') {
+    switchScreen('setup', user, { showWelcome: true });
   } else {
-    switchScreen("home", user, { showWelcome: false });
+    switchScreen('home', user, { showWelcome: false });
   }
-});
-
-const initApp = () => {
-  const hash = location.hash;
-  const initial = DEBUG_AUTO_LOGIN ? "home" : "intro";
-  const screenHash = hash.replace("#", "");
-  const startScreen = screenHash || initial;
-
-  switchScreen(startScreen, undefined, { replace: true });
-
 };
 
-if (document.readyState !== "loading") {
-  initApp();
+authController.on(handleAuth);
+
+const initApp = async () => {
+  const hash = location.hash;
+  const initial = DEBUG_AUTO_LOGIN ? 'home' : 'intro';
+  const screenHash = hash.replace('#', '');
+  const startScreen = screenHash || initial;
+  switchScreen(startScreen, undefined, { replace: true });
+};
+
+const start = async () => {
+  await authController.init();
+  await handleAuth(authController.state, authController.user);
+  await initApp();
+};
+
+if (document.readyState !== 'loading') {
+  start();
 } else {
-  window.addEventListener("DOMContentLoaded", initApp);
+  window.addEventListener('DOMContentLoaded', start);
 }
 
 window.addEventListener("load", () => {});

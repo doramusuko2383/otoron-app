@@ -1,5 +1,5 @@
-import { signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { firebaseAuth } from "../firebase/firebase-init.js"; // ✅ これだけでOK
+import { authController } from "../src/authController.js";
 import { switchScreen, clearTempUser, getBaseUser } from "../main.js";
 import { checkRecentUnlockCriteria } from "../utils/progressStatus.js";
 import { loadGrowthFlags } from "../utils/growthStore_supabase.js";
@@ -175,7 +175,7 @@ export function renderHeader(container, user) {
   // ▼ ログアウト処理
   header.querySelector("#logout-btn").addEventListener("click", async () => {
     try {
-      await signOut(firebaseAuth);
+      await authController.logout();
       sessionStorage.removeItem("currentPassword");
       showCustomAlert("ログアウトしました！", () => {
         switchScreen("intro");
