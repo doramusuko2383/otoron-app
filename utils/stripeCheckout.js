@@ -1,4 +1,5 @@
 import { firebaseAuth } from '../firebase/firebase-init.js';
+import { showToast } from './toast.js';
 
 export async function startCheckout(plan) {
   // currentUser が null の瞬間を避ける
@@ -12,7 +13,7 @@ export async function startCheckout(plan) {
     });
   }
   if (!user?.email) {
-    alert('ログイン情報が確認できません。もう一度ログインしてください。');
+    showToast('ログイン情報が確認できません。もう一度ログインしてください。');
     return;
   }
   const email = user.email;
@@ -41,6 +42,6 @@ export async function startCheckout(plan) {
     }
   } catch (err) {
     console.error('Stripe checkout error', err);
-    alert('決済処理でエラーが発生しました');
+    showToast('決済処理でエラーが発生しました');
   }
 }
