@@ -11,6 +11,7 @@ import { supabase } from "../utils/supabaseClient.js";
 import { switchScreen } from "../main.js";
 import { createPlanInfoContent } from "./planInfo.js";
 import { changeEmail } from "../utils/changeEmail.js";
+import { showToast } from "../utils/toast.js";
 
 export async function renderMyPageScreen(user) {
   const app = document.getElementById("app");
@@ -134,7 +135,7 @@ export async function renderMyPageScreen(user) {
           .maybeSingle();
         if (error) throw error;
         const updated = data || { ...user, ...updates };
-        alert("プロフィールを更新しました");
+        showToast("プロフィールを更新しました");
         switchScreen("mypage", updated, { replace: true });
       } catch (err) {
         statusEl.textContent = "更新に失敗しました: " + err.message;

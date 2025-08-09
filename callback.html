@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>Googleログイン処理中</title>
   <meta name="robots" content="noindex">
+  <link rel="stylesheet" href="/style.css">
 </head>
 <body>
   <p>ログイン処理中です...</p>
@@ -14,6 +15,7 @@
     import { ensureSupabaseAuth } from './utils/supabaseAuthHelper.js';
     import { createInitialChordProgress } from './utils/progressUtils.js';
     import { addDebugLog, showDebugLog } from './utils/loginDebug.js';
+    import { showToast } from './utils/toast.js';
 
     (async () => {
 
@@ -40,10 +42,10 @@
       const methods = await fetchSignInMethodsForEmail(firebaseAuth, firebaseUser.email);
       if (methods.includes('password') && !methods.includes('google.com')) {
         await signOut(firebaseAuth);
-        alert('このメールアドレスは既に通常のログインで使用されています。Googleログインはできません。');
+        showToast('このメールアドレスは既に通常のログインで使用されています。Googleログインはできません。');
         addDebugLog('redirect: login exists');
         showDebugLog();
-        if (!debugMode) window.location.href = '/';
+        if (!debugMode) setTimeout(() => { window.location.href = '/'; }, 1500);
         return;
       }
 

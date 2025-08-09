@@ -1,6 +1,7 @@
 import { chords } from "../data/chords.js";
 import { supabase } from "../utils/supabaseClient.js";
 import { applyStartChordIndex } from "../utils/progressUtils.js";
+import { showToast } from "../utils/toast.js";
 
 export function renderInitialSetupScreen(user, onComplete) {
   const app = document.getElementById("app");
@@ -21,7 +22,7 @@ export function renderInitialSetupScreen(user, onComplete) {
     wrapper.querySelector("#next-btn").onclick = () => {
       const value = wrapper.querySelector("#nickname").value.trim();
       if (!value) {
-        alert("おなまえをいれてね");
+        showToast("おなまえをいれてね");
         return;
       }
       nickname = value;

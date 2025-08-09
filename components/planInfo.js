@@ -2,6 +2,7 @@ import { renderHeader } from './header.js';
 import { supabase } from '../utils/supabaseClient.js';
 import { switchScreen } from '../main.js';
 import { showCustomConfirm } from './home.js';
+import { showToast } from '../utils/toast.js';
 
 const planMap = {
   plan1: { name: '1ヶ月プラン', monthly: 1490, total: 1490 },
@@ -91,10 +92,10 @@ async function createPlanInfoContent(user) {
             body: JSON.stringify({ userId: user.id }),
           });
           if (res.ok) {
-            alert('解約処理が完了しました');
+            showToast('解約処理が完了しました');
             switchScreen('home');
           } else {
-            alert('解約に失敗しました');
+            showToast('解約に失敗しました');
           }
         });
       };
