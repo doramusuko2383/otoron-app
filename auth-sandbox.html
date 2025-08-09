@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>Auth Sandbox</title>
+</head>
+<body>
+  <button data-provider="google">Googleログイン</button>
+  <button data-provider="password">メールログイン</button>
+  <button id="logout">ログアウト</button>
+  <p id="state">idle</p>
+  <script type="module">
+    import { authController } from './src/authController.js';
+    const stateEl = document.getElementById('state');
+    authController.on((state, user) => {
+      stateEl.textContent = `${state}${user ? ' - ' + user.email : ''}`;
+    });
+    await authController.init();
+    document.querySelector('[data-provider="google"]').onclick = () => authController.loginWithGoogle();
+    document.querySelector('[data-provider="password"]').onclick = async () => {
+      const email = prompt('email');
+      const pass = prompt('password');
+      if (email && pass) {
+        try {
+          await authController.loginWithPassword(email, pass);
+        } catch (e) {
+          alert(e.message);
+        }
+      }
+    };
+    document.getElementById('logout').onclick = () => authController.logout();
+  </script>
+</body>
+</html>

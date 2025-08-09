@@ -5,7 +5,6 @@ import {
   reauthenticateWithCredential,
   updatePassword,
   fetchSignInMethodsForEmail,
-  onAuthStateChanged,
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { firebaseAuth } from "../firebase/firebase-init.js";
 import { startCheckout } from "../utils/stripeCheckout.js";
@@ -14,6 +13,7 @@ import { switchScreen } from "../main.js";
 import { createPlanInfoContent } from "./planInfo.js";
 import { changeEmail } from "../utils/changeEmail.js";
 import { showToast } from "../utils/toast.js";
+import { authController } from "../src/authController.js";
 
 export async function renderMyPageScreen(user) {
   const app = document.getElementById("app");
@@ -26,13 +26,7 @@ export async function renderMyPageScreen(user) {
   const tabHeader = document.createElement("div");
   tabHeader.className = "mypage-tabs";
 
-  const firebaseUser = await new Promise((resolve) => {
-    const unsub = onAuthStateChanged(firebaseAuth, (u) => {
-      unsub();
-      resolve(u);
-    });
-  });
-
+  const firebaseUser = authController.user;
   if (!firebaseUser) return;
 
   let methods = [];

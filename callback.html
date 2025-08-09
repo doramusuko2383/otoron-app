@@ -11,7 +11,8 @@
   <pre id="debug-log" style="white-space: pre-wrap; color: red; font-size: 0.9em;"></pre>
   <script type="module">
     import { firebaseAuth } from './firebase/firebase-init.js';
-    import { getRedirectResult, fetchSignInMethodsForEmail, signOut, GoogleAuthProvider, signInWithRedirect } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+    import { getRedirectResult, fetchSignInMethodsForEmail, GoogleAuthProvider, signInWithRedirect } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+    import { authController } from './src/authController.js';
     import { ensureSupabaseAuth } from './utils/supabaseAuthHelper.js';
     import { createInitialChordProgress } from './utils/progressUtils.js';
     import { addDebugLog, showDebugLog } from './utils/loginDebug.js';
@@ -42,7 +43,7 @@
 
       const methods = await fetchSignInMethodsForEmail(firebaseAuth, firebaseUser.email);
       if (methods.includes('password') && !methods.includes('google.com')) {
-        await signOut(firebaseAuth);
+        await authController.logout();
         showToast('このメールアドレスは既に通常のログインで使用されています。Googleログインはできません。');
         addDebugLog('redirect: login exists');
         showDebugLog();
