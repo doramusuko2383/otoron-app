@@ -38,7 +38,9 @@ export default async function handler(req, res) {
 
   const { data: existing, error: selErr } = await supabase
     .from('users')
-    .select('id, email, firebase_uid')
+    .select(
+      'id, email, firebase_uid, is_premium, trial_active, trial_end_date'
+    )
     .eq('firebase_uid', uid)
     .maybeSingle();
   if (selErr) {
@@ -56,8 +58,15 @@ export default async function handler(req, res) {
         firebase_uid: uid,
         email,
         created_at: new Date().toISOString(),
+        trial_active: true,
+        trial_end_date: new Date(Date.now() + 7 * 86400000)
+          .toISOString()
+          .split('T')[0],
+        is_premium: false,
       })
-      .select()
+      .select(
+        'id, email, firebase_uid, is_premium, trial_active, trial_end_date'
+      )
       .maybeSingle();
     if (insErr) {
       return res.status(500).json({ error: 'insert failed', detail: insErr });
@@ -69,7 +78,9 @@ export default async function handler(req, res) {
       .from('users')
       .update({ email })
       .eq('firebase_uid', uid)
-      .select()
+      .select(
+        'id, email, firebase_uid, is_premium, trial_active, trial_end_date'
+      )
       .maybeSingle();
     if (updErr) {
       return res.status(500).json({ error: 'update failed', detail: updErr });
@@ -78,5 +89,16 @@ export default async function handler(req, res) {
     user = updData;
   }
 
-  return res.status(200).json({ user, isNew: inserted, inserted, updated });
+  const responseUser = {
+    id: user.id,
+    email: user.email,
+    firebase_uid: user.firebase_uid,
+    is_premium: user.is_premium,
+    trial_active: user.trial_active,
+    trial_end_date: user.trial_end_date,
+  };
+
+  return res
+    .status(200)
+    .json({ user: responseUser, isNew: inserted, inserted, updated });
 }
