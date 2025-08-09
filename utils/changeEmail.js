@@ -20,8 +20,8 @@ export async function changeEmail({ auth, currentPassword, newEmail }) {
   }
 
   // provider確認（UI側でも分岐しているが、保険で）
-  const providers = new Set(user.providerData?.map((p) => p.providerId) || []);
-  if (!providers.has("password")) {
+  const currentMethods = await fetchSignInMethodsForEmail(auth, user.email);
+  if (!currentMethods.includes("password")) {
     throw new Error(
       "This account uses a social provider. Email change is not allowed here."
     );
@@ -41,5 +41,10 @@ export async function changeEmail({ auth, currentPassword, newEmail }) {
 
   // --- 3) 検証メール送信（新メール宛て） ---
   await verifyBeforeUpdateEmail(user, newEmail);
+}
+
+export async function canChangeEmail(auth, email) {
+  const methods = await fetchSignInMethodsForEmail(auth, email);
+  return methods.includes("password");
 }
 
