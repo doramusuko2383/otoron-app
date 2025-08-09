@@ -24,13 +24,12 @@ export async function renderMyPageScreen(user) {
   tabHeader.className = "mypage-tabs";
 
   const firebaseUser = firebaseAuth.currentUser;
-  // 判定前に最新化（auth直後やオートフィル後の揺らぎ対策）
-  await firebaseUser?.reload?.();
-  const providers = new Set(firebaseUser?.providerData?.map(p => p.providerId) || []);
+  await firebaseUser?.reload?.(); // 最新化
+  const providers = new Set(
+    firebaseUser?.providerData?.map((p) => p.providerId) || []
+  );
   const hasPassword = providers.has("password");
-  // Google が紐づいていて、かつ password を持っていない場合のみ「Google専用UI」
   const googleOnly = providers.has("google.com") && !hasPassword;
-  // パスワードを持っている＝メール変更/パスワード変更UIを出す
   const showEmailChange = hasPassword;
 
   const tabs = [

@@ -21,8 +21,8 @@ export async function changeEmail({ auth, currentPassword, newEmail }) {
   }
 
   // provider確認（UI側でも分岐しているが、保険で）
-  const providerId = user.providerData?.[0]?.providerId;
-  if (providerId !== "password") {
+  const providers = new Set(user.providerData?.map((p) => p.providerId) || []);
+  if (!providers.has("password")) {
     throw new Error(
       "This account uses a social provider. Email change is not allowed here."
     );
