@@ -19,7 +19,6 @@ import { renderInitialSetupScreen } from "./components/initialSetup.js";
 import { supabase } from "./utils/supabaseClient.js";
 import { ensureSupabaseAuth } from "./utils/supabaseAuthHelper.js";
 import { getLockType } from "./utils/accessControl.js";
-import { ensureChordProgress } from "./utils/progressUtils.js";
 import { loadTrainingRecords } from "./utils/recordStore_supabase.js";
 import { getToday } from "./utils/growthUtils.js";
 import { showCustomAlert } from "./components/home.js";
@@ -201,7 +200,7 @@ export const switchScreen = async (screen, user = currentUser, options = {}) => 
     document.body.classList.add("intro-scroll");
     renderIntroScreen();
   }
-  else if (screen === "login") renderLoginScreen(app, () => {});
+  else if (screen === "login") renderLoginScreen(app);
   else if (screen === "forgot_password") renderForgotPasswordScreen();
   else if (screen === "home") renderHomeScreen(user, options);
   else if (screen === "training") renderTrainingScreen(user);
@@ -242,42 +241,16 @@ window.addEventListener("popstate", (e) => {
 });
 
 onAuthStateChanged(firebaseAuth, async (firebaseUser) => {
-  if (!firebaseUser) {
-    return;
-  }
+  if (!firebaseUser) return;
 
-  // console.log("🔓 Firebaseログイン済み:", firebaseUser.email);
-
-  let authResult;
   try {
     await firebaseUser.getIdToken();
-    authResult = await ensureSupabaseAuth(firebaseUser);
+    await ensureSupabaseAuth(firebaseUser.email);
   } catch (e) {
-    console.error("❌ Supabase認証処理エラー:", e);
-    return;
-  }
-  const { user, isNew } = authResult;
-
-  await ensureChordProgress(user.id);
-
-  const lockType = getLockType(user);
-  if (lockType) {
-    switchScreen("lock", user, { lockType });
-    return;
+    console.warn("Supabase session init failed:", e);
   }
 
-  if (isNew) {
-    window.location.href = "/register-thankyou.html";
-    return;
-  }
-
-  baseUser = user;
-  currentUser = user;
-  if (!user.name || user.name === "名前未設定") {
-    switchScreen("setup", user, { showWelcome: true });
-  } else {
-    switchScreen("home", user, { showWelcome: false });
-  }
+  switchScreen("home");
 });
 
 const initApp = () => {
