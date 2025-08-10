@@ -40,10 +40,10 @@
     gtag('config', 'G-QCRGGLGDER');
   </script>
   <script>
-    // Supabaseのパスワードリカバリーリンクでアクセスされた場合、
-    // 専用のパスワード再設定ページへ転送する
-    if (location.hash.includes('type=recovery')) {
-      window.location.replace('/reset-password.html' + location.hash);
+    // Firebaseリセットリンクを検出して専用ページへ転送
+    const p = new URLSearchParams(location.search);
+    if (p.get('mode') === 'resetPassword' && p.get('oobCode')) {
+      location.replace('/reset-password.html?' + p.toString());
     }
   </script>
   <script type="module">
