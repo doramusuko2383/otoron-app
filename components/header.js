@@ -1,12 +1,12 @@
-import { signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { firebaseAuth } from "../firebase/firebase-init.js"; // ✅ これだけでOK
 import { switchScreen, clearTempUser, getBaseUser } from "../main.js";
 import { checkRecentUnlockCriteria } from "../utils/progressStatus.js";
 import { loadGrowthFlags } from "../utils/growthStore_supabase.js";
 import { getCurrentTargetChord } from "../utils/growthUtils.js";
 import { showCustomAlert } from "./home.js";
+import { AuthController } from "../src/authController.js";
 
 export function renderHeader(container, user) {
+  const auth = AuthController.get();
   const header = document.createElement("header");
   header.className = "app-header";
   header.innerHTML = `
@@ -119,10 +119,7 @@ export function renderHeader(container, user) {
 
   const userDiv = header.querySelector(".user-info");
   if (userDiv) {
-    const name =
-      user?.name ||
-      firebaseAuth.currentUser?.displayName ||
-      firebaseAuth.currentUser?.email;
+    const name = user?.name || auth.user?.email;
     if (name) {
       const icon = user?.is_premium ? "⭐ " : "";
       if (user?.isTemp) {
@@ -175,7 +172,7 @@ export function renderHeader(container, user) {
   // ▼ ログアウト処理
   header.querySelector("#logout-btn").addEventListener("click", async () => {
     try {
-      await signOut(firebaseAuth);
+      await auth.logout();
       sessionStorage.removeItem("currentPassword");
       showCustomAlert("ログアウトしました！", () => {
         switchScreen("intro");
