@@ -245,7 +245,7 @@ async function handleAuthState({ state, user }) {
 
   let authResult;
   try {
-    authResult = await ensureSupabaseUser(auth);
+    authResult = await ensureSupabaseUser();
   } catch (e) {
     console.error("❌ Supabase認証処理エラー:", e);
     return;

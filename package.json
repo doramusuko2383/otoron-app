@@ -4,14 +4,12 @@
   "type": "module",
   "private": true,
   "dependencies": {
-    "stripe": "^12.15.0",
     "@supabase/supabase-js": "^2.39.7",
     "micro": "^9.3.4",
-    "firebase-admin": "^11.11.1"
+    "stripe": "^12.15.0"
   },
   "scripts": {
     "reset-expired-premiums": "node scripts/resetExpiredPremiums.js",
     "fix-chord-progress": "node scripts/fixChordProgress.js"
   }
 }
-
