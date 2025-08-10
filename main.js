@@ -16,7 +16,7 @@ import { renderLoginScreen } from "./components/login.js";
 import { renderIntroScreen } from "./components/intro.js";
 import { renderSignUpScreen } from "./components/signup.js";
 import { renderInitialSetupScreen } from "./components/initialSetup.js";
-import { ensureSupabaseAuth } from "./utils/supabaseClient.js";
+import { ensureSupabaseAuth } from "./utils/supabaseOptionalAuth.js";
 import { ensureAppUserRecord } from "./utils/userStore.js";
 import { getLockType } from "./utils/accessControl.js";
 import { loadTrainingRecords } from "./utils/recordStore_supabase.js";
@@ -243,10 +243,8 @@ onAuthStateChanged(firebaseAuth, async (firebaseUser) => {
 
   try {
     await firebaseUser.getIdToken();
-    await ensureSupabaseAuth(firebaseUser.email);
-  } catch (e) {
-    console.warn("Supabase session init failed:", e);
-  }
+    await ensureSupabaseAuth(firebaseUser.email, { quiet: true });
+  } catch (_) {}
 
   try {
     const profile = await ensureAppUserRecord({
