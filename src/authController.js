@@ -1,4 +1,3 @@
-// Supabase v2
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 export const AuthState = {
@@ -18,9 +17,10 @@ export class AuthController {
     this.user = null
     this.listeners = new Set()
     this._inited = false
-
-    const url = window.SUPABASE_URL ?? (import.meta.env?.VITE_SUPABASE_URL)
-    const key = window.SUPABASE_ANON_KEY ?? (import.meta.env?.VITE_SUPABASE_ANON_KEY)
+    // Vercel などで注入された値 or 砂箱からの直書きに対応
+    const url = window.SUPABASE_URL ?? (import.meta?.env?.VITE_SUPABASE_URL)
+    const key = window.SUPABASE_ANON_KEY ?? (import.meta?.env?.VITE_SUPABASE_ANON_KEY)
+    if(!url || !key) throw new Error('Supabase URL/Key not found')
     this.supabase = createClient(url, key, {
       auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
     })
@@ -34,33 +34,44 @@ export class AuthController {
     if(this._inited) return
     this._inited = true
     this.state = AuthState.Loading; this.#emit()
-    const { data: { session } } = await this.supabase.auth.getSession()
-    if(session?.user){ this.user = session.user; this.state = AuthState.Authed }
-    else { this.user = null; this.state = AuthState.Unauthed }
-    this.#emit()
-
-    this._unsubscribe = this.supabase.auth.onAuthStateChange((_event, session)=>{
-      this.user = session?.user ?? null
+    try{
+      const { data: { session }, error } = await this.supabase.auth.getSession()
+      if(error) throw error
+      this.user  = session?.user ?? null
       this.state = this.user ? AuthState.Authed : AuthState.Unauthed
-      console.log('[AUTH] onAuthStateChange', _event, !!this.user)
       this.#emit()
-    }).data.subscription
+      this._unsubscribe = this.supabase.auth.onAuthStateChange((event, session)=>{
+        this.user = session?.user ?? null
+        this.state = this.user ? AuthState.Authed : AuthState.Unauthed
+        console.log('[AUTH] onAuthStateChange', event, !!this.user)
+        this.#emit()
+      }).data.subscription
+    }catch(e){
+      console.error('[AUTH] INIT_ERR', e)
+      this.user = null
+      this.state = AuthState.Error
+      this.#emit()
+      throw e
+    }
   }
 
   async loginWithGoogle(){
     if(this.state === AuthState.Loading) return
     this.state = AuthState.Loading; this.#emit()
     try{
-      const { error } = await this.supabase.auth.signInWithOAuth({
+      // まずURLだけ受け取り→明示遷移（挙動が見えてデバッグしやすい）
+      const { data, error } = await this.supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: location.origin + '/auth-sandbox.html',
+          redirectTo: location.origin + '/index.html',
           queryParams: { prompt: 'select_account' },
-          skipBrowserRedirect: false,
+          skipBrowserRedirect: true,
         }
       })
       if(error) throw error
-    } catch(e){
+      if(data?.url) location.href = data.url
+      else throw new Error('No OAuth URL returned')
+    }catch(e){
       this.state = AuthState.Error; this.#emit()
       throw e
     }
@@ -74,7 +85,7 @@ export class AuthController {
       if(error) throw error
       this.user = data.user
       this.state = AuthState.Authed; this.#emit()
-    } catch(e){
+    }catch(e){
       this.state = AuthState.Error; this.#emit()
       throw e
     }
@@ -88,9 +99,10 @@ export class AuthController {
       if(error) throw error
       this.user = null
       this.state = AuthState.Unauthed; this.#emit()
-    } catch(e){
+    }catch(e){
       this.state = AuthState.Error; this.#emit()
       throw e
     }
   }
 }
+

@@ -1,12 +1,7 @@
-import {
-  signInWithEmailAndPassword,
-  fetchSignInMethodsForEmail
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-import { firebaseAuth } from "../firebase/firebase-init.js";
 import { switchScreen } from "../main.js";
 import { addDebugLog } from "../utils/loginDebug.js";
 import { showCustomAlert } from "./home.js";
+import { AuthController } from "../src/authController.js";
 
 export function renderLoginScreen(container, onLoginSuccess) {
   container.innerHTML = `
@@ -74,33 +69,17 @@ export function renderLoginScreen(container, onLoginSuccess) {
     const password = form.querySelector("#password").value.trim();
 
     try {
-      const methods = await fetchSignInMethodsForEmail(firebaseAuth, email);
-      if (methods.includes('google.com') && !methods.includes('password')) {
-        showCustomAlert('このメールアドレスはGoogleログイン専用です。Googleログインをご利用ください。');
-        return;
-      }
-
-      await signInWithEmailAndPassword(firebaseAuth, email, password);
-      sessionStorage.setItem("currentPassword", password);
-      await firebaseAuth.currentUser?.reload?.();
-      onLoginSuccess();
+      await AuthController.get().loginWithPassword(email, password);
+      onLoginSuccess?.();
     } catch (err) {
-      if (err.code === "auth/invalid-credential") {
-        loginErrorEl.textContent =
-          "ログインできませんでした。このメールアドレスは Googleアカウントで登録されている可能性があります。下の『Googleでログイン』ボタンからお試しください。";
-        loginErrorEl.style.display = "block";
-      } else if (err.code === "auth/missing-password" || err.code === "auth/wrong-password") {
-        showCustomAlert("このアカウントはGoogleで登録されている可能性があります。Googleログインをお試しください。");
-      } else {
-        showCustomAlert("ログイン失敗：" + err.message);
-      }
+      showCustomAlert("ログイン失敗：" + err.message);
     }
   });
 
   // Googleログイン処理（リダイレクト方式）
   container.querySelector("#google-login").addEventListener("click", () => {
     addDebugLog("click google-login");
-    window.location.href = "/callback.html";
+    AuthController.get().loginWithGoogle();
   });
 
   // 戻るボタン

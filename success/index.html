@@ -10,10 +10,7 @@
     <p style="margin-top:1rem;color:#666">3秒後にホーム画面に戻ります</p>
   </div>
   <script type="module">
-    import { supabase } from '../utils/supabaseClient.js';
-    import { firebaseAuth } from '../firebase/firebase-init.js';
-    import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
-    import { ensureSupabaseAuth } from '../utils/supabaseAuthHelper.js';
+    import { AuthController } from '../src/authController.js';
 
     const params = new URLSearchParams(location.search);
     const plan = params.get('plan');
@@ -30,11 +27,11 @@
       return d;
     }
 
-    onAuthStateChanged(firebaseAuth, async (firebaseUser) => {
-      if (!firebaseUser || !plan) return;
-      const authResult = await ensureSupabaseAuth(firebaseUser);
-      const user = authResult.user;
-      if (!user) return;
+    const auth = AuthController.get();
+    await auth.init();
+    const user = auth.user;
+    const supabase = auth.supabase;
+    if (user && plan) {
       const paymentDate = new Date();
       const { data: latestSub } = await supabase
         .from('user_subscriptions')
@@ -68,7 +65,7 @@
           ended_at: expireDate.toISOString(),
         },
       ]);
-    });
+    }
 
     setTimeout(() => {
       window.location.href = '/#home';
