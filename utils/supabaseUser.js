@@ -1,23 +1,19 @@
-export async function ensureSupabaseUser(auth) {
-  const { data: { session }, error } = await auth.supabase.auth.getSession()
-  if (error) throw error
-  const user = session?.user
-  if (!user) return { user: null, isNew: false, needsProfile: false }
+import { AuthController } from '../src/authController.js'
 
-  const payload = { uid: user.id, email: user.email }
+export async function ensureSupabaseUser(){
+  const auth = AuthController.get()
+  // セッション確定を保証（念のため）
+  if (!auth.user) throw new Error('No Supabase session')
+  const { id: uid, email } = auth.user
 
   const res = await fetch('/api/sync-user', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${session.access_token}`,
-    },
-    body: JSON.stringify(payload),
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ uid, email })
   })
-
   if (!res.ok) {
-    throw new Error(await res.text())
+    const t = await res.text().catch(() => '')
+    throw new Error(t || 'sync-user failed')
   }
-
   return await res.json()
 }
