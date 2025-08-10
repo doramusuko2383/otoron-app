@@ -4,10 +4,11 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { uid, email } = req.body || {}
+    const { uid, email, name } = req.body || {}
     if (!uid || !email) {
       res.status(400).json({ error: 'Missing uid or email' }); return
     }
+    const _name = name || (email ? email.split('@')[0] : 'no-name')
 
     const supabaseUrl = process.env.SUPABASE_URL
     const serviceKey  = process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -25,7 +26,7 @@ export default async function handler(req, res) {
         'Content-Type': 'application/json',
         'Prefer': 'resolution=merge-duplicates,return=representation'
       },
-      body: JSON.stringify([{ id: uid, email }])
+      body: JSON.stringify([{ id: uid, email, name: _name }])
     })
 
     const text = await r.text()
