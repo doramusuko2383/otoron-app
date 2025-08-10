@@ -15,56 +15,11 @@
     const params = new URLSearchParams(location.search);
     const plan = params.get('plan');
 
-    const planDays = {
-      plan1: 30,
-      plan6: 180,
-      plan12: 360,
-    };
-
-    function addDays(date, days) {
-      const d = new Date(date);
-      d.setDate(d.getDate() + days);
-      return d;
-    }
-
     const auth = AuthController.get();
     await auth.init();
     const user = auth.user;
-    const supabase = auth.supabase;
     if (user && plan) {
-      const paymentDate = new Date();
-      const { data: latestSub } = await supabase
-        .from('user_subscriptions')
-        .select('ended_at')
-        .eq('user_id', user.id)
-        .order('ended_at', { ascending: false })
-        .limit(1)
-        .maybeSingle();
-
-      let baseDate = paymentDate;
-      if (latestSub && latestSub.ended_at) {
-        const currentEnd = new Date(latestSub.ended_at);
-        if (currentEnd > paymentDate) {
-          baseDate = currentEnd;
-        }
-      }
-
-      const expireDate = addDays(baseDate, planDays[plan] || 30);
-
-      await supabase
-        .from('users')
-        .update({ is_premium: true })
-        .eq('id', user.id);
-
-      await supabase.from('user_subscriptions').insert([
-        {
-          user_id: user.id,
-          plan_type: plan,
-          status: 'active',
-          started_at: paymentDate.toISOString(),
-          ended_at: expireDate.toISOString(),
-        },
-      ]);
+      // 決済完了後のDB更新はサーバ側のWebhookで処理される想定
     }
 
     setTimeout(() => {

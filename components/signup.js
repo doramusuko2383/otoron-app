@@ -2,6 +2,7 @@ import { switchScreen } from "../main.js";
 import { AuthController } from "../src/authController.js";
 import { addDebugLog } from "../utils/loginDebug.js";
 import { showCustomAlert } from "./home.js";
+import { createUserWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js';
 
 export function renderSignUpScreen() {
   const app = document.getElementById("app");
@@ -59,10 +60,9 @@ export function renderSignUpScreen() {
     }
 
     try {
-      await auth.supabase.auth.signUp({ email, password });
-      sessionStorage.setItem("currentPassword", password);
+      await createUserWithEmailAndPassword(auth.auth, email, password);
     } catch (e) {
-      showCustomAlert("登録エラー：" + e.message);
+      showCustomAlert("登録エラー：" + (e.message || e));
     }
   });
 
