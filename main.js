@@ -16,8 +16,8 @@ import { renderLoginScreen } from "./components/login.js";
 import { renderIntroScreen } from "./components/intro.js";
 import { renderSignUpScreen } from "./components/signup.js";
 import { renderInitialSetupScreen } from "./components/initialSetup.js";
-import { supabase } from "./utils/supabaseClient.js";
-import { ensureSupabaseAuth } from "./utils/supabaseAuthHelper.js";
+import { ensureSupabaseAuth } from "./utils/supabaseClient.js";
+import { ensureAppUserRecord } from "./utils/userStore.js";
 import { getLockType } from "./utils/accessControl.js";
 import { loadTrainingRecords } from "./utils/recordStore_supabase.js";
 import { getToday } from "./utils/growthUtils.js";
@@ -39,8 +39,6 @@ import { renderForgotPasswordScreen } from "./components/forgotPassword.js";
 
 import { firebaseAuth } from "./firebase/firebase-init.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-const DUMMY_PASSWORD = "secure_dummy_password";
 
 const INFO_SCREENS = [
   "terms",
@@ -250,7 +248,18 @@ onAuthStateChanged(firebaseAuth, async (firebaseUser) => {
     console.warn("Supabase session init failed:", e);
   }
 
-  switchScreen("home");
+  try {
+    const profile = await ensureAppUserRecord({
+      uid: firebaseUser.uid,
+      email: firebaseUser.email,
+      name: firebaseUser.displayName ?? null,
+      avatar_url: firebaseUser.photoURL ?? null,
+    });
+    window.currentUser = profile;
+    switchScreen("home", profile);
+  } catch (e) {
+    console.warn("Supabase user init failed:", e);
+  }
 });
 
 const initApp = () => {

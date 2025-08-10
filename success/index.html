@@ -13,7 +13,8 @@
     import { supabase } from '../utils/supabaseClient.js';
     import { firebaseAuth } from '../firebase/firebase-init.js';
     import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
-    import { ensureSupabaseAuth } from '../utils/supabaseAuthHelper.js';
+    import { ensureSupabaseAuth } from '../utils/supabaseClient.js';
+    import { ensureAppUserRecord } from '../utils/userStore.js';
 
     const params = new URLSearchParams(location.search);
     const plan = params.get('plan');
@@ -32,14 +33,19 @@
 
     onAuthStateChanged(firebaseAuth, async (firebaseUser) => {
       if (!firebaseUser || !plan) return;
-      const authResult = await ensureSupabaseAuth(firebaseUser);
-      const user = authResult.user;
-      if (!user) return;
+      await ensureSupabaseAuth(firebaseUser);
+      const profile = await ensureAppUserRecord({
+        uid: firebaseUser.uid,
+        email: firebaseUser.email,
+        name: firebaseUser.displayName ?? null,
+        avatar_url: firebaseUser.photoURL ?? null,
+      });
+      const userId = profile.id;
       const paymentDate = new Date();
       const { data: latestSub } = await supabase
         .from('user_subscriptions')
         .select('ended_at')
-        .eq('user_id', user.id)
+        .eq('user_id', userId)
         .order('ended_at', { ascending: false })
         .limit(1)
         .maybeSingle();
@@ -57,11 +63,11 @@
       await supabase
         .from('users')
         .update({ is_premium: true })
-        .eq('id', user.id);
+        .eq('id', userId);
 
       await supabase.from('user_subscriptions').insert([
         {
-          user_id: user.id,
+          user_id: userId,
           plan_type: plan,
           status: 'active',
           started_at: paymentDate.toISOString(),

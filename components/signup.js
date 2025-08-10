@@ -5,7 +5,8 @@ import {
   GoogleAuthProvider,
   signInWithPopup
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { ensureSupabaseAuth } from "../utils/supabaseAuthHelper.js";
+import { ensureSupabaseAuth } from "../utils/supabaseClient.js";
+import { ensureAppUserRecord } from "../utils/userStore.js";
 import { createInitialChordProgress } from "../utils/progressUtils.js";
 import { addDebugLog } from "../utils/loginDebug.js";
 
@@ -68,7 +69,13 @@ export function renderSignUpScreen() {
       const cred = await createUserWithEmailAndPassword(firebaseAuth, email, password);
       const { user } = await ensureSupabaseAuth(cred.user);
       if (user) {
-        await createInitialChordProgress(user.id);
+        const profile = await ensureAppUserRecord({
+          uid: cred.user.uid,
+          email: cred.user.email,
+          name: cred.user.displayName ?? null,
+          avatar_url: cred.user.photoURL ?? null,
+        });
+        await createInitialChordProgress(profile.id);
       }
       window.location.href = "/register-thankyou.html";
     } catch (e) {

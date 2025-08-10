@@ -14,6 +14,7 @@ import { switchScreen } from "../main.js";
 import { createPlanInfoContent } from "./planInfo.js";
 
 export function renderMyPageScreen(user) {
+  if (!window.currentUser) return;
   const app = document.getElementById("app");
   app.innerHTML = "";
   renderHeader(app, user);

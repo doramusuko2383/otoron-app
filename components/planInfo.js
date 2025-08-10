@@ -107,6 +107,7 @@ async function createPlanInfoContent(user) {
 }
 
 export async function renderPlanInfoScreen(user) {
+  if (!window.currentUser) return;
   const app = document.getElementById('app');
   app.innerHTML = '';
   renderHeader(app, user);
