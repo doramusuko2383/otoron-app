@@ -4,14 +4,30 @@ import {
   EmailAuthProvider,
   reauthenticateWithCredential,
   updatePassword,
-  updateEmail,
-  linkWithCredential,
+  verifyBeforeUpdateEmail,
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { firebaseAuth } from "../firebase/firebase-init.js";
+import { isPasswordUser } from "../utils/authHelpers.js";
 import { startCheckout } from "../utils/stripeCheckout.js";
 import { supabase } from "../utils/supabaseClient.js";
 import { switchScreen } from "../main.js";
 import { createPlanInfoContent } from "./planInfo.js";
+
+async function changeEmailFlow(newEmail, currentPassword) {
+  const user = firebaseAuth.currentUser;
+  if (!user) throw new Error("not signed in");
+
+  if (!isPasswordUser(user)) return;
+
+  const cred = EmailAuthProvider.credential(user.email, currentPassword);
+  await reauthenticateWithCredential(user, cred);
+
+  await verifyBeforeUpdateEmail(user, newEmail);
+
+  alert(
+    "確認メールを送信しました。メール内のリンクを開くとメールアドレスが更新されます。"
+  );
+}
 
 export function renderMyPageScreen(user) {
   if (!window.currentUser) return;
@@ -26,12 +42,7 @@ export function renderMyPageScreen(user) {
   tabHeader.className = "mypage-tabs";
 
   const firebaseUser = firebaseAuth.currentUser;
-  const hasPassword = firebaseUser?.providerData.some(
-    (p) => p.providerId === "password"
-  );
-  const googleOnly =
-    firebaseUser?.providerData.some((p) => p.providerId === "google.com") &&
-    !hasPassword;
+  const hasPassword = isPasswordUser(firebaseUser);
 
   const tabs = [
     { id: "profile", label: "プロフィール変更" },
@@ -97,21 +108,17 @@ export function renderMyPageScreen(user) {
     });
     form.appendChild(yearField);
 
-    const emailField = googleOnly
-      ? createField("ログインメールアドレス（変更不可）", null, () => {
-          const span = document.createElement("div");
-          span.className = "email-readonly";
-          span.textContent = firebaseUser.email || user?.email || "";
-          return span;
-        })
-      : createField("メールアドレス", true, () => {
-          const input = document.createElement("input");
-          input.type = "email";
-          input.required = true;
-          input.value = user?.email || "";
-          return input;
-        });
-    form.appendChild(emailField);
+    let emailField;
+    if (hasPassword) {
+      emailField = createField("メールアドレス", true, () => {
+        const input = document.createElement("input");
+        input.type = "email";
+        input.required = true;
+        input.value = user?.email || "";
+        return input;
+      });
+      form.appendChild(emailField);
+    }
 
     const saveBtn = document.createElement("button");
     saveBtn.textContent = "保存";
@@ -121,14 +128,12 @@ export function renderMyPageScreen(user) {
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
       const name = nameField.querySelector("input").value.trim();
-      const emailInput = googleOnly
-        ? null
-        : emailField.querySelector("input");
+      const emailInput = hasPassword ? emailField.querySelector("input") : null;
       const email = emailInput ? emailInput.value.trim() : firebaseUser.email;
 
       try {
         const updates = { name };
-        if (!googleOnly) updates.email = email;
+        if (hasPassword) updates.email = email;
 
         const { data, error } = await supabase
           .from("users")
@@ -139,20 +144,17 @@ export function renderMyPageScreen(user) {
 
         if (error) throw error;
 
-        if (!googleOnly && firebaseUser.email !== email) {
+        let emailChanged = false;
+        if (hasPassword && firebaseUser.email !== email) {
           const currentPw = sessionStorage.getItem("currentPassword");
-          if (currentPw) {
-            const cred = EmailAuthProvider.credential(
-              firebaseUser.email,
-              currentPw
-            );
-            await reauthenticateWithCredential(firebaseUser, cred);
-          }
-          await updateEmail(firebaseUser, email);
+          await changeEmailFlow(email, currentPw);
+          emailChanged = true;
         }
 
         const updated = data || { ...user, ...updates };
-        alert("プロフィールを更新しました");
+        if (!emailChanged) {
+          alert("プロフィールを更新しました");
+        }
         switchScreen("mypage", updated, { replace: true });
       } catch (err) {
         alert("更新に失敗しました: " + err.message);
@@ -295,35 +297,6 @@ export function renderMyPageScreen(user) {
     return div;
   }
 
-  function createPasswordGuide() {
-    const div = document.createElement("div");
-    div.className = "tab-section password-guide";
-    const p1 = document.createElement("p");
-    p1.textContent = "このアカウントではパスワードは設定されていません。";
-    const p2 = document.createElement("p");
-    const linkBtn = document.createElement("button");
-    linkBtn.textContent = "こちら";
-    linkBtn.type = "button";
-    linkBtn.onclick = async () => {
-      const newPw = prompt("追加するパスワードを入力してください");
-      if (!newPw) return;
-      try {
-        const cred = EmailAuthProvider.credential(firebaseUser.email, newPw);
-        await linkWithCredential(firebaseUser, cred);
-        alert("パスワードを追加しました");
-        location.reload();
-      } catch (err) {
-        alert("追加に失敗しました: " + err.message);
-      }
-    };
-    p2.textContent = "メールアドレス＋パスワードでのログインを追加する場合は";
-    p2.appendChild(linkBtn);
-    p2.appendChild(document.createTextNode("。"));
-    div.appendChild(p1);
-    div.appendChild(p2);
-    return div;
-  }
-
   function createPlanTab() {
     const div = document.createElement("div");
     div.className = "tab-section";
@@ -436,10 +409,6 @@ export function renderMyPageScreen(user) {
     plan: createPlanTab(),
   };
 
-  if (!hasPassword) {
-    const guide = createPasswordGuide();
-    container.insertBefore(guide, contentWrapper);
-  }
 
   function showTab(id) {
     contentWrapper.innerHTML = "";
