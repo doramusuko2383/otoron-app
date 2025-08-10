@@ -104,5 +104,35 @@ export class AuthController {
       throw e
     }
   }
+
+  async signInWithOtp(email){
+    if(this.state === AuthState.Loading) return
+    this.state = AuthState.Loading; this.#emit()
+    try{
+      const { error } = await this.supabase.auth.signInWithOtp({
+        email,
+        options: {
+          emailRedirectTo: location.origin + '/index.html'
+        }
+      })
+      if(error) throw error
+      this.state = AuthState.Unauthed; this.#emit()
+    }catch(e){
+      this.state = AuthState.Error; this.#emit()
+      throw e
+    }
+  }
+
+  async sendResetPassword(email){
+    try{
+      const { error } = await this.supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: location.origin + '/reset.html'
+      })
+      if(error) throw error
+      return true
+    }catch(e){
+      throw e
+    }
+  }
 }
 
