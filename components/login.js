@@ -46,9 +46,6 @@ export function renderLoginScreen(container) {
   const pwInput = container.querySelector("#password");
   const pwToggle = container.querySelector(".toggle-password");
   const forgotBtn = container.querySelector("#forgot-btn");
-  if (window.location.hostname === "playotoron.com") {
-    forgotBtn.style.display = "none";
-  }
   pwToggle.addEventListener("click", () => {
     const visible = pwInput.type === "text";
     pwInput.type = visible ? "password" : "text";
