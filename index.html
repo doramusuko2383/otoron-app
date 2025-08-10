@@ -40,7 +40,7 @@
     gtag('config', 'G-QCRGGLGDER');
   </script>
   <script>
-    // Firebaseリセットリンクを検出して専用ページへ転送
+    // Firebase の reset リンクだけを捕捉
     const p = new URLSearchParams(location.search);
     if (p.get('mode') === 'resetPassword' && p.get('oobCode')) {
       location.replace('/reset-password.html?' + p.toString());

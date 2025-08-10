@@ -13,7 +13,7 @@ import { ensureSupabaseAuth } from "../utils/supabaseAuthHelper.js";
 import { ensureChordProgress } from "../utils/progressUtils.js";
 import { showCustomAlert } from "./home.js";
 
-export function renderLoginScreen(container, onLoginSuccess) {
+export function renderLoginScreen(container) {
   container.innerHTML = `
     <div class="login-wrapper">
       <h2 class="login-title">ログイン</h2>
@@ -140,13 +140,16 @@ export function renderLoginScreen(container, onLoginSuccess) {
       sessionStorage.setItem("currentPassword", password);
       const user = firebaseAuth.currentUser;
       try {
-        await ensureSupabaseAuth(user);
+        await ensureSupabaseAuth(user.email);
       } catch (e) {
-        console.error("❌ Supabaseサインイン処理でエラー:", e);
-        return;
+        console.warn("Supabase session init failed:", e);
       }
-      await ensureUserAndProgress(user);
-      onLoginSuccess();
+      try {
+        await ensureUserAndProgress(user);
+      } catch (e) {
+        console.warn("Supabase user/progress init failed:", e);
+      }
+      switchScreen("home");
     } catch (err) {
       if (err.code === "auth/invalid-credential") {
         loginErrorEl.textContent =
