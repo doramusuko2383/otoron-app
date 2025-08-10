@@ -8,7 +8,7 @@ import {
 import { firebaseAuth } from "../firebase/firebase-init.js";
 import { switchScreen } from "../main.js";
 import { addDebugLog } from "../utils/loginDebug.js";
-import { ensureSupabaseAuth } from "../utils/supabaseClient.js";
+import { ensureSupabaseAuth } from "../utils/supabaseOptionalAuth.js";
 import { ensureAppUserRecord } from "../utils/userStore.js";
 import { showCustomAlert } from "./home.js";
 
@@ -65,10 +65,8 @@ export function renderLoginScreen(container) {
   async function onFirebaseLoginSuccess(firebaseUser) {
     const email = firebaseUser.email;
     try {
-      await ensureSupabaseAuth(email);
-    } catch (e) {
-      console.warn("Supabase session init failed:", e);
-    }
+      await ensureSupabaseAuth(email, { quiet: true });
+    } catch (_) {}
     const profile = await ensureAppUserRecord({
       uid: firebaseUser.uid,
       email,
