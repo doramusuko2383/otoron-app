@@ -250,7 +250,7 @@ async function handleAuthState({ state, user }) {
     console.error("❌ Supabase認証処理エラー:", e);
     return;
   }
-  const { user: profile, needsProfile } = authResult;
+  const { user: profile, is_new } = authResult;
   if (!profile) {
     console.warn('⚠️ Supabase link failed.');
     return;
@@ -264,7 +264,7 @@ async function handleAuthState({ state, user }) {
     return;
   }
 
-  if (needsProfile ?? !(profile?.name)) {
+  if (is_new) {
     window.location.href = "/register-thankyou.html";
     return;
   }

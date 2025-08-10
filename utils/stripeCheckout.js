@@ -1,5 +1,6 @@
 import { AuthController, AuthState } from '../src/authController.js';
 import { showToast } from './toast.js';
+import { getBaseUser } from '../main.js';
 
 export async function startCheckout(priceId) {
   const auth = AuthController.get();
@@ -7,7 +8,9 @@ export async function startCheckout(priceId) {
     await auth.loginWithGoogle();
     return;
   }
-  const { id: userId, email } = auth.user;
+  const profile = getBaseUser();
+  const userId = profile?.id || auth.user?.uid;
+  const email = profile?.email || auth.user?.email;
 
   try {
     const res = await fetch('/api/create-checkout-session', {

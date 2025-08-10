@@ -1,138 +1,80 @@
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js'
+import {
+  getAuth, onAuthStateChanged, signInWithEmailAndPassword,
+  GoogleAuthProvider, signInWithPopup, signOut
+} from 'https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js'
 
 export const AuthState = {
-  Idle: 'idle',
-  Loading: 'loading',
-  Authed: 'authed',
-  Unauthed: 'unauthed',
-  Error: 'error',
+  Idle:'idle', Loading:'loading', Authed:'authed', Unauthed:'unauthed', Error:'error'
 }
 
 export class AuthController {
-  static #instance
-  static get() { return this.#instance ??= new AuthController() }
+  static #instance; static get(){ return this.#instance ??= new AuthController() }
 
   constructor(){
     this.state = AuthState.Idle
     this.user = null
     this.listeners = new Set()
     this._inited = false
-    // Vercel などで注入された値 or 砂箱からの直書きに対応
-    const url = window.SUPABASE_URL ?? (import.meta?.env?.VITE_SUPABASE_URL)
-    const key = window.SUPABASE_ANON_KEY ?? (import.meta?.env?.VITE_SUPABASE_ANON_KEY)
-    if(!url || !key) throw new Error('Supabase URL/Key not found')
-    this.supabase = createClient(url, key, {
-      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
-    })
-    this._unsubscribe = null
-  }
 
+    // window.FIREBASE_CONFIG を config.js で与える（anon可）
+    const app = initializeApp(window.FIREBASE_CONFIG)
+    this.auth = getAuth(app)
+    this.provider = new GoogleAuthProvider()
+  }
   on(cb){ this.listeners.add(cb); return ()=>this.listeners.delete(cb) }
-  #emit(){ const s = {state:this.state, user:this.user}; for(const cb of this.listeners) cb(s) }
+  #emit(){ const s={state:this.state,user:this.user}; for(const cb of this.listeners) cb(s) }
 
   async init(){
-    if(this._inited) return
-    this._inited = true
+    if(this._inited) return; this._inited = true
     this.state = AuthState.Loading; this.#emit()
-    try{
-      const { data: { session }, error } = await this.supabase.auth.getSession()
-      if(error) throw error
-      this.user  = session?.user ?? null
-      this.state = this.user ? AuthState.Authed : AuthState.Unauthed
+    onAuthStateChanged(this.auth, async (u)=>{
+      this.user = u
+      this.state = u ? AuthState.Authed : AuthState.Unauthed
+      console.log('[AUTH] onAuthStateChange', !!u)
       this.#emit()
-      this._unsubscribe = this.supabase.auth.onAuthStateChange((event, session)=>{
-        this.user = session?.user ?? null
-        this.state = this.user ? AuthState.Authed : AuthState.Unauthed
-        console.log('[AUTH] onAuthStateChange', event, !!this.user)
-        this.#emit()
-      }).data.subscription
-    }catch(e){
-      console.error('[AUTH] INIT_ERR', e)
-      this.user = null
-      this.state = AuthState.Error
-      this.#emit()
-      throw e
-    }
+      if(u){
+        // サーバへ同期（idToken検証 & Supabase upsert）
+        try{
+          const idToken = await u.getIdToken()
+          const res = await fetch('/api/sync-user', {
+            method:'POST', headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({
+              idToken,
+              email: u.email || '',
+              name: u.displayName || (u.email ? u.email.split('@')[0] : 'no-name')
+            })
+          })
+          if(!res.ok) console.error('sync-user failed', await res.text())
+        }catch(e){ console.error('sync-user err', e) }
+      }
+    })
   }
 
   async loginWithGoogle(){
-    if(this.state === AuthState.Loading) return
+    if(this.state===AuthState.Loading) return
     this.state = AuthState.Loading; this.#emit()
     try{
-      // まずURLだけ受け取り→明示遷移（挙動が見えてデバッグしやすい）
-      const { data, error } = await this.supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: location.origin + '/index.html',
-          queryParams: { prompt: 'select_account' },
-          skipBrowserRedirect: true,
-        }
-      })
-      if(error) throw error
-      if(data?.url) location.href = data.url
-      else throw new Error('No OAuth URL returned')
-    }catch(e){
-      this.state = AuthState.Error; this.#emit()
-      throw e
-    }
-  }
-
-  async loginWithPassword(email, password){
-    if(this.state === AuthState.Loading) return
-    this.state = AuthState.Loading; this.#emit()
-    try{
-      const { data, error } = await this.supabase.auth.signInWithPassword({ email, password })
-      if(error) throw error
-      this.user = data.user
+      await signInWithPopup(this.auth, this.provider)
       this.state = AuthState.Authed; this.#emit()
     }catch(e){
-      this.state = AuthState.Error; this.#emit()
-      throw e
+      this.state = AuthState.Error; this.#emit(); throw e
     }
   }
-
+  async loginWithPassword(email, password){
+    if(this.state===AuthState.Loading) return
+    this.state = AuthState.Loading; this.#emit()
+    try{
+      await signInWithEmailAndPassword(this.auth, email, password)
+      this.state = AuthState.Authed; this.#emit()
+    }catch(e){
+      this.state = AuthState.Error; this.#emit(); throw e
+    }
+  }
   async logout(){
-    if(this.state === AuthState.Loading) return
+    if(this.state===AuthState.Loading) return
     this.state = AuthState.Loading; this.#emit()
-    try{
-      const { error } = await this.supabase.auth.signOut()
-      if(error) throw error
-      this.user = null
-      this.state = AuthState.Unauthed; this.#emit()
-    }catch(e){
-      this.state = AuthState.Error; this.#emit()
-      throw e
-    }
-  }
-
-  async signInWithOtp(email){
-    if(this.state === AuthState.Loading) return
-    this.state = AuthState.Loading; this.#emit()
-    try{
-      const { error } = await this.supabase.auth.signInWithOtp({
-        email,
-        options: {
-          emailRedirectTo: location.origin + '/index.html'
-        }
-      })
-      if(error) throw error
-      this.state = AuthState.Unauthed; this.#emit()
-    }catch(e){
-      this.state = AuthState.Error; this.#emit()
-      throw e
-    }
-  }
-
-  async sendResetPassword(email){
-    try{
-      const { error } = await this.supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: location.origin + '/reset.html'
-      })
-      if(error) throw error
-      return true
-    }catch(e){
-      throw e
-    }
+    try{ await signOut(this.auth); this.state = AuthState.Unauthed; this.#emit() }
+    catch(e){ this.state = AuthState.Error; this.#emit(); throw e }
   }
 }
-
