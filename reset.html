@@ -1,0 +1,28 @@
+<!doctype html><html lang="ja"><meta charset="utf-8">
+<title>パスワード再設定</title>
+<style>body{font-family:system-ui;padding:20px}input{padding:8px;margin:4px 0;width:260px}</style>
+<h1>パスワード再設定</h1>
+<p>新しいパスワードを入力してください。</p>
+<input id="pw1" type="password" placeholder="新しいパスワード">
+<input id="pw2" type="password" placeholder="もう一度入力">
+<button id="btn">更新</button>
+<div id="msg"></div>
+<script type="module">
+  import { AuthController } from './src/authController.js'
+  const msg = (t)=>document.getElementById('msg').textContent = t
+  const btn = document.getElementById('btn')
+  btn.onclick = async ()=>{
+    const p1 = document.getElementById('pw1').value
+    const p2 = document.getElementById('pw2').value
+    if(!p1 || p1!==p2){ msg('パスワードが未入力、または一致しません'); return }
+    try{
+      const auth = AuthController.get()
+      await auth.init()
+      const { data, error } = await auth.supabase.auth.updateUser({ password: p1 })
+      if(error) throw error
+      msg('更新しました。トップに戻ります...')
+      setTimeout(()=> location.href = '/index.html', 800)
+    }catch(e){ msg('エラー: ' + (e?.message||e)) }
+  }
+</script>
+</html>

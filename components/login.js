@@ -27,6 +27,8 @@ export function renderLoginScreen(container, onLoginSuccess) {
       <button id="google-login" class="google-button">Googleでログイン</button>
 
       <div class="login-actions">
+        <button id="btnMagicLink" class="login-secondary">メールでログインリンクを送る</button>
+        <button id="btnResetPw" class="login-secondary">パスワードを設定/再設定</button>
         <button id="forgot-btn" class="login-secondary">パスワードを忘れた方はこちら</button>
         <button id="back-btn" class="login-secondary">戻る</button>
         <button id="signup-btn" class="login-signup">新規登録はこちら</button>
@@ -37,6 +39,8 @@ export function renderLoginScreen(container, onLoginSuccess) {
   const pwInput = container.querySelector("#password");
   const pwToggle = container.querySelector(".toggle-password");
   const forgotBtn = container.querySelector("#forgot-btn");
+  const magicBtn = container.querySelector("#btnMagicLink");
+  const resetBtn = container.querySelector("#btnResetPw");
   if (window.location.hostname === "playotoron.com") {
     forgotBtn.style.display = "none";
   }
@@ -72,7 +76,16 @@ export function renderLoginScreen(container, onLoginSuccess) {
       await AuthController.get().loginWithPassword(email, password);
       onLoginSuccess?.();
     } catch (err) {
-      showCustomAlert("ログイン失敗：" + err.message);
+      const code = err?.code || "";
+      if (code === "invalid_credentials") {
+        showChoices(
+          "このメールではパスワードが未設定の可能性があります。",
+          { label: "メールでログインリンクを送る", onClick: () => onMagicLink(email) },
+          { label: "パスワードを設定/再設定", onClick: () => onResetPassword(email) }
+        );
+      } else {
+        showCustomAlert("ログイン失敗：" + err.message);
+      }
     }
   });
 
@@ -94,11 +107,54 @@ export function renderLoginScreen(container, onLoginSuccess) {
     switchScreen("signup");
   });
 
+  magicBtn?.addEventListener("click", () => onMagicLink());
+  resetBtn?.addEventListener("click", () => onResetPassword());
+
   // パスワード忘れリンク
   if (forgotBtn) {
     forgotBtn.addEventListener("click", (e) => {
       e.preventDefault();
       switchScreen("forgot_password");
     });
+  }
+
+  async function onMagicLink(presetEmail) {
+    const email = presetEmail || container.querySelector("#email")?.value.trim();
+    if (!email) {
+      showCustomAlert("メールを入力してください");
+      return;
+    }
+    try {
+      await AuthController.get().signInWithOtp(email);
+      showCustomAlert("ログインリンクを送信しました。メールを確認してください。");
+    } catch (e) {
+      showCustomAlert("送信に失敗: " + (e.message || e));
+    }
+  }
+
+  async function onResetPassword(presetEmail) {
+    const email = presetEmail || container.querySelector("#email")?.value.trim();
+    if (!email) {
+      showCustomAlert("メールを入力してください");
+      return;
+    }
+    try {
+      await AuthController.get().sendResetPassword(email);
+      showCustomAlert(
+        "再設定メールを送信しました。メールのリンクから新パスワードを設定してください。"
+      );
+    } catch (e) {
+      showCustomAlert("送信に失敗: " + (e.message || e));
+    }
+  }
+
+  function showChoices(msg, ...actions) {
+    if (actions.length === 2) {
+      const ok = window.confirm(`${msg}\n\nOK: ${actions[0].label}\nキャンセル: ${actions[1].label}`);
+      if (ok) actions[0].onClick();
+      else actions[1].onClick();
+    } else {
+      showCustomAlert(msg);
+    }
   }
 }
