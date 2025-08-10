@@ -1,6 +1,7 @@
 import { supabase } from './supabaseClient.js';
 import { chords, chordOrder } from '../data/chords.js';
 import { REQUIRED_DAYS } from './growthUtils.js';
+import { showCustomAlert } from '../components/home.js';
 
 export async function generateWeeklyReport(user, startDate, endDate) {
   const userId = typeof user === 'string' ? user : user?.id;
@@ -209,6 +210,6 @@ export async function shareReport(text) {
       console.error('❌ 共有に失敗:', err);
     }
   } else {
-    alert('このブラウザは共有機能に対応していません。\n\n' + text);
+    showCustomAlert('このブラウザは共有機能に対応していません。\n\n' + text);
   }
 }

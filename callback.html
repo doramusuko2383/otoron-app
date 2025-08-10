@@ -15,6 +15,7 @@
     import { ensureAppUserRecord } from './utils/userStore.js';
     import { createInitialChordProgress } from './utils/progressUtils.js';
     import { addDebugLog, showDebugLog } from './utils/loginDebug.js';
+    import { showCustomAlert } from './components/home.js';
 
     (async () => {
 
@@ -41,10 +42,12 @@
       const methods = await fetchSignInMethodsForEmail(firebaseAuth, firebaseUser.email);
       if (methods.includes('password') && !methods.includes('google.com')) {
         await signOut(firebaseAuth);
-        alert('このメールアドレスは既に通常のログインで使用されています。Googleログインはできません。');
         addDebugLog('redirect: login exists');
         showDebugLog();
-        if (!debugMode) window.location.href = '/';
+        const redirect = () => {
+          if (!debugMode) window.location.href = '/';
+        };
+        showCustomAlert('このメールアドレスは既に通常のログインで使用されています。Googleログインはできません。', redirect);
         return;
       }
 
