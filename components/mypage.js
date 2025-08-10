@@ -12,6 +12,7 @@ import { startCheckout } from "../utils/stripeCheckout.js";
 import { supabase } from "../utils/supabaseClient.js";
 import { switchScreen } from "../main.js";
 import { createPlanInfoContent } from "./planInfo.js";
+import { showCustomAlert } from "./home.js";
 
 async function changeEmailFlow(newEmail, currentPassword) {
   const user = firebaseAuth.currentUser;
@@ -24,7 +25,7 @@ async function changeEmailFlow(newEmail, currentPassword) {
 
   await verifyBeforeUpdateEmail(user, newEmail);
 
-  alert(
+  showCustomAlert(
     "確認メールを送信しました。メール内のリンクを開くとメールアドレスが更新されます。"
   );
 }
@@ -153,11 +154,11 @@ export function renderMyPageScreen(user) {
 
         const updated = data || { ...user, ...updates };
         if (!emailChanged) {
-          alert("プロフィールを更新しました");
+          showCustomAlert("プロフィールを更新しました");
         }
         switchScreen("mypage", updated, { replace: true });
       } catch (err) {
-        alert("更新に失敗しました: " + err.message);
+        showCustomAlert("更新に失敗しました: " + err.message);
       }
     });
 
@@ -284,12 +285,12 @@ export function renderMyPageScreen(user) {
         await reauthenticateWithCredential(firebaseUser, cred);
         await updatePassword(firebaseUser, newPw);
         sessionStorage.setItem("currentPassword", newPw);
-        alert("パスワードを変更しました");
+        showCustomAlert("パスワードを変更しました");
         form.reset();
         current.input.value = newPw;
         validate();
       } catch (err) {
-        alert("パスワード変更に失敗しました: " + err.message);
+        showCustomAlert("パスワード変更に失敗しました: " + err.message);
       }
     });
 
