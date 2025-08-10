@@ -1,22 +1,11 @@
-import {
-  signInWithEmailAndPassword,
-  fetchSignInMethodsForEmail
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-import { firebaseAuth } from "../firebase/firebase-init.js";
 import { switchScreen } from "../main.js";
-import { addDebugLog } from "../utils/loginDebug.js";
 import { showCustomAlert } from "./home.js";
+import { AuthController } from "../src/authController.js";
 
 export function renderLoginScreen(container, onLoginSuccess) {
   container.innerHTML = `
     <div class="login-wrapper">
       <h2 class="login-title">ログイン</h2>
-      <p class="login-success" style="display:none"></p>
-      <div class="login-note">
-        <p>・Googleでログインしたことがある場合は、必ず「Googleでログイン」を使ってください。</p>
-        <p>・メールアドレスとパスワードは、最初にメール認証を使った場合のみ有効です。</p>
-      </div>
       <form class="login-form">
         <input type="email" id="email" placeholder="メールアドレス" required autocomplete="username" />
         <div class="password-wrapper">
@@ -25,14 +14,9 @@ export function renderLoginScreen(container, onLoginSuccess) {
         </div>
         <button type="submit">ログイン</button>
       </form>
-      <p class="login-error" style="display:none"></p>
-
       <div class="login-divider">または</div>
-
       <button id="google-login" class="google-button">Googleでログイン</button>
-
       <div class="login-actions">
-        <button id="forgot-btn" class="login-secondary">パスワードを忘れた方はこちら</button>
         <button id="back-btn" class="login-secondary">戻る</button>
         <button id="signup-btn" class="login-signup">新規登録はこちら</button>
       </div>
@@ -41,85 +25,40 @@ export function renderLoginScreen(container, onLoginSuccess) {
 
   const pwInput = container.querySelector("#password");
   const pwToggle = container.querySelector(".toggle-password");
-  const forgotBtn = container.querySelector("#forgot-btn");
-  if (window.location.hostname === "playotoron.com") {
-    forgotBtn.style.display = "none";
-  }
   pwToggle.addEventListener("click", () => {
     const visible = pwInput.type === "text";
     pwInput.type = visible ? "password" : "text";
     pwToggle.src = visible ? "images/Visibility_off.svg" : "images/Visibility.svg";
   });
 
-  const successMsg = sessionStorage.getItem("passwordResetSuccess");
-  if (successMsg) {
-    const msgEl = container.querySelector(".login-success");
-    msgEl.textContent = "パスワードを変更しました";
-    msgEl.style.display = "block";
-    sessionStorage.removeItem("passwordResetSuccess");
-  }
-
-  const loginErrorEl = container.querySelector(".login-error");
-
-
-
-  
-
-  // メール・パスワードログイン処理
   const form = container.querySelector(".login-form");
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
-    loginErrorEl.style.display = "none";
     const email = form.querySelector("#email").value.trim();
     const password = form.querySelector("#password").value.trim();
-
+    if (!email || !password) {
+      showCustomAlert("メールとパスワードを入力してください");
+      return;
+    }
     try {
-      const methods = await fetchSignInMethodsForEmail(firebaseAuth, email);
-      if (methods.includes('google.com') && !methods.includes('password')) {
-        showCustomAlert('このメールアドレスはGoogleログイン専用です。Googleログインをご利用ください。');
-        return;
-      }
-
-      await signInWithEmailAndPassword(firebaseAuth, email, password);
-      sessionStorage.setItem("currentPassword", password);
-      await firebaseAuth.currentUser?.reload?.();
-      onLoginSuccess();
+      await AuthController.get().loginWithPassword(email, password);
+      onLoginSuccess?.();
     } catch (err) {
-      if (err.code === "auth/invalid-credential") {
-        loginErrorEl.textContent =
-          "ログインできませんでした。このメールアドレスは Googleアカウントで登録されている可能性があります。下の『Googleでログイン』ボタンからお試しください。";
-        loginErrorEl.style.display = "block";
-      } else if (err.code === "auth/missing-password" || err.code === "auth/wrong-password") {
-        showCustomAlert("このアカウントはGoogleで登録されている可能性があります。Googleログインをお試しください。");
-      } else {
-        showCustomAlert("ログイン失敗：" + err.message);
-      }
+      showCustomAlert("ログイン失敗：" + (err.message || err));
     }
   });
 
-  // Googleログイン処理（リダイレクト方式）
   container.querySelector("#google-login").addEventListener("click", () => {
-    addDebugLog("click google-login");
-    window.location.href = "/callback.html";
+    AuthController.get().loginWithGoogle();
   });
 
-  // 戻るボタン
   container.querySelector("#back-btn").addEventListener("click", (e) => {
     e.preventDefault();
     switchScreen("intro");
   });
 
-  // 新規登録ボタン
   container.querySelector("#signup-btn").addEventListener("click", (e) => {
     e.preventDefault();
     switchScreen("signup");
   });
-
-  // パスワード忘れリンク
-  if (forgotBtn) {
-    forgotBtn.addEventListener("click", (e) => {
-      e.preventDefault();
-      switchScreen("forgot_password");
-    });
-  }
 }

@@ -1,13 +1,6 @@
 // components/mypage.js
 import { renderHeader } from "./header.js";
-import {
-  EmailAuthProvider,
-  reauthenticateWithCredential,
-  updatePassword,
-  fetchSignInMethodsForEmail,
-  onAuthStateChanged,
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { firebaseAuth } from "../firebase/firebase-init.js";
+import { AuthController } from "../src/authController.js";
 import { startCheckout } from "../utils/stripeCheckout.js";
 import { supabase } from "../utils/supabaseClient.js";
 import { switchScreen } from "../main.js";
@@ -26,34 +19,16 @@ export async function renderMyPageScreen(user) {
   const tabHeader = document.createElement("div");
   tabHeader.className = "mypage-tabs";
 
-  const firebaseUser = await new Promise((resolve) => {
-    const unsub = onAuthStateChanged(firebaseAuth, (u) => {
-      unsub();
-      resolve(u);
-    });
-  });
-
+  const auth = AuthController.get();
+  const firebaseUser = auth.user;
   if (!firebaseUser) return;
 
-  let methods = [];
-  try {
-    if (!firebaseUser.email) throw new Error("no-email");
-    await firebaseUser.reload();
-    methods = await fetchSignInMethodsForEmail(
-      firebaseAuth,
-      firebaseUser.email
-    );
-  } catch (e) {
-    console.error("[auth-methods]", e);
-    methods = [];
-  }
-  const hasPassword = methods.includes("password");
-  const googleOnly = methods.includes("google.com") && !hasPassword;
-  const showEmailChange = hasPassword;
+  const hasPassword = false;
+  const googleOnly = false;
+  const showEmailChange = false;
 
   const tabs = [
     { id: "profile", label: "プロフィール変更" },
-    ...(hasPassword ? [{ id: "password", label: "パスワード変更" }] : []),
     { id: "plan", label: "プラン・支払い情報" },
   ];
   tabs.forEach((t, i) => {

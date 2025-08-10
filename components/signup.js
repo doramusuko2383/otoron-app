@@ -1,9 +1,8 @@
 import { switchScreen } from "../main.js";
-import { firebaseAuth } from "../firebase/firebase-init.js";
-import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { AuthController } from "../src/authController.js";
 import { addDebugLog } from "../utils/loginDebug.js";
-
 import { showCustomAlert } from "./home.js";
+import { createUserWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js';
 
 export function renderSignUpScreen() {
   const app = document.getElementById("app");
@@ -47,6 +46,8 @@ export function renderSignUpScreen() {
 
 
 
+  const auth = AuthController.get();
+
   // 通常のメールアドレス＋パスワード登録
   const form = container.querySelector(".signup-form");
   form.addEventListener("submit", async (e) => {
@@ -59,10 +60,9 @@ export function renderSignUpScreen() {
     }
 
     try {
-      await createUserWithEmailAndPassword(firebaseAuth, email, password);
-      sessionStorage.setItem("currentPassword", password);
+      await createUserWithEmailAndPassword(auth.auth, email, password);
     } catch (e) {
-      showCustomAlert("登録エラー：" + e.message);
+      showCustomAlert("登録エラー：" + (e.message || e));
     }
   });
 
@@ -70,7 +70,7 @@ export function renderSignUpScreen() {
   const googleBtn = container.querySelector("#google-signup");
   googleBtn.addEventListener("click", () => {
     addDebugLog("click google-signup");
-    window.location.href = "/callback.html";
+    auth.loginWithGoogle();
   });
 
   // 戻るボタン

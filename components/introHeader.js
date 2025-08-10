@@ -1,8 +1,8 @@
-import { signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { firebaseAuth } from "../firebase/firebase-init.js";
 import { switchScreen } from "../main.js";
+import { AuthController } from "../src/authController.js";
 
 export function renderIntroHeader(container) {
+  const auth = AuthController.get();
   const header = document.createElement("header");
   header.className = "app-header intro-header";
   header.innerHTML = `
@@ -33,7 +33,7 @@ export function renderIntroHeader(container) {
   if (loginBtn) {
     loginBtn.addEventListener("click", async () => {
       try {
-        await signOut(firebaseAuth);
+        await auth.logout();
       } catch (e) {
         console.warn("intro logout error", e);
       }
@@ -45,7 +45,7 @@ export function renderIntroHeader(container) {
   if (signupBtn) {
     signupBtn.addEventListener("click", async () => {
       try {
-        await signOut(firebaseAuth);
+        await auth.logout();
       } catch (e) {
         console.warn("intro logout error", e);
       }

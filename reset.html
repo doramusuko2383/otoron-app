@@ -1,0 +1,31 @@
+<!doctype html><html lang="ja"><meta charset="utf-8">
+<title>パスワード再設定</title>
+<style>body{font-family:system-ui;padding:20px}input{padding:8px;margin:4px 0;width:260px}</style>
+<h1>パスワード再設定</h1>
+<p>新しいパスワードを入力してください。</p>
+<input id="pw1" type="password" placeholder="新しいパスワード">
+<input id="pw2" type="password" placeholder="もう一度入力">
+<button id="btn">更新</button>
+<div id="msg"></div>
+<script type="module">
+  import { AuthController } from './src/authController.js'
+  import { confirmPasswordReset } from 'https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js'
+  const msg = (t)=>document.getElementById('msg').textContent = t
+  const btn = document.getElementById('btn')
+  btn.onclick = async ()=>{
+    const p1 = document.getElementById('pw1').value
+    const p2 = document.getElementById('pw2').value
+    if(!p1 || p1!==p2){ msg('パスワードが未入力、または一致しません'); return }
+    try{
+      const auth = AuthController.get()
+      await auth.init()
+      const params = new URLSearchParams(location.search)
+      const code = params.get('oobCode')
+      if(!code) throw new Error('Code not found')
+      await confirmPasswordReset(auth.auth, code, p1)
+      msg('更新しました。トップに戻ります...')
+      setTimeout(()=> location.href = '/index.html', 800)
+    }catch(e){ msg('エラー: ' + (e?.message||e)) }
+  }
+</script>
+</html>

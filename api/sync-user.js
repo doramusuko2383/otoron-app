@@ -1,112 +1,54 @@
-import { createClient } from '@supabase/supabase-js';
-import admin from 'firebase-admin';
+import * as admin from 'firebase-admin'
 
-if (!admin.apps.length) {
-  admin.initializeApp({
-    credential: admin.credential.cert(
-      JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_JSON)
-    ),
-  });
-}
+const app = admin.apps.length
+  ? admin.app()
+  : admin.initializeApp({
+      credential: admin.credential.cert({
+        projectId: process.env.FIREBASE_PROJECT_ID,
+        clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+        privateKey: (process.env.FIREBASE_PRIVATE_KEY || '').replace(/\\n/g, '\n'),
+      }),
+    });
 
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-);
+export default async function handler(req, res){
+  if(req.method!=='POST'){ res.status(405).json({error:'Method not allowed'}); return }
+  try{
+    const { idToken, email, name } = req.body || {}
+    if(!idToken) { res.status(400).json({ error:'Missing idToken' }); return }
 
-export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method Not Allowed' });
+    const decoded = await admin.auth().verifyIdToken(idToken)
+    const uid = decoded.uid
+    const _email = email || decoded.email || ''
+    const _name  = name  || decoded.name  || (_email ? _email.split('@')[0]:'no-name')
+
+    const supabaseUrl = process.env.SUPABASE_URL
+    const serviceKey  = process.env.SUPABASE_SERVICE_ROLE_KEY
+    if(!supabaseUrl || !serviceKey){ res.status(500).json({error:'Server env not set'}); return }
+
+    // 1) 既存メールの行を探す（重複防止）
+    const sel = await fetch(`${supabaseUrl}/rest/v1/users?email=eq.${encodeURIComponent(_email)}&select=id,email,name`, {
+      headers:{ apikey: serviceKey, Authorization:`Bearer ${serviceKey}` }
+    })
+    const found = sel.ok ? await sel.json() : []
+    const exists = Array.isArray(found) && found.length>0
+    const targetId = exists ? found[0].id : uid
+
+    // 2) upsert（id=既存id または Firebase uid）
+    const up = await fetch(`${supabaseUrl}/rest/v1/users?on_conflict=id`, {
+      method:'POST',
+      headers:{
+        apikey: serviceKey, Authorization:`Bearer ${serviceKey}`,
+        'Content-Type':'application/json',
+        'Prefer':'resolution=merge-duplicates,return=representation'
+      },
+      body: JSON.stringify([ { id: targetId, email: _email, name: _name, auth_provider: 'firebase' } ])
+    })
+    const txt = await up.text()
+    if(!up.ok){ res.status(500).json({ error:'Supabase REST failed', status:up.status, body:txt }); return }
+
+    const row = JSON.parse(txt)[0]
+    res.status(200).json({ ok:true, is_new: !exists, user: row })
+  }catch(e){
+    res.status(500).json({ error: String(e?.message||e) })
   }
-
-  const { uid, email, idToken } = req.body || {};
-  if (!uid || !idToken) {
-    return res.status(400).json({ error: 'Missing uid or idToken' });
-  }
-
-  let decoded;
-  try {
-    decoded = await admin.auth().verifyIdToken(idToken);
-    if (decoded.uid !== uid) {
-      return res.status(401).json({ error: 'UID mismatch' });
-    }
-  } catch (e) {
-    console.error('verifyIdToken error', e);
-    const code = e?.errorInfo?.code || e?.message || 'verify-failed';
-    return res.status(401).json({ error: code });
-  }
-
-  const { data: existing, error: selErr } = await supabase
-    .from('users')
-    .select(
-      'id, name, email, firebase_uid, is_premium, trial_active, trial_end_date'
-    )
-    .eq('firebase_uid', uid)
-    .maybeSingle();
-  if (selErr) {
-    return res.status(500).json({ error: 'select failed', detail: selErr });
-  }
-
-  let inserted = false;
-  let updated = false;
-  let user = existing;
-
-  if (!existing) {
-    const { data: insData, error: insErr } = await supabase
-      .from('users')
-      .insert({
-        firebase_uid: uid,
-        email,
-        created_at: new Date().toISOString(),
-        trial_active: true,
-        trial_end_date: new Date(Date.now() + 7 * 86400000)
-          .toISOString()
-          .split('T')[0],
-        is_premium: false,
-      })
-      .select(
-        'id, name, email, firebase_uid, is_premium, trial_active, trial_end_date'
-      )
-      .maybeSingle();
-    if (insErr) {
-      return res.status(500).json({ error: 'insert failed', detail: insErr });
-    }
-    inserted = true;
-    user = insData;
-  } else if (email && existing.email !== email) {
-    const { data: updData, error: updErr } = await supabase
-      .from('users')
-      .update({ email })
-      .eq('firebase_uid', uid)
-      .select(
-        'id, name, email, firebase_uid, is_premium, trial_active, trial_end_date'
-      )
-      .maybeSingle();
-    if (updErr) {
-      return res.status(500).json({ error: 'update failed', detail: updErr });
-    }
-    updated = true;
-    user = updData;
-  }
-
-  const responseUser = {
-    id: user.id,
-    name: user.name ?? null,
-    email: user.email,
-    firebase_uid: user.firebase_uid,
-    is_premium: user.is_premium ?? false,
-    trial_active: user.trial_active ?? true,
-    trial_end_date: user.trial_end_date,
-  };
-  const needsProfile = !(
-    responseUser.name && String(responseUser.name).trim().length > 0
-  );
-
-  return res.status(200).json({
-    user: responseUser,
-    isNew: inserted || needsProfile,
-    needsProfile,
-    inserted,
-    updated,
-  });
 }

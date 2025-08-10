@@ -35,11 +35,11 @@ import { renderChordResetScreen } from "./components/info/chordReset.js";
 import { renderPricingScreen } from "./components/pricing.js";
 import { renderLockScreen } from "./components/lock.js";
 import { renderForgotPasswordScreen } from "./components/forgotPassword.js";
+import { AuthController, AuthState } from './src/authController.js';
 
-
-import { firebaseAuth } from "./firebase/firebase-init.js";
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
+const auth = AuthController.get();
+await auth.init();
+window.__auth = auth;
 
 const INFO_SCREENS = [
   "terms",
@@ -239,47 +239,47 @@ window.addEventListener("popstate", (e) => {
   }
 });
 
-onAuthStateChanged(firebaseAuth, async (firebaseUser) => {
-  if (!firebaseUser) {
-    return;
-  }
-
-  // console.log("🔓 Firebaseログイン済み:", firebaseUser.email);
+async function handleAuthState({ state, user }) {
+  document.documentElement.dataset.authed = state === AuthState.Authed;
+  if (state !== AuthState.Authed || !user) return;
 
   let authResult;
   try {
-    authResult = await ensureSupabaseUser(firebaseAuth);
+    authResult = await ensureSupabaseUser();
   } catch (e) {
     console.error("❌ Supabase認証処理エラー:", e);
     return;
   }
-  const { user, needsProfile } = authResult;
-  if (!user) {
-    console.warn('⚠️ Firebase logged in but Supabase link failed.');
+  const { user: profile, is_new } = authResult;
+  if (!profile) {
+    console.warn('⚠️ Supabase link failed.');
     return;
   }
 
-  await ensureChordProgress(user.id);
+  await ensureChordProgress(profile.id);
 
-  const lockType = getLockType(user);
+  const lockType = getLockType(profile);
   if (lockType) {
-    switchScreen("lock", user, { lockType });
+    switchScreen("lock", profile, { lockType });
     return;
   }
 
-  if (needsProfile ?? !(user?.name)) {
+  if (is_new) {
     window.location.href = "/register-thankyou.html";
     return;
   }
 
-  baseUser = user;
-  currentUser = user;
-  if (!user.name || user.name === "名前未設定") {
-    switchScreen("setup", user, { showWelcome: true });
+  baseUser = profile;
+  currentUser = profile;
+  if (!profile.name || profile.name === "名前未設定") {
+    switchScreen("setup", profile, { showWelcome: true });
   } else {
-    switchScreen("home", user, { showWelcome: false });
+    switchScreen("home", profile, { showWelcome: false });
   }
-});
+}
+
+auth.on(handleAuthState);
+handleAuthState({ state: auth.state, user: auth.user });
 
 const initApp = () => {
   const hash = location.hash;

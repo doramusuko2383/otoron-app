@@ -1,14 +1,16 @@
-import { supabase } from './supabaseClient.js';
+import { AuthController, AuthState } from '../src/authController.js';
 import { showToast } from './toast.js';
+import { getBaseUser } from '../main.js';
 
 export async function startCheckout(priceId) {
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) {
-    showToast('ログイン情報が確認できません。もう一度ログインしてください。');
+  const auth = AuthController.get();
+  if (auth.state !== AuthState.Authed) {
+    await auth.loginWithGoogle();
     return;
   }
+  const profile = getBaseUser();
+  const userId = profile?.id || auth.user?.uid;
+  const email = profile?.email || auth.user?.email;
 
   try {
     const res = await fetch('/api/create-checkout-session', {
@@ -16,8 +18,8 @@ export async function startCheckout(priceId) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         priceId,
-        userId: user.id,
-        email: user.email,
+        userId,
+        email,
       }),
     });
 
