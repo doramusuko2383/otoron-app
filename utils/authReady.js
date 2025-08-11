@@ -22,13 +22,13 @@ export function whenAuthSettled(maxMs = 4000) {
       if (!resolved || u) {
         resolved = true;
         unsub();
-        resolve(u);
+        resolve(u); // pass user so caller receives the auth state
       }
       // タイムアウトでも確定
       if (Date.now() - started > maxMs) {
         resolved = true;
         unsub();
-        resolve(u);
+        resolve(u); // pass user so caller receives the auth state
       }
     });
   });
