@@ -20,7 +20,11 @@ async function getStripe() {
     await waitForStripe().catch(() => {
       console.warn('Stripe.js not loaded; skipping init');
     });
-    const res = await fetch('/api/public-config');
+    if (typeof window.Stripe !== 'function') {
+      return null;
+    }
+
+    const res = await fetch('/api/public-config', { cache: 'no-store' });
     const { publishableKey } = await res.json();
     stripePromise = Stripe(publishableKey);
   }
@@ -43,11 +47,11 @@ export async function startCheckout(plan) {
 
     const data = await response.json();
     if (data.id) {
-      if (typeof window.Stripe !== 'function') {
-        console.warn('Stripe SDK is not loaded; skipping redirect');
+      const stripe = await getStripe();
+      if (!stripe) {
+        showCustomAlert('決済ページの読み込みに失敗しました。時間を置いてお試しください。');
         return;
       }
-      const stripe = await getStripe();
       const { error } = await stripe.redirectToCheckout({ sessionId: data.id });
       if (error) console.error('Stripe checkout error', error);
     } else {
@@ -55,6 +59,6 @@ export async function startCheckout(plan) {
     }
   } catch (err) {
     console.error('Stripe checkout error', err);
-    showCustomAlert('決済処理でエラーが発生しました');
+    showCustomAlert('決済処理でエラーが発生しました。');
   }
 }
