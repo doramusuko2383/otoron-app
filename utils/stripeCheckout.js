@@ -3,8 +3,23 @@ import { showCustomAlert } from '../components/home.js';
 
 let stripePromise;
 
+function waitForStripe(maxMs = 2000, step = 50) {
+  return new Promise((resolve, reject) => {
+    const started = Date.now();
+    const tick = () => {
+      if (typeof window.Stripe === 'function') return resolve();
+      if (Date.now() - started > maxMs) return reject(new Error('Stripe.js not loaded'));
+      setTimeout(tick, step);
+    };
+    tick();
+  });
+}
+
 async function getStripe() {
   if (!stripePromise) {
+    await waitForStripe().catch(() => {
+      console.warn('Stripe.js not loaded; skipping init');
+    });
     const res = await fetch('/api/public-config');
     const { publishableKey } = await res.json();
     stripePromise = Stripe(publishableKey);
