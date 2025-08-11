@@ -1,6 +1,17 @@
 import { firebaseAuth } from '../firebase/firebase-init.js';
 import { showCustomAlert } from '../components/home.js';
 
+let stripePromise;
+
+async function getStripe() {
+  if (!stripePromise) {
+    const res = await fetch('/api/public-config');
+    const { publishableKey } = await res.json();
+    stripePromise = Stripe(publishableKey);
+  }
+  return stripePromise;
+}
+
 export async function startCheckout(plan) {
   const email = firebaseAuth.currentUser?.email || '未取得';
   if (!firebaseAuth.currentUser?.email) {
@@ -21,11 +32,9 @@ export async function startCheckout(plan) {
         console.warn('Stripe SDK is not loaded; skipping redirect');
         return;
       }
-      // Use publishable key from environment if available
-      const key =
-        window.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || 'pk_live_xxx';
-      const stripe = Stripe(key);
-      await stripe.redirectToCheckout({ sessionId: data.id });
+      const stripe = await getStripe();
+      const { error } = await stripe.redirectToCheckout({ sessionId: data.id });
+      if (error) console.error('Stripe checkout error', error);
     } else {
       console.error('No session ID returned:', data);
     }
