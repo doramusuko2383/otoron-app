@@ -5,10 +5,12 @@ import {
   reauthenticateWithCredential,
   updatePassword,
   verifyBeforeUpdateEmail,
+  onAuthStateChanged,
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { firebaseAuth } from "../firebase/firebase-init.js";
 import { isPasswordUser } from "../utils/authHelpers.js";
 import { startCheckout } from "../utils/stripeCheckout.js";
+import { whenAuthSettled } from "../utils/authReady.js";
 import { supabase } from "../utils/supabaseClient.js";
 import { switchScreen } from "../main.js";
 import { createPlanInfoContent } from "./planInfo.js";
@@ -372,7 +374,21 @@ export function renderMyPageScreen(user) {
       const btn = document.createElement("button");
       btn.className = "choose-plan";
       btn.textContent = "このプランを選ぶ";
-      btn.onclick = () => startCheckout(p.key, btn);
+      btn.disabled = true;
+      onAuthStateChanged(firebaseAuth, (u) => {
+        btn.disabled = !u;
+      });
+      btn.onclick = async () => {
+        if (btn.disabled) return;
+        btn.disabled = true;
+        const u = await whenAuthSettled(4000);
+        if (!u?.email) {
+          showCustomAlert('サインインを確認しています。数秒後にもう一度お試しください。');
+          btn.disabled = false;
+          return;
+        }
+        await startCheckout(p.key, btn);
+      };
       card.appendChild(btn);
 
       wrap.appendChild(card);
