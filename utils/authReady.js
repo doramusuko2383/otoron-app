@@ -15,20 +15,21 @@ export function whenAuthSettled(maxMs = 4000) {
   if (resolved) return Promise.resolve(lastUser);
 
   return new Promise((resolve) => {
-    const started = Date.now();
+    const timer = setTimeout(() => {
+      if (!resolved) {
+        resolved = true;
+        unsub();
+        resolve(lastUser ?? firebaseAuth.currentUser ?? null);
+      }
+    }, maxMs);
+
     const unsub = onAuthStateChanged(firebaseAuth, (u) => {
       lastUser = u;
-      // 初回確定（null でも user でも）で解決
-      if (!resolved || u) {
+      if (!resolved) {
         resolved = true;
+        clearTimeout(timer);
         unsub();
-        resolve(u); // pass user so caller receives the auth state
-      }
-      // タイムアウトでも確定
-      if (Date.now() - started > maxMs) {
-        resolved = true;
-        unsub();
-        resolve(u); // pass user so caller receives the auth state
+        resolve(u);
       }
     });
   });
