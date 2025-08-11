@@ -8,12 +8,11 @@ import {
 import { firebaseAuth } from "../firebase/firebase-init.js";
 import { switchScreen } from "../main.js";
 import { addDebugLog } from "../utils/loginDebug.js";
-import { supabase } from "../utils/supabaseClient.js";
-import { ensureSupabaseAuth } from "../utils/supabaseAuthHelper.js";
-import { ensureChordProgress } from "../utils/progressUtils.js";
+import { ensureSupabaseAuth } from "../utils/supabaseOptionalAuth.js";
+import { ensureAppUserRecord } from "../utils/userStore.js";
 import { showCustomAlert } from "./home.js";
 
-export function renderLoginScreen(container, onLoginSuccess) {
+export function renderLoginScreen(container) {
   container.innerHTML = `
     <div class="login-wrapper">
       <h2 class="login-title">ログイン</h2>
@@ -47,9 +46,6 @@ export function renderLoginScreen(container, onLoginSuccess) {
   const pwInput = container.querySelector("#password");
   const pwToggle = container.querySelector(".toggle-password");
   const forgotBtn = container.querySelector("#forgot-btn");
-  if (window.location.hostname === "playotoron.com") {
-    forgotBtn.style.display = "none";
-  }
   pwToggle.addEventListener("click", () => {
     const visible = pwInput.type === "text";
     pwInput.type = visible ? "password" : "text";
@@ -66,58 +62,19 @@ export function renderLoginScreen(container, onLoginSuccess) {
 
   const loginErrorEl = container.querySelector(".login-error");
 
-
-
-  // 🔽 和音進捗の初期登録（必要なら）
-  async function ensureUserAndProgress(user) {
-    if (!user?.uid) return;
-  
-    // users テーブルに Firebase UID が登録されているか確認
-    const { data: existingUser } = await supabase
-      .from("users")
-      .select("*")
-      .eq("firebase_uid", user.uid)
-      .maybeSingle();
-
-    if (existingUser && (!existingUser.email || existingUser.email !== user.email)) {
-      const { data: updated } = await supabase
-        .from("users")
-        .update({ email: user.email })
-        .eq("id", existingUser.id)
-        .select()
-        .maybeSingle();
-      if (updated) {
-        existingUser.email = updated.email;
-      }
-    }
-  
-    let userId;
-  
-    if (!existingUser) {
-      const { data: inserted, error: insertError } = await supabase
-        .from("users")
-        .insert([
-          {
-            firebase_uid: user.uid,
-            name: "名前未設定",
-            email: user.email,
-          },
-        ])
-        .select()
-        .single();
-  
-      if (insertError || !inserted) {
-        console.error("❌ Supabaseユーザー登録失敗:", insertError);
-        return;
-      }
-      userId = inserted.id;
-      
-    } else {
-      userId = existingUser.id;
-      
-    }
-  
-    await ensureChordProgress(userId);
+  async function onFirebaseLoginSuccess(firebaseUser) {
+    const email = firebaseUser.email;
+    try {
+      await ensureSupabaseAuth(email, { quiet: true });
+    } catch (_) {}
+    const profile = await ensureAppUserRecord({
+      uid: firebaseUser.uid,
+      email,
+      name: firebaseUser.displayName ?? null,
+      avatar_url: firebaseUser.photoURL ?? null,
+    });
+    window.currentUser = profile;
+    switchScreen("home", profile);
   }
   
 
@@ -138,15 +95,7 @@ export function renderLoginScreen(container, onLoginSuccess) {
 
       await signInWithEmailAndPassword(firebaseAuth, email, password);
       sessionStorage.setItem("currentPassword", password);
-      const user = firebaseAuth.currentUser;
-      try {
-        await ensureSupabaseAuth(user);
-      } catch (e) {
-        console.error("❌ Supabaseサインイン処理でエラー:", e);
-        return;
-      }
-      await ensureUserAndProgress(user);
-      onLoginSuccess();
+      await onFirebaseLoginSuccess(firebaseAuth.currentUser);
     } catch (err) {
       if (err.code === "auth/invalid-credential") {
         loginErrorEl.textContent =
@@ -162,9 +111,14 @@ export function renderLoginScreen(container, onLoginSuccess) {
 
   // Googleログイン処理（ポップアップ方式）
   const googleProvider = new GoogleAuthProvider();
-  container.querySelector("#google-login").addEventListener("click", () => {
+  container.querySelector("#google-login").addEventListener("click", async () => {
     addDebugLog("click google-login");
-    signInWithPopup(firebaseAuth, googleProvider);
+    try {
+      const result = await signInWithPopup(firebaseAuth, googleProvider);
+      await onFirebaseLoginSuccess(result.user);
+    } catch (e) {
+      console.error("Google login failed:", e);
+    }
   });
 
   // 戻るボタン

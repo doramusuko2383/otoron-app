@@ -78,7 +78,7 @@ export function renderPricingScreen(user) {
     const btn = document.createElement('button');
     btn.className = 'choose-plan';
     btn.textContent = 'このプランを選ぶ';
-    btn.onclick = () => startCheckout(p.key);
+    btn.onclick = () => startCheckout(p.key, btn);
     card.appendChild(btn);
 
     main.appendChild(card);

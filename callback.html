@@ -11,9 +11,11 @@
   <script type="module">
     import { firebaseAuth } from './firebase/firebase-init.js';
     import { getRedirectResult, fetchSignInMethodsForEmail, signOut } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
-    import { ensureSupabaseAuth } from './utils/supabaseAuthHelper.js';
+    import { ensureSupabaseAuth } from './utils/supabaseClient.js';
+    import { ensureAppUserRecord } from './utils/userStore.js';
     import { createInitialChordProgress } from './utils/progressUtils.js';
     import { addDebugLog, showDebugLog } from './utils/loginDebug.js';
+    import { showCustomAlert } from './components/home.js';
 
     (async () => {
 
@@ -40,16 +42,24 @@
       const methods = await fetchSignInMethodsForEmail(firebaseAuth, firebaseUser.email);
       if (methods.includes('password') && !methods.includes('google.com')) {
         await signOut(firebaseAuth);
-        alert('このメールアドレスは既に通常のログインで使用されています。Googleログインはできません。');
         addDebugLog('redirect: login exists');
         showDebugLog();
-        if (!debugMode) window.location.href = '/';
+        const redirect = () => {
+          if (!debugMode) window.location.href = '/';
+        };
+        showCustomAlert('このメールアドレスは既に通常のログインで使用されています。Googleログインはできません。', redirect);
         return;
       }
 
-      const { user, isNew } = await ensureSupabaseAuth(firebaseUser);
+      const { isNew } = await ensureSupabaseAuth(firebaseUser);
+      const profile = await ensureAppUserRecord({
+        uid: firebaseUser.uid,
+        email: firebaseUser.email,
+        name: firebaseUser.displayName ?? null,
+        avatar_url: firebaseUser.photoURL ?? null,
+      });
       if (isNew) {
-        await createInitialChordProgress(user.id);
+        await createInitialChordProgress(profile.id);
         addDebugLog('redirect: register-thankyou');
         showDebugLog();
         if (!debugMode) window.location.href = '/register-thankyou.html';
