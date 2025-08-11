@@ -2,6 +2,7 @@ import { firebaseAuth } from '../firebase/firebase-init.js';
 import { showCustomAlert } from '../components/home.js';
 
 let stripePromise;
+let checkoutInProgress = false;
 
 function waitForStripe(maxMs = 2000, step = 50) {
   return new Promise((resolve, reject) => {
@@ -24,17 +25,29 @@ async function getStripe() {
       return null;
     }
 
-    const res = await fetch('/api/public-config', { cache: 'no-store' });
-    const { publishableKey } = await res.json();
-    stripePromise = Stripe(publishableKey);
+    try {
+      const res = await fetch('/api/public-config', { cache: 'no-store' });
+      if (!res.ok) throw new Error(`public-config: ${res.status}`);
+      const { publishableKey } = await res.json();
+      if (!publishableKey) throw new Error('Missing publishableKey');
+      stripePromise = Stripe(publishableKey);
+    } catch (e) {
+      console.error(e);
+      return null;
+    }
   }
   return stripePromise;
 }
 
-export async function startCheckout(plan) {
+export async function startCheckout(plan, button) {
+  if (checkoutInProgress) return;
+  checkoutInProgress = true;
+  if (button) button.disabled = true;
   const email = firebaseAuth.currentUser?.email || '未取得';
   if (!firebaseAuth.currentUser?.email) {
     showCustomAlert('ログイン情報がありません');
+    checkoutInProgress = false;
+    if (button) button.disabled = false;
     return;
   }
 
@@ -60,5 +73,8 @@ export async function startCheckout(plan) {
   } catch (err) {
     console.error('Stripe checkout error', err);
     showCustomAlert('決済処理でエラーが発生しました。');
+  } finally {
+    checkoutInProgress = false;
+    if (button) button.disabled = false;
   }
 }
