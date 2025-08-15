@@ -11,6 +11,7 @@
     }
   ],
   "rewrites": [
-    { "source": "/reset-password", "destination": "/reset-password.html" }
+    { "source": "/reset-password", "destination": "/reset-password.html" },
+    { "source": "/blog/:path*", "destination": "https://otoron-blog.vercel.app/:path*" }
   ]
 }
