@@ -23,9 +23,29 @@ export async function ensureAppUserRecord({ uid, email, name: displayName, avata
 
   const { data, error } = await supabase
     .from("users")
-    .upsert([{ firebase_uid: uid, email, name, avatar_url }], { onConflict: "firebase_uid" })
+    .upsert(
+      [{ firebase_uid: uid, email, name, avatar_url }],
+      { onConflict: "firebase_uid" }
+    )
     .select("*")
     .single();
   if (error) throw error;
-  return data;
+  const updatedAt = data.updated_at;
+  let user = data;
+  if (user.trial_end_date == null) {
+    const trialEnd = new Date(updatedAt);
+    trialEnd.setDate(trialEnd.getDate() + 7);
+    const { data: updated, error: updateError } = await supabase
+      .from("users")
+      .update({
+        trial_end_date: trialEnd.toISOString(),
+        trial_active: true,
+      })
+      .eq("id", user.id)
+      .select("*")
+      .single();
+    if (updateError) throw updateError;
+    user = updated;
+  }
+  return user;
 }
