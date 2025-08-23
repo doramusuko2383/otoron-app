@@ -84,21 +84,6 @@ export async function applyStartChordIndex(userId, startIndex) {
   }
 }
 
-export async function applyStartIndexToUser(userId, startIndex) {
-  await applyStartChordIndex(userId, startIndex);
-  if (!userId) {
-    console.warn("applyStartIndexToUser called without valid user ID");
-    return;
-  }
-  const { error } = await supabase
-    .from("users")
-    .update({ start: startIndex })
-    .eq("id", userId);
-  if (error) {
-    console.error("❌ applyStartIndexToUser user update failed:", error);
-  }
-}
-
 // ✅ 連続合格日数が7日に達したら、次の和音に進める
 export async function autoUnlockNextChord(user) {
   const passed = await getPassedDays(user.id);
