@@ -10,7 +10,7 @@
   <pre id="debug-log" style="white-space: pre-wrap; color: red; font-size: 0.9em;"></pre>
   <script type="module">
     import { firebaseAuth } from './firebase/firebase-init.js';
-    import { getRedirectResult, fetchSignInMethodsForEmail, signOut } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+    import { getRedirectResult, fetchSignInMethodsForEmail, signOut, getAdditionalUserInfo } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
     import { ensureSupabaseAuth } from './utils/supabaseClient.js';
     import { ensureAppUserRecord } from './utils/userStore.js';
     import { addDebugLog, showDebugLog } from './utils/loginDebug.js';
@@ -50,14 +50,15 @@
         return;
       }
 
-      const { isNew } = await ensureSupabaseAuth(firebaseUser);
+      const info = getAdditionalUserInfo(result);
+      await ensureSupabaseAuth(firebaseUser);
       const profile = await ensureAppUserRecord({
         uid: firebaseUser.uid,
         email: firebaseUser.email,
         name: firebaseUser.displayName ?? null,
         avatar_url: firebaseUser.photoURL ?? null,
       });
-      if (isNew) {
+      if (info?.isNewUser) {
         addDebugLog('redirect: setup');
         showDebugLog();
         window.location.hash = '#/setup';

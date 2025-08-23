@@ -3,7 +3,8 @@ import { firebaseAuth } from "../firebase/firebase-init.js";
 import {
   createUserWithEmailAndPassword,
   GoogleAuthProvider,
-  signInWithPopup
+  signInWithPopup,
+  getAdditionalUserInfo
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { ensureSupabaseAuth } from "../utils/supabaseClient.js";
 import { ensureAppUserRecord } from "../utils/userStore.js";
@@ -66,6 +67,7 @@ export function renderSignUpScreen() {
 
     try {
       const cred = await createUserWithEmailAndPassword(firebaseAuth, email, password);
+      location.hash = '#/setup';
       const { user } = await ensureSupabaseAuth(cred.user);
       if (user) {
         const profile = await ensureAppUserRecord({
@@ -86,7 +88,15 @@ export function renderSignUpScreen() {
   const googleProvider = new GoogleAuthProvider();
   googleBtn.addEventListener("click", () => {
     addDebugLog("click google-signup");
-    signInWithPopup(firebaseAuth, googleProvider);
+    signInWithPopup(firebaseAuth, googleProvider)
+      .then((result) => {
+        if (getAdditionalUserInfo(result)?.isNewUser) {
+          location.hash = '#/setup';
+        }
+      })
+      .catch((e) => {
+        showCustomAlert("登録エラー：" + e.message);
+      });
   });
 
   // 戻るボタン
