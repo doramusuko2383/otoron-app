@@ -30,11 +30,14 @@ export async function ensureAppUserRecord({ uid, email, name: displayName, avata
     .select("*")
     .single();
   if (error) throw error;
-  const updatedAt = data.updated_at;
   let user = data;
-  if (user.trial_end_date == null) {
-    const trialEnd = new Date(updatedAt);
-    trialEnd.setDate(trialEnd.getDate() + 7);
+  // ★ 修正ポイント：updated_atではなくcreated_atを優先、なければ現在時刻。
+  if (!user.trial_end_date) {
+    const base = user.created_at ? new Date(user.created_at) : new Date();
+    const trialEnd = new Date(base);
+    // タイムゾーンずれ防止のためUTCで加算
+    trialEnd.setUTCDate(trialEnd.getUTCDate() + 7);
+
     const { data: updated, error: updateError } = await supabase
       .from("users")
       .update({
@@ -47,5 +50,7 @@ export async function ensureAppUserRecord({ uid, email, name: displayName, avata
     if (updateError) throw updateError;
     user = updated;
   }
+
   return user;
 }
+
