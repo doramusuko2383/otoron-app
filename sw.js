@@ -1,4 +1,7 @@
-const CACHE_NAME = 'otoron-cache-v1';
+const CACHE_NAME = 'otoron-cache-v2';
+
+self.addEventListener('install', () => self.skipWaiting());
+self.addEventListener('activate', e => { e.waitUntil(clients.claim()); });
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -48,7 +51,6 @@ self.addEventListener('install', event => {
       )
     )
   );
-  self.skipWaiting();
 });
 
 self.addEventListener('activate', event => {
@@ -57,7 +59,6 @@ self.addEventListener('activate', event => {
       Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
     )
   );
-  self.clients.claim();
 });
 
 self.addEventListener('fetch', event => {

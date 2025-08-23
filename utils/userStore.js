@@ -13,7 +13,7 @@ export async function ensureAppUserRecord({ uid, email, name: displayName, avata
   try {
     const { data: ex } = await supabase
       .from("users")
-      .select("id,name,start")
+      .select("*")
       .eq("firebase_uid", uid)
       .single();
     existingUser = ex ?? null;
@@ -26,7 +26,6 @@ export async function ensureAppUserRecord({ uid, email, name: displayName, avata
   });
 
   const insert = { firebase_uid: uid, email, name, avatar_url };
-  if (!existingUser) insert.start = null;
 
   const { data, error } = await supabase
     .from("users")
