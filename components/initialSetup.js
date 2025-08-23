@@ -1,6 +1,6 @@
 import { chords } from "../data/chords.js";
 import { supabase } from "../utils/supabaseClient.js";
-import { applyStartChordIndex } from "../utils/progressUtils.js";
+import { applyStartChordIndex, createInitialChordProgress } from "../utils/progressUtils.js";
 import { showCustomAlert } from "./home.js";
 
 export function renderInitialSetupScreen(user, onComplete) {
@@ -50,6 +50,7 @@ export function renderInitialSetupScreen(user, onComplete) {
         .from("users")
         .update({ name: nickname })
         .eq("id", user.id);
+      await createInitialChordProgress(user.id);
       await applyStartChordIndex(user.id, idx);
       const { data } = await supabase
         .from("users")

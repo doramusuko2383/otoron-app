@@ -13,7 +13,6 @@
     import { getRedirectResult, fetchSignInMethodsForEmail, signOut } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
     import { ensureSupabaseAuth } from './utils/supabaseClient.js';
     import { ensureAppUserRecord } from './utils/userStore.js';
-    import { createInitialChordProgress } from './utils/progressUtils.js';
     import { addDebugLog, showDebugLog } from './utils/loginDebug.js';
     import { showCustomAlert } from './components/home.js';
 
@@ -59,10 +58,9 @@
         avatar_url: firebaseUser.photoURL ?? null,
       });
       if (isNew) {
-        await createInitialChordProgress(profile.id);
-        addDebugLog('redirect: register-thankyou');
+        addDebugLog('redirect: setup');
         showDebugLog();
-        if (!debugMode) window.location.href = '/register-thankyou.html';
+        if (!debugMode) window.location.href = '/#setup';
       } else {
         addDebugLog('redirect: home');
         showDebugLog();

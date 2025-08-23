@@ -7,7 +7,6 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { ensureSupabaseAuth } from "../utils/supabaseClient.js";
 import { ensureAppUserRecord } from "../utils/userStore.js";
-import { createInitialChordProgress } from "../utils/progressUtils.js";
 import { addDebugLog } from "../utils/loginDebug.js";
 
 import { showCustomAlert } from "./home.js";
@@ -75,9 +74,8 @@ export function renderSignUpScreen() {
           name: cred.user.displayName ?? null,
           avatar_url: cred.user.photoURL ?? null,
         });
-        await createInitialChordProgress(profile.id);
+        switchScreen("setup", profile);
       }
-      window.location.href = "/register-thankyou.html";
     } catch (e) {
       showCustomAlert("登録エラー：" + e.message);
     }
