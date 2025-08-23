@@ -3,11 +3,11 @@ import { firebaseAuth } from "../firebase/firebase-init.js";
 import {
   createUserWithEmailAndPassword,
   GoogleAuthProvider,
-  signInWithPopup
+  signInWithPopup,
+  getAdditionalUserInfo
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { ensureSupabaseAuth } from "../utils/supabaseClient.js";
 import { ensureAppUserRecord } from "../utils/userStore.js";
-import { createInitialChordProgress } from "../utils/progressUtils.js";
 import { addDebugLog } from "../utils/loginDebug.js";
 
 import { showCustomAlert } from "./home.js";
@@ -67,6 +67,7 @@ export function renderSignUpScreen() {
 
     try {
       const cred = await createUserWithEmailAndPassword(firebaseAuth, email, password);
+      location.hash = '#/setup';
       const { user } = await ensureSupabaseAuth(cred.user);
       if (user) {
         const profile = await ensureAppUserRecord({
@@ -75,9 +76,8 @@ export function renderSignUpScreen() {
           name: cred.user.displayName ?? null,
           avatar_url: cred.user.photoURL ?? null,
         });
-        await createInitialChordProgress(profile.id);
+        switchScreen("setup", profile);
       }
-      window.location.href = "/register-thankyou.html";
     } catch (e) {
       showCustomAlert("登録エラー：" + e.message);
     }
@@ -88,7 +88,15 @@ export function renderSignUpScreen() {
   const googleProvider = new GoogleAuthProvider();
   googleBtn.addEventListener("click", () => {
     addDebugLog("click google-signup");
-    signInWithPopup(firebaseAuth, googleProvider);
+    signInWithPopup(firebaseAuth, googleProvider)
+      .then((result) => {
+        if (getAdditionalUserInfo(result)?.isNewUser) {
+          location.hash = '#/setup';
+        }
+      })
+      .catch((e) => {
+        showCustomAlert("登録エラー：" + e.message);
+      });
   });
 
   // 戻るボタン

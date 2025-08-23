@@ -10,10 +10,9 @@
   <pre id="debug-log" style="white-space: pre-wrap; color: red; font-size: 0.9em;"></pre>
   <script type="module">
     import { firebaseAuth } from './firebase/firebase-init.js';
-    import { getRedirectResult, fetchSignInMethodsForEmail, signOut } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+    import { getRedirectResult, fetchSignInMethodsForEmail, signOut, getAdditionalUserInfo } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
     import { ensureSupabaseAuth } from './utils/supabaseClient.js';
     import { ensureAppUserRecord } from './utils/userStore.js';
-    import { createInitialChordProgress } from './utils/progressUtils.js';
     import { addDebugLog, showDebugLog } from './utils/loginDebug.js';
     import { showCustomAlert } from './components/home.js';
 
@@ -51,23 +50,24 @@
         return;
       }
 
-      const { isNew } = await ensureSupabaseAuth(firebaseUser);
+      const info = getAdditionalUserInfo(result);
+      await ensureSupabaseAuth(firebaseUser);
       const profile = await ensureAppUserRecord({
         uid: firebaseUser.uid,
         email: firebaseUser.email,
         name: firebaseUser.displayName ?? null,
         avatar_url: firebaseUser.photoURL ?? null,
       });
-      if (isNew) {
-        await createInitialChordProgress(profile.id);
-        addDebugLog('redirect: register-thankyou');
+      if (info?.isNewUser) {
+        addDebugLog('redirect: setup');
         showDebugLog();
-        if (!debugMode) window.location.href = '/register-thankyou.html';
+        window.location.hash = '#/setup';
       } else {
         addDebugLog('redirect: home');
         showDebugLog();
-        if (!debugMode) window.location.href = '/';
+        window.location.hash = '';
       }
+      if (!debugMode) window.location.href = '/' + window.location.hash;
     } catch (e) {
       console.error('auth flow error', e);
       addDebugLog('auth flow error', e.message);
