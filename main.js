@@ -18,6 +18,7 @@ import { renderSignUpScreen } from "./components/signup.js";
 import { renderInitialSetupScreen } from "./components/initialSetup.js";
 import { ensureSupabaseAuth } from "./utils/supabaseOptionalAuth.js";
 import { ensureAppUserRecord } from "./utils/userStore.js";
+import { supabase } from "./utils/supabaseClient.js";
 import { getLockType } from "./utils/accessControl.js";
 import { loadTrainingRecords } from "./utils/recordStore_supabase.js";
 import { getToday } from "./utils/growthUtils.js";
@@ -212,7 +213,7 @@ export const switchScreen = async (screen, user = currentUser, options = {}) => 
   }
   else if (screen === "growth") renderGrowthScreen(user);
   else if (screen === "signup") renderSignUpScreen(user);
-  else if (screen === "setup") renderInitialSetupScreen(user, (u) => switchScreen("home", u, options));
+  else if (screen === "setup") renderInitialSetupScreen(user);
   else if (screen === "mypage") renderMyPageScreen(user);
   else if (screen === "result") renderResultScreen(user);
   else if (screen === "result_easy") renderTrainingEasyResultScreen(user);
@@ -254,11 +255,17 @@ onAuthStateChanged(firebaseAuth, async (firebaseUser) => {
       avatar_url: firebaseUser.photoURL ?? null,
     });
     window.currentUser = profile;
-    if (profile.start == null) {
-      switchScreen("setup", profile);
-    } else {
-      switchScreen("home", profile);
+    const { count, error } = await supabase
+      .from('user_chord_progress')
+      .select('id', { count: 'exact', head: true })
+      .eq('user_id', profile.id);
+    if (error) {
+      console.error(error);
+      switchScreen('home', profile);
+      return;
     }
+    if ((count ?? 0) === 0) switchScreen('setup', profile);
+    else switchScreen('home', profile);
   } catch (e) {
     console.warn("Supabase user init failed:", e);
   }

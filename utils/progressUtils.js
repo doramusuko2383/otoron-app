@@ -20,7 +20,7 @@ export async function createInitialChordProgress(userId) {
 
   const { error } = await supabase
     .from("user_chord_progress")
-    .insert(insertData, { upsert: false }); // すでに入っていたら失敗させる
+    .upsert(insertData, { onConflict: "user_id,chord_key", ignoreDuplicates: true });
 
   if (error) {
     console.error("❌ 初期進捗の登録失敗:", error);

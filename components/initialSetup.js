@@ -1,9 +1,9 @@
 import { chords } from "../data/chords.js";
 import { supabase } from "../utils/supabaseClient.js";
-import { createInitialChordProgress, applyStartIndexToUser } from "../utils/progressUtils.js";
+import { createInitialChordProgress, applyStartChordIndex } from "../utils/progressUtils.js";
 import { showCustomAlert } from "./home.js";
 
-export function renderInitialSetupScreen(user, onComplete) {
+export function renderInitialSetupScreen(user) {
   const app = document.getElementById("app");
   app.innerHTML = "";
 
@@ -51,13 +51,8 @@ export function renderInitialSetupScreen(user, onComplete) {
         .update({ name: nickname })
         .eq("id", user.id);
       await createInitialChordProgress(user.id);
-      await applyStartIndexToUser(user.id, idx);
-      const { data: updated } = await supabase
-        .from("users")
-        .select("*")
-        .eq("id", user.id)
-        .maybeSingle();
-      onComplete(updated || user);
+      await applyStartChordIndex(user.id, idx);
+      switchScreen("home", { ...user, name: nickname });
     };
   }
 
