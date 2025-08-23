@@ -312,6 +312,29 @@ export async function renderSettingsScreen(user) {
 
   let storedSelection = stored ? JSON.parse(stored) : [];
 
+  // 🔁 Push recommended selection when no custom selection is stored
+  if (storedSelection.length === 0) {
+    const flags = {};
+    unlockedKeys.forEach(key => {
+      flags[key] = { unlocked: true };
+    });
+
+    const queue = generateRecommendedQueue(flags);
+    const countMap = {};
+    queue.forEach(name => {
+      countMap[name] = (countMap[name] || 0) + 1;
+    });
+
+    storedSelection = chords
+      .filter(ch => countMap[ch.name])
+      .map(ch => ({
+        name: ch.name,
+        count: countMap[ch.name]
+      }));
+
+    localStorage.setItem("selectedChords", JSON.stringify(storedSelection));
+  }
+
   selectedChords = [];
 
   const hasBlack = unlockedKeys.some(k => chords.find(c => c.key === k && c.type === "black-root"));
