@@ -254,7 +254,7 @@ onAuthStateChanged(firebaseAuth, async (firebaseUser) => {
       avatar_url: firebaseUser.photoURL ?? null,
     });
     window.currentUser = profile;
-    if (!profile.name) {
+    if (profile.start == null) {
       switchScreen("setup", profile);
     } else {
       switchScreen("home", profile);

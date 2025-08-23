@@ -60,12 +60,13 @@
       if (isNew) {
         addDebugLog('redirect: setup');
         showDebugLog();
-        if (!debugMode) window.location.href = '/#setup';
+        window.location.hash = '#/setup';
       } else {
         addDebugLog('redirect: home');
         showDebugLog();
-        if (!debugMode) window.location.href = '/';
+        window.location.hash = '';
       }
+      if (!debugMode) window.location.href = '/' + window.location.hash;
     } catch (e) {
       console.error('auth flow error', e);
       addDebugLog('auth flow error', e.message);

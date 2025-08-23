@@ -9,24 +9,28 @@ function safeName({ displayName, email, existingName }) {
 }
 
 export async function ensureAppUserRecord({ uid, email, name: displayName, avatar_url }) {
-  let existingName = null;
+  let existingUser = null;
   try {
     const { data: ex } = await supabase
       .from("users")
-      .select("id,name")
+      .select("id,name,start")
       .eq("firebase_uid", uid)
       .single();
-    existingName = ex?.name ?? null;
+    existingUser = ex ?? null;
   } catch (_) {}
 
-  const name = safeName({ displayName, email, existingName });
+  const name = safeName({
+    displayName,
+    email,
+    existingName: existingUser?.name ?? null,
+  });
+
+  const insert = { firebase_uid: uid, email, name, avatar_url };
+  if (!existingUser) insert.start = null;
 
   const { data, error } = await supabase
     .from("users")
-    .upsert(
-      [{ firebase_uid: uid, email, name, avatar_url }],
-      { onConflict: "firebase_uid" }
-    )
+    .upsert([insert], { onConflict: "firebase_uid" })
     .select("*")
     .single();
   if (error) throw error;
