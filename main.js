@@ -254,7 +254,11 @@ onAuthStateChanged(firebaseAuth, async (firebaseUser) => {
       avatar_url: firebaseUser.photoURL ?? null,
     });
     window.currentUser = profile;
-    switchScreen("home", profile);
+    if (!profile.name) {
+      switchScreen("setup", profile);
+    } else {
+      switchScreen("home", profile);
+    }
   } catch (e) {
     console.warn("Supabase user init failed:", e);
   }
