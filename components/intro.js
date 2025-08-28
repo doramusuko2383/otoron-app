@@ -42,6 +42,16 @@ export function renderIntroScreen() {
             <button id="privacy-btn">プライバシーポリシー</button>
             <button id="contact-btn">お問い合わせ</button>
             <button id="help-btn">必ずお読みください</button>
+            <a
+              href="https://blog.playotoron.com/?utm_source=app&utm_medium=info_menu&utm_campaign=launch"
+              class="info-link"
+              target="_blank"
+              rel="noopener noreferrer"
+              data-analytics="blog"
+            >
+              ブログ（外部サイト）
+              <span class="ext-icon" aria-hidden="true">↗</span>
+            </a>
             <button id="faq-btn">よくある質問</button>
             <button id="law-btn">特定商取引法に基づく表示</button>
             <button id="external-btn">外部送信ポリシー</button>
