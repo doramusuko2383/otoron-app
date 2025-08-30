@@ -19,8 +19,8 @@ export function renderLoginScreen(container) {
       <h2 class="login-title" data-i18n="nav_login"></h2>
       <p class="login-success" style="display:none"></p>
       <div class="login-note">
-        <p>・Googleでログインしたことがある場合は、必ず「Googleでログイン」を使ってください。</p>
-        <p>・メールアドレスとパスワードは、最初にメール認証を使った場合のみ有効です。</p>
+        <p data-i18n="login_note_google"></p>
+        <p data-i18n="login_note_password"></p>
       </div>
       <form class="login-form">
         <input type="email" id="email" required data-i18n="ph_email" data-i18n-attr="placeholder" />
@@ -32,13 +32,13 @@ export function renderLoginScreen(container) {
       </form>
       <p class="login-error" style="display:none"></p>
 
-      <div class="login-divider">または</div>
+      <div class="login-divider" data-i18n="or"></div>
 
-      <button id="google-login" class="google-button">Googleでログイン</button>
+      <button id="google-login" class="google-button" data-i18n="google_login"></button>
 
       <div class="login-actions">
-        <button id="forgot-btn" class="login-secondary">パスワードを忘れた方はこちら</button>
-        <button id="back-btn" class="login-secondary">戻る</button>
+        <button id="forgot-btn" class="login-secondary" data-i18n="forgot_password"></button>
+        <button id="back-btn" class="login-secondary" data-i18n="btn_back"></button>
         <button id="signup-btn" class="login-signup" data-i18n="nav_signup"></button>
       </div>
     </div>
@@ -56,7 +56,7 @@ export function renderLoginScreen(container) {
   const successMsg = sessionStorage.getItem("passwordResetSuccess");
   if (successMsg) {
     const msgEl = container.querySelector(".login-success");
-    msgEl.textContent = "パスワードを変更しました";
+    msgEl.textContent = t('password_changed');
     msgEl.style.display = "block";
     sessionStorage.removeItem("passwordResetSuccess");
   }
@@ -97,7 +97,7 @@ export function renderLoginScreen(container) {
     try {
       const methods = await fetchSignInMethodsForEmail(firebaseAuth, email);
       if (methods.includes('google.com') && !methods.includes('password')) {
-        showCustomAlert('このメールアドレスはGoogleログイン専用です。Googleログインをご利用ください。');
+        showCustomAlert(t('msg_google_only'));
         return;
       }
 

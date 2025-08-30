@@ -36,12 +36,12 @@ export function renderIntroScreen() {
         </button>
         <div class="header-right">
           <div class="info-menu">
-          <button id="info-menu-btn" aria-label="インフォメーション">ℹ️</button>
+          <button id="info-menu-btn" data-i18n="nav_information" data-i18n-attr="aria-label">ℹ️</button>
           <div id="info-dropdown" class="info-dropdown">
-            <button id="terms-btn">利用規約</button>
-            <button id="privacy-btn">プライバシーポリシー</button>
-            <button id="contact-btn">お問い合わせ</button>
-            <button id="help-btn">必ずお読みください</button>
+            <button id="terms-btn" data-i18n="terms_of_service"></button>
+            <button id="privacy-btn" data-i18n="privacy_policy"></button>
+            <button id="contact-btn" data-i18n="contact"></button>
+            <button id="help-btn" data-i18n="please_read"></button>
             <a
               href="https://blog.playotoron.com/?utm_source=app&utm_medium=info_menu&utm_campaign=launch"
               class="info-link"
@@ -49,16 +49,16 @@ export function renderIntroScreen() {
               rel="noopener noreferrer"
               data-analytics="blog"
             >
-              ブログ（外部サイト）
+              <span data-i18n="blog_external"></span>
               <span class="ext-icon" aria-hidden="true">↗</span>
             </a>
-            <button id="faq-btn">よくある質問</button>
-            <button id="law-btn">特定商取引法に基づく表示</button>
-            <button id="external-btn">外部送信ポリシー</button>
+            <button id="faq-btn" data-i18n="faq"></button>
+            <button id="law-btn" data-i18n="legal_notice"></button>
+            <button id="external-btn" data-i18n="external_policy"></button>
           </div>
         </div>
-        <button id="login-btn" class="intro-login">ログイン</button>
-        <button id="signup-btn" class="intro-signup">無料会員登録</button>
+        <button id="login-btn" class="intro-login" data-i18n="nav_login"></button>
+        <button id="signup-btn" class="intro-signup" data-i18n="nav_signup"></button>
       </div>
     </header>
     <div class="intro-wrapper">
