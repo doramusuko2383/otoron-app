@@ -1,7 +1,7 @@
 // 修正済み training.js（黒鍵転回形も正しく表示）
 import { chords } from "../data/chords.js";
 import { selectedChords } from "./settings.js";
-import { switchScreen } from "../main.js";
+import { switchScreen, t } from "../main.js";
 import { showCustomConfirm } from "./home.js";
 import { resetResultFlag } from "./result.js";
 import { saveSessionToHistory } from "./summary.js";
@@ -301,7 +301,7 @@ if (correctBtn) {
   correctBtn.classList.add("correct-highlight");
 }
 
-    showFeedback("もういちど", "bad");
+    showFeedback(t("btn_retry"), "bad");
     const soundKey = currentAnswer.soundKey || currentAnswer.colorClass;
     playSoundThen(`wrong_${soundKey}`, () => {
       playChordFile(currentAnswer.file);
@@ -441,7 +441,7 @@ function checkAnswer(selected) {
     correctBtn.classList.add("correct-highlight");
   }
 
-    showFeedback("もういちど", "bad");
+    showFeedback(t("btn_retry"), "bad");
     const soundKey = currentAnswer.soundKey || currentAnswer.colorClass;
     playSoundThen(`wrong_${soundKey}`, () => {
       playChordFile(currentAnswer.file);

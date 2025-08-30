@@ -1,4 +1,4 @@
-import { switchScreen } from "../main.js";
+import { switchScreen, t } from "../main.js";
 import { loadTrainingRecords } from "../utils/recordStore_supabase.js";
 import { getToday } from "../utils/growthUtils.js";
 import { renderHeader } from "./header.js";
@@ -45,7 +45,7 @@ export async function renderHomeScreen(user, options = {}) {
 
   const info = document.createElement("p");
   info.className = "today-count";
-  info.innerHTML = `🎯 きょう の がんばり：<strong>${todayRecord.sets}</strong>かい`;
+  info.innerHTML = `${t('label_today_count')}：<strong>${todayRecord.sets}</strong>`;
   container.appendChild(info);
 
   // Create trial info element ahead of time to preserve layout
