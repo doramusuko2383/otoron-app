@@ -35,8 +35,8 @@ export function renderSignUpScreen() {
       <button type="submit" class="signup-button" data-i18n="btn_signup"></button>
     </form>
 
-    <div class="signup-divider">または</div>
-    <button id="google-signup" class="google-button">Googleで登録</button>
+    <div class="signup-divider" data-i18n="or"></div>
+    <button id="google-signup" class="google-button" data-i18n="google_signup"></button>
 
     <div class="signup-actions">
       <button id="back-to-login" class="signup-secondary" data-i18n="nav_login"></button>
@@ -68,7 +68,7 @@ export function renderSignUpScreen() {
     const email = form.querySelector("#signup-email").value.trim();
     const password = form.querySelector("#signup-password").value.trim();
     if (!email || !password) {
-      showCustomAlert("メールアドレスとパスワードを入力してください");
+      showCustomAlert(t('enter_email_password'));
       return;
     }
 
