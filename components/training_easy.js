@@ -1,7 +1,8 @@
 // 修正済み training.js（黒鍵転回形も正しく表示）
 import { chords } from "../data/chords.js";
 import { selectedChords } from "./settings.js";
-import { switchScreen, t } from "../main.js";
+import { switchScreen } from "../main.js";
+import { t } from "../js/i18n.js";
 import { showCustomConfirm } from "./home.js";
 import { resetResultFlag } from "./result.js";
 import { saveSessionToHistory } from "./summary.js";
@@ -301,7 +302,7 @@ if (correctBtn) {
   correctBtn.classList.add("correct-highlight");
 }
 
-    showFeedback(t("btn_retry"), "bad");
+    showFeedback(t('try_again'), 'bad');
     const soundKey = currentAnswer.soundKey || currentAnswer.colorClass;
     playSoundThen(`wrong_${soundKey}`, () => {
       playChordFile(currentAnswer.file);
@@ -404,7 +405,7 @@ function checkAnswer(selected) {
     });
 
     if (questionQueue.length === 0) {
-      showFeedback("がんばったね", "good", 0);
+      showFeedback(t('good'), 'good', 0);
       const sound = (correctCount === questionCount) ? "perfect" : "end";
       saveSessionToHistory();
       playSoundThen(sound, () => {
@@ -413,7 +414,7 @@ function checkAnswer(selected) {
       });
     } else {
       const voices = ["good1", "good2"];
-      showFeedback("いいね", "good");
+      showFeedback(t('good'), 'good');
       playSoundThen(voices[Math.floor(Math.random() * voices.length)], () => {
         nextQuestion();
       });
@@ -441,7 +442,7 @@ function checkAnswer(selected) {
     correctBtn.classList.add("correct-highlight");
   }
 
-    showFeedback(t("btn_retry"), "bad");
+    showFeedback(t('try_again'), 'bad');
     const soundKey = currentAnswer.soundKey || currentAnswer.colorClass;
     playSoundThen(`wrong_${soundKey}`, () => {
       playChordFile(currentAnswer.file);

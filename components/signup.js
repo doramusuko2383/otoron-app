@@ -1,5 +1,6 @@
 import { switchScreen } from "../main.js";
 import { firebaseAuth } from "../firebase/firebase-init.js";
+import { t } from "../js/i18n.js";
 import {
   createUserWithEmailAndPassword,
   GoogleAuthProvider,
@@ -20,25 +21,25 @@ export function renderSignUpScreen() {
   container.className = "signup-wrapper";
 
   container.innerHTML = `
-    <h2 class="signup-title">新規登録</h2>
+    <h2 class="signup-title" data-i18n="nav_signup"></h2>
     <form class="signup-form">
-      <label for="signup-email">メールアドレス</label>
-      <input type="email" id="signup-email" required />
+      <label for="signup-email" data-i18n="email"></label>
+      <input type="email" id="signup-email" required data-i18n="ph_email" data-i18n-attr="placeholder" />
 
-      <label for="signup-password">パスワード（6文字以上）</label>
+      <label for="signup-password" data-i18n="password"></label>
       <div class="password-wrapper">
-        <input type="password" id="signup-password" required />
+        <input type="password" id="signup-password" required data-i18n="ph_password" data-i18n-attr="placeholder" />
         <img src="images/Visibility_off.svg" class="toggle-password" alt="絶対音感トレーニングアプリ『オトロン』パスワード表示切り替えアイコン" />
       </div>
 
-      <button type="submit" class="signup-button">アカウントを作成</button>
+      <button type="submit" class="signup-button" data-i18n="btn_signup"></button>
     </form>
 
     <div class="signup-divider">または</div>
     <button id="google-signup" class="google-button">Googleで登録</button>
 
     <div class="signup-actions">
-      <button id="back-to-login" class="signup-secondary">← ログイン画面に戻る</button>
+      <button id="back-to-login" class="signup-secondary" data-i18n="nav_login"></button>
     </div>
   `;
 
@@ -51,6 +52,12 @@ export function renderSignUpScreen() {
     pwInput.type = visible ? "password" : "text";
     pwToggle.src = visible ? "images/Visibility_off.svg" : "images/Visibility.svg";
   });
+
+  function showAuthError(code) {
+    const key = `err_${code}`;
+    const text = t(key) !== key ? t(key) : t('err_default');
+    showCustomAlert(text);
+  }
 
 
 
@@ -79,7 +86,7 @@ export function renderSignUpScreen() {
         switchScreen("setup", profile);
       }
     } catch (e) {
-      showCustomAlert("登録エラー：" + e.message);
+      showAuthError(e.code);
     }
   });
 
@@ -95,7 +102,7 @@ export function renderSignUpScreen() {
         }
       })
       .catch((e) => {
-        showCustomAlert("登録エラー：" + e.message);
+        showAuthError(e.code);
       });
   });
 

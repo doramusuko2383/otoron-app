@@ -1,4 +1,5 @@
-import { switchScreen, t } from "../main.js";
+import { switchScreen } from "../main.js";
+import { t } from "../js/i18n.js";
 import { loadTrainingRecords } from "../utils/recordStore_supabase.js";
 import { getToday } from "../utils/growthUtils.js";
 import { renderHeader } from "./header.js";

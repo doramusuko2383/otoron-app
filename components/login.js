@@ -7,6 +7,7 @@ import {
 
 import { firebaseAuth } from "../firebase/firebase-init.js";
 import { switchScreen } from "../main.js";
+import { t } from "../js/i18n.js";
 import { addDebugLog } from "../utils/loginDebug.js";
 import { ensureSupabaseAuth } from "../utils/supabaseOptionalAuth.js";
 import { ensureAppUserRecord } from "../utils/userStore.js";
@@ -15,19 +16,19 @@ import { showCustomAlert } from "./home.js";
 export function renderLoginScreen(container) {
   container.innerHTML = `
     <div class="login-wrapper">
-      <h2 class="login-title">ログイン</h2>
+      <h2 class="login-title" data-i18n="nav_login"></h2>
       <p class="login-success" style="display:none"></p>
       <div class="login-note">
         <p>・Googleでログインしたことがある場合は、必ず「Googleでログイン」を使ってください。</p>
         <p>・メールアドレスとパスワードは、最初にメール認証を使った場合のみ有効です。</p>
       </div>
       <form class="login-form">
-        <input type="email" id="email" placeholder="メールアドレス" required />
+        <input type="email" id="email" required data-i18n="ph_email" data-i18n-attr="placeholder" />
         <div class="password-wrapper">
-          <input type="password" id="password" placeholder="パスワード" required />
+          <input type="password" id="password" required data-i18n="ph_password" data-i18n-attr="placeholder" />
           <img src="images/Visibility_off.svg" class="toggle-password" alt="絶対音感トレーニングアプリ『オトロン』パスワード表示切り替えアイコン" />
         </div>
-        <button type="submit">ログイン</button>
+        <button type="submit" data-i18n="btn_login"></button>
       </form>
       <p class="login-error" style="display:none"></p>
 
@@ -38,7 +39,7 @@ export function renderLoginScreen(container) {
       <div class="login-actions">
         <button id="forgot-btn" class="login-secondary">パスワードを忘れた方はこちら</button>
         <button id="back-btn" class="login-secondary">戻る</button>
-        <button id="signup-btn" class="login-signup">新規登録はこちら</button>
+        <button id="signup-btn" class="login-signup" data-i18n="nav_signup"></button>
       </div>
     </div>
   `;
@@ -61,6 +62,13 @@ export function renderLoginScreen(container) {
   }
 
   const loginErrorEl = container.querySelector(".login-error");
+
+  function showAuthError(code) {
+    const key = `err_${code}`;
+    const text = t(key) !== key ? t(key) : t('err_default');
+    loginErrorEl.textContent = text;
+    loginErrorEl.style.display = 'block';
+  }
 
   async function onFirebaseLoginSuccess(firebaseUser) {
     const email = firebaseUser.email;
@@ -97,15 +105,7 @@ export function renderLoginScreen(container) {
       sessionStorage.setItem("currentPassword", password);
       await onFirebaseLoginSuccess(firebaseAuth.currentUser);
     } catch (err) {
-      if (err.code === "auth/invalid-credential") {
-        loginErrorEl.textContent =
-          "ログインできませんでした。このメールアドレスは Googleアカウントで登録されている可能性があります。下の『Googleでログイン』ボタンからお試しください。";
-        loginErrorEl.style.display = "block";
-      } else if (err.code === "auth/missing-password" || err.code === "auth/wrong-password") {
-        showCustomAlert("このアカウントはGoogleで登録されている可能性があります。Googleログインをお試しください。");
-      } else {
-        showCustomAlert("ログイン失敗：" + err.message);
-      }
+      showAuthError(err.code);
     }
   });
 
