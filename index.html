@@ -70,6 +70,18 @@
 </head>
 
 <body class="app-root">
+  <header>
+    <div class="lang-switch">
+      <button id="lang-ja">日本語</button>
+      <button id="lang-en">English</button>
+    </div>
+  </header>
+
+  <h1 data-i18n="app_title"></h1>
+
+  <p><span data-i18n="price_monthly"></span>：<span id="price-monthly"></span></p>
+  <p><span data-i18n="price_yearly"></span>：<span id="price-yearly"></span></p>
+
   <div id="app"></div>
 
   <div id="help-modal" class="modal" style="display: none;">
