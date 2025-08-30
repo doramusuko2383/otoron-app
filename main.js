@@ -41,60 +41,6 @@ import { renderForgotPasswordScreen } from "./components/forgotPassword.js";
 import { firebaseAuth } from "./firebase/firebase-init.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-// i18n setup
-let dict = {};
-export function t(key) {
-  return dict[key] || key;
-}
-
-function resolveLang() {
-  const url = new URL(location.href);
-  const urlLang = url.searchParams.get('lang');
-  const stored = localStorage.getItem('lang');
-  const browser = (navigator.language || '').toLowerCase().startsWith('ja') ? 'ja' : 'en';
-  return urlLang || stored || browser;
-}
-
-async function loadDict(lang) {
-  const res = await fetch(`/locales/${lang}.json`);
-  if (!res.ok) throw new Error('i18n load failed');
-  return await res.json();
-}
-
-export let currentLang = resolveLang();
-
-export async function applyLang(lang) {
-  try {
-    dict = await loadDict(lang);
-    document.documentElement.lang = lang;
-    document.querySelectorAll('[data-i18n]').forEach(el => {
-      const key = el.dataset.i18n;
-      if (dict[key]) el.textContent = dict[key];
-    });
-    localStorage.setItem('lang', lang);
-    currentLang = lang;
-    applyPriceFormatting();
-  } catch (e) {
-    console.error(e);
-  }
-}
-
-function applyPriceFormatting() {
-  const locale = currentLang === 'ja' ? 'ja-JP' : 'en-US';
-  const fmt = new Intl.NumberFormat(locale, { style: 'currency', currency: 'JPY' });
-  const monthly = 980;
-  const yearly = 9800;
-  const m = document.getElementById('price-monthly');
-  const y = document.getElementById('price-yearly');
-  if (m) m.textContent = fmt.format(monthly);
-  if (y) y.textContent = fmt.format(yearly);
-}
-
-await applyLang(currentLang);
-
-document.getElementById('lang-ja')?.addEventListener('click', () => applyLang('ja'));
-document.getElementById('lang-en')?.addEventListener('click', () => applyLang('en'));
-
 const INFO_SCREENS = [
   "terms",
   "privacy",
