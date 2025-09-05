@@ -281,12 +281,15 @@ export function renderIntroScreen() {
 
       <footer class="lp-footer">
         <button id="footer-cta" class="cta-button">気になる方は「オトロン」の無料体験へ！</button>
-        <div class="social-links">
-          <a href="https://x.com/otoron_onkanDev" target="_blank" rel="noopener">
+        <div class="social-links" aria-label="オトロン公式SNS">
+          <a href="https://x.com/otoron_onkanDev" target="_blank" rel="noopener noreferrer" aria-label="X（新しいタブで開きます）">
             <img src="images/x-logo.png" alt="絶対音感トレーニングアプリ『オトロン』公式Xへのリンク" />
           </a>
-          <a href="https://note.com/otoron" target="_blank" rel="noopener">
+          <a href="https://note.com/otoron" target="_blank" rel="noopener noreferrer" aria-label="note（新しいタブで開きます）">
             <img src="images/note-logo.png" alt="絶対音感トレーニングアプリ『オトロン』公式noteへのリンク" />
+          </a>
+          <a href="https://www.instagram.com/otoron.zettaionkan/" target="_blank" rel="noopener noreferrer" aria-label="Instagram（新しいタブで開きます）">
+            <img src="images/Instagram_Glyph_Gradient.webp" alt="絶対音感トレーニングアプリ『オトロン』公式Instagramへのリンク" />
           </a>
         </div>
         <p>&copy; 2024 Otoron</p>
