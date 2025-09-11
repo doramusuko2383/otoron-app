@@ -1,80 +1,38 @@
-import { firebaseAuth } from '../firebase/firebase-init.js';
+import { supabase } from './supabaseClient.js';
 import { showCustomAlert } from '../components/home.js';
 
-let stripePromise;
-let checkoutInProgress = false;
-
-function waitForStripe(maxMs = 2000, step = 50) {
-  return new Promise((resolve, reject) => {
-    const started = Date.now();
-    const tick = () => {
-      if (typeof window.Stripe === 'function') return resolve();
-      if (Date.now() - started > maxMs) return reject(new Error('Stripe.js not loaded'));
-      setTimeout(tick, step);
-    };
-    tick();
-  });
-}
-
-async function getStripe() {
-  if (!stripePromise) {
-    await waitForStripe().catch(() => {
-      console.warn('Stripe.js not loaded; skipping init');
-    });
-    if (typeof window.Stripe !== 'function') {
-      return null;
-    }
-
-    try {
-      const res = await fetch('/api/public-config', { cache: 'no-store' });
-      if (!res.ok) throw new Error(`public-config: ${res.status}`);
-      const { publishableKey } = await res.json();
-      if (!publishableKey) throw new Error('Missing publishableKey');
-      stripePromise = Stripe(publishableKey);
-    } catch (e) {
-      console.error(e);
-      return null;
-    }
-  }
-  return stripePromise;
-}
-
-export async function startCheckout(plan, button) {
-  if (checkoutInProgress) return;
-  checkoutInProgress = true;
-  if (button) button.disabled = true;
-  const email = firebaseAuth.currentUser?.email || '未取得';
-  if (!firebaseAuth.currentUser?.email) {
-    showCustomAlert('ログイン情報がありません');
-    checkoutInProgress = false;
-    if (button) button.disabled = false;
-    return;
-  }
+export async function startCheckout(button) {
+  if (!button || button.disabled) return;
+  const plan = button.dataset.plan;
+  if (!plan) return;
+  const origText = button.textContent;
+  button.disabled = true;
+  button.textContent = '処理中…';
 
   try {
-    const response = await fetch('/api/create-checkout-session', {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user?.email) {
+      showCustomAlert('ログインしてください');
+      button.disabled = false;
+      button.textContent = origText;
+      return;
+    }
+
+    const res = await fetch('/api/create-checkout-session', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, plan })
+      body: JSON.stringify({ email: user.email, plan })
     });
-
-    const data = await response.json();
-    if (data.id) {
-      const stripe = await getStripe();
-      if (!stripe) {
-        showCustomAlert('決済ページの読み込みに失敗しました。時間を置いてお試しください。');
-        return;
-      }
-      const { error } = await stripe.redirectToCheckout({ sessionId: data.id });
-      if (error) console.error('Stripe checkout error', error);
+    const json = await res.json();
+    if (json?.url) {
+      window.location.href = json.url;
     } else {
-      console.error('No session ID returned:', data);
+      throw new Error('セッションURLの取得に失敗しました');
     }
-  } catch (err) {
-    console.error('Stripe checkout error', err);
-    showCustomAlert('決済処理でエラーが発生しました。');
-  } finally {
-    checkoutInProgress = false;
-    if (button) button.disabled = false;
+  } catch (e) {
+    console.error(e);
+    showCustomAlert('決済の開始に失敗しました。時間をおいて再度お試しください。');
+    button.disabled = false;
+    button.textContent = origText;
   }
 }
