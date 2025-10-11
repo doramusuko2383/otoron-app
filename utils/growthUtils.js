@@ -4,6 +4,9 @@ import { loadGrowthFlags } from "./growthStore_supabase.js";
 import { getConsecutiveQualifiedDays } from "./qualifiedStore_supabase.js";
 import { supabase } from "./supabaseClient.js";
 import { generateChordQueue } from "./chordQueue.js";
+import { toJstYmd } from "./dateUtils.js";
+
+export { toJstDate, toJstYmd, getJstDayRange, addJstDays } from "./dateUtils.js";
 
 export function getRecommendedChordSet(flags) {
   const unlockedKeys = chordOrder.filter(key => flags[key]?.unlocked);
@@ -78,7 +81,7 @@ export const STORAGE_FORCE_FLAG = "growth_force_unlock";
  * 今日の日付（YYYY-MM-DD）
  */
 export function getToday() {
-  return new Date().toISOString().split("T")[0];
+  return toJstYmd(new Date());
 }
 
 /**

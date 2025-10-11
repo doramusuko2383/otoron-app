@@ -1,5 +1,5 @@
 import { supabase } from "./supabaseClient.js";
-import { getPassedDays } from "./growthUtils.js";
+import { getPassedDays, getToday } from "./growthUtils.js";
 import { chordOrder } from "../data/chords.js";
 import { chords } from "../data/chords.js"; // ✅ 必須
 
@@ -15,7 +15,7 @@ export async function createInitialChordProgress(userId) {
     user_id: userId,
     chord_key: key,
     status: index === 0 ? "in_progress" : "locked",
-    unlocked_date: index === 0 ? new Date().toISOString().split("T")[0] : null
+    unlocked_date: index === 0 ? getToday() : null
   }));
 
   const { error } = await supabase
@@ -45,7 +45,7 @@ export async function applyStartChordIndex(userId, startIndex) {
   const completed = chordKeys.slice(0, startIndex);
   const current = chordKeys[startIndex];
   const locked = chordKeys.slice(startIndex + 1);
-  const today = new Date().toISOString().split("T")[0];
+  const today = getToday();
 
   const updates = [];
 
@@ -113,7 +113,7 @@ export async function autoUnlockNextChord(user) {
     .from("user_chord_progress")
     .update({
       status: "in_progress",
-      unlocked_date: new Date().toISOString().split("T")[0]
+      unlocked_date: getToday()
     })
     .eq("user_id", user.id)
     .eq("chord_key", nextChord);
@@ -150,7 +150,7 @@ export async function unlockChord(userId, chordKey) {
     .from("user_chord_progress")
     .update({
       status: "in_progress",
-      unlocked_date: new Date().toISOString().split("T")[0]
+      unlocked_date: getToday()
     })
     .eq("user_id", userId)
     .eq("chord_key", chordKey);
@@ -227,7 +227,7 @@ export async function resetProgressAndUnlock(userId, startIndex) {
     return false;
   }
 
-  const today = new Date().toISOString().split("T")[0];
+  const today = getToday();
   const chordKeys = chords.map(c => c.key);
   const insertData = chordKeys.map((key, idx) => ({
     user_id: userId,
