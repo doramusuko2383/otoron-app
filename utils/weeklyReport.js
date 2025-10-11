@@ -1,18 +1,29 @@
 import { supabase } from './supabaseClient.js';
 import { chords, chordOrder } from '../data/chords.js';
-import { REQUIRED_DAYS } from './growthUtils.js';
+import { REQUIRED_DAYS, getJstDayRange, addJstDays, toJstYmd } from './growthUtils.js';
 import { showCustomAlert } from '../components/home.js';
 
 export async function generateWeeklyReport(user, startDate, endDate) {
   const userId = typeof user === 'string' ? user : user?.id;
   const userName = typeof user === 'object' ? user?.name : null;
 
+  const startYmd = typeof startDate === 'string' ? startDate : toJstYmd(startDate);
+  const endYmd = typeof endDate === 'string' ? endDate : toJstYmd(endDate);
+  const endExclusiveYmd = addJstDays(endYmd, 1);
+  const startRange = getJstDayRange(startYmd);
+  const endRange = getJstDayRange(endExclusiveYmd);
+
+  if (!startRange.startUtcIso || !endRange.startUtcIso) {
+    console.error('❌ 週次レポート: 無効な日付範囲', { startDate, endDate });
+    return;
+  }
+
   const { data: trainingSessions, error: sesErr } = await supabase
     .from('training_sessions')
     .select('*')
     .eq('user_id', userId)
-    .gte('session_date', startDate)
-    .lte('session_date', endDate);
+    .gte('session_date', startRange.startUtcIso)
+    .lt('session_date', endRange.startUtcIso);
 
   if (sesErr) {
     console.error('❌ セッション取得失敗:', sesErr);
@@ -36,8 +47,8 @@ export async function generateWeeklyReport(user, startDate, endDate) {
     .from('qualified_days')
     .select('qualified_date')
     .eq('user_id', userId)
-    .gte('qualified_date', startDate)
-    .lte('qualified_date', endDate);
+    .gte('qualified_date', startYmd)
+    .lte('qualified_date', endYmd);
 
   if (qualErr) {
     console.error('❌ 合格日数取得失敗:', qualErr);
@@ -48,19 +59,25 @@ export async function generateWeeklyReport(user, startDate, endDate) {
   const totalCorrect = trainingSessions.reduce((sum, s) => sum + (s.correct_count || 0), 0);
   const accuracy = totalQuestions > 0 ? ((totalCorrect / totalQuestions) * 100).toFixed(1) : '0.0';
 
-  const prevStart = new Date(startDate);
-  prevStart.setDate(prevStart.getDate() - 7);
-  const prevEnd = new Date(startDate);
-  prevEnd.setDate(prevEnd.getDate() - 1);
-  const prevStartStr = prevStart.toISOString().split('T')[0];
-  const prevEndStr = prevEnd.toISOString().split('T')[0];
+  const prevStartStr = addJstDays(startYmd, -7);
+  const prevEndStr = addJstDays(startYmd, -1);
+  const prevStartRange = getJstDayRange(prevStartStr);
+  const prevEndRange = getJstDayRange(addJstDays(prevEndStr, 1));
+  if (!prevStartRange.startUtcIso || !prevEndRange.startUtcIso) {
+    console.error('❌ 週次レポート: 前週範囲の算出に失敗', {
+      startDate,
+      prevStartStr,
+      prevEndStr
+    });
+    return;
+  }
 
   const { data: lastSessions, error: lastErr } = await supabase
     .from('training_sessions')
     .select('correct_count, total_count')
     .eq('user_id', userId)
-    .gte('session_date', prevStartStr)
-    .lte('session_date', prevEndStr);
+    .gte('session_date', prevStartRange.startUtcIso)
+    .lt('session_date', prevEndRange.startUtcIso);
 
   if (lastErr) {
     console.error('❌ 先週データ取得失敗:', lastErr);
@@ -111,16 +128,14 @@ export async function generateWeeklyReport(user, startDate, endDate) {
   const nextKey = chordOrder.find(key => !unlockedKeys.has(key));
   const nextUnlockChord = nextKey ? chordLabelMap[nextKey] || nextKey : null;
 
-  const consFrom = new Date(endDate);
-  consFrom.setDate(consFrom.getDate() - (REQUIRED_DAYS - 1));
-  const consFromStr = consFrom.toISOString().split('T')[0];
+  const consFromStr = addJstDays(endYmd, -(REQUIRED_DAYS - 1));
 
   const { data: recentQualified, error: recentErr } = await supabase
     .from('qualified_days')
     .select('qualified_date')
     .eq('user_id', userId)
     .gte('qualified_date', consFromStr)
-    .lte('qualified_date', endDate);
+    .lte('qualified_date', endYmd);
 
   if (recentErr) {
     console.error('❌ 連続合格取得失敗:', recentErr);
@@ -130,9 +145,7 @@ export async function generateWeeklyReport(user, startDate, endDate) {
   const recentSet = new Set(recentQualified.map(d => d.qualified_date));
   let consecutiveDays = 0;
   for (let i = 0; i < REQUIRED_DAYS; i++) {
-    const d = new Date(endDate);
-    d.setDate(d.getDate() - i);
-    const ds = d.toISOString().split('T')[0];
+    const ds = addJstDays(endYmd, -i);
     if (recentSet.has(ds)) consecutiveDays++; else break;
   }
   const remainingPassDays = Math.max(0, REQUIRED_DAYS - consecutiveDays);
@@ -194,7 +207,7 @@ export async function generateWeeklyReport(user, startDate, endDate) {
   const fullComment = [comments[0], comments[1], ...(comments.slice(2))].join(' ');
 
   const userLabel = userName ? `${userName}ちゃん` : userId;
-  const reportText = `\n【🎼 絶対音感トレーニング週次レポート】\n${userLabel}（${startDate}〜${endDate}）\n\n🗓 トレーニング実施日数：${totalSessions}日間\n✅ 合格日数：${passedDays}日間（1日あたり2回以上のトレーニング・各和音4問以上・正答率98%以上）\n📊 合計出題数：${totalQuestions}問\n🎯 正答率：${accuracy}%\n\n🔓 解放済み和音（色）：\n${chordNames}\n\n🔍 ミス傾向：\n${inversionMistakes.concat(topBottomMistakes).join('\n')}\n${initialMistakeCount > 0 ? `・初回だけミス：${initialMistakeCount}回あり` : ''}\n\n📣 コメント：\n${fullComment}`.trim();
+  const reportText = `\n【🎼 絶対音感トレーニング週次レポート】\n${userLabel}（${startYmd}〜${endYmd}）\n\n🗓 トレーニング実施日数：${totalSessions}日間\n✅ 合格日数：${passedDays}日間（1日あたり2回以上のトレーニング・各和音4問以上・正答率98%以上）\n📊 合計出題数：${totalQuestions}問\n🎯 正答率：${accuracy}%\n\n🔓 解放済み和音（色）：\n${chordNames}\n\n🔍 ミス傾向：\n${inversionMistakes.concat(topBottomMistakes).join('\n')}\n${initialMistakeCount > 0 ? `・初回だけミス：${initialMistakeCount}回あり` : ''}\n\n📣 コメント：\n${fullComment}`.trim();
 
   return reportText;
 }
