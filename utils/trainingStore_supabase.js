@@ -3,6 +3,7 @@
 import { supabase } from "./supabaseClient.js";
 import { sessionMeetsStats, markQualifiedDayIfNeeded } from "./qualifiedStore_supabase.js";
 import { convertMistakesJsonToStructuredForm } from "./mistakeUtils.js";
+import { getJstDayRange, toJstYmd, toJstDate, addJstDays } from "./dateUtils.js";
 
 /**
  * トレーニングセッション結果をSupabaseに保存する関数
@@ -72,16 +73,18 @@ export async function loadTrainingSessionsForDate(userId, date) {
     console.warn("loadTrainingSessionsForDate called without valid user ID");
     return [];
   }
-  const nextDay = new Date(date);
-  nextDay.setDate(nextDay.getDate() + 1);
-  const nextStr = nextDay.toISOString().split("T")[0];
+  const { startUtcIso, endUtcIso } = getJstDayRange(date);
+  if (!startUtcIso || !endUtcIso) {
+    console.warn("loadTrainingSessionsForDate received invalid date:", date);
+    return [];
+  }
 
   const { data, error } = await supabase
     .from("training_sessions")
     .select("*")
     .eq("user_id", userId)
-    .gte("session_date", date)
-    .lt("session_date", nextStr)
+    .gte("session_date", startUtcIso)
+    .lt("session_date", endUtcIso)
     .order("session_date", { ascending: true });
 
   if (error) {
@@ -97,22 +100,33 @@ export async function deleteTrainingDataThisWeek(userId) {
     console.warn("deleteTrainingDataThisWeek called without valid user ID");
     return false;
   }
-  const today = new Date();
-  const day = today.getDay(); // 0: Sun
-  const diffToMonday = (day + 6) % 7; // days since Monday
-  const weekStart = new Date(today);
-  weekStart.setDate(today.getDate() - diffToMonday);
-  const nextWeek = new Date(weekStart);
-  nextWeek.setDate(weekStart.getDate() + 7);
-  const startStr = weekStart.toISOString().split("T")[0];
-  const endStr = nextWeek.toISOString().split("T")[0];
+  const jstNow = toJstDate(new Date());
+  if (Number.isNaN(jstNow.getTime())) {
+    console.error("❌ deleteTrainingDataThisWeek failed to compute current JST date");
+    return false;
+  }
+  const day = jstNow.getUTCDay();
+  const diffToMonday = (day + 6) % 7;
+  const todayYmd = toJstYmd(new Date());
+  const startStr = addJstDays(todayYmd, -diffToMonday);
+  const endStr = addJstDays(startStr, 7);
+  const { startUtcIso: startIso } = getJstDayRange(startStr);
+  const { startUtcIso: endIso } = getJstDayRange(endStr);
+
+  if (!startIso || !endIso) {
+    console.error("❌ deleteTrainingDataThisWeek failed to derive JST boundaries", {
+      startStr,
+      endStr
+    });
+    return false;
+  }
 
   const { error: sesErr } = await supabase
     .from("training_sessions")
     .delete()
     .eq("user_id", userId)
-    .gte("session_date", startStr)
-    .lt("session_date", endStr);
+    .gte("session_date", startIso)
+    .lt("session_date", endIso);
 
   const { error: recErr } = await supabase
     .from("training_records")

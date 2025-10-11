@@ -6,6 +6,7 @@ import {
   sessionMeetsStats
 } from "./qualifiedStore_supabase.js";
 import { generateRecommendedQueue } from "./growthUtils.js";
+import { toJstYmd, getJstDayRange, addJstDays } from "./dateUtils.js";
 import { chordOrder } from "../data/chords.js";
 
 /**
@@ -54,7 +55,7 @@ export async function markChordAsUnlocked(userId, chordKey) {
     .from("user_chord_progress")
     .update({
       status: "unlocked",
-      unlocked_date: new Date().toISOString().split("T")[0],
+      unlocked_date: toJstYmd(new Date()),
       manual_override: true
     })
     .eq("user_id", userId)
@@ -76,11 +77,10 @@ export async function generateMockGrowthData(userId, days = 7) {
     return;
   }
   const now = new Date();
+  const todayYmd = toJstYmd(now);
 
   // 現在進行中の和音の解放日を days 日前に調整して解放条件を満たす
-  const past = new Date(now);
-  past.setDate(now.getDate() - days);
-  const pastStr = past.toISOString().split("T")[0];
+  const pastStr = addJstDays(todayYmd, -days);
   await supabase
     .from("user_chord_progress")
     .update({ unlocked_date: pastStr })
@@ -94,9 +94,9 @@ export async function generateMockGrowthData(userId, days = 7) {
   // 指定日数分の記録を挿入（すべて合格とする）
   // 各日には最低2セッション生成して合格条件を満たす
   for (let i = 0; i < days; i++) {
-    const d = new Date(now);
-    d.setDate(now.getDate() - i);
-    const dateStr = d.toISOString().split("T")[0];
+    const dateStr = addJstDays(todayYmd, -i);
+    const { startDate } = getJstDayRange(dateStr);
+    if (!startDate) continue;
 
     const count = 60;
     const mistakeNum = 1;
@@ -140,11 +140,12 @@ export async function generateMockGrowthData(userId, days = 7) {
     }
 
     const isQualified = sessionMeetsStats(stats, count);
-    const sessionTimes = ["T12:00:00", "T18:00:00"];
-    for (const time of sessionTimes) {
+    const sessionOffsets = [12, 18];
+    const sessionDates = sessionOffsets.map(hours => new Date(startDate.getTime() + hours * 60 * 60 * 1000));
+    for (const sessionDate of sessionDates) {
       const ses = {
         user_id: userId,
-        session_date: `${dateStr}${time}`,
+        session_date: sessionDate.toISOString(),
         correct_count: count - mistakeNum,
         total_count: count,
         results_json: { type: 'chord', results },
@@ -159,7 +160,9 @@ export async function generateMockGrowthData(userId, days = 7) {
     }
 
     // 両セッションの保存後に日付単位の合格判定を実施
-    await markQualifiedDayIfNeeded(userId, `${dateStr}${sessionTimes[0]}`);
+    if (sessionDates.length > 0) {
+      await markQualifiedDayIfNeeded(userId, sessionDates[0].toISOString());
+    }
   }
 }
 
@@ -174,7 +177,7 @@ export async function generateMockSingleNoteData(userId) {
   }
 
   const now = new Date();
-  const dateStr = now.toISOString().split("T")[0];
+  const dateStr = toJstYmd(now);
   const sessionTypes = ['note-white', 'note-easy', 'note-full'];
   const total = 20;
   const correctCount = Math.round(total * 0.9);

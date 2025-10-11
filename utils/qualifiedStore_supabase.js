@@ -1,6 +1,7 @@
 import { supabase } from "./supabaseClient.js";
 import { chords, chordOrder } from "../data/chords.js";
 import { getCounts } from "./chordQueue.js";
+import { getJstDayRange, toJstYmd, addJstDays } from "./dateUtils.js";
 
 const REQUIRED_DAYS = 7;
 const PASS_THRESHOLD = 0.98;
@@ -50,17 +51,18 @@ export async function markQualifiedDayIfNeeded(userId, isoDate) {
     console.warn("markQualifiedDayIfNeeded called without valid user ID");
     return;
   }
-  const dayStart = isoDate.split("T")[0];
-  const nextDay = new Date(dayStart);
-  nextDay.setDate(nextDay.getDate() + 1);
-  const nextStr = nextDay.toISOString().split("T")[0];
+  const { ymd: dayStart, startUtcIso, endUtcIso } = getJstDayRange(isoDate);
+  if (!dayStart || !startUtcIso || !endUtcIso) {
+    console.warn("markQualifiedDayIfNeeded received invalid date:", isoDate);
+    return;
+  }
 
   const { data: sessions, error } = await supabase
     .from("training_sessions")
     .select("stats_json, total_count")
     .eq("user_id", userId)
-    .gte("session_date", dayStart)
-    .lt("session_date", nextStr);
+    .gte("session_date", startUtcIso)
+    .lt("session_date", endUtcIso);
 
   if (error) {
     console.error("❌ qualified day check failed:", error);
@@ -115,10 +117,8 @@ export async function getConsecutiveQualifiedDays(userId, days = REQUIRED_DAYS) 
     console.warn("getConsecutiveQualifiedDays called without valid user ID");
     return 0;
   }
-  const today = new Date();
-  const from = new Date();
-  from.setDate(today.getDate() - (days - 1));
-  const fromStr = from.toISOString().split("T")[0];
+  const todayYmd = toJstYmd(new Date());
+  const fromStr = addJstDays(todayYmd, -(days - 1));
 
   const [{ data: qualified, error: qErr }, { data: records, error: rErr }, { data: progress, error: pErr }] = await Promise.all([
     supabase
@@ -172,9 +172,7 @@ export async function getConsecutiveQualifiedDays(userId, days = REQUIRED_DAYS) 
 
   let count = 0;
   for (let i = 0; i < days; i++) {
-    const d = new Date();
-    d.setDate(today.getDate() - i);
-    const ds = d.toISOString().split("T")[0];
+    const ds = addJstDays(todayYmd, -i);
     if (qualifiedSet.has(ds) && recordSet.has(ds) && isValidPassingDay(ds)) {
       count++;
     } else {

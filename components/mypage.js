@@ -5,12 +5,10 @@ import {
   reauthenticateWithCredential,
   updatePassword,
   verifyBeforeUpdateEmail,
-  onAuthStateChanged,
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { firebaseAuth } from "../firebase/firebase-init.js";
 import { isPasswordUser } from "../utils/authHelpers.js";
 import { startCheckout } from "../utils/stripeCheckout.js";
-import { whenAuthSettled } from "../utils/authReady.js";
 import { supabase } from "../utils/supabaseClient.js";
 import { switchScreen } from "../main.js";
 import { createPlanInfoContent } from "./planInfo.js";
@@ -303,103 +301,107 @@ export function renderMyPageScreen(user) {
   function createPlanTab() {
     const div = document.createElement("div");
     div.className = "tab-section";
-    if (user.is_premium) {
-      createPlanInfoContent(user).then((content) => div.appendChild(content));
-      return div;
-    }
 
-    const plans = [
-      {
-        key: "plan12",
-        months: 12,
-        monthly: 990,
-        total: 11880,
-        benefit: "約4ヶ月分お得",
-        recommended: true,
-      },
-      {
-        key: "plan6",
-        months: 6,
-        monthly: 1290,
-        total: 7740,
-        benefit: "約1ヶ月分お得",
-        recommended: false,
-      },
-      {
-        key: "plan1",
-        months: 1,
-        monthly: 1490,
-        total: 1490,
-        benefit: "",
-        recommended: false,
-      },
-    ];
-
-    const wrap = document.createElement("div");
-    wrap.className = "pricing-page";
-
-    plans.forEach((p) => {
-      const card = document.createElement("div");
-      card.className = "plan-card" + (p.recommended ? " recommended" : "");
-
-      if (p.recommended) {
-        const rec = document.createElement("div");
-        rec.className = "recommend-badge";
-        rec.textContent = "おすすめ";
-        card.appendChild(rec);
-      }
-
-      const title = document.createElement("div");
-      title.className = "plan-title";
-      title.textContent = p.title || `${p.months}ヶ月プラン`;
-      card.appendChild(title);
-
-      const price = document.createElement("div");
-      price.className = "monthly-price";
-      price.textContent = `税込 ${p.monthly.toLocaleString()}円／月`;
-      card.appendChild(price);
-
-      const total = document.createElement("div");
-      total.className = "total-price";
-      total.textContent = `一括：${p.total.toLocaleString()}円`;
-      card.appendChild(total);
-
-      if (p.benefit) {
-        const badge = document.createElement("div");
-        badge.className = "plan-badge";
-        badge.textContent = p.benefit;
-        card.appendChild(badge);
-      }
-
-      const btn = document.createElement("button");
-      btn.className = "choose-plan";
-      btn.textContent = "このプランを選ぶ";
-      btn.disabled = true;
-      onAuthStateChanged(firebaseAuth, (u) => {
-        btn.disabled = !u;
-      });
-      btn.onclick = async () => {
-        if (btn.disabled) return;
-        btn.disabled = true;
-        const u = await whenAuthSettled(4000);
-        if (!u?.email) {
-          showCustomAlert('サインインを確認しています。数秒後にもう一度お試しください。');
-          btn.disabled = false;
-          return;
+    (async () => {
+      let showPlans = true;
+      if (user.is_premium) {
+        const { data } = await supabase
+          .from('user_subscriptions')
+          .select('ended_at')
+          .eq('user_id', user.id)
+          .order('ended_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        if (data?.ended_at && new Date(data.ended_at) > new Date()) {
+          showPlans = false;
+          const content = await createPlanInfoContent(user);
+          div.appendChild(content);
         }
-        await startCheckout(p.key, btn);
-      };
-      card.appendChild(btn);
+      }
 
-      wrap.appendChild(card);
-    });
+      if (!showPlans) return;
 
-    const note = document.createElement("p");
-    note.className = "plan-note";
-    note.textContent = "※ プランの料金は、登録時に一括でお支払いいただきます";
-    wrap.appendChild(note);
+      const plans = [
+        {
+          key: "plan12",
+          months: 12,
+          monthly: 990,
+          total: 11880,
+          benefit: "約4ヶ月分お得",
+          recommended: true,
+        },
+        {
+          key: "plan6",
+          months: 6,
+          monthly: 1290,
+          total: 7740,
+          benefit: "約1ヶ月分お得",
+          recommended: false,
+        },
+        {
+          key: "plan1",
+          months: 1,
+          monthly: 1490,
+          total: 1490,
+          benefit: "",
+          recommended: false,
+        },
+      ];
 
-    div.appendChild(wrap);
+      const wrap = document.createElement("div");
+      wrap.className = "pricing-page";
+
+      plans.forEach((p) => {
+        const card = document.createElement("div");
+        card.className = "plan-card" + (p.recommended ? " recommended" : "");
+
+        if (p.recommended) {
+          const rec = document.createElement("div");
+          rec.className = "recommend-badge";
+          rec.textContent = "おすすめ";
+          card.appendChild(rec);
+        }
+
+        const title = document.createElement("div");
+        title.className = "plan-title";
+        title.textContent = p.title || `${p.months}ヶ月プラン`;
+        card.appendChild(title);
+
+        const price = document.createElement("div");
+        price.className = "monthly-price";
+        price.textContent = `税込 ${p.monthly.toLocaleString()}円／月`;
+        card.appendChild(price);
+
+        const total = document.createElement("div");
+        total.className = "total-price";
+        total.textContent = `一括：${p.total.toLocaleString()}円`;
+        card.appendChild(total);
+
+        if (p.benefit) {
+          const badge = document.createElement("div");
+          badge.className = "plan-badge";
+          badge.textContent = p.benefit;
+          card.appendChild(badge);
+        }
+
+        const btn = document.createElement("button");
+        btn.className = "choose-plan";
+        btn.textContent = "このプランを選ぶ";
+        btn.dataset.plan = p.key;
+        btn.onclick = () => startCheckout(btn);
+        card.appendChild(btn);
+
+        wrap.appendChild(card);
+      });
+
+      const note = document.createElement("p");
+      note.className = "plan-note";
+      note.textContent = "※ プランの料金は、登録時に一括でお支払いいただきます";
+      wrap.appendChild(note);
+
+      div.appendChild(wrap);
+    })();
+
     return div;
   }
 

@@ -119,10 +119,30 @@ export function renderHeader(container, user) {
   header.querySelector("#growth-btn").onclick = () => switchScreen("growth");
   const pricingBtn = header.querySelector("#pricing-btn");
   if (pricingBtn) {
-    if (user && !user.is_premium) {
+    if (!user) {
       pricingBtn.onclick = () => switchScreen("pricing");
     } else {
-      pricingBtn.style.display = "none";
+      (async () => {
+        let hide = false;
+        if (user.is_premium) {
+          const { data } = await supabase
+            .from('user_subscriptions')
+            .select('ended_at')
+            .eq('user_id', user.id)
+            .order('ended_at', { ascending: false })
+            .limit(1)
+            .maybeSingle();
+          if (data?.ended_at && new Date(data.ended_at) > new Date()) {
+            hide = true;
+            const info = document.createElement('div');
+            info.textContent = `ご利用中（有効期限: ${new Date(data.ended_at).toLocaleDateString()}）`;
+            pricingBtn.replaceWith(info);
+          }
+        }
+        if (!hide) {
+          pricingBtn.onclick = () => switchScreen("pricing");
+        }
+      })();
     }
   }
 

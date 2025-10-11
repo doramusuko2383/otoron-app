@@ -44,14 +44,13 @@ export default async function handler(req, res) {
           quantity: 1,
         },
       ],
-      success_url:
-        `${baseUrl}/success?session_id={CHECKOUT_SESSION_ID}&plan=${plan}`,
+      success_url: `${baseUrl}/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${baseUrl}/cancel`,
       customer_email: email,
       customer_creation: 'always', // ✅ これが重要！
     });
 
-    res.status(200).json({ id: session.id });
+    res.status(200).json({ url: session.url });
   } catch (error) {
     console.error('❌ Error creating Stripe session:', error);
     res.status(500).json({ error: error.message });
