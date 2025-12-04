@@ -1,5 +1,7 @@
-import { supabase } from './supabaseClient.js';
+import { supabase, ensureSupabaseAuth } from './supabaseClient.js';
 import { showCustomAlert } from '../components/home.js';
+import { firebaseAuth } from '../firebase/firebase-init.js';
+import { whenAuthSettled } from './authReady.js';
 
 export async function startCheckout(button) {
   if (!button || button.disabled) return;
@@ -10,7 +12,15 @@ export async function startCheckout(button) {
   button.textContent = '処理中…';
 
   try {
-    const { data: { user } } = await supabase.auth.getUser();
+    let { data: { user } } = await supabase.auth.getUser();
+    if (!user?.email) {
+      const firebaseUser = firebaseAuth.currentUser ?? await whenAuthSettled();
+      if (firebaseUser?.email) {
+        await ensureSupabaseAuth(firebaseUser);
+        ({ data: { user } } = await supabase.auth.getUser());
+      }
+    }
+
     if (!user?.email) {
       showCustomAlert('ログインしてください');
       button.disabled = false;
