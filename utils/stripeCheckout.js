@@ -13,11 +13,17 @@ export async function startCheckout(button) {
 
   try {
     let { data: { user } } = await supabase.auth.getUser();
+    let firebaseUser = firebaseAuth.currentUser;
     if (!user?.email) {
-      const firebaseUser = firebaseAuth.currentUser ?? await whenAuthSettled();
+      firebaseUser = firebaseUser ?? await whenAuthSettled();
       if (firebaseUser?.email) {
         await ensureSupabaseAuth(firebaseUser);
         ({ data: { user } } = await supabase.auth.getUser());
+
+        if (!user?.email) {
+          await ensureSupabaseAuth(firebaseUser);
+          ({ data: { user } } = await supabase.auth.getUser());
+        }
       }
     }
 
