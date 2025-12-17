@@ -10,21 +10,7 @@ export async function startCheckout(button) {
   button.textContent = '処理中…';
 
   try {
-    let { data: { user } } = await supabase.auth.getUser();
-    let firebaseUser = firebaseAuth.currentUser;
-    if (!user?.email) {
-      firebaseUser = firebaseUser ?? await whenAuthSettled();
-      if (firebaseUser?.email) {
-        await ensureSupabaseAuth(firebaseUser);
-        ({ data: { user } } = await supabase.auth.getUser());
-
-        if (!user?.email) {
-          await ensureSupabaseAuth(firebaseUser);
-          ({ data: { user } } = await supabase.auth.getUser());
-        }
-      }
-    }
-
+    const { data: { user } } = await supabase.auth.getUser();
     if (!user?.email) {
       showCustomAlert('ログインしてください');
       button.disabled = false;
