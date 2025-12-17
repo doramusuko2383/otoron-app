@@ -1,7 +1,5 @@
-import { supabase, ensureSupabaseAuth } from './supabaseClient.js';
+import { supabase } from './supabaseClient.js';
 import { showCustomAlert } from '../components/home.js';
-import { firebaseAuth } from '../firebase/firebase-init.js';
-import { whenAuthSettled } from './authReady.js';
 
 export async function startCheckout(button) {
   if (!button || button.disabled) return;
