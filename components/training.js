@@ -108,21 +108,41 @@ async function playSoundThen(name, callback) {
     currentAudio.pause();
     currentAudio.currentTime = 0;
   }
-  const encoded = encodeURIComponent(name);
-  currentAudio = getAudio(`audio/${encoded}.mp3`);
-  currentAudio.onended = () => setTimeout(callback, 100);
-  currentAudio.onerror = () => {
-    console.error("⚠️ 音声ファイルが読み込めませんでした:", name);
+
+  let completed = false;
+  let fallbackTimer = null;
+  const finish = () => {
+    if (completed) return;
+    completed = true;
+    if (fallbackTimer) {
+      clearTimeout(fallbackTimer);
+      fallbackTimer = null;
+    }
     callback();
   };
+
+  const encoded = encodeURIComponent(name);
+  currentAudio = getAudio(`audio/${encoded}.mp3`);
+  currentAudio.onended = () => setTimeout(finish, 100);
+  currentAudio.onerror = () => {
+    console.error("⚠️ 音声ファイルが読み込めませんでした:", name);
+    finish();
+  };
+
+  // Androidでまれにonendedが発火しないケースへの保険
+  fallbackTimer = setTimeout(() => {
+    console.warn("⚠️ onended未発火のためフォールバック遷移:", name);
+    finish();
+  }, 3000);
+
   try {
     const ok = await safePlayAudio(currentAudio, name);
     if (!ok) {
       // Playback failed so invoke callback to avoid freezing the UI
-      callback();
+      finish();
     }
   } catch (_) {
-    callback();
+    finish();
   }
 }
 
