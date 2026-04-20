@@ -8,6 +8,7 @@ import {
   clearTimeOfDayStyling,
 } from "../utils/timeOfDay.js";
 import { getAudio } from "../utils/audioCache.js";
+import { safePlayAudio } from "../utils/audioPlayback.js";
 
 export async function renderHomeScreen(user, options = {}) {
   const { showWelcome = false } = options;
@@ -81,13 +82,7 @@ export async function renderHomeScreen(user, options = {}) {
   faceImg.className = "otolon-face";
   faceImg.addEventListener("pointerdown", () => {
     const audio = getAudio("audio/touch.mp3");
-    (async () => {
-      try {
-        await audio.play();
-      } catch (e) {
-        console.warn("🎧 audio.play() エラー:", e);
-      }
-    })();
+    safePlayAudio(audio, "touch");
     faceImg.classList.add("bounce");
     faceImg.addEventListener(
       "animationend",

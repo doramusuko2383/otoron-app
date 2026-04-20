@@ -3,6 +3,7 @@ import { unlockChord } from "./progressUtils.js";
 import { applyRecommendedSelection, forceUnlock } from "./growthUtils.js";
 import { showCustomAlert } from "../components/home.js";
 import { getAudio } from "./audioCache.js";
+import { safePlayAudio } from "./audioPlayback.js";
 import { getConsecutiveQualifiedDays } from "./qualifiedStore_supabase.js";
 import { launchConfetti } from "./confetti.js";
 
@@ -113,16 +114,8 @@ export async function updateGrowthStatusBar(user, target, onUnlocked) {
         if (success) {
           const audio = getAudio("audio/unlock_chord.mp3");
           const applause = getAudio("audio/applause.mp3");
-          try {
-            await audio.play();
-          } catch (e) {
-            console.warn("🎧 audio.play() エラー:", e);
-          }
-          try {
-            await applause.play();
-          } catch (e) {
-            console.warn("🎧 audio.play() エラー:", e);
-          }
+          await safePlayAudio(audio, "unlock_chord");
+          await safePlayAudio(applause, "applause");
           launchConfetti();
           await applyRecommendedSelection(user.id);
           setTimeout(() => {
