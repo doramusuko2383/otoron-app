@@ -36,23 +36,30 @@ export let lastResults = [];
 export let correctCount = 0;
 
 async function playSoundThen(name, callback) {
+  let finished = false;
+  const finishOnce = () => {
+    if (finished) return;
+    finished = true;
+    setTimeout(callback, 100);
+  };
+
   if (currentAudio) {
     currentAudio.pause();
     currentAudio.currentTime = 0;
   }
   const encoded = encodeURIComponent(name);
   currentAudio = getAudio(`audio/${encoded}.mp3`);
-  currentAudio.onended = () => setTimeout(callback, 100);
+  currentAudio.onended = finishOnce;
   currentAudio.onerror = () => {
     console.error("⚠️ 音声ファイルが読み込めませんでした:", name);
-    callback();
+    finishOnce();
   };
   try {
     await currentAudio.play();
   } catch (e) {
     console.warn("🎧 audio.play() エラー:", e);
     // Playback failed so invoke callback to avoid freezing the UI
-    callback();
+    finishOnce();
   }
 }
 
@@ -549,14 +556,25 @@ async function playNoteFile(note, callback) {
   }
   const encoded = encodeURIComponent(normalizeNoteName(note));
   currentAudio = getAudio(`sounds/${encoded}.mp3`);
-  currentAudio.onerror = () => console.error("音声ファイルが見つかりません:", note);
+  let finishOnce = null;
+  currentAudio.onerror = () => {
+    console.error("音声ファイルが見つかりません:", note);
+    if (finishOnce) finishOnce();
+  };
   if (callback) {
-    currentAudio.onended = () => setTimeout(callback, 100);
+    let finished = false;
+    finishOnce = () => {
+      if (finished) return;
+      finished = true;
+      setTimeout(callback, 100);
+    };
+    currentAudio.onended = finishOnce;
   }
   try {
     await currentAudio.play();
   } catch (e) {
     console.warn("🎧 audio.play() エラー:", e);
+    if (finishOnce) finishOnce();
   }
 }
 
