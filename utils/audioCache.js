@@ -15,15 +15,3 @@ export function getAudio(src) {
   audio.currentTime = 0;
   return audio;
 }
-
-export function resetAudioCache() {
-  cache.forEach((audio) => {
-    try {
-      audio.pause();
-      audio.currentTime = 0;
-      audio.onended = null;
-      audio.onerror = null;
-    } catch (_) {}
-  });
-  cache.clear();
-}

@@ -36,7 +36,6 @@ import { renderChordResetScreen } from "./components/info/chordReset.js";
 import { renderPricingScreen } from "./components/pricing.js";
 import { renderLockScreen } from "./components/lock.js";
 import { renderForgotPasswordScreen } from "./components/forgotPassword.js";
-import { setupAudioResumeOnFirstTouch } from "./utils/audioPlayback.js";
 
 
 import { firebaseAuth } from "./firebase/firebase-init.js";
@@ -273,7 +272,6 @@ onAuthStateChanged(firebaseAuth, async (firebaseUser) => {
 });
 
 const initApp = () => {
-  setupAudioResumeOnFirstTouch();
   const hash = location.hash;
   const initial = DEBUG_AUTO_LOGIN ? "home" : "intro";
   const screenHash = hash.replace("#", "");

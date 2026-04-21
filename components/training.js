@@ -11,7 +11,6 @@ import { saveTrainingSession } from "../utils/trainingStore_supabase.js";
 import { generateRecommendedQueue } from "../utils/growthUtils.js";
 import { loadGrowthFlags } from "../utils/growthStore_supabase.js";
 import { getAudio } from "../utils/audioCache.js";
-import { safePlayAudio } from "../utils/audioPlayback.js";
 import { kanaToHiragana, noteLabels } from "../utils/noteUtils.js";
 import { SHOW_DEBUG } from "../utils/debug.js";
 
@@ -29,7 +28,6 @@ let chordProgressCount = 0;
 let chordSoundOn = true;
 let manualQuestion = false;
 let displayMode = null; // 'note' or 'color'
-const TRAINING_SESSION_KEY = "trainingSessionV1";
 
 export const stats = {};
 export const mistakes = {};
@@ -37,112 +35,24 @@ export const firstMistakeInSession = { flag: false, wrong: null };
 export let lastResults = [];
 export let correctCount = 0;
 
-function clearTrainingSessionSnapshot() {
-  sessionStorage.removeItem(TRAINING_SESSION_KEY);
-}
-
-function saveTrainingSessionSnapshot() {
-  if (!currentUser?.id || !currentAnswer?.name) return;
-  const payload = {
-    userId: currentUser.id,
-    questionCount,
-    correctCount,
-    currentAnswerName: currentAnswer.name,
-    questionQueue,
-    stats,
-    mistakes,
-    lastResults,
-    selectedChords,
-    alreadyTried,
-    isForcedAnswer,
-    singleNoteMode,
-    singleNoteStrategy,
-    chordSoundOn,
-    manualQuestion,
-    displayMode,
-    savedAt: Date.now(),
-  };
-  sessionStorage.setItem(TRAINING_SESSION_KEY, JSON.stringify(payload));
-}
-
-function tryRestoreTrainingSessionSnapshot() {
-  const raw = sessionStorage.getItem(TRAINING_SESSION_KEY);
-  if (!raw || !currentUser?.id) return false;
-  try {
-    const data = JSON.parse(raw);
-    if (data.userId !== currentUser.id) return false;
-
-    questionCount = Number(data.questionCount || 0);
-    correctCount = Number(data.correctCount || 0);
-    questionQueue = Array.isArray(data.questionQueue) ? [...data.questionQueue] : [];
-    alreadyTried = Boolean(data.alreadyTried);
-    isForcedAnswer = Boolean(data.isForcedAnswer);
-    singleNoteMode = Boolean(data.singleNoteMode);
-    singleNoteStrategy = data.singleNoteStrategy || "top";
-    chordSoundOn = data.chordSoundOn !== false;
-    manualQuestion = Boolean(data.manualQuestion);
-    displayMode = data.displayMode || displayMode;
-
-    selectedChords.length = 0;
-    if (Array.isArray(data.selectedChords)) {
-      selectedChords.push(...data.selectedChords);
-    }
-
-    for (const key in stats) delete stats[key];
-    Object.assign(stats, data.stats || {});
-    for (const key in mistakes) delete mistakes[key];
-    Object.assign(mistakes, data.mistakes || {});
-    lastResults = Array.isArray(data.lastResults) ? data.lastResults : [];
-
-    const answerName = data.currentAnswerName;
-    currentAnswer = chords.find(c => c.name === answerName) || null;
-    return Boolean(currentAnswer);
-  } catch (e) {
-    console.warn("セッション復元に失敗しました", e);
-    return false;
-  }
-}
-
 async function playSoundThen(name, callback) {
   if (currentAudio) {
     currentAudio.pause();
     currentAudio.currentTime = 0;
   }
-
-  let completed = false;
-  let fallbackTimer = null;
-  const finish = () => {
-    if (completed) return;
-    completed = true;
-    if (fallbackTimer) {
-      clearTimeout(fallbackTimer);
-      fallbackTimer = null;
-    }
-    callback();
-  };
-
   const encoded = encodeURIComponent(name);
   currentAudio = getAudio(`audio/${encoded}.mp3`);
-  currentAudio.onended = () => setTimeout(finish, 100);
+  currentAudio.onended = () => setTimeout(callback, 100);
   currentAudio.onerror = () => {
     console.error("⚠️ 音声ファイルが読み込めませんでした:", name);
-    finish();
+    callback();
   };
-
-  // Androidでまれにonendedが発火しないケースへの保険
-  fallbackTimer = setTimeout(() => {
-    console.warn("⚠️ onended未発火のためフォールバック遷移:", name);
-    finish();
-  }, 3000);
-
   try {
-    const ok = await safePlayAudio(currentAudio, name);
-    if (!ok) {
-      // Playback failed so invoke callback to avoid freezing the UI
-      finish();
-    }
-  } catch (_) {
-    finish();
+    await currentAudio.play();
+  } catch (e) {
+    console.warn("🎧 audio.play() エラー:", e);
+    // Playback failed so invoke callback to avoid freezing the UI
+    callback();
   }
 }
 
@@ -237,12 +147,6 @@ export async function renderTrainingScreen(user) {
   alreadyTried = false;
   isForcedAnswer = false;
   firstMistakeInSession.flag = false;
-  if (tryRestoreTrainingSessionSnapshot()) {
-    drawQuizScreen();
-    updateProgressUI();
-    playChordFile(currentAnswer.file);
-    return;
-  }
   if (!questionQueue.length) {
     questionQueue = createQuestionQueue();
   }
@@ -271,7 +175,6 @@ async function nextQuestion() {
   if (questionQueue.length === 0 || quitFlag) {
     const sound = (correctCount === questionCount) ? "perfect" : "end";
     playSoundThen(sound, async () => {
-      clearTrainingSessionSnapshot();
       if (!currentUser.isTemp) {
         await saveTrainingSession({
           userId: currentUser.id,
@@ -316,7 +219,6 @@ function showQuiz() {
   }
   questionCount++;
   updateProgressUI();
-  saveTrainingSessionSnapshot();
 
   playChordFile(currentAnswer.file);
 }
@@ -519,7 +421,6 @@ function drawQuizScreen() {
   quitBtn.onclick = () => {
     showCustomConfirm("ほんとうに やめちゃうの？", () => {
       quitFlag = true;
-      clearTrainingSessionSnapshot();
       switchScreen("home");
     });
   };
@@ -600,19 +501,27 @@ async function playChordFile(filename) {
   }
   currentAudio = getAudio(`audio/${filename}`);
   currentAudio.onerror = () => console.error("音声ファイルが見つかりません:", filename);
-  await safePlayAudio(currentAudio, filename);
+  try {
+    await currentAudio.play();
+  } catch (e) {
+    console.warn("🎧 audio.play() エラー:", e);
+  }
 }
 
 function unlockAudio(filename) {
   if (!chordSoundOn || manualQuestion) return;
   const audio = getAudio(`audio/${filename}`);
   audio.muted = true;
-  safePlayAudio(audio, filename).then((ok) => {
-    if (!ok) return;
-    audio.pause();
-    audio.muted = false;
-    audio.currentTime = 0;
-  });
+  audio
+    .play()
+    .then(() => {
+      audio.pause();
+      audio.muted = false;
+      audio.currentTime = 0;
+    })
+    .catch(e => {
+      console.warn("🎧 audio.play() エラー:", e);
+    });
 }
 
 function normalizeNoteName(name) {
@@ -644,7 +553,11 @@ async function playNoteFile(note, callback) {
   if (callback) {
     currentAudio.onended = () => setTimeout(callback, 100);
   }
-  await safePlayAudio(currentAudio, note);
+  try {
+    await currentAudio.play();
+  } catch (e) {
+    console.warn("🎧 audio.play() エラー:", e);
+  }
 }
 
 function noteToMidi(n) {
@@ -929,7 +842,7 @@ function checkAnswer(selected) {
 
   if (isForcedAnswer) {
     isForcedAnswer = false;
-    saveTrainingSessionSnapshot();
+
     nextQuestion();
     return;
   }
@@ -970,7 +883,6 @@ function checkAnswer(selected) {
       } else {
         proceed();
       }
-      saveTrainingSessionSnapshot();
     } else {
       const voices = ["good1", "good2"];
       showFeedback("いいね", "good");
@@ -981,7 +893,6 @@ function checkAnswer(selected) {
           proceed();
         }
       });
-      saveTrainingSessionSnapshot();
     }
   } else {
     alreadyTried = true;
@@ -1011,6 +922,5 @@ function checkAnswer(selected) {
     playSoundThen(`wrong_${soundKey}`, () => {
       playChordFile(currentAnswer.file);
     });
-    saveTrainingSessionSnapshot();
   }
 }
