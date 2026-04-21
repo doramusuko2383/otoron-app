@@ -31,6 +31,7 @@ let manualQuestion = false;
 let displayMode = null; // 'note' or 'color'
 let isProcessingAnswer = false;
 let isAnswerEnabled = true;
+let chordPlayRequestId = 0;
 const TRAINING_SESSION_KEY = "trainingSessionV1";
 
 export const stats = {};
@@ -599,8 +600,14 @@ if (correctBtn) {
 
 
 async function playChordFile(filename) {
-  if (!chordSoundOn || manualQuestion) {
+  const requestId = ++chordPlayRequestId;
+  const unlockAnswers = () => {
+    if (requestId !== chordPlayRequestId) return;
     isAnswerEnabled = true;
+  };
+
+  if (!chordSoundOn || manualQuestion) {
+    unlockAnswers();
     return;
   }
   if (currentAudio) {
@@ -608,9 +615,28 @@ async function playChordFile(filename) {
     currentAudio.currentTime = 0;
   }
   currentAudio = getAudio(`audio/${filename}`);
-  currentAudio.onerror = () => console.error("音声ファイルが見つかりません:", filename);
-  await safePlayAudio(currentAudio, filename);
-  isAnswerEnabled = true;
+  currentAudio.onerror = () => {
+    console.error("音声ファイルが見つかりません:", filename);
+    unlockAnswers();
+  };
+
+  const fallbackUnlockTimer = setTimeout(() => {
+    console.warn("⚠️ 再生開始待ちがタイムアウトしたため回答受付を再開:", filename);
+    unlockAnswers();
+  }, 1800);
+
+  currentAudio.onplaying = () => {
+    clearTimeout(fallbackUnlockTimer);
+    unlockAnswers();
+  };
+
+  const ok = await safePlayAudio(currentAudio, filename, { timeoutMs: 1800 });
+  clearTimeout(fallbackUnlockTimer);
+  if (!ok) {
+    unlockAnswers();
+    return;
+  }
+  unlockAnswers();
 }
 
 function unlockAudio(filename) {
