@@ -12,6 +12,8 @@ export function getAudio(src) {
     audio = new Audio(src);
     cache.set(src, audio);
   }
+  // Ensure overlapping plays are stopped before reusing the same element.
+  audio.pause();
   audio.currentTime = 0;
   return audio;
 }
