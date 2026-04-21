@@ -29,6 +29,9 @@ let chordProgressCount = 0;
 let chordSoundOn = true;
 let manualQuestion = false;
 let displayMode = null; // 'note' or 'color'
+let isProcessingAnswer = false;
+let isAnswerEnabled = true;
+let chordPlayRequestId = 0;
 const TRAINING_SESSION_KEY = "trainingSessionV1";
 
 export const stats = {};
@@ -268,6 +271,8 @@ async function nextQuestion() {
   
   alreadyTried = false;
   isForcedAnswer = false;
+  isProcessingAnswer = false;
+  isAnswerEnabled = false;
   if (questionQueue.length === 0 || quitFlag) {
     const sound = (correctCount === questionCount) ? "perfect" : "end";
     playSoundThen(sound, async () => {
@@ -539,7 +544,8 @@ function drawQuizScreen() {
   unknownBtn.id = "unknownBtn";
   unknownBtn.textContent = "わからない";
   unknownBtn.onclick = () => {
-    if (alreadyTried || isForcedAnswer) return;
+    if (alreadyTried || isForcedAnswer || isProcessingAnswer || !isAnswerEnabled) return;
+    isProcessingAnswer = true;
 
     alreadyTried = true;
     isForcedAnswer = true;
@@ -573,6 +579,7 @@ if (correctBtn) {
     showFeedback("もういちど", "bad");
     const soundKey = currentAnswer.soundKey || currentAnswer.colorClass;
     playSoundThen(`wrong_${soundKey}`, () => {
+      isProcessingAnswer = false;
       playChordFile(currentAnswer.file);
     });
   };
@@ -593,14 +600,43 @@ if (correctBtn) {
 
 
 async function playChordFile(filename) {
-  if (!chordSoundOn || manualQuestion) return;
+  const requestId = ++chordPlayRequestId;
+  const unlockAnswers = () => {
+    if (requestId !== chordPlayRequestId) return;
+    isAnswerEnabled = true;
+  };
+
+  if (!chordSoundOn || manualQuestion) {
+    unlockAnswers();
+    return;
+  }
   if (currentAudio) {
     currentAudio.pause();
     currentAudio.currentTime = 0;
   }
   currentAudio = getAudio(`audio/${filename}`);
-  currentAudio.onerror = () => console.error("音声ファイルが見つかりません:", filename);
-  await safePlayAudio(currentAudio, filename);
+  currentAudio.onerror = () => {
+    console.error("音声ファイルが見つかりません:", filename);
+    unlockAnswers();
+  };
+
+  const fallbackUnlockTimer = setTimeout(() => {
+    console.warn("⚠️ 再生開始待ちがタイムアウトしたため回答受付を再開:", filename);
+    unlockAnswers();
+  }, 1800);
+
+  currentAudio.onplaying = () => {
+    clearTimeout(fallbackUnlockTimer);
+    unlockAnswers();
+  };
+
+  const ok = await safePlayAudio(currentAudio, filename, { timeoutMs: 1800 });
+  clearTimeout(fallbackUnlockTimer);
+  if (!ok) {
+    unlockAnswers();
+    return;
+  }
+  unlockAnswers();
 }
 
 function unlockAudio(filename) {
@@ -924,11 +960,15 @@ function updateProgressUI() {
 }
 
 function checkAnswer(selected) {
+  if (isProcessingAnswer || !isAnswerEnabled) return;
+  isProcessingAnswer = true;
+
   const name = currentAnswer.name;
   stats[name] = stats[name] || { correct: 0, wrong: 0, total: 0 };
 
   if (isForcedAnswer) {
     isForcedAnswer = false;
+    isProcessingAnswer = false;
     saveTrainingSessionSnapshot();
     nextQuestion();
     return;
@@ -960,6 +1000,7 @@ function checkAnswer(selected) {
       if (questionQueue.length === 0) {
         showFeedback("がんばったね", "good", 0);
       }
+      isProcessingAnswer = false;
       nextQuestion();
     };
 
@@ -1009,6 +1050,7 @@ function checkAnswer(selected) {
     showFeedback("もういちど", "bad");
     const soundKey = currentAnswer.soundKey || currentAnswer.colorClass;
     playSoundThen(`wrong_${soundKey}`, () => {
+      isProcessingAnswer = false;
       playChordFile(currentAnswer.file);
     });
     saveTrainingSessionSnapshot();

@@ -47,7 +47,8 @@ export function setupAudioResumeOnFirstTouch() {
   document.addEventListener("pointerdown", handler, { passive: true });
 }
 
-export async function safePlayAudio(audio, label = "") {
+export async function safePlayAudio(audio, label = "", options = {}) {
+  const timeoutMs = Number.isFinite(options.timeoutMs) ? options.timeoutMs : 2500;
   playAttemptCount += 1;
   if (playAttemptCount % AUDIO_CONTEXT_RESET_INTERVAL === 0) {
     await recreateAudioContext();
@@ -56,7 +57,15 @@ export async function safePlayAudio(audio, label = "") {
 
   await resumeAudioContextIfNeeded();
   try {
-    await audio.play();
+    const playPromise = audio.play();
+    if (playPromise && typeof playPromise.then === "function") {
+      await Promise.race([
+        playPromise,
+        new Promise((_, reject) => {
+          setTimeout(() => reject(new Error("audio.play() timeout")), timeoutMs);
+        })
+      ]);
+    }
     return true;
   } catch (e) {
     console.warn(`🎧 audio.play() エラー: ${label}`, e);
