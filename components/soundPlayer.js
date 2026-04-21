@@ -1,5 +1,4 @@
 import { getAudio } from "../utils/audioCache.js";
-import { safePlayAudio } from "../utils/audioPlayback.js";
 
 function normalizeNoteName(name) {
   return name
@@ -41,10 +40,13 @@ export function playNote(noteName) {
     audio.addEventListener("error", handleError);
 
     (async () => {
-      const ok = await safePlayAudio(audio, noteName);
-      if (!ok) {
+      try {
+        await audio.play();
+      } catch (e) {
+        console.warn(`音声再生エラー: ${noteName}`, e);
         handleError();
       }
     })();
   });
 }
+
