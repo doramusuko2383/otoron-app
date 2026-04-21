@@ -28,6 +28,7 @@ let chordProgressCount = 0;
 let chordSoundOn = true;
 let manualQuestion = false;
 let displayMode = null; // 'note' or 'color'
+let chordAudioLockCount = 0;
 
 export const stats = {};
 export const mistakes = {};
@@ -36,23 +37,37 @@ export let lastResults = [];
 export let correctCount = 0;
 
 async function playSoundThen(name, callback) {
+  chordAudioLockCount++;
+  let finished = false;
+  const finishOnce = () => {
+    if (finished) return;
+    finished = true;
+    setTimeout(() => {
+      try {
+        callback();
+      } finally {
+        chordAudioLockCount = Math.max(0, chordAudioLockCount - 1);
+      }
+    }, 100);
+  };
+
   if (currentAudio) {
     currentAudio.pause();
     currentAudio.currentTime = 0;
   }
   const encoded = encodeURIComponent(name);
   currentAudio = getAudio(`audio/${encoded}.mp3`);
-  currentAudio.onended = () => setTimeout(callback, 100);
+  currentAudio.onended = finishOnce;
   currentAudio.onerror = () => {
     console.error("⚠️ 音声ファイルが読み込めませんでした:", name);
-    callback();
+    finishOnce();
   };
   try {
     await currentAudio.play();
   } catch (e) {
     console.warn("🎧 audio.play() エラー:", e);
     // Playback failed so invoke callback to avoid freezing the UI
-    callback();
+    finishOnce();
   }
 }
 
@@ -145,6 +160,7 @@ export async function renderTrainingScreen(user) {
   questionCount = 0;
   quitFlag = false;
   alreadyTried = false;
+  chordAudioLockCount = 0;
   isForcedAnswer = false;
   firstMistakeInSession.flag = false;
   if (!questionQueue.length) {
@@ -440,7 +456,7 @@ function drawQuizScreen() {
   unknownBtn.id = "unknownBtn";
   unknownBtn.textContent = "わからない";
   unknownBtn.onclick = () => {
-    if (alreadyTried || isForcedAnswer) return;
+    if (alreadyTried || isForcedAnswer || chordAudioLockCount > 0) return;
 
     alreadyTried = true;
     isForcedAnswer = true;
@@ -495,16 +511,32 @@ if (correctBtn) {
 
 async function playChordFile(filename) {
   if (!chordSoundOn || manualQuestion) return;
+  chordAudioLockCount++;
+  let finished = false;
+  let watchdogId = null;
+  const finishOnce = () => {
+    if (finished) return;
+    finished = true;
+    if (watchdogId) clearTimeout(watchdogId);
+    chordAudioLockCount = Math.max(0, chordAudioLockCount - 1);
+  };
+
   if (currentAudio) {
     currentAudio.pause();
     currentAudio.currentTime = 0;
   }
   currentAudio = getAudio(`audio/${filename}`);
-  currentAudio.onerror = () => console.error("音声ファイルが見つかりません:", filename);
+  currentAudio.onended = finishOnce;
+  currentAudio.onerror = () => {
+    console.error("音声ファイルが見つかりません:", filename);
+    finishOnce();
+  };
   try {
+    watchdogId = setTimeout(finishOnce, 5000);
     await currentAudio.play();
   } catch (e) {
     console.warn("🎧 audio.play() エラー:", e);
+    finishOnce();
   }
 }
 
@@ -549,14 +581,25 @@ async function playNoteFile(note, callback) {
   }
   const encoded = encodeURIComponent(normalizeNoteName(note));
   currentAudio = getAudio(`sounds/${encoded}.mp3`);
-  currentAudio.onerror = () => console.error("音声ファイルが見つかりません:", note);
+  let finishOnce = null;
+  currentAudio.onerror = () => {
+    console.error("音声ファイルが見つかりません:", note);
+    if (finishOnce) finishOnce();
+  };
   if (callback) {
-    currentAudio.onended = () => setTimeout(callback, 100);
+    let finished = false;
+    finishOnce = () => {
+      if (finished) return;
+      finished = true;
+      setTimeout(callback, 100);
+    };
+    currentAudio.onended = finishOnce;
   }
   try {
     await currentAudio.play();
   } catch (e) {
     console.warn("🎧 audio.play() エラー:", e);
+    if (finishOnce) finishOnce();
   }
 }
 
@@ -837,6 +880,7 @@ function updateProgressUI() {
 }
 
 function checkAnswer(selected) {
+  if (chordAudioLockCount > 0) return;
   const name = currentAnswer.name;
   stats[name] = stats[name] || { correct: 0, wrong: 0, total: 0 };
 
