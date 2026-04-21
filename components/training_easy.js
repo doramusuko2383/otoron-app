@@ -8,6 +8,7 @@ import { saveSessionToHistory } from "./summary.js";
 import { incrementSetCount, updateTrainingRecord } from "../utils/recordStore_supabase.js";
 import { autoUnlockNextChord } from "../utils/progressUtils.js";
 import { getAudio } from "../utils/audioCache.js";
+import { safePlayAudio } from "../utils/audioPlayback.js";
 import { SHOW_DEBUG } from "../utils/debug.js";
 
 let questionCount = 0;
@@ -37,10 +38,12 @@ async function playSoundThen(name, callback) {
     callback();
   };
   try {
-    await currentAudio.play();
-  } catch (e) {
-    console.warn("🎧 audio.play() エラー:", e);
-    // Playback failed so invoke callback to avoid freezing the UI
+    const ok = await safePlayAudio(currentAudio, name);
+    if (!ok) {
+      // Playback failed so invoke callback to avoid freezing the UI
+      callback();
+    }
+  } catch (_) {
     callback();
   }
 }
@@ -330,11 +333,7 @@ async function playChordFile(filename) {
   }
   currentAudio = getAudio(`audio/${filename}`);
   currentAudio.onerror = () => console.error("音声ファイルが見つかりません:", filename);
-  try {
-    await currentAudio.play();
-  } catch (e) {
-    console.warn("🎧 audio.play() エラー:", e);
-  }
+  await safePlayAudio(currentAudio, filename);
 }
 
 let feedbackTimeoutId;
