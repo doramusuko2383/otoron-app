@@ -615,28 +615,44 @@ async function playChordFile(filename) {
     currentAudio.currentTime = 0;
   }
   currentAudio = getAudio(`audio/${filename}`);
+  let fallbackUnlockTimer = null;
+  const resetFallbackTimer = (ms = 4000) => {
+    if (fallbackUnlockTimer) {
+      clearTimeout(fallbackUnlockTimer);
+    }
+    fallbackUnlockTimer = setTimeout(() => {
+      console.warn("⚠️ 再生終了待ちがタイムアウトしたため回答受付を再開:", filename);
+      unlockAnswers();
+    }, ms);
+  };
+
   currentAudio.onerror = () => {
     console.error("音声ファイルが見つかりません:", filename);
+    if (fallbackUnlockTimer) clearTimeout(fallbackUnlockTimer);
     unlockAnswers();
   };
 
-  const fallbackUnlockTimer = setTimeout(() => {
-    console.warn("⚠️ 再生開始待ちがタイムアウトしたため回答受付を再開:", filename);
+  currentAudio.onended = () => {
+    if (fallbackUnlockTimer) clearTimeout(fallbackUnlockTimer);
     unlockAnswers();
-  }, 1800);
+  };
 
-  currentAudio.onplaying = () => {
-    clearTimeout(fallbackUnlockTimer);
-    unlockAnswers();
+  currentAudio.onloadedmetadata = () => {
+    const durationSec = Number(currentAudio.duration);
+    if (Number.isFinite(durationSec) && durationSec > 0) {
+      const fallbackMs = Math.min(Math.max(Math.ceil(durationSec * 1000) + 250, 1500), 5000);
+      resetFallbackTimer(fallbackMs);
+    }
   };
 
   const ok = await safePlayAudio(currentAudio, filename, { timeoutMs: 1800 });
-  clearTimeout(fallbackUnlockTimer);
-  if (!ok) {
-    unlockAnswers();
-    return;
+  if (ok) {
+    resetFallbackTimer();
   }
-  unlockAnswers();
+  if (!ok) {
+    if (fallbackUnlockTimer) clearTimeout(fallbackUnlockTimer);
+    unlockAnswers();
+  }
 }
 
 function unlockAudio(filename) {
