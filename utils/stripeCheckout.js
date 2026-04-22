@@ -1,4 +1,5 @@
 import { supabase } from './supabaseClient.js';
+import { firebaseAuth } from '../firebase/firebase-init.js';
 import { showCustomAlert } from '../components/home.js';
 
 export async function startCheckout(button) {
@@ -10,8 +11,13 @@ export async function startCheckout(button) {
   button.textContent = '処理中…';
 
   try {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user?.email) {
+    let email = firebaseAuth.currentUser?.email || null;
+    if (!email) {
+      const { data: { user } } = await supabase.auth.getUser();
+      email = user?.email || null;
+    }
+
+    if (!email) {
       showCustomAlert('ログインしてください');
       button.disabled = false;
       button.textContent = origText;
@@ -21,7 +27,7 @@ export async function startCheckout(button) {
     const res = await fetch('/api/create-checkout-session', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: user.email, plan })
+      body: JSON.stringify({ email, plan })
     });
     const json = await res.json();
     if (json?.url) {
