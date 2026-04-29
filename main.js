@@ -36,6 +36,7 @@ import { renderChordResetScreen } from "./components/info/chordReset.js";
 import { renderPricingScreen } from "./components/pricing.js";
 import { renderLockScreen } from "./components/lock.js";
 import { renderForgotPasswordScreen } from "./components/forgotPassword.js";
+import { primeAudioPlaybackOnce } from "./utils/audioCache.js";
 
 
 import { firebaseAuth } from "./firebase/firebase-init.js";
@@ -117,6 +118,19 @@ window.closeHelp = closeHelp;
 
 window.addEventListener("error", (e) => {
   console.error("Uncaught error", e.error);
+});
+
+// iOS Safari で音声再生がブロックされやすいため、
+// 最初のユーザー操作タイミングでオーディオ再生をプライミングする。
+const audioPrimeEvents = ["touchstart", "pointerdown", "click"];
+const primeAudioOnFirstGesture = () => {
+  primeAudioPlaybackOnce();
+  audioPrimeEvents.forEach((eventName) => {
+    window.removeEventListener(eventName, primeAudioOnFirstGesture, true);
+  });
+};
+audioPrimeEvents.forEach((eventName) => {
+  window.addEventListener(eventName, primeAudioOnFirstGesture, { capture: true, passive: true });
 });
 
 
