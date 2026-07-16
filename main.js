@@ -149,7 +149,7 @@ export function clearTempUser() {
 }
 
 export function getBaseUser() {
-  return baseUser;
+  return baseUser || (currentUser && !currentUser.isTemp ? currentUser : null);
 }
 
 async function checkTrainingLimit(user) {
@@ -268,6 +268,8 @@ onAuthStateChanged(firebaseAuth, async (firebaseUser) => {
       name: firebaseUser.displayName ?? null,
       avatar_url: firebaseUser.photoURL ?? null,
     });
+    baseUser = profile;
+    currentUser = profile;
     window.currentUser = profile;
     const { count, error } = await supabase
       .from('user_chord_progress')
